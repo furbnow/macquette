@@ -27,7 +27,7 @@ It should create a new Ubuntu 18.04 VM and configure everything.
 * [Create item in element library](#create-item-in-element-library)
 * [Update item in element library](#update-item-in-element-library)
 
-All endpoints start with `/v1` e.g. `http://localhost:9090/v1/assessments/`.
+All endpoints start with `/api/v1` e.g. `http://localhost:9090/api/v1/assessments/`.
 
 ## List assessments
 
@@ -72,7 +72,7 @@ GET /assessments/:id/
 ### Example
 
 ```
-> curl http://localhost:9090/v1/assessments/1
+> curl http://localhost:9090/api/v1/assessments/1
 ```
 
 Returns:
@@ -111,7 +111,7 @@ POST /assessments/
 ```
 > curl -v \
     -H "Content-Type: application/json" \
-    http://localhost:9090/v1/assessments/ \
+    http://localhost:9090/api/v1/assessments/ \
     --data @- << EOF
 {
     "name": "Example assessment",
@@ -147,7 +147,7 @@ Content-Type: application/json
 > curl -v \
     -X PUT \
     -H "Content-Type: application/json" \
-    http://localhost:9090/v1/assessments/1/data \
+    http://localhost:9090/api/v1/assessments/1/data \
     --data @- << EOF
 
     "master": {
@@ -184,7 +184,7 @@ Update one or more metadata fields (status, description etc).
 > curl -v \
     -X PUT \
     -H "Content-Type: application/json" \
-    http://localhost:9090/v1/assessments/1/ \
+    http://localhost:9090/api/v1/assessments/1/ \
     --data @- << EOF
 {
     "status": "complete",
@@ -203,7 +203,7 @@ DELETE /assessments/:id/
 ### Example
 
 ```
-> curl -v -X DELETE http://localhost:9090/v1/assessments/1/
+> curl -v -X DELETE http://localhost:9090/api/v1/assessments/1/
 ```
 
 Returns:
@@ -225,7 +225,7 @@ List all element libraries and their library items that I've got access to.
 ### Example
 
 ```
-> curl http://localhost:9090/v1/libraries/
+> curl http://localhost:9090/api/v1/libraries/
 ```
 
 Returns:
@@ -302,7 +302,7 @@ POST /libraries/:id/items/
 ```
 > curl -v \
     -H "Content-Type: application/json" \
-    http://localhost:9090/v1/libraries/1/items/ \
+    http://localhost:9090/api/v1/libraries/1/items/ \
     --data @- << EOF
 {
     "idtag": "SWIN_04",
@@ -337,7 +337,7 @@ PUT /libraries/:id/items/:idtag/
 > curl -v \
     -X PUT \
     -H "Content-Type: application/json" \
-    http://localhost:9090/v1/libraries/1/item/SWIN_04/ \
+    http://localhost:9090/api/v1/libraries/1/item/SWIN_04/ \
     --data @- << EOF
 {
     "name": "100-140mm External Wall Insulation EWI on filled cavity wall.",
