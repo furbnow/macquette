@@ -73,7 +73,9 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "mhep.users.apps.UsersConfig",
+
     # Your stuff: custom apps go here
+    "mhep.assessments.apps.AssessmentsConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
