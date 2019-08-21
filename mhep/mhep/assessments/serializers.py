@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import serializers
 from mhep.assessments.models import Assessment
 
@@ -15,7 +17,15 @@ class StringIDMixin():
         return '{:d}'.format(obj.id)
 
 
+class MdateMixin():
+    def get_mdate(self, obj):
+        return "{:d}".format(
+            int(datetime.datetime.timestamp(obj.updated_at))
+        )
+
+
 class AssessmentMetadataSerializer(
+        MdateMixin,
         StringIDMixin,
         HardcodedAuthorUserIDMixin,
         serializers.ModelSerializer):
@@ -23,6 +33,7 @@ class AssessmentMetadataSerializer(
     author = serializers.SerializerMethodField()
     userid = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
+    mdate = serializers.SerializerMethodField()
 
     class Meta:
         model = Assessment
@@ -36,10 +47,12 @@ class AssessmentMetadataSerializer(
             "updated_at",
             "author",
             "userid",
+            "mdate",
         ]
 
 
 class AssessmentFullSerializer(
+        MdateMixin,
         StringIDMixin,
         HardcodedAuthorUserIDMixin,
         serializers.ModelSerializer):
@@ -47,6 +60,7 @@ class AssessmentFullSerializer(
     author = serializers.SerializerMethodField()
     userid = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
+    mdate = serializers.SerializerMethodField()
 
     class Meta:
         model = Assessment
@@ -60,5 +74,6 @@ class AssessmentFullSerializer(
             "updated_at",
             "author",
             "userid",
+            "mdate",
             "data",
         ]
