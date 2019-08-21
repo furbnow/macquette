@@ -75,19 +75,25 @@ var mhep_helper = {
     },
     'set_status': function (id, status)
     {
-        var result = 0;
-        $.ajax({type: 'GET', url: path + "assessment/setstatus.json", data: "id=" + id + "&status=" + status, async: false, success: function (data) {
-                result = data;
+        $.ajax({type: 'PATCH',
+            url: apiURL + "/assessments/" + parseInt(id) + "/",
+            data: JSON.stringify({'status': status}),
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            async: false,
+            success: function (data) {
             }});
-        return result;
     },
     'set_name_and_description': function (id, name, description)
     {
-        var result = 0;
-        $.ajax({type: 'POST', url: path + "assessment/setnameanddescription.json", data: "id=" + id + "&name=" + name + "&description=" + description, async: false, success: function (data) {
-                result = data;
+        $.ajax({type: 'PATCH',
+            url: apiURL + "/assessments/" + parseInt(id) + "/",
+            data: JSON.stringify({'name': name, 'description': description}),
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            async: false,
+            success: function (data) {
             }});
-        return result;
     },
     'upload_images': function (id, form_data, callback)
     {
@@ -107,9 +113,15 @@ var mhep_helper = {
     },
     'set_openBEM_version': function (id, version, callback)
     {
-        $.ajax({type: 'POST', url: path + "assessment/setopenBEMversion.json", data: "id=" + id + "&openBEM_version=" + version, success: function (data) {
-                if (data == false)
+        $.ajax({type: 'PATCH',
+            url: apiURL + "/assessments/" + parseInt(id) + "/",
+            data: JSON.stringify({'openbem_version': version}),
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                if (data == false) {
                     window.alert("There was an error updating openBEM version");
+                }
                 callback(data);
             }});
     },
