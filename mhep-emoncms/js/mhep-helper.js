@@ -1,3 +1,5 @@
+const apiURL = "http://localhost:9090/api/v1"
+
 var mhep_helper = {
     apikey: "",
     'getlist': function ()
@@ -18,7 +20,7 @@ var mhep_helper = {
     'get': function (id)
     {
         var result = {};
-        $.ajax({url: path + "assessment/get.json?id=" + parseInt(id), async: false, success: function (data) {
+        $.ajax({url: apiURL + "/assessments/" + parseInt(id) + "/", async: false, success: function (data) {
                 result = data;
             }});
         return result;
