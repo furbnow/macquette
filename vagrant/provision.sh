@@ -109,7 +109,7 @@ load_django_fixtures() {
 }
 
 install_emoncms() {
-  if [ ! -d "/var/www/html/emoncms" ]; then
+  if [ ! -f "/var/www/html/emoncms/default.settings.php" ]; then
     mkdir -p /var/www/html/emoncms
     chown vagrant /var/www/html/emoncms
 
@@ -163,6 +163,10 @@ install_emoncms_mhep_theme() {
 }
 
 configure_emoncms_settings_for_mhep_assessment() {
+  if [ ! -L "/var/www/html/emoncms/Modules/assessment" ]; then
+    ln -s /vagrant/mhep-emoncms /var/www/html/emoncms/Modules/assessment
+  fi
+
   if ! grep 'MHEP_image_gallery' /var/www/html/emoncms/settings.php ; then
     echo "\$MHEP_image_gallery = true; // If true then the image gallery will be available" >> /var/www/html/emoncms/settings.php
   fi
