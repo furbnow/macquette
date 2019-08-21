@@ -2,9 +2,9 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 
 STATUS_CHOICES = [
-        ('complete', 'Complete'),
-        ('inprogress', 'In progress'),
-        ('test', 'Test'),
+        ('Complete', 'Complete'),
+        ('In progress', 'In progress'),
+        ('Test', 'Test'),
 ]
 
 OPENBEM_VERSION_CHOICES = [
@@ -25,7 +25,7 @@ class Assessment(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='inprogress',
+        default='In progress',
     )
 
     data = JSONField()
