@@ -33,9 +33,17 @@ var mhep_helper = {
             inputdata[z] = mhep_helper.extract_inputdata(project[z]);
         }
         var result = {};
-        $.ajax({type: 'POST', url: path + "assessment/setdata.json", data: "id=" + parseInt(id) + "&data=" + JSON.stringify(inputdata), async: true, success: function (data) {
-                callback(data)
-            }});
+        $.ajax({
+          type: 'PATCH',
+          url: apiURL + "/assessments/" + parseInt(id) + "/",
+          data: JSON.stringify({'data': inputdata}),
+          dataType: "json",
+          contentType: "application/json;charset=utf-8",
+          async: true,
+          success: function (data) {
+              callback(data)
+          }
+        });
         //console.log(JSON.stringify(inputdata));
     },
     'create': function (name, description, orgid, callback)
