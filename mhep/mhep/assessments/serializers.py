@@ -10,12 +10,19 @@ class HardcodedAuthorUserIDMixin():
         return "1"
 
 
+class StringIDMixin():
+    def get_id(self, obj):
+        return '{:d}'.format(obj.id)
+
+
 class AssessmentMetadataSerializer(
+        StringIDMixin,
         HardcodedAuthorUserIDMixin,
         serializers.ModelSerializer):
 
     author = serializers.SerializerMethodField()
     userid = serializers.SerializerMethodField()
+    id = serializers.SerializerMethodField()
 
     class Meta:
         model = Assessment
@@ -33,11 +40,13 @@ class AssessmentMetadataSerializer(
 
 
 class AssessmentFullSerializer(
+        StringIDMixin,
         HardcodedAuthorUserIDMixin,
         serializers.ModelSerializer):
 
     author = serializers.SerializerMethodField()
     userid = serializers.SerializerMethodField()
+    id = serializers.SerializerMethodField()
 
     class Meta:
         model = Assessment
