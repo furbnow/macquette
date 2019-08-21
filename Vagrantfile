@@ -28,6 +28,11 @@ Vagrant.configure("2") do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
   # via 127.0.0.1 to disable public access
+
+  # emoncms runs on port 80 / 9091
+  config.vm.network "forwarded_port", guest: 80, host: 9091, host_ip: "127.0.0.1"
+
+  # django runs on port 9090 / 9090
   config.vm.network "forwarded_port", guest: 9090, host: 9090, host_ip: "127.0.0.1"
 
   # Create a private network, which allows host-only access to the machine
@@ -44,6 +49,7 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   config.vm.synced_folder "~/.cache/vagrant-apt-archives", "/var/cache/apt/archives", create: true
+  config.vm.synced_folder "./mhep-emoncms", "/var/www/html/emoncms/Modules/assessment", create: true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.

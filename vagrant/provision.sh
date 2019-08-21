@@ -17,6 +17,35 @@ update_package_index() {
   fi
 }
 
+install_mysql() {
+  MYSQL_ROOT_PASSWORD=foo
+  debconf-set-selections <<< "mysql-server mysql-server/root_password password $MYSQL_ROOT_PASSWORD"
+  debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASSWORD"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    mysql-client \
+    libapache2-mod-php
+}
+
+install_php_7_2() {
+  # https://github.com/emoncms/emoncms/blob/master/docs/LinuxInstall.md
+  # note: no need to configure PECL or Redis
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    apache2 \
+    php \
+    php-mysql \
+    php-curl \
+    php-pear \
+    php-dev \
+    php-json \
+    git-core \
+    build-essential \
+    php7.2-mbstring
+}
+
+
 install_postgresql_11_5() {
   DEBIAN_FRONTEND=noninteractive apt-get install -y \
     postgresql-11 \
@@ -78,6 +107,103 @@ load_django_admin_user() {
   run_as_vagrant "python manage.py loaddata /vagrant/vagrant/django_admin_fixture.json"
 }
 
+install_emoncms() {
+  if [ ! -d "/var/www/html/emoncms" ]; then
+    mkdir -p /var/www/html/emoncms
+    chown vagrant /var/www/html/emoncms
+
+    run_as_vagrant "git clone -b stable https://github.com/emoncms/emoncms.git /var/www/html/emoncms"
+
+    # latest commit on `stable` branch at time of writing:
+    # https://github.com/emoncms/emoncms/commit/a0c672e4dbf7989d79b00758d5c7a0841e6dce8d
+    run_as_vagrant "cd /var/www/html/emoncms && git checkout a0c672e4dbf7989d79b00758d5c7a0841e6dce8d"
+  fi
+
+  mkdir -p /var/log/emoncms
+  touch /var/log/emoncms.log
+  chown -R www-data:adm /var/log/emoncms
+}
+
+create_emoncms_database() {
+  if [ ! -f "/root/created_mysql_emoncms" ]; then
+    mysql -u root -p${MYSQL_ROOT_PASSWORD} -e 'CREATE DATABASE IF NOT EXISTS emoncms DEFAULT CHARACTER SET utf8;'
+    mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'emoncms';"
+    mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';"
+    mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "flush privileges;"
+
+    touch "/root/created_mysql_emoncms"
+  fi
+}
+
+install_database_dump() {
+  if [ ! -f "/root/installed_database_dump" ]; then
+    run_as_vagrant "mysql < /vagrant/vagrant/example_data.sql"
+    touch /root/installed_database_dump
+  fi
+}
+
+
+configure_emoncms_settings_php() {
+  cp /var/www/html/emoncms/default.settings.php /var/www/html/emoncms/settings.php
+
+  sed -i 's|$server = .*;|$server = "localhost";|g' /var/www/html/emoncms/settings.php
+  sed -i 's|$database = .*;|$database = "emoncms";|g' /var/www/html/emoncms/settings.php
+  sed -i 's|$username = .*;|$username = "emoncms";|g' /var/www/html/emoncms/settings.php
+  sed -i 's|$password = .*;|$password = "emoncms";|g' /var/www/html/emoncms/settings.php
+}
+
+install_emoncms_mhep_theme() {
+  if [ ! -d "/var/www/html/emoncms/Theme/CCoop" ]; then
+    run_as_vagrant "cd /var/www/html/emoncms/Theme && git clone --depth=3 https://github.com/carboncoop/MHEP_theme.git CCoop"
+    run_as_vagrant "cd /var/www/html/emoncms/Theme/CCoop && git checkout c65e083ef9f072e4c9d5af7ec0e98942a59d0a06"
+  fi
+
+  sed -i 's/$theme = "basic";/$theme = "CCoop";/g' /var/www/html/emoncms/settings.php
+}
+
+configure_emoncms_settings_for_mhep_assessment() {
+  if ! grep 'MHEP_image_gallery' /var/www/html/emoncms/settings.php ; then
+    echo "\$MHEP_image_gallery = true; // If true then the image gallery will be available" >> /var/www/html/emoncms/settings.php
+  fi
+
+  if ! grep 'MHEP_key' /var/www/html/emoncms/settings.php ; then
+    # empty key: disable encryption
+    echo '// note: MHEP_key not set: disable encryption' >> /var/www/html/emoncms/settings.php
+  fi
+
+   ## Change ownership of images directory to allow MHEP save pictures
+   mkdir -p /var/www/html/emoncms/Modules/assessment/images
+   chown :www-data /var/www/html/emoncms/Modules/assessment/images
+   chmod 774 /var/www/html/emoncms/Modules/assessment/images
+}
+
+install_openfuvc() {
+  run_as_vagrant "cd /var/www/html/emoncms/Modules/assessment && git submodule init && git submodule update"
+}
+
+add_emoncms_apache_config() {
+  # https://github.com/emoncms/emoncms/blob/master/docs/LinuxInstall.md#configure-apache
+
+  a2enmod rewrite
+  cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
+<Directory /var/www/html/emoncms>
+    Options FollowSymLinks
+    AllowOverride All
+    DirectoryIndex index.php
+    Order allow,deny
+    Allow from all
+</Directory>
+EOF
+
+  if ! grep 'ServerName localhost' /etc/apache2/apache2.conf ; then
+    echo "ServerName localhost" | tee -a /etc/apache2/apache2.conf 1>&2
+  fi
+
+  if [ ! -s "/etc/apache2/sites-enabled/emoncms.conf" ]; then
+    a2ensite emoncms
+  fi
+  service apache2 reload
+}
 atomic_download() {
     URL=$1
     DEST=$2
@@ -102,9 +228,24 @@ setup_virtualenv
 migrate_django_database
 load_django_admin_user
 
+# all the following is for emoncms (and will disappear eventually):
+install_mysql
+install_php_7_2
+install_emoncms
+create_emoncms_database
+install_database_dump
+configure_emoncms_settings_php
+install_emoncms_mhep_theme
+configure_emoncms_settings_for_mhep_assessment
+install_openfuvc
+add_emoncms_apache_config
+
 set +x
 echo
 echo "All done!"
 echo
 echo "Now open:"
-echo "http://localhost:9090"
+echo
+echo "Django: http://localhost:9090/admin"
+echo
+echo "emoncms: http://localhost:9091/emoncms"
