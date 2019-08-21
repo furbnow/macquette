@@ -4,6 +4,9 @@ Base settings to build other settings files upon.
 
 import environ
 
+from corsheaders.defaults import default_methods
+from corsheaders.defaults import default_headers
+
 ROOT_DIR = (
     environ.Path(__file__) - 3
 )  # (mhep/config/settings/base.py - 3 = mhep/)
@@ -64,6 +67,7 @@ DJANGO_APPS = [
     "django.contrib.admin",
 ]
 THIRD_PARTY_APPS = [
+    "corsheaders",
     "crispy_forms",
     "allauth",
     "allauth.account",
@@ -124,6 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -263,3 +268,10 @@ SOCIALACCOUNT_ADAPTER = "mhep.users.adapters.SocialAccountAdapter"
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# CORS HEADERS
+# https://pypi.org/project/django-cors-headers/
+
+CORS_ORIGIN_WHITELIST = ["http://localhost:9091"]
+CORS_ALLOW_METHODS = list(default_methods)
+CORS_ALLOW_HEADERS = list(default_headers)
