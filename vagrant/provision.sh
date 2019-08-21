@@ -103,8 +103,9 @@ migrate_django_database() {
   run_as_vagrant "make migrate"
 }
 
-load_django_admin_user() {
-  run_as_vagrant "python manage.py loaddata /vagrant/vagrant/django_admin_fixture.json"
+load_django_fixtures() {
+  run_as_vagrant "python manage.py loaddata adminuser"
+  run_as_vagrant "python manage.py loaddata assessments"
 }
 
 install_emoncms() {
@@ -226,7 +227,7 @@ install_additional_packages
 create_postgresql_database_and_user
 setup_virtualenv
 migrate_django_database
-load_django_admin_user
+load_django_fixtures
 
 # all the following is for emoncms (and will disappear eventually):
 install_mysql
