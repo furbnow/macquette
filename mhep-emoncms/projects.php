@@ -177,12 +177,10 @@ $d = $path . "Modules/assessment/";
 // 1) Load project lists
 // -----------------------------------------------------------------------------------
 
-    var projects = [];
-    $.ajax({url: path + "assessment/list.json", success: function (result) {
-            projects = result;
-            draw_projects("#projects", projects);
-            $("#assessments-title").html("My Assessments");
-        }});
+    var projects = mhep_helper.getlist();
+    draw_projects("#projects", projects);
+
+    $("#assessments-title").html("My Assessments");
 // -----------------------------------------------------------------------------------
 // Check that the user at least one library of each type and if not create it from the default one
 // Check that all the elements in the default library are in the user's Standard library, copy over the ones that are not (kind of getting in sync)
@@ -489,12 +487,11 @@ $d = $path . "Modules/assessment/";
         var viewmode = "personal";
         var orgid = 0;
         $("#organisation").hide();
-        $.ajax({url: path + "assessment/list.json", success: function (result) {
-                projects = result;
-                draw_projects("#projects", projects);
-                $("#assessments-title").html("My Assessments");
-                $("#myview").show();
-            }});
+
+        projects = mhep_helper.getlist();
+        draw_projects("#projects", projects);
+        $("#assessments-title").html("My Assessments");
+        $("#myview").show();
     });
     
     

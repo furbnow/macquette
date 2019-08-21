@@ -3,14 +3,16 @@ var mhep_helper = {
     'getlist': function ()
     {
         var result = [];
-        var apikeystr = "";
-        if (this.apikey != "")
-            apikeystr = "?apikey=" + this.apikey;
-        $.ajax({url: path + "assessment/list.json" + apikeystr, dataType: 'json', async: false, success: function (data) {
+        $.ajax({
+            url: apiURL + "/assessments/",
+            dataType: 'json',
+            async: false,
+            success: function (data) {
                 result = data;
             }});
-        if (result == "")
+        if (result == "") {
             result = [];
+        }
         return result;
     },
     'get': function (id)
