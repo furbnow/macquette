@@ -1,7 +1,7 @@
 from freezegun import freeze_time
 
 from rest_framework.test import APITestCase
-from rest_framework import status
+from rest_framework import exceptions, status
 
 from mhep.assessments.models import Assessment
 
@@ -77,7 +77,7 @@ class TestAssessmentDetail(APITestCase):
         assert "2019-07-13T12:10:12+00:00" == updated_assessment.updated_at.isoformat()
 
 
-class TestListAssessments(APITestCase):
+class TestListCreateAssessments(APITestCase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
@@ -117,3 +117,64 @@ class TestListAssessments(APITestCase):
         }
 
         assert expectedFirstResult == response.data[0]
+
+    def test_create_assessment(self):
+        new_assessment = {
+            "openbem_version": "10.1.1",
+            "name": "test assessment 1",
+            "description": "test description 2",
+        }
+
+        with freeze_time("2019-06-01T16:35:34Z"):
+            response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+
+        assert response.status_code == status.HTTP_201_CREATED
+
+        expected_result = {
+            "created_at": "2019-06-01T16:35:34Z",
+            "updated_at": "2019-06-01T16:35:34Z",
+            "mdate": "1559406934",
+            "status": "In progress",
+            "openbem_version": "10.1.1",
+            "name": "test assessment 1",
+            "description": "test description 2",
+            "author": "localadmin",
+            "userid": "1",
+        }
+
+        assert "id" in response.data
+        response.data.pop("id")
+        assert expected_result == response.data
+
+    def test_create_assessment_fails_if_name_missing(self):
+        self.assert_create_fails(
+            {
+                "openbem_version": "10.1.1",
+                "description": "test description 2",
+            },
+            status.HTTP_400_BAD_REQUEST,
+            {
+                'name': [
+                    exceptions.ErrorDetail(string='This field is required.', code='required')
+                ]
+            }
+        )
+
+    def test_create_assessment_fails_if_openbem_version_missing(self):
+        self.assert_create_fails(
+            {
+                "name": "test assessment 1",
+                "description": "test description 2",
+            },
+            status.HTTP_400_BAD_REQUEST,
+            {
+                'openbem_version': [
+                    exceptions.ErrorDetail(string='This field is required.', code='required')
+                ]
+            }
+         )
+
+    def assert_create_fails(self, new_assessment, expected_status, expected_response):
+        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+        assert response.status_code == expected_status
+        assert response.data == expected_response

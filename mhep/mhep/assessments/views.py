@@ -1,4 +1,4 @@
-from rest_framework import generics, mixins
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -9,7 +9,9 @@ from mhep.assessments.serializers import (
 )
 
 
-class ListAssessments(generics.ListAPIView, mixins.ListModelMixin):
+class ListCreateAssessments(
+  generics.ListCreateAPIView
+  ):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentMetadataSerializer
 
