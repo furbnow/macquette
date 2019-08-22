@@ -4,6 +4,7 @@ from django.urls import path
 from mhep.assessments.views import (
     RetrieveUpdateDestroyAssessment,
     ListCreateAssessments,
+    ListCreateLibraries,
     ListOrganisationAssessments,
 )
 
@@ -18,6 +19,12 @@ urlpatterns = [
         "api/v1/assessments/<int:pk>/",
         view=RetrieveUpdateDestroyAssessment.as_view(),
         name="retrieve-update-destroy-assessment",
+    ),
+
+    path(
+        "api/v1/libraries/",
+        view=ListCreateLibraries.as_view(),
+        name="list-create-libraries"
     ),
 
     path(
