@@ -39,3 +39,7 @@ class TestAssessmentDetail(APITestCase):
             "data": {"foo": "bar"},
         }
         assert expected == response.data
+
+    def test_get_assessment_for_bad_id(self):
+        response = self.client.get("/api/v1/assessments/{}/".format("bad-id"))
+        assert status.HTTP_404_NOT_FOUND == response.status_code
