@@ -77,7 +77,7 @@ class TestAssessmentDetail(APITestCase):
         assert "2019-07-13T12:10:12+00:00" == updated_assessment.updated_at.isoformat()
 
 
-class TestListAssessments(APITestCase):
+class TestListCreateAssessments(APITestCase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()

@@ -7,11 +7,11 @@ from mhep.assessments.models import Assessment
 pytestmark = pytest.mark.django_db
 
 
-def test_list_assessments(assessment: Assessment):
+def test_list_create_assessments(assessment: Assessment):
     assert (
-        reverse("assessments:list") == f"/api/v1/assessments/"
+        reverse("assessments:list-create") == f"/api/v1/assessments/"
     )
-    assert resolve(f"/api/v1/assessments/").view_name == "assessments:list"
+    assert resolve(f"/api/v1/assessments/").view_name == "assessments:list-create"
 
 
 def test_assessment_detail(assessment: Assessment):
