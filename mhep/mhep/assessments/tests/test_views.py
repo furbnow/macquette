@@ -7,8 +7,10 @@ from mhep.assessments.models import Assessment
 
 
 class TestAssessmentDetail(APITestCase):
+    @classmethod
     def tearDownClass(cls):
-        Assessment.objects.delete()
+        super().tearDownClass()
+        Assessment.objects.all().delete()
 
     def test_get_assessment(self):
         with freeze_time("2019-06-01T16:35:34Z"):

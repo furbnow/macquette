@@ -1,5 +1,7 @@
 # My Home Energy Planner (MHEP) Django
 
+[![Build Status](https://travis-ci.org/mhep-transition/mhep-django.svg?branch=master)](https://travis-ci.org/mhep-transition/mhep-django)
+
 ## Install Vagrant & Virtualbox
 
 * Install [Vagrant 2.0.1+](https://www.vagrantup.com/downloads.html)
