@@ -19,3 +19,8 @@ env:
 
 notifications:
     email: false
+
+after_success:
+  - pip install python-coveralls
+  - cd mhep
+  - coveralls
