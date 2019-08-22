@@ -186,7 +186,11 @@ $d = $path . "Modules/assessment/";
 // Check that all the elements in the default library are in the user's Standard library, copy over the ones that are not (kind of getting in sync)
 // -----------------------------------------------------------------------------------
     var libraries = {};
-    $.ajax({url: path + "assessment/loaduserlibraries.json", async: true, datatype: "json", success: function (user_libraries) {
+    $.ajax({
+      url: path + "assessment/loaduserlibraries.json",
+      async: true,
+      datatype: "json",
+      success: function (user_libraries) {
             // Check that the user at least one library of each type and if not create it from the default one
             var user_has_the_library = false;
             for (library_type in standard_library) {
@@ -197,11 +201,20 @@ $d = $path . "Modules/assessment/";
                 }
                 if (user_has_the_library == false) {
                     var library_name = "StandardLibrary - " + myusername;
-                    $.ajax({url: path + "assessment/newlibrary.json", data: "name=" + library_name + '&type=' + library_type, datatype: "json", async: false, success: function (result) {
+                    $.ajax({
+                      url: path + "assessment/newlibrary.json",
+                      data: "name=" + library_name + '&type=' + library_type,
+                      datatype: "json",
+                      async: false,
+                      success: function (result) {
                             var library_id = result;
                             var library_string = JSON.stringify(standard_library[library_type]);
                             library_string = library_string.replace(/&/g, 'and');
-                            $.ajax({type: "POST", url: path + "assessment/savelibrary.json", data: "id=" + library_id + "&data=" + library_string, success: function (result) {
+                            $.ajax({
+                              type: "POST",
+                              url: path + "assessment/savelibrary.json",
+                              data: "id=" + library_id + "&data=" + library_string,
+                              success: function (result) {
                                     console.log("Library: " + library_type + ' - ' + result);
                                 }});
                         }});
@@ -224,9 +237,13 @@ $d = $path . "Modules/assessment/";
                     if (library_changed === true) {
                         var library_string = JSON.stringify(user_library);
                         library_string = library_string.replace(/&/g, 'and');
-                        $.ajax({type: "POST", url: path + "assessment/savelibrary.json", data: "id=" + user_libraries[library_index].id + "&data=" + library_string, success: function (result) {
+                        $.ajax({
+                          type: "POST",
+                          url: path + "assessment/savelibrary.json",
+                          data: "id=" + user_libraries[library_index].id + "&data=" + library_string,
+                          success: function (result) {
                                 console.log("Library: " + library_type + ' - ' + result);
-                            }});
+                          }});
                     }
                 }
             }
