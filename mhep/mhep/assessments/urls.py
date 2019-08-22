@@ -2,12 +2,13 @@
 from django.urls import path
 
 from mhep.assessments.views import (
-    AssessmentDetail,
+    RetrieveUpdateAssessment,
     ListCreateAssessments,
 )
 
 app_name = "assessments"
 urlpatterns = [
+<<<<<<< HEAD
     path(
         "api/v1/assessments/",
         view=ListCreateAssessments.as_view(),
@@ -15,7 +16,7 @@ urlpatterns = [
     ),
     path(
         "api/v1/assessments/<int:pk>/",
-        view=AssessmentDetail.as_view(),
-        name="assessment-detail"
+        view=RetrieveUpdateAssessment.as_view(),
+        name="retrieve-update-assessment",
     ),
 ]

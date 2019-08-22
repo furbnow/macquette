@@ -6,7 +6,7 @@ from rest_framework import exceptions, status
 from mhep.assessments.models import Assessment
 
 
-class TestAssessmentDetail(APITestCase):
+class TestRetrieveUpdateAssessment(APITestCase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()

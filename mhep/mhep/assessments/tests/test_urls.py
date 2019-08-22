@@ -14,14 +14,14 @@ def test_list_create_assessments(assessment: Assessment):
     assert resolve(f"/api/v1/assessments/").view_name == "assessments:list-create-assessments"
 
 
-def test_assessment_detail(assessment: Assessment):
+def test_assessment_detail_update(assessment: Assessment):
     assert (
-        reverse("assessments:assessment-detail", kwargs={"pk": assessment.id})
+        reverse("assessments:retrieve-update-assessment", kwargs={"pk": assessment.id})
         == f"/api/v1/assessments/{assessment.id}/"
     )
     assert (
         resolve(f"/api/v1/assessments/{assessment.id}/").view_name
-        == "assessments:assessment-detail"
+        == "assessments:retrieve-update-assessment"
     )
 
 
