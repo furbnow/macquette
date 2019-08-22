@@ -50,16 +50,38 @@ var mhep_helper = {
     {
         var result = 0;
         var openBEM_version = {}
-        $.ajax({type: 'GET', async: false, url: "https://api.github.com/repos/carboncoop/openBEM/releases/latest", success: function (data) {
+        $.ajax({
+            type: 'GET',
+            async: false,
+            url: "https://api.github.com/repos/carboncoop/openBEM/releases/latest",
+            success: function (data) {
                 openBEM_version = data.tag_name;
-                var query = "name=" + name + "&description=" + description + "&openBEM_version=" + openBEM_version;
-                if (orgid != undefined)
-                    query += "&org=" + orgid;
-                $.ajax({type: 'GET', url: path + "assessment/create.json", data: query, async: false, success: function (data) {
-                        if (data == false)
+                const newAssessment = {
+                    "name": name,
+                    "description": description,
+                    "openbem_version": openBEM_version,
+                };
+
+                var endpoint;
+                if (orgid != null) {
+                    endpoint = apiURL + '/organisations/' + orgid + '/assessments/';
+                } else {
+                    endpoint = apiURL + '/assessments/';
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: endpoint,
+                    data: JSON.stringify(newAssessment),
+                    dataType: 'json',
+                    contentType: "application/json;charset=utf-8",
+                    async: false,
+                    success: function (data) {
+                        if (data == false) {
                             window.alert("Assesment couldn't be created")
-                        else
+                        } else {
                             callback(data);
+                        }
                     }});
             }
         });
