@@ -6,7 +6,7 @@ from rest_framework import exceptions, status
 from mhep.assessments.models import Assessment
 
 
-class TestRetrieveUpdateAssessment(APITestCase):
+class TestRetrieveUpdateDestroyAssessment(APITestCase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
@@ -75,6 +75,24 @@ class TestRetrieveUpdateAssessment(APITestCase):
         assert "Complete" == updated_assessment.status
 
         assert "2019-07-13T12:10:12+00:00" == updated_assessment.updated_at.isoformat()
+
+    def test_destroy_assessment(self):
+        a = Assessment.objects.create(
+                name="test name",
+                description="test description",
+                data={"foo": "bar"},
+                status="In progress",
+                openbem_version="10.1.1",
+        )
+
+        assessment_count = Assessment.objects.count()
+
+        response = self.client.delete(f"/api/v1/assessments/{a.pk}/")
+
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert b"" == response.content
+
+        assert (assessment_count - 1) == Assessment.objects.count()
 
 
 class TestListCreateAssessments(APITestCase):
