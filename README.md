@@ -22,8 +22,7 @@ It should create a new Ubuntu 18.04 VM and configure everything.
 * [List assessments](#list-assessments)
 * [Get assessment](#get-assessment)
 * [Create assessment](#create-assessment)
-* [Update model data for assessment](#update-model-data-for-assessment)
-* [Update metadata for assessment](#update-metadata-for-assessment)
+* [Update a field on assessment](#update-a-field-on-assessment)
 * [Delete assessment](#delete-assessment)
 * [List element libraries](#list-element-libraries)
 * [Create item in element library](#create-item-in-element-library)
@@ -141,84 +140,59 @@ Content-Type: application/json
 }
 ```
 
-## Update model data for assessment
+## Update a field on assessment
 
 ```
-PUT /assessments/:id/data/
+PATCH /assessments/:id/
 Content-Type: application/json
 ```
 
-ℹ️ porting notes: replaces previous route `assessment/setdata`
-
-### Example
-
-```
-> curl -v \
-    -X PUT \
-    -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/assessments/1/data \
-    --data @- << EOF
-
-    "master": {
-        "scenario_name": "Master",
-        "household": {
-            "3a_heatinghours_weekday_on1_hours": 6,
-            "3a_heatinghours_weekday_on1_mins": 45,
-...
-```
-
-Returns:
-
-```
-HTTP 204 No content
-```
-
-## Update metadata for assessment
-
-```
-PUT /assessments/:id/
-```
-
-Update one or more metadata fields (status, description etc).
-
 ℹ️ porting notes: replaces previous routes:
 
+* `assessment/setdata`
 * `assessment/setnameanddescription`
 * `assessment/setopenBEMversion`
 * `assessment/setstatus`
 
-### Example
+### Example: update the model data
 
 ```
 > curl -v \
-    -X PUT \
+    -X PATCH \
     -H "Content-Type: application/json" \
     http://localhost:9090/api/v1/assessments/1/ \
     --data @- << EOF
+
 {
-    "status": "complete",
+    "data": {
+        "master": {
+            "scenario_name": "Master",
+            "household": {
+                "3a_heatinghours_weekday_on1_hours": 6,
+                "3a_heatinghours_weekday_on1_mins": 45,
+        ...
+    }
 }
-EOF
-```
-
-## Delete assessment
-
-```
-DELETE /assessments/:id/
-```
-
-ℹ️ porting notes: replaces previous route `assessment/delete`
-
-### Example
-
-```
-> curl -v -X DELETE http://localhost:9090/api/v1/assessments/1/
 ```
 
 Returns:
 
 ```
 HTTP 204 No content
+```
+
+### Example: update the status
+
+```
+> curl -v \
+    -X PATCH \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/api/v1/assessments/1/ \
+    --data @- << EOF
+{
+    "status": "Complete",
+}
+EOF
 ```
 
 ## List element libraries
