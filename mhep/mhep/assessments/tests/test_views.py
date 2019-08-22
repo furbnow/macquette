@@ -12,41 +12,6 @@ class TestAssessmentDetail(APITestCase):
         super().tearDownClass()
         Assessment.objects.all().delete()
 
-    def test_list_assessments(self):
-        with freeze_time("2019-06-01T16:35:34Z"):
-            a1 = Assessment.objects.create(
-                    name="test assessment 1",
-                    description="test description",
-                    data={"foo": "bar"},
-                    openbem_version="10.1.1",
-            )
-            Assessment.objects.create(
-                    name="test assessment 2",
-                    description="test description",
-                    data={"foo": "baz"},
-                    openbem_version="10.1.1",
-            )
-
-        response = self.client.get("/api/v1/assessments/")
-        assert response.status_code == status.HTTP_200_OK
-
-        assert 2 == len(response.data)
-
-        expectedFirstResult = {
-            "id": "{}".format(a1.pk),
-            "created_at": "2019-06-01T16:35:34Z",
-            "updated_at": "2019-06-01T16:35:34Z",
-            "mdate": "1559406934",
-            "status": "In progress",
-            "openbem_version": "10.1.1",
-            "name": "test assessment 1",
-            "description": "test description",
-            "author": "localadmin",
-            "userid": "1",
-        }
-
-        assert expectedFirstResult == response.data[0]
-
     def test_get_assessment(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = Assessment.objects.create(
@@ -110,3 +75,45 @@ class TestAssessmentDetail(APITestCase):
         assert "Complete" == updated_assessment.status
 
         assert "2019-07-13T12:10:12+00:00" == updated_assessment.updated_at.isoformat()
+
+
+class TestListAssessments(APITestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        Assessment.objects.all().delete()
+
+    def test_list_assessments(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a1 = Assessment.objects.create(
+                    name="test assessment 1",
+                    description="test description",
+                    data={"foo": "bar"},
+                    openbem_version="10.1.1",
+            )
+            Assessment.objects.create(
+                    name="test assessment 2",
+                    description="test description",
+                    data={"foo": "baz"},
+                    openbem_version="10.1.1",
+            )
+
+        response = self.client.get("/api/v1/assessments/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert 2 == len(response.data)
+
+        expectedFirstResult = {
+            "id": "{}".format(a1.pk),
+            "created_at": "2019-06-01T16:35:34Z",
+            "updated_at": "2019-06-01T16:35:34Z",
+            "mdate": "1559406934",
+            "status": "In progress",
+            "openbem_version": "10.1.1",
+            "name": "test assessment 1",
+            "description": "test description",
+            "author": "localadmin",
+            "userid": "1",
+        }
+
+        assert expectedFirstResult == response.data[0]
