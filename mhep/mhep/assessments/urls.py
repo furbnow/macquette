@@ -8,6 +8,14 @@ from mhep.assessments.views import (
 
 app_name = "assessments"
 urlpatterns = [
-    path("api/v1/assessments/", view=ListCreateAssessments.as_view(), name="list-create"),
-    path("api/v1/assessments/<int:pk>/", view=AssessmentDetail.as_view(), name="detail"),
+    path(
+        "api/v1/assessments/",
+        view=ListCreateAssessments.as_view(),
+        name="list-create-assessments"
+    ),
+    path(
+        "api/v1/assessments/<int:pk>/",
+        view=AssessmentDetail.as_view(),
+        name="assessment-detail"
+    ),
 ]
