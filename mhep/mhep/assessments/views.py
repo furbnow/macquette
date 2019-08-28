@@ -38,6 +38,21 @@ class ListCreateLibraries(generics.ListCreateAPIView):
     serializer_class = LibrarySerializer
 
 
+class UpdateLibrary(
+  generics.UpdateAPIView,
+  ):
+    queryset = Library.objects.all()
+    serializer_class = LibrarySerializer
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_200_OK:
+            return Response(None, status.HTTP_204_NO_CONTENT)
+        else:
+            return response
+
+
 class ListOrganisationAssessments(APIView):
     def get(self, request, *args, **kwargs):
         return Response([], status.HTTP_200_OK)

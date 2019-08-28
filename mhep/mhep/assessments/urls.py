@@ -6,6 +6,7 @@ from mhep.assessments.views import (
     ListCreateAssessments,
     ListCreateLibraries,
     ListOrganisationAssessments,
+    UpdateLibrary,
 )
 
 app_name = "assessments"
@@ -25,6 +26,12 @@ urlpatterns = [
         "api/v1/libraries/",
         view=ListCreateLibraries.as_view(),
         name="list-create-libraries"
+    ),
+
+    path(
+        "api/v1/libraries/<int:pk>/",
+        view=UpdateLibrary.as_view(),
+        name="update-library"
     ),
 
     path(
