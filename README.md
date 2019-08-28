@@ -525,3 +525,32 @@ Content-Type: application/json
 
 []
 ```
+
+## Create assessment in organisation
+
+```
+POST /organisations/:id/assessments/
+```
+
+ℹ️ porting notes: replaces previous `assessment/create` route, passing `orgid`.
+
+### Example
+
+```
+> curl -v \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/api/v1/organisations/1/assessments/ \
+    --data @- << EOF
+{
+    "name": "Example assessment",
+    "description": "Example description",
+    "openbem_version": "10.1.1"
+}
+EOF
+```
+
+Returns:
+
+```
+HTTP 400 Bad Request
+```

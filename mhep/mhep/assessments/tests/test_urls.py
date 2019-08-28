@@ -52,14 +52,14 @@ def test_list_organisations():
     )
 
 
-def test_list_organisation_assessments():
+def test_list_create_organisation_assessments():
     assert (
-        reverse("assessments:list-organisation-assessments", kwargs={"pk": 1})
+        reverse("assessments:list-create-organisation-assessments", kwargs={"pk": 1})
         == f"/api/v1/organisations/1/assessments/"
     )
     assert (
         resolve(f"/api/v1/organisations/1/assessments/").view_name
-        == "assessments:list-organisation-assessments"
+        == "assessments:list-create-organisation-assessments"
     )
 
 

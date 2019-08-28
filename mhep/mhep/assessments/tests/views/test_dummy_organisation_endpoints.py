@@ -9,6 +9,22 @@ class TestListOrganisationAssessments(APITestCase):
 
         assert [] == response.data
 
+    def test_create_organisation_assessment(self):
+        new_assessment = {
+            "openbem_version": "10.1.1",
+            "name": "test assessment 1",
+            "description": "test description 2",
+        }
+
+        response = self.client.post(
+            "/api/v1/organisations/1/assessments/",
+            new_assessment,
+            format="json"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert None is response.data
+
 
 class TestListMyOrganisations(APITestCase):
     def test_list_organisation_assessments(self):
