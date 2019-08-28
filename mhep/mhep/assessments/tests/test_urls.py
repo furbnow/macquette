@@ -9,17 +9,20 @@ pytestmark = pytest.mark.django_db
 
 def test_list_create_assessments(assessment: Assessment):
     assert (
-        reverse("assessments:list-create") == f"/api/v1/assessments/"
+        reverse("assessments:list-create-assessments") == f"/api/v1/assessments/"
     )
-    assert resolve(f"/api/v1/assessments/").view_name == "assessments:list-create"
+    assert resolve(f"/api/v1/assessments/").view_name == "assessments:list-create-assessments"
 
 
 def test_assessment_detail(assessment: Assessment):
     assert (
-        reverse("assessments:detail", kwargs={"pk": assessment.id})
+        reverse("assessments:assessment-detail", kwargs={"pk": assessment.id})
         == f"/api/v1/assessments/{assessment.id}/"
     )
-    assert resolve(f"/api/v1/assessments/{assessment.id}/").view_name == "assessments:detail"
+    assert (
+        resolve(f"/api/v1/assessments/{assessment.id}/").view_name
+        == "assessments:assessment-detail"
+    )
 
 
 @pytest.fixture
