@@ -25,6 +25,17 @@ def test_assessment_detail_update_destroy(assessment: Assessment):
     )
 
 
+def test_list_organisation_assessments():
+    assert (
+        reverse("assessments:list-organisation-assessments", kwargs={"pk": 1})
+        == f"/api/v1/organisations/1/assessments/"
+    )
+    assert (
+        resolve(f"/api/v1/organisations/1/assessments/").view_name
+        == "assessments:list-organisation-assessments"
+    )
+
+
 @pytest.fixture
 def assessment():
     return Assessment.objects.create(
