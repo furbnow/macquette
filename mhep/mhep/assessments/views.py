@@ -16,8 +16,8 @@ class ListCreateAssessments(
     serializer_class = AssessmentMetadataSerializer
 
 
-class AssessmentDetail(
-  generics.RetrieveUpdateAPIView,
+class RetrieveUpdateDestroyAssessment(
+  generics.RetrieveUpdateDestroyAPIView,
   ):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentFullSerializer

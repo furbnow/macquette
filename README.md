@@ -196,6 +196,28 @@ HTTP 204 No content
 EOF
 ```
 
+## Delete assessment
+
+```
+DELETE /assessments/:id/
+```
+
+ℹ️ porting notes: replaces previous `assessment/delete` route.
+
+### Example
+
+```
+> curl -v \
+    -X DELETE \
+    http://localhost:9090/api/v1/assessments/1/
+```
+
+Returns:
+
+```
+HTTP 204 HTTP 204 No content
+```
+
 ## List element libraries
 
 ```
