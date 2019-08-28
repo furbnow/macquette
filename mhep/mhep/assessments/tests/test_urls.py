@@ -43,6 +43,15 @@ def test_update_library(library: Library):
     )
 
 
+def test_list_organisations():
+    assert (
+        reverse("assessments:list-organisations") == f"/api/v1/organisations/"
+    )
+    assert (
+        resolve("/api/v1/organisations/").view_name == "assessments:list-organisations"
+    )
+
+
 def test_list_organisation_assessments():
     assert (
         reverse("assessments:list-organisation-assessments", kwargs={"pk": 1})

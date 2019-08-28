@@ -107,11 +107,3 @@ class TestListCreateAssessments(APITestCase):
         response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
         assert response.status_code == expected_status
         assert response.data == expected_response
-
-
-class TestListOrganisationAssessments(APITestCase):
-    def test_list_organisation_assessments(self):
-        response = self.client.get("/api/v1/organisations/1/assessments/")
-        assert response.status_code == status.HTTP_200_OK
-
-        assert [] == response.data
