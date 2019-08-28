@@ -481,17 +481,22 @@ libraryHelper.prototype.onCreateInLibraryOk = function (library_id) {
         else if (selected_library.data[tag] != undefined)
             $("#create-in-library-message").html("Tag already exist, choose another one");
         else {
-            //selected_library.data[tag] = item[tag];
-            var item_string = JSON.stringify(item[tag]);
-            item_string = item_string.replace(/&/g, 'and');
-            $.ajax({type: "POST", url: path + "assessment/additemtolibrary.json", data: "library_id=" + selected_library.id + "&tag=" + tag + "&item=" + item_string, success: function (result) {
-                    if (result == true) {
-                        $("#create-in-library-message").html("Item added to the library");
-                        $('#modal-create-in-library button').hide('fast');
-                        $('#create-in-library-finish').show('fast');
-                    }
-                    else
-                        $("#create-in-library-message").html("There were problems saving the library");
+            $.ajax({
+                type: "POST",
+                url: apiURL + '/libraries/' + selected_library.id + '/items/',
+                data: JSON.stringify({
+                    'tag': tag,
+                    'item': item[tag],
+                }),
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+                success: function (result) {
+                    $("#create-in-library-message").html("Item added to the library");
+                    $('#modal-create-in-library button').hide('fast');
+                    $('#create-in-library-finish').show('fast');
+                },
+                error: function (result) {
+                    $("#create-in-library-message").html("There were problems saving the library");
                 }});
         }
     }
