@@ -468,11 +468,12 @@ $d = $path . "Modules/assessment/";
         }
     });
     $("body").on("click", ".org-item", function () {
+        const apiURL = "http://localhost:9090/api/v1"
         orgid = $(this).attr("orgid");
         draw_organisation(orgid);
         $("#organisation").show();
         viewmode = "organisation";
-        $.ajax({url: path + "assessment/list.json", data: "orgid=" + orgid, success: function (result) {
+        $.ajax({url: apiURL + "/organisations/" + orgid + "/assessments/", success: function (result) {
                 projects = result;
                 draw_projects("#projects", projects);
                 $("#assessments-title").html(myorganisations[orgid].name + " Assessments");
