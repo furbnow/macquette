@@ -20,15 +20,15 @@ class BadRequest(exceptions.APIException):
 
 
 class ListCreateAssessments(
-  generics.ListCreateAPIView
-  ):
+    generics.ListCreateAPIView
+):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentMetadataSerializer
 
 
 class RetrieveUpdateDestroyAssessment(
-  generics.RetrieveUpdateDestroyAPIView,
-  ):
+    generics.RetrieveUpdateDestroyAPIView,
+):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentFullSerializer
 
@@ -47,8 +47,8 @@ class ListCreateLibraries(generics.ListCreateAPIView):
 
 
 class UpdateLibrary(
-  generics.UpdateAPIView,
-  ):
+    generics.UpdateAPIView,
+):
     queryset = Library.objects.all()
     serializer_class = LibrarySerializer
 
