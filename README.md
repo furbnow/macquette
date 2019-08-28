@@ -55,18 +55,20 @@ Returns:
 ```
 HTTP 200 OK
 Content-Type: application/json
-{
-    "id": "1",
-    "name": "Example assessment",
-    "description": "Example description",
-    "openbem_version": "10.1.1",
-    "status": "In progress",
-    "created_at": "2019-08-15T15:25:37.634182Z",
-    "updated_at": "2019-08-21T10:40:58.830425Z",
-    "author": "localadmin",
-    "userid": "1",
-    "mdate": "1566384058",
-}
+[
+    {
+        "id": "1",
+        "name": "Example assessment",
+        "description": "Example description",
+        "openbem_version": "10.1.1",
+        "status": "In progress",
+        "created_at": "2019-08-15T15:25:37.634182Z",
+        "updated_at": "2019-08-21T10:40:58.830425Z",
+        "author": "localadmin",
+        "userid": "1",
+        "mdate": "1566384058",
+    }
+]
 ```
 
 ## Get assessment
