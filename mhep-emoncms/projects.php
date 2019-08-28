@@ -442,14 +442,22 @@ $d = $path . "Modules/assessment/";
         if (orgname == "") {
             alert("Organisation name missing");
         } else {
-            $.ajax({url: path + "assessment/neworganisation.json", data: "orgname=" + orgname, success: function (result) {
-                    if (result.success) {
-                        myorganisations = result.myorganisations;
+            $.ajax({
+                type: 'POST',
+                url: apiURL + "/organisations/",
+                data: {"name": orgname},
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                success: function (response) {
+                    $.ajax({url: apiURL + "/organisations/", success: function (result) {
+                        myorganisations = result;
                         draw_organisation_list();
-                    } else {
-                        alert(result.message);
-                    }
-                }});
+                    }});
+                },
+                error: function (response) {
+                    alert(response.responseJSON.detail);
+                },
+            });
         }
     });
     $("#organisation-add-member").click(function () {
