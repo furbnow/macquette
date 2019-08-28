@@ -54,12 +54,12 @@ def test_create_library_item(library: Library):
     )
 
 
-def test_list_organisations():
+def test_list_create_organisations():
     assert (
-        reverse("assessments:list-organisations") == f"/api/v1/organisations/"
+        reverse("assessments:list-create-organisations") == f"/api/v1/organisations/"
     )
     assert (
-        resolve("/api/v1/organisations/").view_name == "assessments:list-organisations"
+        resolve("/api/v1/organisations/").view_name == "assessments:list-create-organisations"
     )
 
 
