@@ -428,7 +428,7 @@ $d = $path . "Modules/assessment/";
 // ORGANISATIONS
 // ----------------------------------------------------------------------------
     var myorganisations = {};
-    $.ajax({url: path + "assessment/getorganisations.json", success: function (result) {
+    $.ajax({url: apiURL + "/organisations/", success: function (result) {
             myorganisations = result;
             draw_organisation_list();
             //draw_organisation(8);
