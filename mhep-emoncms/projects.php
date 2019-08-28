@@ -199,25 +199,24 @@ $d = $path . "Modules/assessment/";
                     if (user_libraries[library_index].type == library_type)
                         user_has_the_library = true;
                 }
-                if (user_has_the_library == false) {
-                    var library_name = "StandardLibrary - " + myusername;
+                if (!user_has_the_library) {
+                    const library_name = "StandardLibrary - " + myusername;
+
+                    const body = JSON.stringify({
+                      'name': library_name,
+                      'type': library_type,
+                      'data': standard_library[library_type],
+                    });
+
+                    // create new library
                     $.ajax({
-                      url: path + "assessment/newlibrary.json",
-                      data: "name=" + library_name + '&type=' + library_type,
+                      url: apiURL + '/libraries/',
+                      type: 'POST',
+                      data: body,
                       datatype: "json",
+                      contentType: "application/json;charset=utf-8",
                       async: false,
-                      success: function (result) {
-                            var library_id = result;
-                            var library_string = JSON.stringify(standard_library[library_type]);
-                            library_string = library_string.replace(/&/g, 'and');
-                            $.ajax({
-                              type: "POST",
-                              url: path + "assessment/savelibrary.json",
-                              data: "id=" + library_id + "&data=" + library_string,
-                              success: function (result) {
-                                    console.log("Library: " + library_type + ' - ' + result);
-                                }});
-                        }});
+                     });
                 }
             }
             // Check that all the elements in the default library are in the user's Standard library, copy over the ones that are not (kind of getting in sync)

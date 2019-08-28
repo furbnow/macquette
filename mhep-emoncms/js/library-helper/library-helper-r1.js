@@ -393,21 +393,6 @@ libraryHelper.prototype.onChangeEmptyOrCopyLibrary = function () {
 libraryHelper.prototype.onCreateNewLibrary = function () {
     $("#create-library-message").html('');
     var myself = this;
-    var callback = function (resultado) {
-        if (resultado == '0' || resultado == 0)
-            $("#create-library-message").html('Library could not be created');
-        if (typeof resultado == 'number') {
-            myself.load_user_libraries();
-            myself.get_library_permissions();
-            $("#create-library-message").html('Library created');
-            $('#cancelnewlibrary').hide('fast');
-            $('#newlibrary').hide('fast');
-            $('#finishcreatelibrary').show('fast');
-            UpdateUI(data);
-        }
-        else
-            $("#create-library-message").html(resultado)
-    };
     var name = $("#new-library-name").val();
     if (name === '')
         $("#create-library-message").html('User name cannot be empty');
@@ -420,9 +405,29 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
                 }});
         }
         else {
-            $.ajax({url: path + "assessment/newlibrary.json", data: "name=" + name + "&type=" + this.type, datatype: "json", success: function (result) {
-                    callback(result);
-                }});
+            const body = JSON.stringify({
+                'name': name,
+                'type': this.type,
+            });
+            // create new library
+            $.ajax({
+                url: apiURL + '/libraries/',
+                type: 'POST',
+                data: body,
+                datatype: "json",
+                contentType: "application/json;charset=utf-8",
+                success: function (result) {
+                    myself.load_user_libraries();
+                    $("#create-library-message").html('Library created');
+                    $('#cancelnewlibrary').hide('fast');
+                    $('#newlibrary').hide('fast');
+                    $('#finishcreatelibrary').show('fast');
+                    UpdateUI(data);
+                },
+                error: function (result) {
+                    $("#create-library-message").html('Library could not be created');
+                }
+            });
         }
     }
 };
