@@ -2,12 +2,13 @@
 from django.urls import path
 
 from mhep.assessments.views import (
-    RetrieveUpdateDestroyAssessment,
+    CreateLibraryItem,
     ListCreateAssessments,
     ListCreateLibraries,
-    UpdateLibrary,
     ListCreateOrganisationAssessments,
     ListOrganisations,
+    RetrieveUpdateDestroyAssessment,
+    UpdateLibrary,
 )
 
 app_name = "assessments"
@@ -44,5 +45,11 @@ urlpatterns = [
         "api/v1/organisations/<int:pk>/assessments/",
         view=ListCreateOrganisationAssessments.as_view(),
         name="list-create-organisation-assessments"
+    ),
+
+    path(
+        "api/v1/libraries/<int:pk>/items/",
+        view=CreateLibraryItem.as_view(),
+        name="create-library-item"
     ),
 ]
