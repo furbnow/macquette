@@ -463,6 +463,7 @@ In this first release, where we have no concept of an organisation, the followin
 certain values.
 
 * [List my organisations](#list-my-organisations)
+* [Create organisation](#create-organisations)
 * [List organisation assessments](#list-organisation-assessments)
 
 ## List my organisations
@@ -501,6 +502,38 @@ Content-Type: application/json
         ]
     }
 ]
+```
+
+## Create organisation
+
+```
+POST /organisations/
+```
+
+ℹ️ porting notes: replaces previous `assessment/neworganisation` route.
+
+### Example
+
+```
+> curl -v \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/api/v1/organisations/ \
+    --data @- << EOF
+{
+    "name": "Example organisation"
+}
+EOF
+```
+
+Returns:
+
+```
+HTTP 400 Bad Request
+Content-Type: application/json
+
+{
+    "detail": "function not implemented"
+}
 ```
 
 ## List organisation assessments

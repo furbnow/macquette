@@ -6,7 +6,7 @@ from mhep.assessments.views import (
     ListCreateAssessments,
     ListCreateLibraries,
     ListCreateOrganisationAssessments,
-    ListOrganisations,
+    ListCreateOrganisations,
     RetrieveUpdateDestroyAssessment,
     UpdateLibrary,
 )
@@ -38,8 +38,8 @@ urlpatterns = [
 
     path(
         "api/v1/organisations/",
-        view=ListOrganisations.as_view(),
-        name="list-organisations"
+        view=ListCreateOrganisations.as_view(),
+        name="list-create-organisations"
     ),
     path(
         "api/v1/organisations/<int:pk>/assessments/",

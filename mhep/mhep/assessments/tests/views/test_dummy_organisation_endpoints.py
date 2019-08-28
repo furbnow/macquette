@@ -26,7 +26,7 @@ class TestListOrganisationAssessments(APITestCase):
         assert None is response.data
 
 
-class TestListMyOrganisations(APITestCase):
+class TestListCreateOrganisations(APITestCase):
     def test_list_organisation_assessments(self):
         response = self.client.get("/api/v1/organisations/")
         assert response.status_code == status.HTTP_200_OK
@@ -47,3 +47,13 @@ class TestListMyOrganisations(APITestCase):
         ]
 
         assert expected == response.data
+
+    def test_create_organisation(self):
+        new_organisation = {
+            "name": "new organisation",
+        }
+
+        response = self.client.post("/api/v1/organisations/", new_organisation, format="json")
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert {"detail": "function not implemented"} == response.data

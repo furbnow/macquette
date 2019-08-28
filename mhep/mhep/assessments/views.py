@@ -61,7 +61,7 @@ class UpdateLibrary(
             return response
 
 
-class ListOrganisations(APIView):
+class ListCreateOrganisations(APIView):
     def get(self, request, *args, **kwargs):
         return Response([
             {
@@ -77,6 +77,12 @@ class ListOrganisations(APIView):
                 ]
             }
         ], status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        return Response(
+            {"detail": "function not implemented"},
+            status.HTTP_400_BAD_REQUEST
+        )
 
 
 class CreateLibraryItem(
