@@ -43,6 +43,17 @@ def test_update_library(library: Library):
     )
 
 
+def test_create_library_item(library: Library):
+    assert (
+        reverse("assessments:create-library-item", kwargs={"pk": library.id})
+        == f"/api/v1/libraries/{library.id}/items/"
+    )
+    assert (
+        resolve(f"/api/v1/libraries/{library.id}/items/").view_name
+        == "assessments:create-library-item"
+    )
+
+
 def test_list_organisations():
     assert (
         reverse("assessments:list-organisations") == f"/api/v1/organisations/"

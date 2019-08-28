@@ -92,3 +92,8 @@ class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+
+class LibraryItemSerializer(serializers.Serializer):
+    tag = serializers.CharField(max_length=100)
+    item = serializers.DictField(allow_empty=False)

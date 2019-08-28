@@ -1,4 +1,7 @@
-from rest_framework import generics
+import json
+import logging
+
+from rest_framework import generics, exceptions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,8 +10,13 @@ from mhep.assessments.models import Assessment, Library
 from mhep.assessments.serializers import (
     AssessmentFullSerializer,
     AssessmentMetadataSerializer,
-    LibrarySerializer
+    LibraryItemSerializer,
+    LibrarySerializer,
 )
+
+
+class BadRequest(exceptions.APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
 
 
 class ListCreateAssessments(
@@ -69,6 +77,39 @@ class ListOrganisations(APIView):
                 ]
             }
         ], status.HTTP_200_OK)
+
+
+class CreateLibraryItem(
+    generics.GenericAPIView,
+):
+    serializer_class = LibraryItemSerializer
+
+    def post(self, request, pk):
+        serializer = self.get_serializer_class()(data=request.data)
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        tag = serializer.validated_data['tag']
+        item = serializer.validated_data['item']
+
+        library = Library.objects.get(id=pk)
+
+        if isinstance(library.data, str):
+            d = json.loads(library.data)
+        else:
+            d = library.data
+
+        if tag in d:
+            logging.warning(f"tag {tag} already exists in library {library.id}")
+            raise BadRequest(
+                    f"tag `{tag}` already exists in library {library.id}",
+            )
+
+        d[tag] = item
+        library.data = d
+        library.save()
+        return Response("", status=status.HTTP_204_NO_CONTENT)
 
 
 class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
