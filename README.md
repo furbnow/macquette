@@ -460,7 +460,46 @@ HTTP 204 No content
 In this first release, where we have no concept of an organisation, the following endpoints have been hardcoded to return
 certain values.
 
+* [List my organisations](#list-my-organisations)
 * [List organisation assessments](#list-organisation-assessments)
+
+## List my organisations
+
+```
+GET /organisations/
+```
+
+List all organisations the logged in user is part of
+
+ℹ️ porting notes: replaces previous `assessment/getorganisations` route.
+
+### Example
+
+```
+> curl http://localhost:9090/api/v1/organisations/
+```
+
+Returns:
+
+```
+HTTP 200 OK
+Content-Type: application/json
+
+[
+    {
+        "orgid": "1",
+        "name": "Carbon Coop",
+        "assessments": 0,
+        "members": [
+            {
+                "userid": "1",
+                "name": "localadmin",
+                "lastactive": "?"
+            }
+        ]
+    }
+]
+```
 
 ## List organisation assessments
 
