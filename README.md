@@ -25,9 +25,12 @@ It should create a new Ubuntu 18.04 VM and configure everything.
 * [Create assessment](#create-assessment)
 * [Update a field on assessment](#update-a-field-on-assessment)
 * [Delete assessment](#delete-assessment)
-* [List element libraries](#list-element-libraries)
-* [Create item in element library](#create-item-in-element-library)
-* [Update item in element library](#update-item-in-element-library)
+* [List libraries](#list-libraries)
+* [Create a library](#create-a-library)
+* [Update a library](#update-a-library)
+* [Create item in library](#create-item-in-library)
+* [Update item in library](#update-item-in-library)
+* [Delete item in library](#delete-item-in-library)
 
 All endpoints start with `/api/v1` e.g. `http://localhost:9090/api/v1/assessments/`.
 
@@ -218,13 +221,13 @@ Returns:
 HTTP 204 HTTP 204 No content
 ```
 
-## List element libraries
+## List libraries
 
 ```
 GET /libraries/
 ```
 
-List all element libraries and their library items that I've got access to.
+List all libraries and their library items that belong to me.
 
 ℹ️ porting notes: replaces previous route `assessment/loaduserlibraries`
 
@@ -295,7 +298,77 @@ Content-Type: application/json
 ]
 ```
 
-## Create item in element library
+## Create a library
+
+```
+POST /libraries/
+```
+
+ℹ️ porting notes: replaces previous `assessment/newlibrary` route. It can also add data in a
+single request, where the previous route required the subsequent use of `savelibrary`
+
+```
+> curl -v \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/api/v1/libraries/ \
+    --data @- << EOF
+{
+    "name": "StandardLibrary - user",
+    "type": "draught_proofing_measures",
+    "data": {
+        "DP_01": {
+            "name": "Basic Draught-proofing Measures",
+            "q50": 12,
+            "description": "This may include DIY draught-proofing measures to doors...",
+            "performance": "Dependent on existing. 8-12 ...",
+            "maintenance": "Minimal. Ensure any draught-proofing strips are replaced..."
+        },
+        "DP_02": {
+            "name": "Another draught proofing measure",
+            "q50": 12,
+            "description": "This may include DIY draught-proofing measures to doors...",
+            "performance": "Dependent on existing. 8-12 ...",
+            "maintenance": "Minimal. Ensure any draught-proofing strips are replaced..."
+        }
+}
+```
+
+Returns:
+
+```
+HTTP 204 No content
+```
+
+## Update a library
+
+```
+PATCH /libraries/:id/
+Content-Type: application/json
+```
+
+ℹ️ porting notes: replaces previous `assessment/savelibrary` route.
+
+### Example: update the `data` field
+
+```
+> curl -v \
+    -X PATCH \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/api/v1/libraries/1/ \
+    --data @- << EOF
+{
+    "data": {},
+}
+EOF
+```
+
+Returns:
+
+```
+HTTP 204 No content
+```
+
+## Create item in library
 
 ```
 POST /libraries/:id/items/
@@ -311,7 +384,7 @@ POST /libraries/:id/items/
     http://localhost:9090/api/v1/libraries/1/items/ \
     --data @- << EOF
 {
-    "idtag": "SWIN_04",
+    "tag": "SWIN_04",
     "item": {
         "name": "100-140mm External Wall Insulation EWI on filled cavity wall.",
         "source": "URBED/ SAP table 1e, p.195",
@@ -329,13 +402,13 @@ Returns:
 HTTP 204 No content
 ```
 
-## Update item in element library
+## Update item in library
 
 ```
-PUT /libraries/:id/items/:idtag/
+PUT /libraries/:id/items/:tag/
 ```
 
-ℹ️ porting notes: replaces previous `assessment/edititeminibrary` route.
+ℹ️ porting notes: replaces previous `assessment/edititeminlibrary` route.
 
 ### Example
 
@@ -353,6 +426,27 @@ PUT /libraries/:id/items/:idtag/
     "tags": ["Wall"]
 }
 EOF
+```
+
+Returns:
+
+```
+HTTP 204 No content
+```
+
+## Delete item in library
+
+```
+DELETE /libraries/:id/items/:tag/
+```
+
+ℹ️ porting notes: replaces previous `assessment/deletelibraryitem` route.
+
+### Example
+
+```
+> curl -v -X DELETE \
+    http://localhost:9090/api/v1/libraries/1/item/SWIN_04/
 ```
 
 Returns:
