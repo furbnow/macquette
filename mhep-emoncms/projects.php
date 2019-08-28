@@ -429,7 +429,11 @@ $d = $path . "Modules/assessment/";
 // ----------------------------------------------------------------------------
     var myorganisations = {};
     $.ajax({url: apiURL + "/organisations/", success: function (result) {
-            myorganisations = result;
+            for (let i = 0; i < result.length; i++) {
+                const org = result[i];
+                org.orgid = org.id;
+                myorganisations[org.id] = org;
+            }
             draw_organisation_list();
             //draw_organisation(8);
         }});
