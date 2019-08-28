@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import admin
 
 from mhep.assessments.models import Assessment, Library
@@ -11,5 +13,8 @@ class AssessmentAdmin(admin.ModelAdmin):
 
 @admin.register(Library)
 class LibraryAdmin(admin.ModelAdmin):
-    list_display = ["name", "type"]
+    list_display = ["name", "type", "number_of_items"]
     search_fields = ["name", "type"]
+
+    def number_of_items(self, obj):
+        return len(json.loads(obj.data))
