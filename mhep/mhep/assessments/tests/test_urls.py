@@ -2,7 +2,7 @@ import pytest
 # from django.conf import settings
 from django.urls import reverse, resolve
 
-from mhep.assessments.models import Assessment
+from mhep.assessments.models import Assessment, Library
 
 pytestmark = pytest.mark.django_db
 
@@ -32,6 +32,17 @@ def test_list_create_libraries():
     assert resolve(f"/api/v1/libraries/").view_name == "assessments:list-create-libraries"
 
 
+def test_update_library(library: Library):
+    assert (
+        reverse("assessments:update-library", kwargs={"pk": library.id})
+        == f"/api/v1/libraries/{library.id}/"
+    )
+    assert (
+        resolve(f"/api/v1/libraries/{library.id}/").view_name
+        == "assessments:update-library"
+    )
+
+
 def test_list_organisation_assessments():
     assert (
         reverse("assessments:list-organisation-assessments", kwargs={"pk": 1})
@@ -46,5 +57,12 @@ def test_list_organisation_assessments():
 @pytest.fixture
 def assessment():
     return Assessment.objects.create(
+        data={},
+    )
+
+
+@pytest.fixture
+def library():
+    return Library.objects.create(
         data={},
     )
