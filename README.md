@@ -209,7 +209,6 @@ DELETE /assessments/:id/
 ```
 > curl -v \
     -X DELETE \
-    -H "Content-Type: application/json" \
     http://localhost:9090/api/v1/assessments/1/
 ```
 
