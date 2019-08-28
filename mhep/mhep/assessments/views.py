@@ -53,6 +53,24 @@ class UpdateLibrary(
             return response
 
 
+class ListOrganisations(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response([
+            {
+                "orgid": "1",
+                "name": "Carbon Coop",
+                "assessments": 0,
+                "members": [
+                    {
+                        "userid": "1",
+                        "name": "localadmin",
+                        "lastactive": "?"
+                    }
+                ]
+            }
+        ], status.HTTP_200_OK)
+
+
 class ListOrganisationAssessments(APIView):
     def get(self, request, *args, **kwargs):
         return Response([], status.HTTP_200_OK)
