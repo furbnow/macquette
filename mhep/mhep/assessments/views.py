@@ -57,7 +57,7 @@ class ListOrganisations(APIView):
     def get(self, request, *args, **kwargs):
         return Response([
             {
-                "orgid": "1",
+                "id": "1",
                 "name": "Carbon Coop",
                 "assessments": 0,
                 "members": [
