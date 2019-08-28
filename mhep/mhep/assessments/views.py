@@ -71,6 +71,9 @@ class ListOrganisations(APIView):
         ], status.HTTP_200_OK)
 
 
-class ListOrganisationAssessments(APIView):
+class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         return Response([], status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        return Response(None, status.HTTP_400_BAD_REQUEST)
