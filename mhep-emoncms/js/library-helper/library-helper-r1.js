@@ -3340,7 +3340,11 @@ libraryHelper.prototype.generation_measures_get_item_to_save = function () {
 libraryHelper.prototype.load_user_libraries = function (callback) {
     var mylibraries = {};
     var myself = this;
-    $.ajax({url: path + "assessment/loaduserlibraries.json", async: false, datatype: "json", success: function (result) {
+    $.ajax({
+        url: apiURL + '/libraries/',
+        async: false,
+        datatype: "json",
+        success: function (result) {
             //result = JSON.parse(result);
             for (library in result) {
                 if (mylibraries[result[library].type] === undefined)

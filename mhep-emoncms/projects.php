@@ -185,9 +185,10 @@ $d = $path . "Modules/assessment/";
 // Check that the user at least one library of each type and if not create it from the default one
 // Check that all the elements in the default library are in the user's Standard library, copy over the ones that are not (kind of getting in sync)
 // -----------------------------------------------------------------------------------
+
     var libraries = {};
     $.ajax({
-      url: path + "assessment/loaduserlibraries.json",
+      url: apiURL + '/libraries/',
       async: true,
       datatype: "json",
       success: function (user_libraries) {
