@@ -25,6 +25,13 @@ def test_assessment_detail_update_destroy(assessment: Assessment):
     )
 
 
+def test_list_create_libraries():
+    assert (
+        reverse("assessments:list-create-libraries") == f"/api/v1/libraries/"
+    )
+    assert resolve(f"/api/v1/libraries/").view_name == "assessments:list-create-libraries"
+
+
 def test_list_organisation_assessments():
     assert (
         reverse("assessments:list-organisation-assessments", kwargs={"pk": 1})

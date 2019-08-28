@@ -3,10 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from mhep.assessments.models import Assessment
+from mhep.assessments.models import Assessment, Library
 from mhep.assessments.serializers import (
     AssessmentFullSerializer,
     AssessmentMetadataSerializer,
+    LibrarySerializer
 )
 
 
@@ -30,6 +31,11 @@ class RetrieveUpdateDestroyAssessment(
             return Response(None, status.HTTP_204_NO_CONTENT)
         else:
             return response
+
+
+class ListCreateLibraries(generics.ListCreateAPIView):
+    queryset = Library.objects.all()
+    serializer_class = LibrarySerializer
 
 
 class ListOrganisationAssessments(APIView):

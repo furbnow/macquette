@@ -1,7 +1,7 @@
 import datetime
 
 from rest_framework import serializers
-from mhep.assessments.models import Assessment
+from mhep.assessments.models import Assessment, Library
 
 
 class HardcodedAuthorUserIDMixin():
@@ -83,7 +83,7 @@ class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
 
     class Meta:
-        model = Assessment
+        model = Library
         fields = [
             "id",
             "name",
