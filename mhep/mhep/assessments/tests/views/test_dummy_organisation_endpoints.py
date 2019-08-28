@@ -27,7 +27,7 @@ class TestListOrganisationAssessments(APITestCase):
 
 
 class TestListCreateOrganisations(APITestCase):
-    def test_list_organisation_assessments(self):
+    def test_list_organisations(self):
         response = self.client.get("/api/v1/organisations/")
         assert response.status_code == status.HTTP_200_OK
 
