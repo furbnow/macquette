@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -29,3 +30,8 @@ class RetrieveUpdateDestroyAssessment(
             return Response(None, status.HTTP_204_NO_CONTENT)
         else:
             return response
+
+
+class ListOrganisationAssessments(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response([], status.HTTP_200_OK)

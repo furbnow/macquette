@@ -360,3 +360,35 @@ Returns:
 ```
 HTTP 204 No content
 ```
+
+# Dummy API endpoints
+
+In this first release, where we have no concept of an organisation, the following endpoints have been hardcoded to return
+certain values.
+
+* [List organisation assessments](#list-organisation-assessments)
+
+## List organisation assessments
+
+```
+GET /organisations/:id/assessments/
+```
+
+List all assessments belonging to the organisation.
+
+ℹ️ porting notes: replaces previous `assessment/list` route, passing `orgid`.
+
+### Example
+
+```
+> curl http://localhost:9090/api/v1/organisations/1/assessments/
+```
+
+Returns:
+
+```
+HTTP 200 OK
+Content-Type: application/json
+
+[]
+```
