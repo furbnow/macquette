@@ -11,12 +11,12 @@ $d = $path . "Modules/assessment/";
     :root {
         --app-color: <?php echo $app_color;?>;
     }
-    
+
     .cc {
         color: var(--app-color);
         font-weight: bold;
         padding-right:20px;
-        
+
     }
 
     .title {
@@ -24,7 +24,7 @@ $d = $path . "Modules/assessment/";
         color:#888;
         float:left;
     }
-    
+
     .recent-activity-item {
         padding:5px;
         border-bottom: 1px solid #ccc;
@@ -272,7 +272,7 @@ $d = $path . "Modules/assessment/";
                 };
             if (viewmode == "organisation" && orgid != 0)
                 mhep_helper.create(name, description, orgid, callback);
-            else 
+            else
                 mhep_helper.create(name, description, null, callback);
             /*var orgselector = "";
             if (viewmode == "organisation" && orgid != 0)
@@ -525,8 +525,8 @@ $d = $path . "Modules/assessment/";
         $("#assessments-title").html("My Assessments");
         $("#myview").show();
     });
-    
-    
+
+
 // -------------------------------------------------------
 // Other
 // -------------------------------------------------------
