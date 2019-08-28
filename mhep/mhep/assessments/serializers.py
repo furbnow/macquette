@@ -77,3 +77,18 @@ class AssessmentFullSerializer(
             "mdate",
             "data",
         ]
+
+
+class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Assessment
+        fields = [
+            "id",
+            "name",
+            "type",
+            "data",
+            "created_at",
+            "updated_at",
+        ]
