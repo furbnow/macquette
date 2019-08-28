@@ -932,14 +932,21 @@ libraryHelper.prototype.onSaveLibraryEditMode = function (selector, library_id) 
         });
     });
 
-    $.ajax({url: path + "assessment/savelibrary.json", method: 'post', data: 'data=' + JSON.stringify(data) + '&id=' + library_id, async: false, datatype: "json", success: function (result) {
-            if (result != true)
-                alert("Library could not be saved. The server said: " + result);
-            else {
-                $('#show-library-modal-edit-mode #save').attr('disabled', 'disabled');
-                $('#show-library-modal-edit-mode #message').html('Saved');
-            }
-        }});
+    $.ajax({
+        type: 'PATCH',
+        url: apiURL + '/libraries/' + library_id + '/',
+        async: false,
+        data: JSON.stringify({'data': data}),
+        datatype: "json",
+        contentType: "application/json;charset=utf-8",
+        success: function (result) {
+            $('#show-library-modal-edit-mode #save').attr('disabled', 'disabled');
+            $('#show-library-modal-edit-mode #message').html('Saved');
+        },
+        error: function (result) {
+            alert("Library could not be saved. The server said: " + result);
+        }
+    });
 
 }
 

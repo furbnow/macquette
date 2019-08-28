@@ -238,9 +238,11 @@ $d = $path . "Modules/assessment/";
                         var library_string = JSON.stringify(user_library);
                         library_string = library_string.replace(/&/g, 'and');
                         $.ajax({
-                          type: "POST",
-                          url: path + "assessment/savelibrary.json",
-                          data: "id=" + user_libraries[library_index].id + "&data=" + library_string,
+                          type: 'PATCH',
+                          url: apiURL + '/libraries/' + user_libraries[library_index].id + '/',
+                          data: JSON.stringify({'data': library_string}),
+                          datatype: "json",
+                          contentType: "application/json;charset=utf-8",
                           success: function (result) {
                                 console.log("Library: " + library_type + ' - ' + result);
                           }});
