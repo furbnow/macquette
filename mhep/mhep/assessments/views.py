@@ -118,6 +118,44 @@ class CreateLibraryItem(
         return Response("", status=status.HTTP_204_NO_CONTENT)
 
 
+class UpdateDestroyLibraryItem(
+    generics.GenericAPIView,
+):
+    serializer_class = LibraryItemSerializer
+
+    def delete(self, request, pk, tag):
+        library = Library.objects.get(id=pk)
+
+        if isinstance(library.data, str):
+            d = json.loads(library.data)
+        else:
+            d = library.data
+
+        if tag not in d:
+            raise exceptions.NotFound(f"tag `{tag}` not found in library {library.id}")
+
+        del d[tag]
+        library.data = d
+        library.save()
+        return Response("", status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, pk, tag):
+        library = Library.objects.get(id=pk)
+
+        if isinstance(library.data, str):
+            d = json.loads(library.data)
+        else:
+            d = library.data
+
+        if tag not in d:
+            raise exceptions.NotFound(f"tag `{tag}` not found in library {library.id}")
+
+        d[tag] = request.data
+        library.data = d
+        library.save()
+        return Response("", status=status.HTTP_204_NO_CONTENT)
+
+
 class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         return Response([], status.HTTP_200_OK)
