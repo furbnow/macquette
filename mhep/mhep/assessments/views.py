@@ -26,6 +26,16 @@ class AssessmentHTMLView(DetailView):
     context_object_name = "assessment"
     model = Assessment
 
+    def get_context_data(self, object=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        locked = object.status == "Completed"
+
+        context["locked_javascript"] = json.dumps(locked)
+        context["reports_javascript"] = json.dumps([])
+        context["use_image_gallery"] = False
+        return context
+
 
 class ListCreateAssessments(
     generics.ListCreateAPIView

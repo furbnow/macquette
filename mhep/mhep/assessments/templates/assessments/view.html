@@ -1,13 +1,6 @@
 {% extends "base.html" %}
 {% load static i18n %}
 
-<?php
-global $path, $app_color, $app_title, $app_description, $MHEP_image_gallery;
-
-$d = $path . "Modules/assessment/";
-$projectid = (int) $_GET['id'];
-?>
-
 {% block extra_head %}
 <script language="javascript" type="text/javascript" src="{% static 'js/mhep-helper.js' %}"></script>
 <script language="javascript" type="text/javascript" src="{% static 'js/ui-helper-r3.js' %}"></script>
@@ -20,7 +13,6 @@ $projectid = (int) $_GET['id'];
 <script language="javascript" type="text/javascript" src="{% static 'js/library-helper/library-helper-r1.js' %}"></script>
 
 
-<!--<script language="javascript" type="text/javascript" src="<?php echo $d; ?>js/canvas-barchart/barchart.js"></script>-->
 <link rel="stylesheet" href="{% static 'js/jquery-ui-1.12.1/jquery-ui.min.css' %}">
 <script src="{% static 'js/jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
 
@@ -77,9 +69,9 @@ $projectid = (int) $_GET['id'];
                 <div class="scenario-nav"><a class="project-menu-item" href="#master/householdquestionnaire">Household Questionnaire</a></div>
                 <div class="scenario-nav"><a class="project-menu-item" href="#master/commentary">Commentary</a></div>
                 <div class="scenario-nav"><a class="project-menu-item" href="#master/currentenergy">Current Energy</a></div>
-                <?php if ($MHEP_image_gallery === true) { ?>
-                    <div class="scenario-nav"><a class="project-menu-item" href="#master/imagegallery">Image gallery</a></div>
-                <?php } ?>
+                {% if use_image_gallery %}
+                <div class="scenario-nav"><a class="project-menu-item" href="#master/imagegallery">Image gallery</a></div>
+                {% endif %}
                 <div class="scenario-nav-heading">Other</div>
                 <div id="links-to-reports"></div>
                 <div class="scenario-nav"><a class="project-menu-item" href="#master/compare">MHEP Report</a></div>
@@ -206,8 +198,8 @@ $projectid = (int) $_GET['id'];
         Are you sure you want to delete this scenario?
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="delete-scenario-confirm" class="btn btn-primary"><?php echo _('Delete'); ?></button>
+        <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        <button id="delete-scenario-confirm" class="btn btn-primary">Delete</button>
     </div>
 </div>
 
@@ -259,12 +251,12 @@ $projectid = (int) $_GET['id'];
     var printmode = false;
     var report = undefined;
     var page = undefined;
-    var locked = <?php echo json_encode($args['locked']); ?>;
+    var locked = {{ locked_javascript }}; // populated via Django template
     scenario = ""; //I put it here to be clear this is a global variable, it will be set later on from the hash in URL
     var data = {};
 
-    var path = "<?php echo $path; ?>";
-    var jspath = path + "Modules/assessment/";
+    var path = '{{ request.build_absolute_uri }}';
+    var jspath = path; // TODO: remove this, and all uses of it
 
     var keys = {};
 
@@ -276,7 +268,9 @@ $projectid = (int) $_GET['id'];
     //*********************
     // Initialize project
     //********************
-    var projectid = <?php echo $projectid; ?>;
+
+    var projectid = {{ assessment.id }}; // populated via Django template
+
     var p = mhep_helper.get(projectid);
 
     $("#project-title").html(p.name);
@@ -294,8 +288,8 @@ $projectid = (int) $_GET['id'];
     var historical_index; // pointer for the historical array, pointing the current version of project
     historical.unshift(JSON.stringify(project));
     historical_index = 0;
-    $('.navbar-inner').append('<div style="display:inline" class="menu-assessment pull-right" id="redo"><a><img src="' + path + 'Modules/assessment/img-assets/redo.gif" title="Redo" style="width:14px" /></a></div>');
-    $('.navbar-inner').append('<div style="display:inline" class="menu-assessment pull-right" id="undo"><a><img src="' + path + 'Modules/assessment/img-assets/undo.gif" title="Undo" style="width:14px" / > </a></div> ');
+    $('.navbar-inner').append('<div style="display:inline" class="menu-assessment pull-right" id="redo"><a><img src="{% static "img/redo.gif" %}" title="Redo" style="width:14px" /></a></div>');
+    $('.navbar-inner').append('<div style="display:inline" class="menu-assessment pull-right" id="undo"><a><img src="{% static "img/undo.gif" %}" title="Undo" style="width:14px" / > </a></div> ');
     refresh_undo_redo_buttons();
 
     //**************************
@@ -649,7 +643,7 @@ $projectid = (int) $_GET['id'];
         $('div [scenario="' + scenario + '"]').click();
     }
     function add_reports_to_menu() {
-        var reports = <?php echo json_encode($args['reports']); ?>;
+        var reports = {{ reports_javascript }}; // populated via Django template
         reports.forEach(function (report) {
             var html = '<div class="scenario-nav"> <a class="project-menu-item" class="link-to-report" href="#master/report/' + report.view + '">' + report.name + '</a></div>';
             $('#links-to-reports').append(html);
