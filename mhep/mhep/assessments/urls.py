@@ -8,6 +8,7 @@ from mhep.assessments.views import (
     ListCreateOrganisationAssessments,
     ListCreateOrganisations,
     RetrieveUpdateDestroyAssessment,
+    UpdateDestroyLibraryItem,
     UpdateLibrary,
 )
 
@@ -51,5 +52,11 @@ urlpatterns = [
         "api/v1/libraries/<int:pk>/items/",
         view=CreateLibraryItem.as_view(),
         name="create-library-item"
+    ),
+
+    path(
+        "api/v1/libraries/<int:pk>/items/<str:tag>/",
+        view=UpdateDestroyLibraryItem.as_view(),
+        name="update-destroy-library-item"
     ),
 ]

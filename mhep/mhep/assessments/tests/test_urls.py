@@ -54,6 +54,19 @@ def test_create_library_item(library: Library):
     )
 
 
+def test_update_destroy_library_item(library: Library):
+    tag = "SW_01"
+
+    assert (
+        reverse("assessments:update-destroy-library-item", kwargs={"pk": library.id, "tag": tag})
+        == f"/api/v1/libraries/{library.id}/items/{tag}/"
+    )
+    assert (
+        resolve(f"/api/v1/libraries/{library.id}/items/{tag}/").view_name
+        == "assessments:update-destroy-library-item"
+    )
+
+
 def test_list_create_organisations():
     assert (
         reverse("assessments:list-create-organisations") == "/api/v1/organisations/"
