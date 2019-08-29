@@ -221,20 +221,22 @@ $d = $path . "Modules/assessment/";
                 }
             }
             // Check that all the elements in the default library are in the user's Standard library, copy over the ones that are not (kind of getting in sync)
-            for (library_type in standard_library) {
-                for (library_index in user_libraries) {
-                    var library_changed = false;
-                    if (user_libraries[library_index].type == library_type && user_libraries[library_index].name == "StandardLibrary - " + myusername) {
-                        var user_library = JSON.parse(user_libraries[library_index].data);
+            for (library_type in standard_library) { // e.g. 'appliances_and_cooking'
+                for (let i=0; i < user_libraries.length; i++) {
+                    const user_library = user_libraries[i];
+                    let library_changed = false;
+                    if (user_library.type == library_type && user_library.name == "StandardLibrary - " + myusername) {
+                        var user_library_data = user_library.data;
                         for (item in standard_library[library_type]) {
-                            item = item.replace(/[^\w\s-+.",:{}\/'\[\]\\]/g, ''); // we apply the same validation than in the server
-                            if (user_library[item] == undefined) {
-                                user_library[item] = standard_library[library_type][item];
+                            if (user_library_data[item] == undefined) {
+                                console.log('added missing library item `', item, '` to user library ',
+                                            user_library.type, ' ', user_library.name);
+                                user_library_data[item] = standard_library[library_type][item];
                                 library_changed = true;
                             }
                         }
                     }
-                    if (library_changed === true) {
+                    if (library_changed) {
                         var library_string = JSON.stringify(user_library);
                         library_string = library_string.replace(/&/g, 'and');
                         $.ajax({
@@ -243,8 +245,8 @@ $d = $path . "Modules/assessment/";
                           data: JSON.stringify({'data': library_string}),
                           datatype: "json",
                           contentType: "application/json;charset=utf-8",
-                          success: function (result) {
-                                console.log("Library: " + library_type + ' - ' + result);
+                          success: function (response) {
+                                console.log("updated library: " + library_type);
                           }});
                     }
                 }
