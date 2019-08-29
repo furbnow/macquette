@@ -582,15 +582,20 @@ libraryHelper.prototype.onEditLibraryItemOk = function (library_id) {
         var item_string = JSON.stringify(item[tag]).replace('+', '/plus'); // For a reason i have not been able to find why the character + becomes a carrier return when it is accesed in $_POST in the controller, because of this we escape + with \plus
         item_string = item_string.replace(/&/g, 'and');
         //item[tag].number_of_intermittentfans="\\+2";
-        $.ajax({type: "POST", url: path + "assessment/edititeminlibrary.json", data: "library_id=" + selected_library.id + "&tag=" + tag + "&item=" + item_string, success: function (result) {
-                if (result == true) {
+        $.ajax({type: "PUT",
+            url: apiURL + "/libraries/"  + selected_library.id + "/items/" + tag + "/",
+            data: item_string,
+            contentType: "application/json;charset=utf-8",
+            complete: function(xhr) {
+                if (xhr.status == 204) {
                     $("#edit-item-message").html("Item edited and library saved");
                     $('#modal-edit-item button').hide('fast');
                     $('#edit-item-finish').show('fast');
-                }
-                else
+                } else {
                     $("#edit-item-message").html("There were problems saving the library - " + result);
-            }});
+                }
+            }
+        });
     }
 };
 
