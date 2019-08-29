@@ -4,6 +4,8 @@ from rest_framework import status
 
 class TestListOrganisationAssessments(APITestCase):
     def test_list_organisation_assessments(self):
+        # NOTE: any organisation ID should work, since there's no concept of an organisation
+        # at the moment
         response = self.client.get("/api/v1/organisations/1/assessments/")
         assert response.status_code == status.HTTP_200_OK
 
