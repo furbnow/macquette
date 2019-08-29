@@ -37,6 +37,7 @@ class TestListCreateLibraries(APITestCase):
             "name": "test library 1",
             "type": "test type 1",
             "data": {"foo": "bar"},
+            "writeable": True,
         }
 
         assert expectedFirstResult == response.data[0]
