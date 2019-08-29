@@ -1,6 +1,8 @@
 import json
 import logging
 
+from django.views.generic import DetailView
+
 from rest_framework import generics, exceptions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,6 +19,12 @@ from mhep.assessments.serializers import (
 
 class BadRequest(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
+
+
+class AssessmentHTMLView(DetailView):
+    template_name = "assessments/view.html"
+    context_object_name = "assessment"
+    model = Assessment
 
 
 class ListCreateAssessments(

@@ -3,6 +3,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 from mhep.assessments.views import (
+    AssessmentHTMLView,
     CreateLibraryItem,
     ListCreateAssessments,
     ListCreateLibraries,
@@ -19,6 +20,12 @@ urlpatterns = [
         "",
         TemplateView.as_view(template_name="assessments/assessments.html"),
         name="home",
+    ),
+
+    path(
+        "assessments/<int:pk>/",
+        AssessmentHTMLView.as_view(),
+        name="view-assessment",
     ),
 
     path(
