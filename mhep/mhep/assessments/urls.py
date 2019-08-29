@@ -1,5 +1,6 @@
 
 from django.urls import path
+from django.views.generic import TemplateView
 
 from mhep.assessments.views import (
     CreateLibraryItem,
@@ -14,6 +15,12 @@ from mhep.assessments.views import (
 
 app_name = "assessments"
 urlpatterns = [
+    path(
+        "",
+        TemplateView.as_view(template_name="assessments/assessments.html"),
+        name="home",
+    ),
+
     path(
         "api/v1/assessments/",
         view=ListCreateAssessments.as_view(),

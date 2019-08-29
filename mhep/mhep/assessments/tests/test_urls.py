@@ -7,6 +7,13 @@ from mhep.assessments.models import Assessment, Library
 pytestmark = pytest.mark.django_db
 
 
+def test_assessments_home():
+    assert (
+        reverse("assessments:home") == "/"
+    )
+    assert resolve("/").view_name == "assessments:home"
+
+
 def test_list_create_assessments(assessment: Assessment):
     assert (
         reverse("assessments:list-create-assessments") == "/api/v1/assessments/"
