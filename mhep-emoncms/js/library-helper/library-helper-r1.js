@@ -3357,12 +3357,9 @@ libraryHelper.prototype.load_user_libraries = function (callback) {
         async: false,
         datatype: "json",
         success: function (result) {
-            //result = JSON.parse(result);
             for (library in result) {
                 if (mylibraries[result[library].type] === undefined)
                     mylibraries[result[library].type] = [];
-                result[library].data = result[library].data.replace('\\/plus', '+'); // For a reason i have not been able to find why the character + becomes a carrier return when it is accesed in $_POST in the controller, because of this we escape + with \plus
-                result[library].data = JSON.parse(result[library].data);
                 mylibraries[result[library].type].push(result[library]);
             }
             if (callback !== undefined)
