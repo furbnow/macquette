@@ -24,7 +24,6 @@ function libraryHelper(type, container) {
 
 libraryHelper.prototype.init = function () {
     this.load_user_libraries(); // Populates this.library_list
-    this.get_library_permissions(); // Populates this.library_permissions
     this.library_names = {
         'elements': 'Fabric elements',
         'systems': 'Energy systems',
@@ -363,7 +362,8 @@ libraryHelper.prototype.onSelectingLibraryToShow = function (origin) {
         $("#library_table").html(out);
         $('#create-in-library').attr('library-id', id);
         // Hide/show "share" option according to the permissions
-        if (this.library_permissions[id].write == 0)
+        const library = this.get_library_by_id(id);
+        if (!library.writeable)
             $('.if-write').hide('fast');
         else
             $('.if-write').show('fast');
@@ -788,7 +788,7 @@ libraryHelper.prototype.onShowLibraryItems = function (library_id) {
     // Hide the Use buttons
     $("#show-library-items-modal .use-from-lib").hide('fast');
     // Hide Write options if no write access
-    if (this.library_permissions[library.id].write != 1)
+    if (!library.writeable)
         $("#show-library-items-modal .if-write").hide('fast');
     // Show the select to choose the type of fabric elements when library is "elements"
     if (this.type == 'elements' || this.type == 'elements_measures')
@@ -812,7 +812,8 @@ libraryHelper.prototype.onChangeTypeOfElementsToShow = function (origin) {
     // Hide the Use buttons
     $("#show-library-items-modal .use-from-lib").hide('fast');
     // Hide Write options if no write access
-    if (this.library_permissions[library_id].write != 1)
+    const library = this.get_library_by_id(library_id)
+    if (!library.writeable)
         $("#show-library-items-modal .if-write").hide('fast');
     // Show the select to choose the type of fabric elements when library is "elements"
     $('#show-library-items-modal .element-type').show('fast');
@@ -848,7 +849,7 @@ libraryHelper.prototype.onShowLibraryItemsEditMode = function (library_id) {
     var out = this[function_name](null, library_id);
     $("#show-library-modal-edit-mode .modal-body").html(out);
     // Hide Write options if no write access
-    if (this.library_permissions[library.id].write != 1)
+    if (!library.writeable)
         $("#show-library-modal-edit-mode .if-write").hide('fast');
     // Add library id to "Create new item" and "Save" buttons
     $('#show-library-modal-edit-mode #create-in-library').attr('library-id', library_id);
@@ -3367,16 +3368,6 @@ libraryHelper.prototype.load_user_libraries = function (callback) {
             myself.library_list = mylibraries;
         }});
 };
-libraryHelper.prototype.get_library_permissions = function (callback) {
-    var mypermissions = {};
-    var myself = this;
-    $.ajax({url: path + "assessment/getuserpermissions.json", async: false, datatype: "json", success: function (result) {
-            if (callback !== undefined)
-                callback();
-            myself.library_permissions = result;
-        }});
-    //return mypermissions;
-};
 libraryHelper.prototype.display_library_users = function (library_id) {
     $.ajax({url: path + "assessment/getsharedlibrary.json", data: "id=" + library_id, success: function (shared) {
             var out = "<tr><th>Shared with:</th><th>Has write persmissions</th><th></th></tr>";
@@ -3435,7 +3426,7 @@ libraryHelper.prototype.populate_library_modal = function (origin) {
     // Add library id to "Add item from library" button
     $('#create-in-library').attr('library-id', id);
     // Hide/show "share" option according to the permissions
-    if (this.library_permissions[id].write == 0)
+    if (!this.get_library_by_id(id).writeable)
         $('.if-write').hide('fast');
     else
         $('.if-write').show('fast');

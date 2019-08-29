@@ -32,7 +32,7 @@ function librariesmanager_UpdateUI()
             $('#libraries-table [library-name="template"]').attr('library-name', library.name);
             $('#libraries-table [library-id="template"]').attr('library-id', library.id);
             $("#libraries-table [library-type='template']").attr('library-type', library.type);
-            if (library_helper.library_permissions[library.id].write != 1) {
+            if (!library.writeable) {
                 access = "Read";
                 $('.if-write-access[library-id=' + library.id + ']').hide('fast');
             }
