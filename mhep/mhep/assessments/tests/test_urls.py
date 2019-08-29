@@ -9,9 +9,9 @@ pytestmark = pytest.mark.django_db
 
 def test_list_create_assessments(assessment: Assessment):
     assert (
-        reverse("assessments:list-create-assessments") == f"/api/v1/assessments/"
+        reverse("assessments:list-create-assessments") == "/api/v1/assessments/"
     )
-    assert resolve(f"/api/v1/assessments/").view_name == "assessments:list-create-assessments"
+    assert resolve("/api/v1/assessments/").view_name == "assessments:list-create-assessments"
 
 
 def test_assessment_detail_update_destroy(assessment: Assessment):
@@ -27,9 +27,9 @@ def test_assessment_detail_update_destroy(assessment: Assessment):
 
 def test_list_create_libraries():
     assert (
-        reverse("assessments:list-create-libraries") == f"/api/v1/libraries/"
+        reverse("assessments:list-create-libraries") == "/api/v1/libraries/"
     )
-    assert resolve(f"/api/v1/libraries/").view_name == "assessments:list-create-libraries"
+    assert resolve("/api/v1/libraries/").view_name == "assessments:list-create-libraries"
 
 
 def test_update_library(library: Library):
@@ -56,7 +56,7 @@ def test_create_library_item(library: Library):
 
 def test_list_create_organisations():
     assert (
-        reverse("assessments:list-create-organisations") == f"/api/v1/organisations/"
+        reverse("assessments:list-create-organisations") == "/api/v1/organisations/"
     )
     assert (
         resolve("/api/v1/organisations/").view_name == "assessments:list-create-organisations"
@@ -66,10 +66,10 @@ def test_list_create_organisations():
 def test_list_create_organisation_assessments():
     assert (
         reverse("assessments:list-create-organisation-assessments", kwargs={"pk": 1})
-        == f"/api/v1/organisations/1/assessments/"
+        == "/api/v1/organisations/1/assessments/"
     )
     assert (
-        resolve(f"/api/v1/organisations/1/assessments/").view_name
+        resolve("/api/v1/organisations/1/assessments/").view_name
         == "assessments:list-create-organisation-assessments"
     )
 
