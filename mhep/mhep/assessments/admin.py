@@ -1,5 +1,3 @@
-import json
-
 from django.contrib import admin
 
 from mhep.assessments.models import Assessment, Library
@@ -17,4 +15,4 @@ class LibraryAdmin(admin.ModelAdmin):
     search_fields = ["name", "type"]
 
     def number_of_items(self, obj):
-        return len(json.loads(obj.data))
+        return len(obj.data)
