@@ -305,6 +305,9 @@
 // -----------------------------------------------------------------------------------
 
     $(".assessments").on('click', '.share-project-openmodal', function () {
+        alert("Not currently supported.");
+        return;
+        /* TODO(PMF): disabled for port phase 1
         var projectid = $(this).attr('projectid');
         var z = $(this).attr('z');
         $.ajax({url: path + "assessment/getshared.json", data: "id=" + projectid, success: function (shared) {
@@ -321,8 +324,13 @@
         $('#modal-share-project').attr('the_id', projectid);
         $('#modal-share-project').attr('the_row', z);
         console.log("Share project " + projectid);
+        */
     });
     $("#share-project").click(function () {
+        alert("Not currently supported.");
+        return;
+        /* TODO(PMF): disabled for port phase 1. Re-enable later.
+
         var username = $("#sharename").val();
         var projectid = $('#modal-share-project').attr('the_id');
         $.ajax({url: path + "assessment/share.json", data: "id=" + projectid + "&username=" + username, success: function (data) {
@@ -338,6 +346,7 @@
                         $("#shared-with-table").html(out);
                     }});
             }});
+        */
     });
 // -----------------------------------------------------------------------------------
 // Change assessment status
@@ -458,6 +467,8 @@
         if (membername == "") {
             alert("Member name missing");
         } else {
+            alert("Not currently supported.");
+            /* TODO(PMF): disabled for port phase 1.
             $.ajax({url: path + "assessment/organisationaddmember.json", data: "orgid=" + orgid + "&membername=" + membername, success: function (result) {
                     if (result.success) {
                         myorganisations[orgid].members.push(result);
@@ -466,6 +477,7 @@
                         alert(result.message);
                     }
                 }});
+            */
         }
     });
     $("body").on("click", ".org-item", function () {
