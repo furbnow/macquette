@@ -331,17 +331,7 @@ libraryHelper.prototype.onEditLibraryNameOk = function () {
     var library_id = $('#edit-library-name-modal #edit-library-name-ok').attr('library-id');
     var library_new_name = $('#edit-library-name-modal #new-library-name').val();
     var myself = this;
-    this.set_library_name(library_id, library_new_name, function (result) {
-        console.log(myself);
-        if (result == 1) {
-            var library = myself.get_library_by_id(library_id);
-            library.name = library_new_name;
-            UpdateUI(data);
-            $('.modal').modal('hide');
-        }
-        else
-            $('#edit-library-name-modal #message').html('Library name could not be changed: ' + result);
-    });
+    this.set_library_name(library_id, library_new_name);
     //this.set_library_name(library_id, library_new_name);
 };
 libraryHelper.prototype.onRemoveUserFromSharedLib = function (user_to_remove, selected_library) {
@@ -3414,9 +3404,29 @@ libraryHelper.prototype.populate_measure_new_item = function (type_of_library) {
     $('#apply-measure-item-fields').html(out);
 };
 libraryHelper.prototype.set_library_name = function (library_id, new_name, callback) {
-    $.ajax({url: path + "assessment/setlibraryname.json", data: "library_id=" + library_id + "&new_library_name=" + new_name, async: false, datatype: "json", success: function (result) {
-            callback(result);
-        }});
+    const body = JSON.stringify({
+        'name': new_name,
+    });
+
+    $.ajax({
+        url: apiURL + "/libraries/" + library_id + "/",
+        type: 'PATCH',
+        data: body,
+        async: false,
+        datatype: "json",
+        contentType: "application/json;charset=utf-8",
+        success: function (response) {
+            var library = library_helper.get_library_by_id(library_id);
+            library.name = new_name;
+            UpdateUI(data);
+            $('.modal').modal('hide');
+        },
+        error: function (response) {
+            $('#edit-library-name-modal #message').html('Library name could not be changed: ' + response.responseJSON.detail);
+        }
+
+
+    });
 };
 libraryHelper.prototype.populate_library_modal = function (origin) {
     // Populate the select to choose library to display
