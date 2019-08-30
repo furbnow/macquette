@@ -681,7 +681,7 @@
             scenarios_measures_summary = {};
             scenarios_measures_complete = {}
             if (view_html['compare'] == undefined) {
-                $.ajax({url: jspath + "views/compare.js", async: false, cache: false});
+                $.ajax({url: '{% url "assessments:subview-javascript" "compare" %}', async: false, cache: false});
             }
             for (var s in project) {
                 if (s != 'master') {
