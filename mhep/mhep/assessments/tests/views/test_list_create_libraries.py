@@ -36,6 +36,7 @@ class TestListCreateLibraries(APITestCase):
             "updated_at": "2019-06-01T16:35:34Z",
             "name": "test library 1",
             "type": "test type 1",
+            "writeable": True,
             "data": {"foo": "bar"},
         }
 
@@ -58,6 +59,7 @@ class TestListCreateLibraries(APITestCase):
             "updated_at": "2019-06-01T16:35:34Z",
             "name": "test library 1",
             "type": "test type 1",
+            "writeable": True,
             "data": {"foo": "bar"}
         }
 

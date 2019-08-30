@@ -233,6 +233,8 @@ List all libraries and their library items that belong to me.
 
 ℹ️ porting notes: replaces previous route `assessment/loaduserlibraries`
 
+⚠️ currently each library has `"writeable": True` hardcoded
+
 ### Example
 
 ```
