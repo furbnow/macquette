@@ -263,30 +263,20 @@
         if (name == "") {
             alert("Please enter a project name");
         } else {
-            var callback = function (project) {
-                    projects.push(project);
-                    draw_projects("#projects", projects);
-                    $("#noprojects").hide();
-                };
-            if (viewmode == "organisation" && orgid != 0)
-                mhep_helper.create(name, description, orgid, callback);
-            else
-                mhep_helper.create(name, description, null, callback);
-            /*var orgselector = "";
-            if (viewmode == "organisation" && orgid != 0)
-                orgselector += "&org=" + orgid;
-            $.ajax({
-                url: path + "assessment/create.json",
-                data: "name=" + name + "&description=" + description + orgselector,
-                success: function (project) {
-                    projects.push(project);
-                    draw_projects("#projects", projects);
-                    $("#noprojects").hide();
-                }
-            });*/
-            $("#project-name-input").val("");
-            $("#project-description-input").val("");
-            $("#modal-assessment-create").modal("hide");
+          var callback = function (project) {
+            projects.push(project);
+            draw_projects("#projects", projects);
+            $("#noprojects").hide();
+          };
+          if (viewmode == "organisation" && orgid != 0) {
+            mhep_helper.create(name, description, orgid, callback);
+          }
+          else {
+            mhep_helper.create(name, description, null, callback);
+          }
+          $("#project-name-input").val("");
+          $("#project-description-input").val("");
+          $("#modal-assessment-create").modal("hide");
         }
     });
 // -----------------------------------------------------------------------------------
