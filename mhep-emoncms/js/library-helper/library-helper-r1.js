@@ -200,7 +200,9 @@ libraryHelper.prototype.add_events = function () {
         $('#confirm-delete-library-item-modal').modal('show');
     });
     this.container.on('click', '#confirm-delete-library-item-modal #delete-library-item-ok', function () {
-        myself.delete_library_item($(this).attr('library-id'), $(this).attr('tag'));
+        const library_id = $(this).attr('library-id');
+        const tag = $(this).attr('tag');
+        myself.delete_library_item(library_id, tag);
         myself.show_temporally_hidden_modals();
     });
     this.container.on('change', '.item-ventilation_type', function () {
@@ -3447,16 +3449,18 @@ libraryHelper.prototype.populate_selects_in_apply_measure_modal = function (type
 };
 libraryHelper.prototype.delete_library_item = function (library_id, tag) {
     var myself = this;
-    $.ajax({url: path + "assessment/deletelibraryitem.json", data: "library_id=" + library_id + "&tag=" + tag, async: false, datatype: "json", success: function (result) {
-            if (result != true)
-                $('#confirm-delete-library-item-modal .message').html("Item could not be deleted - " + result);
-            else {
+        $.ajax({
+            type: "DELETE",
+            async: false,
+            url: apiURL + "/libraries/"  + library_id + "/items/" + tag + "/",
+            success: function() {
                 $('#confirm-delete-library-item-modal').modal('hide');
-                $('#show-library-items-modal [tag="' + tag + '"]').parent().parent().remove();
-                $('#show-library-modal-edit-mode tr[tag="' + tag + '"]').remove();
                 myself.load_user_libraries();
+            },
+            error: function() {
+                $('#confirm-delete-library-item-modal .message').html("Item could not be deleted - " + result);
             }
-        }});
+        });
 }
 
 libraryHelper.prototype.get_list_of_libraries_for_select = function (library_type) {
