@@ -1,3 +1,4 @@
+{% load static i18n %}
 <div id="bound">
     <hr>
     <h3>Overview <span id="scenario-name" /></h3>
@@ -13,15 +14,15 @@
 
     <br><br>
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" style="width:50%; max-width:500px" viewBox="0 0 1000 800" preserveAspectRatio="xMinYMin" xml:space="preserve">
-        <image x="250" y="100" width="500" height="500" xlink:href="./house.svg"/>
+        <image x="250" y="100" width="500" height="500" xlink:href="{% static 'topgraphic/house.svg' %}"/>
 
-        <g id="house-floor" transform="scale(0)"><image width="100" height="100" xlink:href="../Modules/assessment/views/arrow.svg" transform="translate(0,-50)"/></g>
-        <g id="house-ventilation" transform="scale(0)"><image width="100" height="100" xlink:href="../Modules/assessment/views/arrow-light.svg" transform="translate(0,-50)"/></g>
-        <g id="house-windows" transform="scale(0)"><image width="100" height="100" xlink:href="../Modules/assessment/views/arrow-light.svg" transform="translate(0,-50)"/></g>
-        <g id="house-walls" transform="scale(0)"><image width="100" height="100" xlink:href="../Modules/assessment/views/arrow-light.svg" transform="translate(0,-50)"/></g>
-        <g id="house-roof" transform="scale(0)"><image width="100" height="100" xlink:href="../Modules/assessment/views/arrow.svg" transform="translate(0,-50)"/></g>
-        <g id="house-thermalbridge" transform="scale(0)"><image width="100" height="100" xlink:href="../Modules/assessment/views/arrow-light.svg" transform="translate(0,-50)"/></g>
-        <g id="house-infiltration" transform="scale(0)"><image width="100" height="100" xlink:href="../Modules/assessment/views/arrow.svg" transform="translate(0,-50)"/></g>
+        <g id="house-floor" transform="scale(0)"><image width="100" height="100" xlink:href="{% static 'topgraphic/arrow.svg' %}" transform="translate(0,-50)"/></g>
+        <g id="house-ventilation" transform="scale(0)"><image width="100" height="100" xlink:href="{% static 'topgraphic/arrow-light.svg' %}" transform="translate(0,-50)"/></g>
+        <g id="house-windows" transform="scale(0)"><image width="100" height="100" xlink:href="{% static 'topgraphic/arrow-light.svg' %}" transform="translate(0,-50)"/></g>
+        <g id="house-walls" transform="scale(0)"><image width="100" height="100" xlink:href="{% static 'topgraphic/arrow-light.svg' %}" transform="translate(0,-50)"/></g>
+        <g id="house-roof" transform="scale(0)"><image width="100" height="100" xlink:href="{% static 'topgraphic/arrow.svg' %}" transform="translate(0,-50)"/></g>
+        <g id="house-thermalbridge" transform="scale(0)"><image width="100" height="100" xlink:href="{% static 'topgraphic/arrow-light.svg' %}" transform="translate(0,-50)"/></g>
+        <g id="house-infiltration" transform="scale(0)"><image width="100" height="100" xlink:href="{% static 'topgraphic/arrow.svg' %}" transform="translate(0,-50)"/></g>
 
         <g style="font-size:36px; fill:rgba(99,86,71,0.8)">
             <text x="540" y="648" style="font-weight:bold;">Floor</text>
