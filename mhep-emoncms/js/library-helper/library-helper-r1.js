@@ -386,42 +386,38 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
     $("#create-library-message").html('');
     var myself = this;
     var name = $("#new-library-name").val();
-    if (name === '')
+    if (name === '') {
         $("#create-library-message").html('User name cannot be empty');
-    else {
-        console.log("newlibrary:" + name);
-        if ($("input[name=empty_or_copy_library]:checked").val() == 'copy') {
-            var id = $('#library-to-copy-select').val();
-            $.ajax({url: path + "assessment/copylibrary.json", data: "name=" + name + "&id=" + id + "&type=" + this.type, datatype: "json", success: function (result) {
-                    callback(result);
-                }});
-        }
-        else {
-            const body = JSON.stringify({
-                'name': name,
-                'type': this.type,
-            });
-            // create new library
-            $.ajax({
-                url: apiURL + '/libraries/',
-                type: 'POST',
-                data: body,
-                datatype: "json",
-                contentType: "application/json;charset=utf-8",
-                success: function (result) {
-                    myself.load_user_libraries();
-                    $("#create-library-message").html('Library created');
-                    $('#cancelnewlibrary').hide('fast');
-                    $('#newlibrary').hide('fast');
-                    $('#finishcreatelibrary').show('fast');
-                    UpdateUI(data);
-                },
-                error: function (result) {
-                    $("#create-library-message").html('Library could not be created');
-                }
-            });
-        }
+        return;
     }
+    const new_library_body = {
+        'name': name,
+        'type': this.type,
+    };
+    if ($("input[name=empty_or_copy_library]:checked").val() == 'copy') {
+        const id = $('#library-to-copy-select').val();
+        const library = myself.get_library_by_id(id);
+        new_library_body['data'] = library['data'];
+    }
+    $.ajax({
+        url: apiURL + '/libraries/',
+        type: 'POST',
+        data: JSON.stringify(new_library_body),
+        datatype: "json",
+        contentType: "application/json;charset=utf-8",
+        success: function (result) {
+            myself.load_user_libraries();
+            $("#create-library-message").html('Library created');
+            $('#cancelnewlibrary').hide('fast');
+            $('#newlibrary').hide('fast');
+            $('#finishcreatelibrary').show('fast');
+            UpdateUI(data);
+        },
+        error: function (result) {
+            $("#create-library-message").html('Library could not be created');
+        }
+    });
+
 };
 libraryHelper.prototype.onCreateInLibrary = function (library_id) {
     $('#modal-create-in-library .modal-header h3').html('Create ' + page);
