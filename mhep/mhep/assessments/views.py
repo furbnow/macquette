@@ -2,6 +2,7 @@ import json
 import logging
 
 from django.views.generic import DetailView
+from django.views.generic.base import TemplateView
 
 from rest_framework import generics, exceptions
 from rest_framework.views import APIView
@@ -35,6 +36,20 @@ class AssessmentHTMLView(DetailView):
         context["reports_javascript"] = json.dumps([])
         context["use_image_gallery"] = False
         return context
+
+
+class SubviewHTMLView(TemplateView):
+    def get_template_names(self, *kwargs):
+        view_name = self.kwargs['name']
+
+        return "assessments/subviews/" + view_name + ".html"
+
+
+class SubviewJavascriptView(TemplateView):
+    def get_template_names(self, *kwargs):
+        view_name = self.kwargs['name']
+
+        return "assessments/subviews/" + view_name + ".js"
 
 
 class ListCreateAssessments(

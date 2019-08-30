@@ -10,6 +10,8 @@ from mhep.assessments.views import (
     ListCreateOrganisationAssessments,
     ListCreateOrganisations,
     RetrieveUpdateDestroyAssessment,
+    SubviewHTMLView,
+    SubviewJavascriptView,
     UpdateDestroyLibraryItem,
     UpdateDestroyLibrary,
 )
@@ -26,6 +28,18 @@ urlpatterns = [
         "assessments/<int:pk>/",
         AssessmentHTMLView.as_view(),
         name="view-assessment",
+    ),
+
+    path(
+        "subview/<str:name>.html",
+        SubviewHTMLView.as_view(),
+        name="subview-html",
+    ),
+
+    path(
+        "subview/<str:name>.js",
+        SubviewJavascriptView.as_view(),
+        name="subview-javascript",
     ),
 
     path(

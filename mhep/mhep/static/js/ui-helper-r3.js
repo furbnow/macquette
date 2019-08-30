@@ -9,7 +9,11 @@ function load_view(eid, view)
     }
 
     var result_html = "";
-    $.ajax({url: jspath + "views/" + view + ".html", async: false, cache: false, success: function (data) {
+    $.ajax({
+        url: subviewBaseURL + '/' + view + ".html",
+        async: false,
+        cache: false,
+        success: function (data) {
             result_html = data;
         }});
 
@@ -17,7 +21,7 @@ function load_view(eid, view)
 
     // Load js
     $.ajax({
-        url: jspath + "views/" + view + ".js",
+        url: subviewBaseURL + '/' + view + ".js",
         dataType: 'script',
         async: false
     });
