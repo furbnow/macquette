@@ -46,8 +46,9 @@ class ListCreateLibraries(generics.ListCreateAPIView):
     serializer_class = LibrarySerializer
 
 
-class UpdateLibrary(
+class UpdateDestroyLibrary(
     generics.UpdateAPIView,
+    generics.DestroyAPIView,
 ):
     queryset = Library.objects.all()
     serializer_class = LibrarySerializer

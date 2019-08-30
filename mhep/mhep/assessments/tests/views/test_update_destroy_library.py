@@ -39,3 +39,19 @@ class TestUpdateLibrary(APITestCase):
         assert {"new": "data"} == updated_library.data
 
         assert "2019-07-13T12:10:12+00:00" == updated_library.updated_at.isoformat()
+
+    def test_destroy_library(self):
+        a = Library.objects.create(
+                name="test name",
+                type="test type",
+                data={"foo": "bar"},
+        )
+
+        assessment_count = Library.objects.count()
+
+        response = self.client.delete(f"/api/v1/libraries/{a.pk}/")
+
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert b"" == response.content
+
+        assert (assessment_count - 1) == Library.objects.count()

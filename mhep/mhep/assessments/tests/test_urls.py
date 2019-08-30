@@ -32,14 +32,14 @@ def test_list_create_libraries():
     assert resolve("/api/v1/libraries/").view_name == "assessments:list-create-libraries"
 
 
-def test_update_library(library: Library):
+def test_update_destroy_library(library: Library):
     assert (
-        reverse("assessments:update-library", kwargs={"pk": library.id})
+        reverse("assessments:update-destroy-library", kwargs={"pk": library.id})
         == f"/api/v1/libraries/{library.id}/"
     )
     assert (
         resolve(f"/api/v1/libraries/{library.id}/").view_name
-        == "assessments:update-library"
+        == "assessments:update-destroy-library"
     )
 
 

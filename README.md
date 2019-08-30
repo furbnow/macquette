@@ -28,6 +28,7 @@ It should create a new Ubuntu 18.04 VM and configure everything.
 * [List libraries](#list-libraries)
 * [Create a library](#create-a-library)
 * [Update a library](#update-a-library)
+* [Delete a library](#delete-a-library)
 * [Create item in library](#create-item-in-library)
 * [Update item in library](#update-item-in-library)
 * [Delete item in library](#delete-item-in-library)
@@ -370,6 +371,28 @@ Returns:
 
 ```
 HTTP 204 No content
+```
+
+## Delete a library
+
+```
+DELETE /librarys/:id/
+```
+
+ℹ️ porting notes: replaces previous `assessment/deletelibrary` route.
+
+### Example
+
+```
+> curl -v \
+    -X DELETE \
+    http://localhost:9090/api/v1/libraries/1/
+```
+
+Returns:
+
+```
+HTTP 204 HTTP 204 No content
 ```
 
 ## Create item in library
