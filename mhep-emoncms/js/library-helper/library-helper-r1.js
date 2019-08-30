@@ -834,15 +834,19 @@ libraryHelper.prototype.onDeleteLibrary = function (library_id) {
 }
 libraryHelper.prototype.onDeleteLibraryOk = function (library_id) {
     var myself = this;
-    $.ajax({url: path + "assessment/deletelibrary.json", data: "library_id=" + library_id, async: false, datatype: "json", success: function (result) {
-            if (result == 1) {
-                $('#confirm-delete-library-modal').modal('hide');
-                myself.init();
-                UpdateUI();
-            }
-            else
-                $('#confirm-delete-library-modal .message').html('Library could not be deleted - ' + result);
-        }});
+    $.ajax({
+        url: apiURL + "/libraries/" + library_id,
+        type: 'DELETE',
+        async: false,
+        success: function () {
+            $('#confirm-delete-library-modal').modal('hide');
+            myself.init();
+            UpdateUI();
+        },
+        error : function (response) {
+            $('#confirm-delete-library-modal .message').html('Library could not be deleted - ' + response.responseJSON.detail);
+        },
+    });
 }
 libraryHelper.prototype.onShowLibraryItemsEditMode = function (library_id) {
     var library = this.get_library_by_id(library_id);
