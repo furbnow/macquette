@@ -40,6 +40,31 @@ class TestUpdateLibrary(APITestCase):
 
         assert "2019-07-13T12:10:12+00:00" == updated_library.updated_at.isoformat()
 
+    def test_update_library_name(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a = Library.objects.create(
+                    name="test name",
+                    type="test type",
+            )
+
+        with freeze_time("2019-07-13T12:10:12Z"):
+            updateFields = {
+                "name": "updated name",
+            }
+
+            response = self.client.patch(
+                "/api/v1/libraries/{}/".format(a.pk),
+                updateFields,
+                format="json",
+            )
+
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert b"" == response.content
+
+        updated_library = Library.objects.get(pk=a.pk)
+
+        assert "updated name" == updated_library.name
+
     def test_destroy_library(self):
         a = Library.objects.create(
                 name="test name",
