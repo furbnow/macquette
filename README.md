@@ -221,7 +221,7 @@ DELETE /assessments/:id/
 Returns:
 
 ```
-HTTP 204 HTTP 204 No content
+HTTP 204 No content
 ```
 
 ## List libraries
