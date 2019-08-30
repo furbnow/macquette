@@ -166,7 +166,7 @@
     var orgid = 0;
     var myusername = '{{ user.username|default:"anonymous" }}';
     $(".username").html(myusername);
-    var path = "<?php echo $path; ?>";
+    var path = '{{ request.build_absolute_uri }}';
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     var now = (new Date()).getTime() * 0.001;
 // -----------------------------------------------------------------------------------
