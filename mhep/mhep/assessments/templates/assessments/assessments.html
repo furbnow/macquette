@@ -164,7 +164,7 @@
 
     var viewmode = "personal";
     var orgid = 0;
-    var myusername = "<?php echo $session['username']; ?>";
+    var myusername = '{{ user.username|default:"anonymous" }}';
     $(".username").html(myusername);
     var path = "<?php echo $path; ?>";
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
