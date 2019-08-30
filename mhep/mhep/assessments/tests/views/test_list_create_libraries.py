@@ -36,8 +36,8 @@ class TestListCreateLibraries(APITestCase):
             "updated_at": "2019-06-01T16:35:34Z",
             "name": "test library 1",
             "type": "test type 1",
-            "data": {"foo": "bar"},
             "writeable": True,
+            "data": {"foo": "bar"},
         }
 
         assert expectedFirstResult == response.data[0]
@@ -59,6 +59,7 @@ class TestListCreateLibraries(APITestCase):
             "updated_at": "2019-06-01T16:35:34Z",
             "name": "test library 1",
             "type": "test type 1",
+            "writeable": True,
             "data": {"foo": "bar"}
         }
 

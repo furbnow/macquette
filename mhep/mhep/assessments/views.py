@@ -45,13 +45,6 @@ class ListCreateLibraries(generics.ListCreateAPIView):
     queryset = Library.objects.all()
     serializer_class = LibrarySerializer
 
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        for library in response.data:
-            library['writeable'] = True
-
-        return response
-
 
 class UpdateLibrary(
     generics.UpdateAPIView,

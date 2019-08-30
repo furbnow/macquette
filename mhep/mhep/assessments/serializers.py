@@ -81,6 +81,7 @@ class AssessmentFullSerializer(
 
 class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
+    writeable = serializers.SerializerMethodField()
 
     class Meta:
         model = Library
@@ -91,7 +92,11 @@ class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
             "data",
             "created_at",
             "updated_at",
+            "writeable",
         ]
+
+    def get_writeable(self, obj):
+        return True
 
 
 class LibraryItemSerializer(serializers.Serializer):
