@@ -87,12 +87,19 @@ var mhep_helper = {
         });
         return result;
     },
-    'delete': function (id)
-    {
+    'delete': function (id) {
         var result = 0;
-        $.ajax({type: 'GET', url: path + "assessment/delete.json", data: "id=" + id, async: false, success: function (data) {
-                result = data;
-            }});
+        $.ajax({
+            type: 'DELETE',
+            url: apiURL + "/assessments/" + id + "/",
+            async: false,
+            success: function () {
+                result = 1;
+            },
+            error: function () {
+                result = 0;
+            }
+        });
         return result;
     },
     'set_status': function (id, status)
