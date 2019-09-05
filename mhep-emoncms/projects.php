@@ -11,12 +11,12 @@ $d = $path . "Modules/assessment/";
     :root {
         --app-color: <?php echo $app_color;?>;
     }
-    
+
     .cc {
         color: var(--app-color);
         font-weight: bold;
         padding-right:20px;
-        
+
     }
 
     .title {
@@ -24,7 +24,7 @@ $d = $path . "Modules/assessment/";
         color:#888;
         float:left;
     }
-    
+
     .recent-activity-item {
         padding:5px;
         border-bottom: 1px solid #ccc;
@@ -177,18 +177,21 @@ $d = $path . "Modules/assessment/";
 // 1) Load project lists
 // -----------------------------------------------------------------------------------
 
-    var projects = [];
-    $.ajax({url: path + "assessment/list.json", success: function (result) {
-            projects = result;
-            draw_projects("#projects", projects);
-            $("#assessments-title").html("My Assessments");
-        }});
+    var projects = mhep_helper.getlist();
+    draw_projects("#projects", projects);
+
+    $("#assessments-title").html("My Assessments");
 // -----------------------------------------------------------------------------------
 // Check that the user at least one library of each type and if not create it from the default one
 // Check that all the elements in the default library are in the user's Standard library, copy over the ones that are not (kind of getting in sync)
 // -----------------------------------------------------------------------------------
+
     var libraries = {};
-    $.ajax({url: path + "assessment/loaduserlibraries.json", async: true, datatype: "json", success: function (user_libraries) {
+    $.ajax({
+      url: apiURL + '/libraries/',
+      async: true,
+      datatype: "json",
+      success: function (user_libraries) {
             // Check that the user at least one library of each type and if not create it from the default one
             var user_has_the_library = false;
             for (library_type in standard_library) {
@@ -197,38 +200,54 @@ $d = $path . "Modules/assessment/";
                     if (user_libraries[library_index].type == library_type)
                         user_has_the_library = true;
                 }
-                if (user_has_the_library == false) {
-                    var library_name = "StandardLibrary - " + myusername;
-                    $.ajax({url: path + "assessment/newlibrary.json", data: "name=" + library_name + '&type=' + library_type, datatype: "json", async: false, success: function (result) {
-                            var library_id = result;
-                            var library_string = JSON.stringify(standard_library[library_type]);
-                            library_string = library_string.replace(/&/g, 'and');
-                            $.ajax({type: "POST", url: path + "assessment/savelibrary.json", data: "id=" + library_id + "&data=" + library_string, success: function (result) {
-                                    console.log("Library: " + library_type + ' - ' + result);
-                                }});
-                        }});
+                if (!user_has_the_library) {
+                    const library_name = "StandardLibrary - " + myusername;
+
+                    const body = JSON.stringify({
+                      'name': library_name,
+                      'type': library_type,
+                      'data': standard_library[library_type],
+                    });
+
+                    // create new library
+                    $.ajax({
+                      url: apiURL + '/libraries/',
+                      type: 'POST',
+                      data: body,
+                      datatype: "json",
+                      contentType: "application/json;charset=utf-8",
+                      async: false,
+                     });
                 }
             }
             // Check that all the elements in the default library are in the user's Standard library, copy over the ones that are not (kind of getting in sync)
-            for (library_type in standard_library) {
-                for (library_index in user_libraries) {
-                    var library_changed = false;
-                    if (user_libraries[library_index].type == library_type && user_libraries[library_index].name == "StandardLibrary - " + myusername) {
-                        var user_library = JSON.parse(user_libraries[library_index].data);
+            for (library_type in standard_library) { // e.g. 'appliances_and_cooking'
+                for (let i=0; i < user_libraries.length; i++) {
+                    const user_library = user_libraries[i];
+                    let library_changed = false;
+                    if (user_library.type == library_type && user_library.name == "StandardLibrary - " + myusername) {
+                        var user_library_data = user_library.data;
                         for (item in standard_library[library_type]) {
-                            item = item.replace(/[^\w\s-+.",:{}\/'\[\]\\]/g, ''); // we apply the same validation than in the server
-                            if (user_library[item] == undefined) {
-                                user_library[item] = standard_library[library_type][item];
+                            if (user_library_data[item] == undefined) {
+                                console.log('added missing library item `', item, '` to user library ',
+                                            user_library.type, ' ', user_library.name);
+                                user_library_data[item] = standard_library[library_type][item];
                                 library_changed = true;
                             }
                         }
                     }
-                    if (library_changed === true) {
+                    if (library_changed) {
                         var library_string = JSON.stringify(user_library);
                         library_string = library_string.replace(/&/g, 'and');
-                        $.ajax({type: "POST", url: path + "assessment/savelibrary.json", data: "id=" + user_libraries[library_index].id + "&data=" + library_string, success: function (result) {
-                                console.log("Library: " + library_type + ' - ' + result);
-                            }});
+                        $.ajax({
+                          type: 'PATCH',
+                          url: apiURL + '/libraries/' + user_libraries[library_index].id + '/',
+                          data: JSON.stringify({'data': library_string}),
+                          datatype: "json",
+                          contentType: "application/json;charset=utf-8",
+                          success: function (response) {
+                                console.log("updated library: " + library_type);
+                          }});
                     }
                 }
             }
@@ -255,7 +274,7 @@ $d = $path . "Modules/assessment/";
                 };
             if (viewmode == "organisation" && orgid != 0)
                 mhep_helper.create(name, description, orgid, callback);
-            else 
+            else
                 mhep_helper.create(name, description, null, callback);
             /*var orgselector = "";
             if (viewmode == "organisation" && orgid != 0)
@@ -411,8 +430,12 @@ $d = $path . "Modules/assessment/";
 // ORGANISATIONS
 // ----------------------------------------------------------------------------
     var myorganisations = {};
-    $.ajax({url: path + "assessment/getorganisations.json", success: function (result) {
-            myorganisations = result;
+    $.ajax({url: apiURL + "/organisations/", success: function (result) {
+            for (let i = 0; i < result.length; i++) {
+                const org = result[i];
+                org.orgid = org.id;
+                myorganisations[org.id] = org;
+            }
             draw_organisation_list();
             //draw_organisation(8);
         }});
@@ -425,14 +448,22 @@ $d = $path . "Modules/assessment/";
         if (orgname == "") {
             alert("Organisation name missing");
         } else {
-            $.ajax({url: path + "assessment/neworganisation.json", data: "orgname=" + orgname, success: function (result) {
-                    if (result.success) {
-                        myorganisations = result.myorganisations;
+            $.ajax({
+                type: 'POST',
+                url: apiURL + "/organisations/",
+                data: {"name": orgname},
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                success: function (response) {
+                    $.ajax({url: apiURL + "/organisations/", success: function (result) {
+                        myorganisations = result;
                         draw_organisation_list();
-                    } else {
-                        alert(result.message);
-                    }
-                }});
+                    }});
+                },
+                error: function (response) {
+                    alert(response.responseJSON.detail);
+                },
+            });
         }
     });
     $("#organisation-add-member").click(function () {
@@ -451,11 +482,12 @@ $d = $path . "Modules/assessment/";
         }
     });
     $("body").on("click", ".org-item", function () {
+        const apiURL = "http://localhost:9090/api/v1"
         orgid = $(this).attr("orgid");
         draw_organisation(orgid);
         $("#organisation").show();
         viewmode = "organisation";
-        $.ajax({url: path + "assessment/list.json", data: "orgid=" + orgid, success: function (result) {
+        $.ajax({url: apiURL + "/organisations/" + orgid + "/assessments/", success: function (result) {
                 projects = result;
                 draw_projects("#projects", projects);
                 $("#assessments-title").html(myorganisations[orgid].name + " Assessments");
@@ -489,15 +521,14 @@ $d = $path . "Modules/assessment/";
         var viewmode = "personal";
         var orgid = 0;
         $("#organisation").hide();
-        $.ajax({url: path + "assessment/list.json", success: function (result) {
-                projects = result;
-                draw_projects("#projects", projects);
-                $("#assessments-title").html("My Assessments");
-                $("#myview").show();
-            }});
+
+        projects = mhep_helper.getlist();
+        draw_projects("#projects", projects);
+        $("#assessments-title").html("My Assessments");
+        $("#myview").show();
     });
-    
-    
+
+
 // -------------------------------------------------------
 // Other
 // -------------------------------------------------------

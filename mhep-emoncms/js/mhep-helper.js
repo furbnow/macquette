@@ -1,22 +1,26 @@
+const apiURL = "http://localhost:9090/api/v1"
+
 var mhep_helper = {
     apikey: "",
     'getlist': function ()
     {
         var result = [];
-        var apikeystr = "";
-        if (this.apikey != "")
-            apikeystr = "?apikey=" + this.apikey;
-        $.ajax({url: path + "assessment/list.json" + apikeystr, dataType: 'json', async: false, success: function (data) {
+        $.ajax({
+            url: apiURL + "/assessments/",
+            dataType: 'json',
+            async: false,
+            success: function (data) {
                 result = data;
             }});
-        if (result == "")
+        if (result == "") {
             result = [];
+        }
         return result;
     },
     'get': function (id)
     {
         var result = {};
-        $.ajax({url: path + "assessment/get.json?id=" + parseInt(id), async: false, success: function (data) {
+        $.ajax({url: apiURL + "/assessments/" + parseInt(id) + "/", async: false, success: function (data) {
                 result = data;
             }});
         return result;
@@ -29,53 +33,96 @@ var mhep_helper = {
             inputdata[z] = mhep_helper.extract_inputdata(project[z]);
         }
         var result = {};
-        $.ajax({type: 'POST', url: path + "assessment/setdata.json", data: "id=" + parseInt(id) + "&data=" + JSON.stringify(inputdata), async: true, success: function (data) {
-                callback(data)
-            }});
+        $.ajax({
+          type: 'PATCH',
+          url: apiURL + "/assessments/" + parseInt(id) + "/",
+          data: JSON.stringify({'data': inputdata}),
+          dataType: "json",
+          contentType: "application/json;charset=utf-8",
+          async: true,
+          success: function (data) {
+              callback(data)
+          }
+        });
         //console.log(JSON.stringify(inputdata));
     },
     'create': function (name, description, orgid, callback)
     {
         var result = 0;
         var openBEM_version = {}
-        $.ajax({type: 'GET', async: false, url: "https://api.github.com/repos/carboncoop/openBEM/releases/latest", success: function (data) {
+        $.ajax({
+            type: 'GET',
+            async: false,
+            url: "https://api.github.com/repos/carboncoop/openBEM/releases/latest",
+            success: function (data) {
                 openBEM_version = data.tag_name;
-                var query = "name=" + name + "&description=" + description + "&openBEM_version=" + openBEM_version;
-                if (orgid != undefined)
-                    query += "&org=" + orgid;
-                $.ajax({type: 'GET', url: path + "assessment/create.json", data: query, async: false, success: function (data) {
-                        if (data == false)
+                const newAssessment = {
+                    "name": name,
+                    "description": description,
+                    "openbem_version": openBEM_version,
+                };
+
+                var endpoint;
+                if (orgid != null) {
+                    endpoint = apiURL + '/organisations/' + orgid + '/assessments/';
+                } else {
+                    endpoint = apiURL + '/assessments/';
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: endpoint,
+                    data: JSON.stringify(newAssessment),
+                    dataType: 'json',
+                    contentType: "application/json;charset=utf-8",
+                    async: false,
+                    success: function (data) {
+                        if (data == false) {
                             window.alert("Assesment couldn't be created")
-                        else
+                        } else {
                             callback(data);
+                        }
                     }});
             }
         });
         return result;
     },
-    'delete': function (id)
-    {
+    'delete': function (id) {
         var result = 0;
-        $.ajax({type: 'GET', url: path + "assessment/delete.json", data: "id=" + id, async: false, success: function (data) {
-                result = data;
-            }});
+        $.ajax({
+            type: 'DELETE',
+            url: apiURL + "/assessments/" + id + "/",
+            async: false,
+            success: function () {
+                result = 1;
+            },
+            error: function () {
+                result = 0;
+            }
+        });
         return result;
     },
     'set_status': function (id, status)
     {
-        var result = 0;
-        $.ajax({type: 'GET', url: path + "assessment/setstatus.json", data: "id=" + id + "&status=" + status, async: false, success: function (data) {
-                result = data;
+        $.ajax({type: 'PATCH',
+            url: apiURL + "/assessments/" + parseInt(id) + "/",
+            data: JSON.stringify({'status': status}),
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            async: false,
+            success: function (data) {
             }});
-        return result;
     },
     'set_name_and_description': function (id, name, description)
     {
-        var result = 0;
-        $.ajax({type: 'POST', url: path + "assessment/setnameanddescription.json", data: "id=" + id + "&name=" + name + "&description=" + description, async: false, success: function (data) {
-                result = data;
+        $.ajax({type: 'PATCH',
+            url: apiURL + "/assessments/" + parseInt(id) + "/",
+            data: JSON.stringify({'name': name, 'description': description}),
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            async: false,
+            success: function (data) {
             }});
-        return result;
     },
     'upload_images': function (id, form_data, callback)
     {
@@ -95,9 +142,15 @@ var mhep_helper = {
     },
     'set_openBEM_version': function (id, version, callback)
     {
-        $.ajax({type: 'POST', url: path + "assessment/setopenBEMversion.json", data: "id=" + id + "&openBEM_version=" + version, success: function (data) {
-                if (data == false)
+        $.ajax({type: 'PATCH',
+            url: apiURL + "/assessments/" + parseInt(id) + "/",
+            data: JSON.stringify({'openbem_version': version}),
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                if (data == false) {
                     window.alert("There was an error updating openBEM version");
+                }
                 callback(data);
             }});
     },

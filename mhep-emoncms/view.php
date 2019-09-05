@@ -3,11 +3,6 @@ global $path, $app_color, $app_title, $app_description, $MHEP_image_gallery;
 
 $d = $path . "Modules/assessment/";
 $projectid = (int) $_GET['id'];
-
-if (is_null($args["openBEM_version"]))
-    $openBEM_version = "10.1.0";  // first version of the model since we started recording it
-else
-    $openBEM_version = $args["openBEM_version"];
 ?>       
 
 <!--<link href='http://fonts.googleapis.com/css?family=Ubuntu:300' rel='stylesheet' type='text/css'>-->
@@ -18,8 +13,8 @@ else
 <script language="javascript" type="text/javascript" src="<?php echo $d; ?>js/ui-mhep.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $d; ?>js/library-r6.js"></script>
-<script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/gh/carboncoop/openBEM@<?php echo $openBEM_version; ?>/datasets.js"></script>
-<script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/gh/carboncoop/openBEM@<?php echo $openBEM_version; ?>/openBEM.js"></script>
+<script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/gh/carboncoop/openBEM@10.1.1/datasets.js"></script>
+<script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/gh/carboncoop/openBEM@10.1.1/openBEM.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $d; ?>js/targetbar-r3.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $d; ?>js/arrow-r3.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $d; ?>js/library-helper/library-helper-r1.js"></script>

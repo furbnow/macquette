@@ -83,6 +83,7 @@ function assessment_controller() {
     }
 
     if ($route->format == 'json') {
+        return false; // disable all JSON endpoints
 
         require_once "Modules/assessment/organisation_model.php";
         $organisation = new Organisation($mysqli);
