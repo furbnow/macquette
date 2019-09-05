@@ -40,6 +40,32 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         }
         assert expected == response.data
 
+    def test_get_assessment_without_data_gets_sensible_default(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a = Assessment.objects.create(
+                    name="test name",
+                    openbem_version="10.1.1",
+            )
+
+        response = self.client.get("/api/v1/assessments/{}/".format(a.pk))
+        assert response.status_code == status.HTTP_200_OK
+
+        expected = {
+            "id": f"{a.pk}",
+            "created_at": "2019-06-01T16:35:34Z",
+            "updated_at": "2019-06-01T16:35:34Z",
+            "mdate": "1559406934",
+            "openbem_version": "10.1.1",
+            "name": "test name",
+            # defaults:
+            "description": "",
+            "author": "localadmin",
+            "userid": "1",
+            "status": "In progress",
+            "data": None,
+        }
+        assert expected == response.data
+
     def test_get_assessment_for_bad_id(self):
         response = self.client.get("/api/v1/assessments/{}/".format("bad-id"))
         assert status.HTTP_404_NOT_FOUND == response.status_code
