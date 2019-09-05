@@ -1,7 +1,7 @@
 from freezegun import freeze_time
 
 from rest_framework.test import APITestCase
-from rest_framework import status
+from rest_framework import exceptions, status
 
 from mhep.assessments.models import Assessment
 
@@ -62,7 +62,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
             "author": "localadmin",
             "userid": "1",
             "status": "In progress",
-            "data": None,
+            "data": {},
         }
         assert expected == response.data
 
@@ -101,6 +101,34 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         assert "Complete" == updated_assessment.status
 
         assert "2019-07-13T12:10:12+00:00" == updated_assessment.updated_at.isoformat()
+
+    def test_update_assessment_data_fails_if_string(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a = Assessment.objects.create(
+                    name="test name",
+                    description="test description",
+                    data={"foo": "bar"},
+                    status="In progress",
+                    openbem_version="10.1.1",
+            )
+
+        with freeze_time("2019-07-13T12:10:12Z"):
+            updateFields = {
+                "data": {"foo string"},
+            }
+
+            response = self.client.patch(
+                "/api/v1/assessments/{}/".format(a.pk),
+                updateFields,
+                format="json",
+            )
+
+        assert status.HTTP_400_BAD_REQUEST == response.status_code
+        assert response.data == {
+            'data': [
+                exceptions.ErrorDetail(string='This field is not a dict.', code='invalid')
+            ]
+        }
 
     def test_update_assessment_data_fails_if_assessment_is_complete(self):
         with freeze_time("2019-06-01T16:35:34Z"):
