@@ -29,7 +29,7 @@ This will start the Django server.
 
 Browse to [localhost:9090](http://localhost:9090)
 
-An administrative interface is available at [localhost:9090/admin], the username is `localadmin`, password `localadmin`
+An administrative interface is available at [localhost:9090/admin](http://localhost:9090/admin), the username is `localadmin`, password `localadmin`
 
 # API endpoints
 
