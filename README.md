@@ -13,10 +13,23 @@
 
 It should create a new Ubuntu 18.04 VM and configure everything.
 
+## Start Django
+
+With the vagrant box running, run:
+
+`vagrant ssh`
+
+Once connected to the box, simply run:
+
+`make run`
+
+This will start the Django server.
+
 ## Access MHEP
 
-* browse to [localhost:9090](http://localhost:8080)
-* the admin username is `localadmin`, password `localadmin`
+Browse to [localhost:9090](http://localhost:9090)
+
+An administrative interface is available at [localhost:9090/admin], the username is `localadmin`, password `localadmin`
 
 # API endpoints
 
