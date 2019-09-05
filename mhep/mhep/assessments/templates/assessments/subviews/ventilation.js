@@ -1,3 +1,4 @@
+{% load static i18n %}
 console.log('Debug ventilation.js');
 
 if (typeof library_helper != "undefined")
@@ -433,7 +434,7 @@ function ventilation_initUI() {
         out += '<td> <button class="apply-ventilation-measure-from-lib if-not-master" type="extract_ventilation_points" item_id="' + item.id + '" style="margin-right:25px">Apply Measure</button>'
         out += '<span class="edit-item-EVP" row="' + z + '" tag="' + item.tag + '" style="cursor:pointer; margin-right:15px" item=\'' + JSON.stringify(item) + '\' title="Editing a system this way is not considered a Measure"> <a><i class = "icon-edit"> </i></a></span>';
         out += '<span class = "delete-EVP" row="' + z + '" style="cursor:pointer" title="Deleting an element this way is not considered a Measure" ><a> <i class="icon-trash" ></i></a></span>';
-        out += '<span class="revert-to-original" item-id="' + item.id + '" item-type="ventilation-EVP" style="margin-left:15px; display:inline-block;cursor: pointer"><img src="' + path + 'Modules/assessment/img-assets/undo.gif" style="width:14px" /><span class="text" /></span>';
+        out += '<span class="revert-to-original" item-id="' + item.id + '" item-type="ventilation-EVP" style="margin-left:15px; display:inline-block;cursor: pointer"><img src="{% static 'img/undo.gif' %}" style="width:14px" /><span class="text" /></span>';
         out += '</td></tr> ';
         $('#EVP').append(out);
         init_revert_to_original_by_id('#fans_and_vents_div #EVP', item.id, 'ventilation-EVP');

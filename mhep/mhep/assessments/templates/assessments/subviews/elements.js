@@ -1,3 +1,4 @@
+{% load static i18n %}
 console.log('debug elements.js');
 if (typeof library_helper != "undefined")
     library_helper.type = 'elements';
@@ -594,7 +595,7 @@ function elements_UpdateUI()
             options += "<option value='" + data.fabric.elements[z].id + "'>" + data.fabric.elements[z].location + "</option>";
     }
 
-    $('.revert-to-original-icon').attr('src', path + "Modules/assessment/img-assets/undo.gif");
+    $('.revert-to-original-icon').attr('src', '{% static 'img/undo.gif' %}');
 
     // Fill up the substractfrom selects
     $('.subtractfrom').each(function (i, obj) {
