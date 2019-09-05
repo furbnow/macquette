@@ -3383,8 +3383,9 @@ libraryHelper.prototype.display_library_users = function (library_id) {
 libraryHelper.prototype.get_library_by_id = function (id) {
     for (z in this.library_list) {
         for (i in this.library_list[z]) {
-            if (this.library_list[z][i].id == id)
+            if (this.library_list[z][i].id == id) {
                 return this.library_list[z][i];
+            }
         }
     }
 };
