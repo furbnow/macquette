@@ -15,7 +15,7 @@ OPENBEM_VERSION_CHOICES = [
 
 class Assessment(models.Model):
     name = models.TextField()
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     openbem_version = models.CharField(
         max_length=20,
