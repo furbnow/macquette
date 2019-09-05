@@ -33,6 +33,13 @@ class RetrieveUpdateDestroyAssessment(
     serializer_class = AssessmentFullSerializer
 
     def update(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if "data" in request.data and obj.status == "Complete":
+            return Response(
+                {"detail": "can't update data when status is 'complete'"},
+                status.HTTP_400_BAD_REQUEST
+            )
+
         response = super().update(request, *args, **kwargs)
 
         if response.status_code == status.HTTP_200_OK:

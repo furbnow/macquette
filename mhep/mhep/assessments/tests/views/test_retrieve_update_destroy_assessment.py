@@ -76,6 +76,53 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
         assert "2019-07-13T12:10:12+00:00" == updated_assessment.updated_at.isoformat()
 
+    def test_update_assessment_data_fails_if_assessment_is_complete(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a = Assessment.objects.create(
+                    name="test name",
+                    description="test description",
+                    data={"foo": "bar"},
+                    status="Complete",
+                    openbem_version="10.1.1",
+            )
+
+        with freeze_time("2019-07-13T12:10:12Z"):
+            updateFields = {
+                "data": {"new": "data"},
+            }
+
+            response = self.client.patch(
+                "/api/v1/assessments/{}/".format(a.pk),
+                updateFields,
+                format="json",
+            )
+
+        assert status.HTTP_400_BAD_REQUEST == response.status_code
+        assert response.data == {'detail': "can't update data when status is 'complete'"}
+
+    def test_assessment_status_can_change_from_complete_to_in_progress(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a = Assessment.objects.create(
+                    name="test name",
+                    description="test description",
+                    data={"foo": "bar"},
+                    status="Complete",
+                    openbem_version="10.1.1",
+            )
+
+        with freeze_time("2019-07-13T12:10:12Z"):
+            updateFields = {
+                "status": "In progress"
+            }
+
+            response = self.client.patch(
+                "/api/v1/assessments/{}/".format(a.pk),
+                updateFields,
+                format="json",
+            )
+
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
     def test_destroy_assessment(self):
         a = Assessment.objects.create(
                 name="test name",
