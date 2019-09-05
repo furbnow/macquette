@@ -1,7 +1,7 @@
 from freezegun import freeze_time
 
 from rest_framework.test import APITestCase
-from rest_framework import exceptions, status
+from rest_framework import status
 
 from mhep.assessments.models import Assessment
 
