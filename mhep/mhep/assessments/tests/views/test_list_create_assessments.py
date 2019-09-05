@@ -103,6 +103,34 @@ class TestListCreateAssessments(APITestCase):
             response.data.pop("id")
             assert expected_result == response.data
 
+    def test_create_assessment_doesnt_show_data_in_return_value(self):
+        new_assessment = {
+            "name": "test assessment",
+            "openbem_version": "10.1.1",
+            "data": {"foo": "baz"}
+        }
+
+        with freeze_time("2019-06-01T16:35:34Z"):
+            response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+
+        assert response.status_code == status.HTTP_201_CREATED
+
+        expected_result = {
+            "created_at": "2019-06-01T16:35:34Z",
+            "updated_at": "2019-06-01T16:35:34Z",
+            "mdate": "1559406934",
+            "status": "In progress",
+            "openbem_version": "10.1.1",
+            "name": "test assessment",
+            "description": "",
+            "author": "localadmin",
+            "userid": "1",
+        }
+
+        assert "id" in response.data
+        response.data.pop("id")
+        assert expected_result == response.data
+
     def test_create_assessment_fails_if_name_missing(self):
         self.assert_create_fails(
             {
