@@ -131,6 +131,23 @@ class TestListCreateAssessments(APITestCase):
             }
          )
 
+    def test_create_assessment_fails_if_openbem_version_is_not_valid_choice(self):
+        self.assert_create_fails(
+            {
+                "name": "test assessment 1",
+                "openbem_version": "foo",
+            },
+            status.HTTP_400_BAD_REQUEST,
+            {
+                'openbem_version': [
+                    exceptions.ErrorDetail(
+                        string='"foo" is not a valid choice.',
+                        code='invalid_choice',
+                    )
+                ]
+            }
+        )
+
     def assert_create_fails(self, new_assessment, expected_status, expected_response):
         response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
         assert response.status_code == expected_status
