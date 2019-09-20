@@ -1,3 +1,6 @@
 [submodule "js/openFUVC"]
 	path = mhep-emoncms/js/openFUVC
 	url = https://github.com/carboncoop/openFUVC.git
+[submodule "mhep/mhep/static/js/openFUVC"]
+	path = mhep/mhep/static/js/openFUVC
+	url = https://github.com/carboncoop/openFUVC.git

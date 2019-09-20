@@ -1,19 +1,59 @@
 
 from django.urls import path
+from django.views.generic import TemplateView
 
 from mhep.assessments.views import (
+    AssessmentHTMLView,
     CreateLibraryItem,
     ListCreateAssessments,
     ListCreateLibraries,
     ListCreateOrganisationAssessments,
     ListCreateOrganisations,
     RetrieveUpdateDestroyAssessment,
+    SubviewHTMLView,
+    SubviewJavascriptView,
     UpdateDestroyLibraryItem,
     UpdateDestroyLibrary,
 )
 
 app_name = "assessments"
 urlpatterns = [
+    path(
+        "",
+        TemplateView.as_view(template_name="assessments/assessments.html"),
+        name="home",
+    ),
+
+    path(
+        "js/library-helper/library-helper.html",
+        TemplateView.as_view(template_name="assessments/js/library-helper/library-helper.html"),
+        name="library-helper-html",
+    ),
+
+    path(
+        "js/library-helper/library-helper-r1.js",
+        TemplateView.as_view(template_name="assessments/js/library-helper/library-helper-r1.js"),
+        name="library-helper-r1-js",
+    ),
+
+    path(
+        "assessments/<int:pk>/",
+        AssessmentHTMLView.as_view(),
+        name="view-assessment",
+    ),
+
+    path(
+        "subview/<str:name>.html",
+        SubviewHTMLView.as_view(),
+        name="subview-html",
+    ),
+
+    path(
+        "subview/<str:name>.js",
+        SubviewJavascriptView.as_view(),
+        name="subview-javascript",
+    ),
+
     path(
         "api/v1/assessments/",
         view=ListCreateAssessments.as_view(),
