@@ -1,3 +1,5 @@
+{% load static i18n %}
+
 function libraryHelper(type, container) {
     this.container = container;
     this.library_list = {};
@@ -264,7 +266,7 @@ libraryHelper.prototype.add_events = function () {
 libraryHelper.prototype.append_modals = function () {
     var html;
     var myself = this;
-    $.ajax({url: path + "Modules/assessment/js/library-helper/library-helper.html", datatype: "json", success: function (result) {
+    $.ajax({url: "{% url 'assessments:library-helper-html' %}", datatype: "json", success: function (result) {
             html = result;
             myself.container.append(html);
             // Make modals draggable
@@ -853,7 +855,7 @@ libraryHelper.prototype.onShowLibraryItemsEditMode = function (library_id) {
     $('#show-library-modal-edit-mode #save').attr('library-id', library_id);
     // Disable save button
     $('#show-library-modal-edit-mode #save').attr('disabled', 'disabled');
-    // Empty message 
+    // Empty message
     $('#show-library-modal-edit-mode #message').html('');
     // Modal dimensions
     var width = 1415;
@@ -1622,7 +1624,7 @@ libraryHelper.prototype.heating_systems_library_to_html_edit_mode = function (or
  for (z in library) {
  var item = library[z];
  for (var field in item) {
- 
+
  }
  tr[0] += '<td index="tag"><input class="w100" type="text" value="' + z + '" /></td>';
  tr[1] += '<td index="name" title="' + item.name + '"><textarea rows=4 cols=50>' + item.name + '</textarea></td>';
