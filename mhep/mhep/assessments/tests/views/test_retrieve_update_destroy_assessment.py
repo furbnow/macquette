@@ -40,6 +40,32 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         }
         assert expected == response.data
 
+    def test_get_assessment_without_data_gets_sensible_default(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a = Assessment.objects.create(
+                    name="test name",
+                    openbem_version="10.1.1",
+            )
+
+        response = self.client.get("/api/v1/assessments/{}/".format(a.pk))
+        assert response.status_code == status.HTTP_200_OK
+
+        expected = {
+            "id": f"{a.pk}",
+            "created_at": "2019-06-01T16:35:34Z",
+            "updated_at": "2019-06-01T16:35:34Z",
+            "mdate": "1559406934",
+            "openbem_version": "10.1.1",
+            "name": "test name",
+            # defaults:
+            "description": "",
+            "author": "localadmin",
+            "userid": "1",
+            "status": "In progress",
+            "data": {},
+        }
+        assert expected == response.data
+
     def test_get_assessment_for_bad_id(self):
         response = self.client.get("/api/v1/assessments/{}/".format("bad-id"))
         assert status.HTTP_404_NOT_FOUND == response.status_code
@@ -75,6 +101,81 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         assert "Complete" == updated_assessment.status
 
         assert "2019-07-13T12:10:12+00:00" == updated_assessment.updated_at.isoformat()
+
+    def test_update_assessment_data_fails_if_string(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a = Assessment.objects.create(
+                    name="test name",
+                    description="test description",
+                    data={"foo": "bar"},
+                    status="In progress",
+                    openbem_version="10.1.1",
+            )
+
+        with freeze_time("2019-07-13T12:10:12Z"):
+            updateFields = {
+                "data": {"foo string"},
+            }
+
+            response = self.client.patch(
+                "/api/v1/assessments/{}/".format(a.pk),
+                updateFields,
+                format="json",
+            )
+
+        assert status.HTTP_400_BAD_REQUEST == response.status_code
+        assert response.data == {
+            'data': [
+                exceptions.ErrorDetail(string='This field is not a dict.', code='invalid')
+            ]
+        }
+
+    def test_update_assessment_data_fails_if_assessment_is_complete(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a = Assessment.objects.create(
+                    name="test name",
+                    description="test description",
+                    data={"foo": "bar"},
+                    status="Complete",
+                    openbem_version="10.1.1",
+            )
+
+        with freeze_time("2019-07-13T12:10:12Z"):
+            updateFields = {
+                "data": {"new": "data"},
+            }
+
+            response = self.client.patch(
+                "/api/v1/assessments/{}/".format(a.pk),
+                updateFields,
+                format="json",
+            )
+
+        assert status.HTTP_400_BAD_REQUEST == response.status_code
+        assert response.data == {'detail': "can't update data when status is 'complete'"}
+
+    def test_assessment_status_can_change_from_complete_to_in_progress(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            a = Assessment.objects.create(
+                    name="test name",
+                    description="test description",
+                    data={"foo": "bar"},
+                    status="Complete",
+                    openbem_version="10.1.1",
+            )
+
+        with freeze_time("2019-07-13T12:10:12Z"):
+            updateFields = {
+                "status": "In progress"
+            }
+
+            response = self.client.patch(
+                "/api/v1/assessments/{}/".format(a.pk),
+                updateFields,
+                format="json",
+            )
+
+        assert status.HTTP_204_NO_CONTENT == response.status_code
 
     def test_destroy_assessment(self):
         a = Assessment.objects.create(

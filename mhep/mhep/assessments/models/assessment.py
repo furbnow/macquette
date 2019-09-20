@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+from mhep.assessments.validators import validate_dict
 
 STATUS_CHOICES = [
         ('Complete', 'Complete'),
@@ -15,7 +16,7 @@ OPENBEM_VERSION_CHOICES = [
 
 class Assessment(models.Model):
     name = models.TextField()
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     openbem_version = models.CharField(
         max_length=20,
@@ -28,7 +29,7 @@ class Assessment(models.Model):
         default='In progress',
     )
 
-    data = JSONField(null=True)
+    data = JSONField(default=dict, validators=[validate_dict])
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
