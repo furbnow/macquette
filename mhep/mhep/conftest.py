@@ -3,8 +3,8 @@ from django.conf import settings
 from django.test import RequestFactory
 
 from mhep.users.tests.factories import UserFactory, UserWithOrganisationFactory
-from mhep.assessments.tests.factories import AssessmentFactory, LibraryFactory
-from mhep.assessments.models import Assessment, Library
+from mhep.assessments.tests.factories import AssessmentFactory, LibraryFactory, OrganisationFactory
+from mhep.assessments.models import Assessment, Library, Organisation
 
 
 @pytest.fixture(autouse=True)
@@ -35,3 +35,8 @@ def assessment() -> Assessment:
 @pytest.fixture
 def library() -> Library:
     return LibraryFactory()
+
+
+@pytest.fixture
+def organisation() -> Organisation:
+    return OrganisationFactory()
