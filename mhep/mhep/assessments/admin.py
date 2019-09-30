@@ -5,7 +5,7 @@ from mhep.assessments.models import Assessment, Library, Organisation
 
 @admin.register(Assessment)
 class AssessmentAdmin(admin.ModelAdmin):
-    list_display = ["name", "status", "owner"]
+    list_display = ["name", "status", "owner", "organisation"]
     search_fields = ["name", "description"]
 
 
@@ -20,5 +20,8 @@ class LibraryAdmin(admin.ModelAdmin):
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
-    list_display = ["name"]
+    list_display = ["name", "number_of_assessments"]
     search_fields = ["name"]
+
+    def number_of_assessments(self, obj):
+        return obj.assessments.all().count()

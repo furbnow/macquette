@@ -21,6 +21,16 @@ class Assessment(models.Model):
         null=True,
         on_delete=models.PROTECT,
     )
+
+    organisation = models.ForeignKey(
+        "Organisation",
+        null=True,
+        blank=True,
+        default=None,
+        on_delete=models.SET_NULL,
+        related_name="assessments",
+    )
+
     name = models.TextField()
     description = models.TextField(blank=True)
 
