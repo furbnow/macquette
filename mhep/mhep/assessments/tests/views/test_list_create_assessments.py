@@ -1,18 +1,24 @@
+from django.contrib.auth import get_user_model
+
 from freezegun import freeze_time
 
 from rest_framework.test import APITestCase
 from rest_framework import exceptions, status
 
 from mhep.assessments.models import Assessment
+User = get_user_model()
 
 
-class TestListCreateAssessments(APITestCase):
+class TestListAssessments(APITestCase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         Assessment.objects.all().delete()
 
-    def test_list_assessments(self):
+    def test_succeeds_for_logged_in_user(self):
+        user = get_or_create_user("testuser")
+        self.client.force_authenticate(user)
+
         with freeze_time("2019-06-01T16:35:34Z"):
             a1 = Assessment.objects.create(
                     name="test assessment 1",
@@ -47,7 +53,24 @@ class TestListCreateAssessments(APITestCase):
 
         assert expectedFirstResult == response.data[0]
 
+    def test_returns_forbidden_if_not_logged_in(self):
+        response = self.client.get("/api/v1/assessments/")
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+class TestCreateAssessment(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = get_or_create_user("testuser")
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        Assessment.objects.all().delete()
+
     def test_create_assessment(self):
+        self.client.force_authenticate(self.user)
         with self.subTest("without data"):
             new_assessment = {
                 "name": "test assessment 1",
@@ -104,6 +127,8 @@ class TestListCreateAssessments(APITestCase):
             assert expected_result == response.data
 
     def test_create_assessment_doesnt_show_data_in_return_value(self):
+        self.client.force_authenticate(self.user)
+
         new_assessment = {
             "name": "test assessment",
             "openbem_version": "10.1.1",
@@ -131,7 +156,18 @@ class TestListCreateAssessments(APITestCase):
         response.data.pop("id")
         assert expected_result == response.data
 
+    def test_returns_forbidden_if_not_logged_in(self):
+        new_assessment = {
+                "name": "test assessment 1",
+                "openbem_version": "10.1.1",
+            }
+
+        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
     def test_create_assessment_fails_if_name_missing(self):
+        self.client.force_authenticate(self.user)
+
         self.assert_create_fails(
             {
                 "openbem_version": "10.1.1",
@@ -146,6 +182,8 @@ class TestListCreateAssessments(APITestCase):
         )
 
     def test_create_assessment_fails_if_openbem_version_missing(self):
+        self.client.force_authenticate(self.user)
+
         self.assert_create_fails(
             {
                 "name": "test assessment 1",
@@ -160,6 +198,8 @@ class TestListCreateAssessments(APITestCase):
          )
 
     def test_create_assessment_fails_if_openbem_version_is_not_valid_choice(self):
+        self.client.force_authenticate(self.user)
+
         self.assert_create_fails(
             {
                 "name": "test assessment 1",
@@ -177,6 +217,8 @@ class TestListCreateAssessments(APITestCase):
         )
 
     def test_create_assessment_fails_if_status_is_not_valid_choice(self):
+        self.client.force_authenticate(self.user)
+
         self.assert_create_fails(
             {
                 "name": "test assessment 1",
@@ -195,6 +237,19 @@ class TestListCreateAssessments(APITestCase):
         )
 
     def assert_create_fails(self, new_assessment, expected_status, expected_response):
+        self.client.force_authenticate(self.user)
+
         response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
         assert response.status_code == expected_status
         assert response.data == expected_response
+
+
+def create_user(username, email='', *args, **kwargs):
+    user = User.objects.create(username=username, email=email, *args, **kwargs)
+    return user
+
+
+def get_or_create_user(username, *args, **kwargs):
+    if User.objects.filter(username=username).exists():
+        return User.objects.get(username=username)
+    return create_user(username, *args, **kwargs)

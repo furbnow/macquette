@@ -275,3 +275,9 @@ SOCIALACCOUNT_ADAPTER = "mhep.users.adapters.SocialAccountAdapter"
 CORS_ORIGIN_WHITELIST = ["http://localhost:9091"]
 CORS_ALLOW_METHODS = list(default_methods)
 CORS_ALLOW_HEADERS = list(default_headers)
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ([
+        'rest_framework.authentication.SessionAuthentication',
+    ]),
+}
