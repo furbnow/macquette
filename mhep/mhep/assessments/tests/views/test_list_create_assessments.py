@@ -15,7 +15,7 @@ class TestListAssessments(APITestCase):
         super().tearDownClass()
         Assessment.objects.all().delete()
 
-    def test_succeeds_for_logged_in_user(self):
+    def test_returns_assessments_for_logged_in_user_with_expected_result_structure(self):
         user = get_or_create_user("testuser")
         self.client.force_authenticate(user)
 
