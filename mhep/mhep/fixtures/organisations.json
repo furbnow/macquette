@@ -1,0 +1,20 @@
+[
+{
+    "model": "assessments.organisation",
+    "pk": 1,
+    "fields": {
+        "name": "Chigley Community Energy",
+        "created_at": "2019-09-30T09:55:08.654Z",
+        "updated_at": "2019-09-30T09:55:08.654Z"
+    }
+},
+{
+    "model": "assessments.organisation",
+    "pk": 2,
+    "fields": {
+        "name": "Sandford Assessment CIC",
+        "created_at": "2019-09-30T09:55:27.317Z",
+        "updated_at": "2019-09-30T09:55:27.317Z"
+    }
+}
+]
