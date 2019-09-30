@@ -25,12 +25,14 @@ class TestListAssessments(APITestCase):
                     description="test description",
                     data={"foo": "bar"},
                     openbem_version="10.1.1",
+                    owner=user,
             )
             Assessment.objects.create(
                     name="test assessment 2",
                     description="test description",
                     data={"foo": "baz"},
                     openbem_version="10.1.1",
+                    owner=user,
             )
 
         response = self.client.get("/api/v1/assessments/")
@@ -52,6 +54,33 @@ class TestListAssessments(APITestCase):
         }
 
         assert expectedFirstResult == response.data[0]
+
+    def test_only_returns_assessments_for_logged_in_user(self):
+        user = get_or_create_user("testuser")
+        another_user = get_or_create_user("anotheruser")
+        self.client.force_authenticate(user)
+
+        with freeze_time("2019-06-01T16:35:34Z"):
+            Assessment.objects.create(
+                    name="my assessment #1",
+                    openbem_version="10.1.1",
+                    owner=user,
+            )
+            Assessment.objects.create(
+                    name="my assessment #2",
+                    openbem_version="10.1.1",
+                    owner=user,
+            )
+            Assessment.objects.create(
+                    name="someone elses assessment",
+                    openbem_version="10.1.1",
+                    owner=another_user,
+            )
+
+        response = self.client.get("/api/v1/assessments/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert 2 == len(response.data)
 
     def test_returns_forbidden_if_not_logged_in(self):
         response = self.client.get("/api/v1/assessments/")
