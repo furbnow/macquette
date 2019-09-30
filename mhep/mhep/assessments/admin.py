@@ -5,7 +5,7 @@ from mhep.assessments.models import Assessment, Library
 
 @admin.register(Assessment)
 class AssessmentAdmin(admin.ModelAdmin):
-    list_display = ["name", "status"]
+    list_display = ["name", "status", "owner"]
     search_fields = ["name", "description"]
 
 

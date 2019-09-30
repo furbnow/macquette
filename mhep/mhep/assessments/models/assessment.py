@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from mhep.assessments.validators import validate_dict
 
@@ -15,6 +16,11 @@ OPENBEM_VERSION_CHOICES = [
 
 
 class Assessment(models.Model):
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        on_delete=models.PROTECT,
+    )
     name = models.TextField()
     description = models.TextField(blank=True)
 
