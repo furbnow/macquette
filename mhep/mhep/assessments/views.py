@@ -6,6 +6,7 @@ from django.views.generic.base import TemplateView
 
 from rest_framework import generics, exceptions
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -55,6 +56,8 @@ class SubviewJavascriptView(TemplateView):
 class ListCreateAssessments(
     generics.ListCreateAPIView
 ):
+    permission_classes = [IsAuthenticated]
+
     queryset = Assessment.objects.all()
     serializer_class = AssessmentMetadataSerializer
 
