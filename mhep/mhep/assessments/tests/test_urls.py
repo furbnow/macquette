@@ -92,17 +92,3 @@ def test_list_create_organisation_assessments():
         resolve("/api/v1/organisations/1/assessments/").view_name
         == "assessments:list-create-organisation-assessments"
     )
-
-
-@pytest.fixture
-def assessment():
-    return Assessment.objects.create(
-        data={},
-    )
-
-
-@pytest.fixture
-def library():
-    return Library.objects.create(
-        data={},
-    )
