@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from mhep.assessments.models import Assessment, Library
+from mhep.assessments.models import Assessment, Library, Organisation
 
 
 @admin.register(Assessment)
@@ -16,3 +16,9 @@ class LibraryAdmin(admin.ModelAdmin):
 
     def number_of_items(self, obj):
         return len(obj.data)
+
+
+@admin.register(Organisation)
+class OrganisationAdmin(admin.ModelAdmin):
+    list_display = ["name"]
+    search_fields = ["name"]
