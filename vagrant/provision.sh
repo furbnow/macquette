@@ -106,6 +106,7 @@ migrate_django_database() {
 load_django_fixtures() {
   run_as_vagrant "python manage.py loaddata adminuser"
   run_as_vagrant "python manage.py loaddata assessments"
+  run_as_vagrant "python manage.py loaddata organisations"
 }
 
 install_emoncms() {
