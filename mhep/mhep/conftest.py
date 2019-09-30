@@ -3,6 +3,7 @@ from django.conf import settings
 from django.test import RequestFactory
 
 from mhep.users.tests.factories import UserFactory, UserWithOrganisationFactory
+from mhep.assessments.tests.factories import AssessmentFactory, LibraryFactory
 from mhep.assessments.models import Assessment, Library
 
 
@@ -28,13 +29,9 @@ def request_factory() -> RequestFactory:
 
 @pytest.fixture
 def assessment() -> Assessment:
-    return Assessment.objects.create(
-        data={},
-    )
+    return AssessmentFactory()
 
 
 @pytest.fixture
 def library() -> Library:
-    return Library.objects.create(
-        data={},
-    )
+    return LibraryFactory()
