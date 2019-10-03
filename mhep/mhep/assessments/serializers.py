@@ -4,12 +4,12 @@ from rest_framework import serializers
 from mhep.assessments.models import Assessment, Library, Organisation
 
 
-class HardcodedAuthorUserIDMixin():
+class AuthorUserIDMixin():
     def get_author(self, obj):
-        return "localadmin"
+        return obj.owner.username
 
     def get_userid(self, obj):
-        return "1"
+        return "{:d}".format(obj.owner.id)
 
 
 class StringIDMixin():
@@ -27,7 +27,7 @@ class MdateMixin():
 class AssessmentMetadataSerializer(
         MdateMixin,
         StringIDMixin,
-        HardcodedAuthorUserIDMixin,
+        AuthorUserIDMixin,
         serializers.ModelSerializer):
 
     author = serializers.SerializerMethodField()
@@ -54,7 +54,7 @@ class AssessmentMetadataSerializer(
 class AssessmentFullSerializer(
         MdateMixin,
         StringIDMixin,
-        HardcodedAuthorUserIDMixin,
+        AuthorUserIDMixin,
         serializers.ModelSerializer):
 
     author = serializers.SerializerMethodField()

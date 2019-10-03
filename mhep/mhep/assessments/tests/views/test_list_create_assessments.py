@@ -40,7 +40,7 @@ class TestListAssessments(APITestCase):
 
         assert 2 == len(response.data)
 
-        expectedFirstResult = {
+        expected_first_result = {
             "id": "{}".format(a1.pk),
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
@@ -49,11 +49,11 @@ class TestListAssessments(APITestCase):
             "openbem_version": "10.1.1",
             "name": "test assessment 1",
             "description": "test description",
-            "author": "localadmin",
-            "userid": "1",
+            "author": user.username,
+            "userid": f"{user.id}",
         }
 
-        assert expectedFirstResult == response.data[0]
+        assert expected_first_result == response.data[0]
 
     def test_only_returns_assessments_for_logged_in_user(self):
         user = get_or_create_user("testuser")
@@ -120,8 +120,8 @@ class TestCreateAssessment(APITestCase):
                 "openbem_version": "10.1.1",
                 "name": "test assessment 1",
                 "description": "test description 2",
-                "author": "localadmin",
-                "userid": "1",
+                "author": self.user.username,
+                "userid": f"{self.user.id}",
             }
 
             assert "id" in response.data
@@ -147,8 +147,8 @@ class TestCreateAssessment(APITestCase):
                 "openbem_version": "10.1.1",
                 "name": "test assessment 1",
                 "description": "",
-                "author": "localadmin",
-                "userid": "1",
+                "author": self.user.username,
+                "userid": f"{self.user.id}",
             }
 
             assert "id" in response.data
@@ -177,8 +177,8 @@ class TestCreateAssessment(APITestCase):
             "openbem_version": "10.1.1",
             "name": "test assessment",
             "description": "",
-            "author": "localadmin",
-            "userid": "1",
+            "author": self.user.username,
+            "userid": f"{self.user.id}",
         }
 
         assert "id" in response.data
