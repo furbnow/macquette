@@ -57,9 +57,10 @@ class ListCreateAssessments(
     generics.ListCreateAPIView
 ):
     permission_classes = [IsAuthenticated]
-
-    queryset = Assessment.objects.all()
     serializer_class = AssessmentMetadataSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        return Assessment.objects.all().filter(owner=self.request.user)
 
 
 class RetrieveUpdateDestroyAssessment(
