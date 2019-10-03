@@ -196,3 +196,7 @@ class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         return Response(None, status.HTTP_400_BAD_REQUEST)
+
+
+class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):
+    template_name = "assessments/assessments.html"
