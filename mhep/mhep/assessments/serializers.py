@@ -55,17 +55,10 @@ class AssessmentMetadataSerializer(
         ]
 
 
-class AssessmentFullSerializer(
-        MdateMixin,
-        StringIDMixin,
-        AuthorUserIDMixin,
-        serializers.ModelSerializer):
-
-    author = serializers.SerializerMethodField()
-    userid = serializers.SerializerMethodField()
-    id = serializers.SerializerMethodField()
-    mdate = serializers.SerializerMethodField()
-
+class AssessmentFullSerializer(AssessmentMetadataSerializer):
+    """
+    Identical to AssessmentMetadataSerializer except that it includes the `data` field"
+    """
     class Meta:
         model = Assessment
         fields = [
