@@ -4,12 +4,12 @@ from rest_framework import serializers
 from mhep.assessments.models import Assessment, Library, Organisation
 
 
-class HardcodedAuthorUserIDMixin():
+class AuthorUserIDMixin():
     def get_author(self, obj):
-        return "localadmin"
+        return obj.owner.username
 
     def get_userid(self, obj):
-        return "1"
+        return "{:d}".format(obj.owner.id)
 
 
 class StringIDMixin():
@@ -27,13 +27,17 @@ class MdateMixin():
 class AssessmentMetadataSerializer(
         MdateMixin,
         StringIDMixin,
-        HardcodedAuthorUserIDMixin,
+        AuthorUserIDMixin,
         serializers.ModelSerializer):
 
     author = serializers.SerializerMethodField()
     userid = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
     mdate = serializers.SerializerMethodField()
+
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user
+        return super().create(validated_data)
 
     class Meta:
         model = Assessment
@@ -51,17 +55,10 @@ class AssessmentMetadataSerializer(
         ]
 
 
-class AssessmentFullSerializer(
-        MdateMixin,
-        StringIDMixin,
-        HardcodedAuthorUserIDMixin,
-        serializers.ModelSerializer):
-
-    author = serializers.SerializerMethodField()
-    userid = serializers.SerializerMethodField()
-    id = serializers.SerializerMethodField()
-    mdate = serializers.SerializerMethodField()
-
+class AssessmentFullSerializer(AssessmentMetadataSerializer):
+    """
+    Identical to AssessmentMetadataSerializer except that it includes the `data` field"
+    """
     class Meta:
         model = Assessment
         fields = [

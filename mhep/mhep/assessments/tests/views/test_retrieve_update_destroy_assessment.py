@@ -12,6 +12,11 @@ from mhep.users.tests.factories import UserFactory
 
 class TestRetrieveUpdateDestroyAssessment(APITestCase):
     @classmethod
+    def setUpClass(cls):
+        cls.me = UserFactory.create()
+        super().setUpClass()
+
+    @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         Assessment.objects.all().delete()
@@ -19,6 +24,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
     def test_get_assessment(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = Assessment.objects.create(
+                    owner=self.me,
                     name="test name",
                     description="test description",
                     data={"foo": "bar"},
@@ -38,8 +44,8 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
             "openbem_version": "10.1.1",
             "name": "test name",
             "description": "test description",
-            "author": "localadmin",
-            "userid": "1",
+            "author": self.me.username,
+            "userid": f"{self.me.id}",
             "data": {"foo": "bar"},
         }
         assert expected == response.data
@@ -47,6 +53,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
     def test_get_assessment_without_data_gets_sensible_default(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = Assessment.objects.create(
+                    owner=self.me,
                     name="test name",
                     openbem_version="10.1.1",
             )
@@ -63,8 +70,8 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
             "name": "test name",
             # defaults:
             "description": "",
-            "author": "localadmin",
-            "userid": "1",
+            "author": self.me.username,
+            "userid": f"{self.me.id}",
             "status": "In progress",
             "data": {},
         }
@@ -77,6 +84,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
     def test_update_assessment(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = Assessment.objects.create(
+                    owner=self.me,
                     name="test name",
                     description="test description",
                     data={"foo": "bar"},
@@ -109,6 +117,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
     def test_update_assessment_data_fails_if_string(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = Assessment.objects.create(
+                    owner=self.me,
                     name="test name",
                     description="test description",
                     data={"foo": "bar"},
@@ -137,6 +146,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
     def test_update_assessment_data_fails_if_assessment_is_complete(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = Assessment.objects.create(
+                    owner=self.me,
                     name="test name",
                     description="test description",
                     data={"foo": "bar"},
@@ -161,6 +171,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
     def test_assessment_status_can_change_from_complete_to_in_progress(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = Assessment.objects.create(
+                    owner=self.me,
                     name="test name",
                     description="test description",
                     data={"foo": "bar"},
@@ -183,6 +194,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
     def test_destroy_assessment(self):
         a = Assessment.objects.create(
+                owner=self.me,
                 name="test name",
                 description="test description",
                 data={"foo": "bar"},
