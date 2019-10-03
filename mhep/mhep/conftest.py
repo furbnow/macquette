@@ -3,7 +3,12 @@ from django.conf import settings
 from django.test import RequestFactory
 
 from mhep.users.tests.factories import UserFactory, UserWithOrganisationFactory
-from mhep.assessments.tests.factories import AssessmentFactory, LibraryFactory, OrganisationFactory
+from mhep.assessments.tests.factories import (
+    AssessmentFactory,
+    LibraryFactory,
+    OrganisationFactory,
+    OrganisationWithExtrasFactory,
+)
 from mhep.assessments.models import Assessment, Library, Organisation
 
 
@@ -40,3 +45,8 @@ def library() -> Library:
 @pytest.fixture
 def organisation() -> Organisation:
     return OrganisationFactory()
+
+
+@pytest.fixture
+def organisation_with_extras() -> Organisation:
+    return OrganisationWithExtrasFactory()

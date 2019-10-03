@@ -38,6 +38,7 @@ An administrative interface is available at [localhost:9090/admin](http://localh
 * [Create assessment](#create-assessment)
 * [Update a field on assessment](#update-a-field-on-assessment)
 * [Delete assessment](#delete-assessment)
+* [List organisations](#list-organisations)
 * [List libraries](#list-libraries)
 * [Create a library](#create-a-library)
 * [Update a library](#update-a-library)
@@ -235,6 +236,60 @@ Returns:
 
 ```
 HTTP 204 No content
+```
+
+## List organisations
+
+```
+GET /organisations/
+```
+
+List all organisations the current user is a member of.
+
+ℹ️ porting notes: replaces previous `assessment/getorganisations` route.
+
+### Example
+
+```
+GET /organisations/
+```
+
+Returns:
+
+```
+HTTP 200 OK
+Content-Type: application/json
+[
+    {
+        "id": "1",
+        "name": "Chigley Community Energy",
+        "assessments": 0,
+        "members": [
+            {
+                "userid": "2",
+                "name": "janedoe",
+                "lastactive": "?"
+            }
+        ]
+    },
+    {
+        "id": "2",
+        "name": "Sandford Assessment CIC",
+        "assessments": 1,
+        "members": [
+            {
+                "userid": "2",
+                "name": "janedoe",
+                "lastactive": "?"
+            },
+            {
+                "userid": "3",
+                "name": "michael2",
+                "lastactive": "?"
+            }
+        ]
+    }
+]
 ```
 
 ## List libraries

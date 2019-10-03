@@ -24,8 +24,14 @@ class LibraryFactory(DjangoModelFactory):
 
 
 class OrganisationFactory(DjangoModelFactory):
-    "Creates an Organisation with 1 member and 1 assessment"
     name = Faker("company")
+
+    class Meta:
+        model = Organisation
+
+
+class OrganisationWithExtrasFactory(OrganisationFactory):
+    "Creates an Organisation with 1 member and 1 assessment"
 
     @post_generation
     def assessments(self, create: bool, extracted: Sequence[Any], **kwargs):
@@ -35,6 +41,3 @@ class OrganisationFactory(DjangoModelFactory):
     def members(self, create: bool, extracted: Sequence[Any], **kwargs):
         from mhep.users.tests.factories import UserFactory
         self.members.add(UserFactory.create())
-
-    class Meta:
-        model = Organisation

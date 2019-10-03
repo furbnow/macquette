@@ -74,12 +74,12 @@ def test_update_destroy_library_item(library: Library):
     )
 
 
-def test_list_create_organisations():
+def test_list_organisations():
     assert (
-        reverse("assessments:list-create-organisations") == "/api/v1/organisations/"
+        reverse("assessments:list-organisations") == "/api/v1/organisations/"
     )
     assert (
-        resolve("/api/v1/organisations/").view_name == "assessments:list-create-organisations"
+        resolve("/api/v1/organisations/").view_name == "assessments:list-organisations"
     )
 
 
