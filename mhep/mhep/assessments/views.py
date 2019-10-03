@@ -29,6 +29,9 @@ class AssessmentHTMLView(LoginRequiredMixin, DetailView):
     context_object_name = "assessment"
     model = Assessment
 
+    def get_queryset(self, *args, **kwargs):
+        return Assessment.objects.filter(owner=self.request.user)
+
     def get_context_data(self, object=None, **kwargs):
         context = super().get_context_data(**kwargs)
 

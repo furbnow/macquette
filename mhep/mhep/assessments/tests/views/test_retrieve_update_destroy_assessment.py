@@ -220,3 +220,14 @@ class TestAssessmentHTMLView(TestCase):
         my_assessment_url = "/assessments/{}/".format(self.my_assessment.pk)
         response = self.client.get(my_assessment_url)
         assert status.HTTP_200_OK == response.status_code
+
+    def test_returns_not_found_if_not_owner(self):
+        someone_else = UserFactory.create()
+        someone_else.set_password("foo")
+        someone_else.save()
+        someone_elses_assessment = AssessmentFactory.create(owner=someone_else)
+
+        self.client.login(username=self.me.username, password="foo")
+        not_my_assessment_url = f"/assessments/{someone_elses_assessment.pk}/"
+        response = self.client.get(not_my_assessment_url)
+        assert status.HTTP_404_NOT_FOUND == response.status_code
