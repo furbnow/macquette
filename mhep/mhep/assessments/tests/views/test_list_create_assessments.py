@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 from rest_framework import exceptions, status
 
 from mhep.assessments.models import Assessment
+from mhep.users.tests.factories import UserFactory
 User = get_user_model()
 
 
@@ -16,7 +17,7 @@ class TestListAssessments(APITestCase):
         Assessment.objects.all().delete()
 
     def test_returns_assessments_for_logged_in_user_with_expected_result_structure(self):
-        user = get_or_create_user("testuser")
+        user = UserFactory.create()
         self.client.force_authenticate(user)
 
         with freeze_time("2019-06-01T16:35:34Z"):
@@ -56,25 +57,25 @@ class TestListAssessments(APITestCase):
         assert expectedFirstResult == response.data[0]
 
     def test_only_returns_assessments_for_logged_in_user(self):
-        user = get_or_create_user("testuser")
-        another_user = get_or_create_user("anotheruser")
-        self.client.force_authenticate(user)
+        me = UserFactory.create()
+        someone_else = UserFactory.create()
+        self.client.force_authenticate(me)
 
         with freeze_time("2019-06-01T16:35:34Z"):
             Assessment.objects.create(
                     name="my assessment #1",
                     openbem_version="10.1.1",
-                    owner=user,
+                    owner=me,
             )
             Assessment.objects.create(
                     name="my assessment #2",
                     openbem_version="10.1.1",
-                    owner=user,
+                    owner=me,
             )
             Assessment.objects.create(
                     name="someone elses assessment",
                     openbem_version="10.1.1",
-                    owner=another_user,
+                    owner=someone_else,
             )
 
         response = self.client.get("/api/v1/assessments/")
@@ -91,7 +92,7 @@ class TestCreateAssessment(APITestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = get_or_create_user("testuser")
+        cls.user = UserFactory.create()
 
     @classmethod
     def tearDownClass(cls):
@@ -271,14 +272,3 @@ class TestCreateAssessment(APITestCase):
         response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
         assert response.status_code == expected_status
         assert response.data == expected_response
-
-
-def create_user(username, email='', *args, **kwargs):
-    user = User.objects.create(username=username, email=email, *args, **kwargs)
-    return user
-
-
-def get_or_create_user(username, *args, **kwargs):
-    if User.objects.filter(username=username).exists():
-        return User.objects.get(username=username)
-    return create_user(username, *args, **kwargs)
