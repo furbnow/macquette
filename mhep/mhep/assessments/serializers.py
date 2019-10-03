@@ -1,7 +1,7 @@
 import datetime
 
 from rest_framework import serializers
-from mhep.assessments.models import Assessment, Library
+from mhep.assessments.models import Assessment, Library, Organisation
 
 
 class HardcodedAuthorUserIDMixin():
@@ -102,3 +102,31 @@ class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
 class LibraryItemSerializer(serializers.Serializer):
     tag = serializers.CharField(max_length=100)
     item = serializers.DictField(allow_empty=False)
+
+
+class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+    assessments = serializers.SerializerMethodField()
+    members = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Organisation
+        fields = [
+            "id",
+            "name",
+            "assessments",
+            "members",
+        ]
+
+    def get_assessments(self, obj):
+        return obj.assessments.count()
+
+    def get_members(self, obj):
+        def userinfo(user):
+            return {
+                "userid": f"{user.id}",
+                "name": user.username,
+                "lastactive": "?",
+            }
+
+        return [userinfo(u) for u in obj.members.all()]

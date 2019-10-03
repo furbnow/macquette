@@ -16,6 +16,7 @@ from mhep.assessments.serializers import (
     AssessmentMetadataSerializer,
     LibraryItemSerializer,
     LibrarySerializer,
+    OrganisationSerializer,
 )
 
 
@@ -106,28 +107,12 @@ class UpdateDestroyLibrary(
             return response
 
 
-class ListCreateOrganisations(APIView):
-    def get(self, request, *args, **kwargs):
-        return Response([
-            {
-                "id": "1",
-                "name": "Carbon Coop",
-                "assessments": 0,
-                "members": [
-                    {
-                        "userid": "1",
-                        "name": "localadmin",
-                        "lastactive": "?"
-                    }
-                ]
-            }
-        ], status.HTTP_200_OK)
+class ListOrganisations(generics.ListAPIView):
+    serializer_class = OrganisationSerializer
+    permission_classes = [IsAuthenticated]
 
-    def post(self, request, *args, **kwargs):
-        return Response(
-            {"detail": "function not implemented"},
-            status.HTTP_400_BAD_REQUEST
-        )
+    def get_queryset(self, *args, **kwargs):
+        return self.request.user.organisations.all()
 
 
 class CreateLibraryItem(
