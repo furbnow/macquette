@@ -35,6 +35,10 @@ class AssessmentMetadataSerializer(
     id = serializers.SerializerMethodField()
     mdate = serializers.SerializerMethodField()
 
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user
+        return super().create(validated_data)
+
     class Meta:
         model = Assessment
         fields = [
