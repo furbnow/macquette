@@ -1,6 +1,7 @@
 import json
 import logging
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
 
@@ -24,10 +25,13 @@ class BadRequest(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
 
-class AssessmentHTMLView(DetailView):
+class AssessmentHTMLView(LoginRequiredMixin, DetailView):
     template_name = "assessments/view.html"
     context_object_name = "assessment"
     model = Assessment
+
+    def get_queryset(self, *args, **kwargs):
+        return Assessment.objects.filter(owner=self.request.user)
 
     def get_context_data(self, object=None, **kwargs):
         context = super().get_context_data(**kwargs)
