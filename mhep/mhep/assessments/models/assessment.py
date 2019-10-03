@@ -18,7 +18,7 @@ OPENBEM_VERSION_CHOICES = [
 class Assessment(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        null=True,
+        null=True, blank=True,
         on_delete=models.PROTECT,
     )
 
