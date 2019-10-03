@@ -1,9 +1,13 @@
+from django.test import TestCase
+
 from freezegun import freeze_time
 
 from rest_framework.test import APITestCase
 from rest_framework import exceptions, status
 
 from mhep.assessments.models import Assessment
+from mhep.assessments.tests.factories import AssessmentFactory
+from mhep.users.tests.factories import UserFactory
 
 
 class TestRetrieveUpdateDestroyAssessment(APITestCase):
@@ -194,3 +198,25 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         assert b"" == response.content
 
         assert (assessment_count - 1) == Assessment.objects.count()
+
+
+class TestAssessmentHTMLView(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.me = UserFactory()
+        cls.me.set_password("foo")
+        cls.me.save()
+        cls.my_assessment = AssessmentFactory.create(owner=cls.me)
+
+    def test_logged_out_users_get_redirected_to_log_in(self):
+        login_url = '/accounts/login/'
+        my_assessment_url = "/assessments/{}/".format(self.my_assessment.pk)
+        response = self.client.get(my_assessment_url)
+        self.assertRedirects(response, f"{login_url}?next={my_assessment_url}")
+
+    def test_returns_204_for_logged_in_user_viewing_own_assessment(self):
+        self.client.login(username=self.me.username, password="foo")
+        my_assessment_url = "/assessments/{}/".format(self.my_assessment.pk)
+        response = self.client.get(my_assessment_url)
+        assert status.HTTP_200_OK == response.status_code
