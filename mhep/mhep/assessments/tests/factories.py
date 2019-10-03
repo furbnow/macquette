@@ -37,9 +37,10 @@ class OrganisationWithExtrasFactory(OrganisationFactory):
 
     @post_generation
     def assessments(self, create: bool, extracted: Sequence[Any], **kwargs):
-        self.assessments.add(AssessmentFactory.create())
+        from mhep.users.tests.factories import UserFactory
+        self._assessment_owner = UserFactory.create()
+        self.assessments.add(AssessmentFactory.create(owner=self._assessment_owner))
 
     @post_generation
     def members(self, create: bool, extracted: Sequence[Any], **kwargs):
-        from mhep.users.tests.factories import UserFactory
-        self.members.add(UserFactory.create())
+        self.members.add(self._assessment_owner)
