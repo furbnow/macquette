@@ -1,7 +1,8 @@
 from typing import Any, Sequence
-from factory import DjangoModelFactory, Faker, post_generation
+from factory import DjangoModelFactory, Faker, post_generation, SubFactory
 
 from mhep.assessments.models import Assessment, Library, Organisation
+from mhep.users.tests.factories import UserFactory
 
 
 class AssessmentFactory(DjangoModelFactory):
@@ -9,6 +10,7 @@ class AssessmentFactory(DjangoModelFactory):
     description = "Test description"
     status = "In progress"
     data = {}
+    owner = SubFactory(UserFactory)
 
     class Meta:
         model = Assessment
@@ -35,9 +37,10 @@ class OrganisationWithExtrasFactory(OrganisationFactory):
 
     @post_generation
     def assessments(self, create: bool, extracted: Sequence[Any], **kwargs):
-        self.assessments.add(AssessmentFactory.create())
+        from mhep.users.tests.factories import UserFactory
+        self._assessment_owner = UserFactory.create()
+        self.assessments.add(AssessmentFactory.create(owner=self._assessment_owner))
 
     @post_generation
     def members(self, create: bool, extracted: Sequence[Any], **kwargs):
-        from mhep.users.tests.factories import UserFactory
-        self.members.add(UserFactory.create())
+        self.members.add(self._assessment_owner)
