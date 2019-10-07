@@ -6,12 +6,12 @@ from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
 
 from rest_framework import generics, exceptions
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
 from mhep.assessments.models import Assessment, Library
+from mhep.assessments.permissions import IsOwner, IsMemberOfConnectedOrganisation
 from mhep.assessments.serializers import (
     AssessmentFullSerializer,
     AssessmentMetadataSerializer,
@@ -73,6 +73,10 @@ class RetrieveUpdateDestroyAssessment(
 ):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentFullSerializer
+    permission_classes = [
+        IsAuthenticated,
+        IsOwner | IsMemberOfConnectedOrganisation,
+    ]
 
     def update(self, request, *args, **kwargs):
         obj = self.get_object()
