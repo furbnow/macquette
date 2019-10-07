@@ -106,8 +106,15 @@ class UpdateDestroyLibrary(
     generics.UpdateAPIView,
     generics.DestroyAPIView,
 ):
-    queryset = Library.objects.all()
     serializer_class = LibrarySerializer
+    permission_classes = [
+        # IsAuthenticated will ensure we can filter (using get_queryset) based on User.libraries
+        # (which is the reverse of Library.owner)
+        IsAuthenticated,
+    ]
+
+    def get_queryset(self, *args, **kwargs):
+        return self.request.user.libraries.all()
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
