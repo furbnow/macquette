@@ -32,6 +32,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
                     openbem_version="10.1.1",
             )
 
+        self.client.force_authenticate(self.me)
         response = self.client.get("/api/v1/assessments/{}/".format(a.pk))
         assert response.status_code == status.HTTP_200_OK
 
@@ -58,6 +59,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
                     openbem_version="10.1.1",
             )
 
+        self.client.force_authenticate(self.me)
         response = self.client.get("/api/v1/assessments/{}/".format(a.pk))
         assert response.status_code == status.HTTP_200_OK
 
@@ -98,6 +100,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
                 "status": "Complete",
             }
 
+            self.client.force_authenticate(self.me)
             response = self.client.patch(
                 "/api/v1/assessments/{}/".format(a.pk),
                 updateFields,
@@ -129,7 +132,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
             updateFields = {
                 "data": {"foo string"},
             }
-
+            self.client.force_authenticate(self.me)
             response = self.client.patch(
                 "/api/v1/assessments/{}/".format(a.pk),
                 updateFields,
@@ -159,6 +162,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
                 "data": {"new": "data"},
             }
 
+            self.client.force_authenticate(self.me)
             response = self.client.patch(
                 "/api/v1/assessments/{}/".format(a.pk),
                 updateFields,
@@ -184,6 +188,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
                 "status": "In progress"
             }
 
+            self.client.force_authenticate(self.me)
             response = self.client.patch(
                 "/api/v1/assessments/{}/".format(a.pk),
                 updateFields,
@@ -204,6 +209,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
         assessment_count = Assessment.objects.count()
 
+        self.client.force_authenticate(self.me)
         response = self.client.delete(f"/api/v1/assessments/{a.pk}/")
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
