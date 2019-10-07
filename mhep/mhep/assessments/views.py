@@ -95,9 +95,11 @@ class RetrieveUpdateDestroyAssessment(
 
 
 class ListCreateLibraries(generics.ListCreateAPIView):
-    queryset = Library.objects.all()
     serializer_class = LibrarySerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self, *args, **kwargs):
+        return self.request.user.libraries.all()
 
 
 class UpdateDestroyLibrary(
