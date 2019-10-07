@@ -2,12 +2,17 @@
 from freezegun import freeze_time
 
 from rest_framework.test import APITestCase
-from rest_framework import exceptions, status
+from rest_framework import status
 
 from mhep.assessments.tests.factories import LibraryFactory
+from mhep.users.tests.factories import UserFactory
 
 
 class TestCreateLibraryItem(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.me = UserFactory.create()
 
     def test_create_library_item(self):
         library = LibraryFactory.create(data={"tag1": {"name": "foo"}})
@@ -19,12 +24,12 @@ class TestCreateLibraryItem(APITestCase):
             }
         }
 
-        with freeze_time("2019-06-01T16:35:34Z"):
-            response = self.client.post(
-                f"/api/v1/libraries/{library.id}/items/",
-                item_data,
-                format="json"
-            )
+        self.client.force_authenticate(self.me)
+        response = self.client.post(
+            f"/api/v1/libraries/{library.id}/items/",
+            item_data,
+            format="json"
+        )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -38,6 +43,7 @@ class TestCreateLibraryItem(APITestCase):
             }
         }
 
+        self.client.force_authenticate(self.me)
         response = self.client.post(
             f"/api/v1/libraries/{library.id}/items/",
             item_data,

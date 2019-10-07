@@ -5,9 +5,15 @@ from rest_framework import status
 
 from mhep.assessments.models import Library
 from mhep.assessments.tests.factories import LibraryFactory
+from mhep.users.tests.factories import UserFactory
 
 
 class TestUpdateLibrary(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.me = UserFactory.create()
+
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
@@ -15,15 +21,17 @@ class TestUpdateLibrary(APITestCase):
 
     def test_update_library(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = LibraryFactory.create()
+            lib = LibraryFactory.create(owner=self.me)
 
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
                 "data": {"new": "data"},
             }
 
+            self.client.force_authenticate(self.me)
+
             response = self.client.patch(
-                "/api/v1/libraries/{}/".format(a.pk),
+                "/api/v1/libraries/{}/".format(lib.pk),
                 updateFields,
                 format="json",
             )
@@ -31,7 +39,7 @@ class TestUpdateLibrary(APITestCase):
         assert status.HTTP_204_NO_CONTENT == response.status_code
         assert b"" == response.content
 
-        updated_library = Library.objects.get(pk=a.pk)
+        updated_library = Library.objects.get(pk=lib.pk)
 
         assert {"new": "data"} == updated_library.data
 
@@ -39,13 +47,14 @@ class TestUpdateLibrary(APITestCase):
 
     def test_update_library_name(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            lib = LibraryFactory.create()
+            lib = LibraryFactory.create(owner=self.me)
 
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
                 "name": "updated name",
             }
 
+            self.client.force_authenticate(self.me)
             response = self.client.patch(
                 "/api/v1/libraries/{}/".format(lib.pk),
                 updateFields,
@@ -60,11 +69,12 @@ class TestUpdateLibrary(APITestCase):
         assert "updated name" == updated_library.name
 
     def test_destroy_library(self):
-        a = LibraryFactory.create()
+        lib = LibraryFactory.create(owner=self.me)
 
         assessment_count = Library.objects.count()
 
-        response = self.client.delete(f"/api/v1/libraries/{a.pk}/")
+        self.client.force_authenticate(self.me)
+        response = self.client.delete(f"/api/v1/libraries/{lib.pk}/")
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
         assert b"" == response.content
