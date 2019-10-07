@@ -95,6 +95,10 @@ class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
     def get_writeable(self, obj):
         return True
 
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user
+        return super().create(validated_data)
+
 
 class LibraryItemSerializer(serializers.Serializer):
     tag = serializers.CharField(max_length=100)
