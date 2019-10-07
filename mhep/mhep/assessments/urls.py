@@ -1,10 +1,12 @@
 
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.views.generic import TemplateView
 
 from mhep.assessments.views import (
     AssessmentHTMLView,
     CreateLibraryItem,
+    ListAssessmentsHTMLView,
     ListCreateAssessments,
     ListCreateLibraries,
     ListCreateOrganisationAssessments,
@@ -20,7 +22,7 @@ app_name = "assessments"
 urlpatterns = [
     path(
         "",
-        TemplateView.as_view(template_name="assessments/assessments.html"),
+        ListAssessmentsHTMLView.as_view(),
         name="home",
     ),
 

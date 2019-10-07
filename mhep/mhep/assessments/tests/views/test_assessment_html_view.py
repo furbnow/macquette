@@ -6,6 +6,28 @@ from mhep.assessments.tests.factories import AssessmentFactory
 from mhep.users.tests.factories import UserFactory
 
 
+class TestListAssessmentsHTMLView(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.me = UserFactory()
+        cls.me.set_password("foo")
+        cls.me.save()
+        cls.my_assessment = AssessmentFactory.create(owner=cls.me)
+
+    def test_logged_out_users_get_redirected_to_log_in(self):
+        login_url = '/accounts/login/'
+        my_assessments_url = "/"
+        response = self.client.get(my_assessments_url)
+        self.assertRedirects(response, f"{login_url}?next={my_assessments_url}")
+
+    def test_returns_204_for_logged_in_user_viewing_own_assessment(self):
+        self.client.login(username=self.me.username, password="foo")
+        my_assessments_url = "/"
+        response = self.client.get(my_assessments_url)
+        assert status.HTTP_200_OK == response.status_code
+
+
 class TestAssessmentHTMLView(TestCase):
     @classmethod
     def setUpClass(cls):
