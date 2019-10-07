@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from mhep.assessments.models import Library
+from mhep.assessments.tests.factories import LibraryFactory
 
 
 class TestUpdateDestroyLibraryItem(APITestCase):
@@ -14,9 +15,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         Library.objects.all().delete()
 
     def test_destroy_library_item(self):
-        library = Library.objects.create(
-            name="test library",
-            type="test type",
+        library = LibraryFactory.create(
             data={
                 "tag1": {"name": "foo"},
                 "tag2": {"name": "bar"},
@@ -31,9 +30,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         assert retrieved.data == {"tag1": {"name": "foo"}}
 
     def test_update_library_item(self):
-        library = Library.objects.create(
-            name="test library",
-            type="test type",
+        library = LibraryFactory.create(
             data={
                 "tag1": {"name": "foo"},
             },
@@ -56,10 +53,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         assert retrieved.data == {"tag1": replacement_data}
 
     def test_update_library_item_fails_if_tag_doesnt_exist(self):
-        library = Library.objects.create(
-            name="test library",
-            type="test type",
-        )
+        library = LibraryFactory.create()
 
         replacement_data = {
             "name": "bar",

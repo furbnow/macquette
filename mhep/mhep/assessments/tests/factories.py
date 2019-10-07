@@ -35,6 +35,7 @@ class LibraryFactory(factory.DjangoModelFactory):
     name = "Standard Library - exampleuser"
     type = "generation_measures"
     data = {}
+    owner = factory.SubFactory(UserFactory)
 
     class Meta:
         model = Library
