@@ -170,6 +170,15 @@ Content-Type: application/json
 
 {
     "id": 6,
+    "name": "Example assesment",
+    "description": "Example description",
+    "openbem_version": "10.1.1",
+    "status": "In progress",
+    "created_at": "2019-06-01T16:35:34Z",
+    "updated_at": "2019-06-01T16:35:34Z",
+    "mdate": "1559406934",
+    "author": "janedoe",
+    "userid": "2",
 }
 ```
 
