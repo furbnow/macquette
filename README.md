@@ -3,6 +3,18 @@
 [![Build Status](https://travis-ci.org/mhep-transition/mhep-django.svg?branch=master)](https://travis-ci.org/mhep-transition/mhep-django)
 [![Coverage Status](https://coveralls.io/repos/github/mhep-transition/mhep-django/badge.svg?branch=master)](https://coveralls.io/github/mhep-transition/mhep-django?branch=master)
 
+## Checkout the repo and submodules
+
+```
+git clone --recursive https://github.com/mhep-transition/mhep-django
+```
+
+Or, if you've already cloned `mhep-django`, run:
+
+```
+git submodule update --init --recursive
+```
+
 ## Install Vagrant & Virtualbox
 
 * Install [Vagrant 2.0.1+](https://www.vagrantup.com/downloads.html)
