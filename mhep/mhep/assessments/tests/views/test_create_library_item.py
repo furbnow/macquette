@@ -4,23 +4,13 @@ from freezegun import freeze_time
 from rest_framework.test import APITestCase
 from rest_framework import exceptions, status
 
-from mhep.assessments.models import Library
+from mhep.assessments.tests.factories import LibraryFactory
 
 
 class TestCreateLibraryItem(APITestCase):
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        Library.objects.all().delete()
 
     def test_create_library_item(self):
-        library = Library.objects.create(
-            name="test library",
-            type="test type",
-            data={
-                "tag1": {"name": "foo"},
-            },
-        )
+        library = LibraryFactory.create(data={"tag1": {"name": "foo"}})
 
         item_data = {
             "tag": "tag2",
@@ -39,13 +29,7 @@ class TestCreateLibraryItem(APITestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_create_library_item_fails_if_tag_already_exists(self):
-        library = Library.objects.create(
-            name="test library",
-            type="test type",
-            data={
-                "tag1": {"name": "foo"},
-            },
-        )
+        library = LibraryFactory.create(data={"tag1": {"name": "foo"}})
 
         item_data = {
             "tag": "tag1",

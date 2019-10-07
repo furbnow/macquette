@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from mhep.assessments.models import Library
+from mhep.assessments.tests.factories import LibraryFactory
 
 
 class TestUpdateLibrary(APITestCase):
@@ -14,11 +15,7 @@ class TestUpdateLibrary(APITestCase):
 
     def test_update_library(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = Library.objects.create(
-                    name="test name",
-                    type="test type",
-                    data={"foo": "bar"},
-            )
+            a = LibraryFactory.create()
 
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
@@ -42,10 +39,7 @@ class TestUpdateLibrary(APITestCase):
 
     def test_update_library_name(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = Library.objects.create(
-                    name="test name",
-                    type="test type",
-            )
+            lib = LibraryFactory.create()
 
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
@@ -53,7 +47,7 @@ class TestUpdateLibrary(APITestCase):
             }
 
             response = self.client.patch(
-                "/api/v1/libraries/{}/".format(a.pk),
+                "/api/v1/libraries/{}/".format(lib.pk),
                 updateFields,
                 format="json",
             )
@@ -61,16 +55,12 @@ class TestUpdateLibrary(APITestCase):
         assert status.HTTP_204_NO_CONTENT == response.status_code
         assert b"" == response.content
 
-        updated_library = Library.objects.get(pk=a.pk)
+        updated_library = Library.objects.get(pk=lib.pk)
 
         assert "updated name" == updated_library.name
 
     def test_destroy_library(self):
-        a = Library.objects.create(
-                name="test name",
-                type="test type",
-                data={"foo": "bar"},
-        )
+        a = LibraryFactory.create()
 
         assessment_count = Library.objects.count()
 
