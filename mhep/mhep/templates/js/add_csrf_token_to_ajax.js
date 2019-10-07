@@ -24,7 +24,8 @@
     beforeSend: function(xhr, settings) {
       if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
         var csrftoken = getCookie('csrftoken');
-        xhr.setRequestHeader("{{ settings.CSRF_HEADER_NAME }}", csrftoken);
+        // relates to Django's CSRF_HEADER_NAME setting
+        xhr.setRequestHeader('X-CSRFTOKEN', csrftoken);
       }
     }
   });
