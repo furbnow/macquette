@@ -6,29 +6,25 @@ from rest_framework.test import APITestCase
 from rest_framework import exceptions, status
 
 from mhep.assessments.models import Assessment
+from mhep.assessments.tests.factories import AssessmentFactory
 from mhep.users.tests.factories import UserFactory
 User = get_user_model()
 
 
 class TestListAssessments(APITestCase):
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        Assessment.objects.all().delete()
-
     def test_returns_assessments_for_logged_in_user_with_expected_result_structure(self):
         user = UserFactory.create()
         self.client.force_authenticate(user)
 
         with freeze_time("2019-06-01T16:35:34Z"):
-            a1 = Assessment.objects.create(
+            a1 = AssessmentFactory.create(
                     name="test assessment 1",
                     description="test description",
                     data={"foo": "bar"},
                     openbem_version="10.1.1",
                     owner=user,
             )
-            Assessment.objects.create(
+            AssessmentFactory.create(
                     name="test assessment 2",
                     description="test description",
                     data={"foo": "baz"},
@@ -61,22 +57,9 @@ class TestListAssessments(APITestCase):
         someone_else = UserFactory.create()
         self.client.force_authenticate(me)
 
-        with freeze_time("2019-06-01T16:35:34Z"):
-            Assessment.objects.create(
-                    name="my assessment #1",
-                    openbem_version="10.1.1",
-                    owner=me,
-            )
-            Assessment.objects.create(
-                    name="my assessment #2",
-                    openbem_version="10.1.1",
-                    owner=me,
-            )
-            Assessment.objects.create(
-                    name="someone elses assessment",
-                    openbem_version="10.1.1",
-                    owner=someone_else,
-            )
+        AssessmentFactory.create(owner=me)
+        AssessmentFactory.create(owner=me)
+        AssessmentFactory.create(owner=someone_else)
 
         response = self.client.get("/api/v1/assessments/")
         assert response.status_code == status.HTTP_200_OK
