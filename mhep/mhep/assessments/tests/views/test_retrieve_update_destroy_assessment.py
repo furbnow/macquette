@@ -14,14 +14,9 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         cls.me = UserFactory.create()
         super().setUpClass()
 
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        Assessment.objects.all().delete()
-
     def test_get_assessment(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = Assessment.objects.create(
+            a = AssessmentFactory.create(
                     owner=self.me,
                     name="test name",
                     description="test description",
@@ -51,10 +46,12 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
     def test_get_assessment_without_data_gets_sensible_default(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = Assessment.objects.create(
+            a = AssessmentFactory.create(
                     owner=self.me,
                     name="test name",
                     openbem_version="10.1.1",
+                    description="",
+                    data={},
             )
 
         self.client.force_authenticate(self.me)
@@ -83,7 +80,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
     def test_update_assessment(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = Assessment.objects.create(
+            a = AssessmentFactory.create(
                     owner=self.me,
                     name="test name",
                     description="test description",
@@ -117,7 +114,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
     def test_update_assessment_data_fails_if_string(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = Assessment.objects.create(
+            a = AssessmentFactory.create(
                     owner=self.me,
                     name="test name",
                     description="test description",
@@ -146,7 +143,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
     def test_update_assessment_data_fails_if_assessment_is_complete(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = Assessment.objects.create(
+            a = AssessmentFactory.create(
                     owner=self.me,
                     name="test name",
                     description="test description",
@@ -172,7 +169,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
     def test_assessment_status_can_change_from_complete_to_in_progress(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = Assessment.objects.create(
+            a = AssessmentFactory.create(
                     owner=self.me,
                     name="test name",
                     description="test description",
@@ -196,7 +193,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         assert status.HTTP_204_NO_CONTENT == response.status_code
 
     def test_destroy_assessment(self):
-        a = Assessment.objects.create(
+        a = AssessmentFactory.create(
                 owner=self.me,
                 name="test name",
                 description="test description",
