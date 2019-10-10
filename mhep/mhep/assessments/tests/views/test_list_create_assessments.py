@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 from rest_framework import exceptions, status
 
 from mhep.assessments.models import Assessment
-from mhep.assessments.tests.factories import AssessmentFactory
+from mhep.assessments.tests.factories import AssessmentFactory, OrganisationFactory
 from mhep.users.tests.factories import UserFactory
 User = get_user_model()
 
@@ -51,6 +51,23 @@ class TestListAssessments(APITestCase):
         }
 
         assert expected_first_result == response.data[0]
+
+    def test_doesnt_return_assessments_in_connected_organisation(self):
+        user = UserFactory.create()
+        organisation = OrganisationFactory.create()
+        organisation.members.add(user)
+
+        self.client.force_authenticate(user)
+
+        AssessmentFactory.create(owner=user)
+        AssessmentFactory.create(owner=user)
+
+        AssessmentFactory.create(organisation=organisation)
+
+        response = self.client.get("/api/v1/assessments/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert 2 == len(response.data)
 
     def test_only_returns_assessments_for_logged_in_user(self):
         me = UserFactory.create()
