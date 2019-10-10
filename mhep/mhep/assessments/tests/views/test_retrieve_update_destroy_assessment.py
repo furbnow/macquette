@@ -8,13 +8,13 @@ from mhep.assessments.tests.factories import AssessmentFactory
 from mhep.users.tests.factories import UserFactory
 
 
-class TestRetrieveUpdateDestroyAssessment(APITestCase):
+class TestGetAssessment(APITestCase):
     @classmethod
     def setUpClass(cls):
         cls.me = UserFactory.create()
         super().setUpClass()
 
-    def test_get_assessment(self):
+    def test_returns_result_structured_as_expected(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = AssessmentFactory.create(
                     owner=self.me,
@@ -44,7 +44,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         }
         assert expected == response.data
 
-    def test_get_assessment_without_data_gets_sensible_default(self):
+    def test_assessment_without_data_returns_sensible_default(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = AssessmentFactory.create(
                     owner=self.me,
@@ -74,14 +74,18 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         }
         assert expected == response.data
 
-    def test_get_assessment_for_bad_id(self):
+    def test_returns_404_for_bad_id(self):
         response = self.client.get("/api/v1/assessments/{}/".format("bad-id"))
         assert status.HTTP_404_NOT_FOUND == response.status_code
 
-    def test_update_assessment(self):
+
+class TestUpdateAssessment(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.me = UserFactory.create()
         with freeze_time("2019-06-01T16:35:34Z"):
-            a = AssessmentFactory.create(
-                    owner=self.me,
+            cls.assessment = AssessmentFactory.create(
+                    owner=cls.me,
                     name="test name",
                     description="test description",
                     data={"foo": "bar"},
@@ -89,6 +93,9 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
                     openbem_version="10.1.1",
             )
 
+        super().setUpClass()
+
+    def test_updates_and_returns_as_expected(self):
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
                 "data": {"new": "data"},
@@ -97,7 +104,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                "/api/v1/assessments/{}/".format(a.pk),
+                f"/api/v1/assessments/{self.assessment.pk}/",
                 updateFields,
                 format="json",
             )
@@ -105,31 +112,21 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         assert status.HTTP_204_NO_CONTENT == response.status_code
         assert b"" == response.content
 
-        updated_assessment = Assessment.objects.get(pk=a.pk)
+        updated_assessment = Assessment.objects.get(pk=self.assessment.pk)
 
         assert {"new": "data"} == updated_assessment.data
         assert "Complete" == updated_assessment.status
 
         assert "2019-07-13T12:10:12+00:00" == updated_assessment.updated_at.isoformat()
 
-    def test_update_assessment_data_fails_if_string(self):
-        with freeze_time("2019-06-01T16:35:34Z"):
-            a = AssessmentFactory.create(
-                    owner=self.me,
-                    name="test name",
-                    description="test description",
-                    data={"foo": "bar"},
-                    status="In progress",
-                    openbem_version="10.1.1",
-            )
-
+    def test_fails_if_data_field_is_a_string(self):
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
                 "data": {"foo string"},
             }
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                "/api/v1/assessments/{}/".format(a.pk),
+                f"/api/v1/assessments/{self.assessment.pk}/",
                 updateFields,
                 format="json",
             )
@@ -142,15 +139,8 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         }
 
     def test_update_assessment_data_fails_if_assessment_is_complete(self):
-        with freeze_time("2019-06-01T16:35:34Z"):
-            a = AssessmentFactory.create(
-                    owner=self.me,
-                    name="test name",
-                    description="test description",
-                    data={"foo": "bar"},
-                    status="Complete",
-                    openbem_version="10.1.1",
-            )
+        self.assessment.status = "Complete"
+        self.assessment.save()
 
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
@@ -159,7 +149,7 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                "/api/v1/assessments/{}/".format(a.pk),
+                f"/api/v1/assessments/{self.assessment.pk}/",
                 updateFields,
                 format="json",
             )
@@ -168,15 +158,8 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
         assert response.data == {'detail': "can't update data when status is 'complete'"}
 
     def test_assessment_status_can_change_from_complete_to_in_progress(self):
-        with freeze_time("2019-06-01T16:35:34Z"):
-            a = AssessmentFactory.create(
-                    owner=self.me,
-                    name="test name",
-                    description="test description",
-                    data={"foo": "bar"},
-                    status="Complete",
-                    openbem_version="10.1.1",
-            )
+        self.assessment.status = "Complete"
+        self.assessment.save()
 
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
@@ -185,14 +168,31 @@ class TestRetrieveUpdateDestroyAssessment(APITestCase):
 
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                "/api/v1/assessments/{}/".format(a.pk),
+                f"/api/v1/assessments/{self.assessment.pk}/",
                 updateFields,
                 format="json",
             )
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
 
-    def test_destroy_assessment(self):
+
+class TestDestroyAssessment(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.me = UserFactory.create()
+        with freeze_time("2019-06-01T16:35:34Z"):
+            cls.assessment = AssessmentFactory.create(
+                    owner=cls.me,
+                    name="test name",
+                    description="test description",
+                    data={"foo": "bar"},
+                    status="In progress",
+                    openbem_version="10.1.1",
+            )
+
+        super().setUpClass()
+
+    def test_returns_204_if_user_is_owner(self):
         a = AssessmentFactory.create(
                 owner=self.me,
                 name="test name",
