@@ -46,6 +46,13 @@ class TestListCreateLibraries(APITestCase):
             "data": l2.data,
         } == response.data[1]
 
+    def test_list_libraries_fails_if_not_logged_in(self):
+        LibraryFactory.create(owner=self.me)
+        LibraryFactory.create(owner=self.me)
+
+        response = self.client.get("/api/v1/libraries/")
+        assert status.HTTP_403_FORBIDDEN == response.status_code
+
     def test_create_library(self):
 
         with self.subTest("a valid library"):
@@ -86,12 +93,12 @@ class TestListCreateLibraries(APITestCase):
             with freeze_time("2019-06-01T16:35:34Z"):
                 response = self.client.post("/api/v1/libraries/", new_library, format="json")
 
-            assert response.status_code == status.HTTP_400_BAD_REQUEST
-            assert response.data == {
+            assert status.HTTP_400_BAD_REQUEST == response.status_code
+            assert {
                 'data': [
                     exceptions.ErrorDetail(string='This field is not a dict.', code='invalid')
                 ]
-            }
+            } == response.data
 
     def test_create_library_has_logged_in_user_as_owner(self):
         new_library = {
@@ -111,4 +118,4 @@ class TestListCreateLibraries(APITestCase):
         new_id = response.data.pop("id")
 
         retrieved = Library.objects.get(id=new_id)
-        assert retrieved.owner == self.me
+        assert self.me == retrieved.owner
