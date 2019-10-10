@@ -89,70 +89,14 @@ class TestCreateAssessment(APITestCase):
         super().tearDownClass()
         Assessment.objects.all().delete()
 
-    def test_create_assessment(self):
-        self.client.force_authenticate(self.user)
-        with self.subTest("without data"):
-            new_assessment = {
-                "name": "test assessment 1",
-                "description": "test description 2",
-                "openbem_version": "10.1.1",
-            }
-
-            with freeze_time("2019-06-01T16:35:34Z"):
-                response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
-
-            assert response.status_code == status.HTTP_201_CREATED
-
-            expected_result = {
-                "created_at": "2019-06-01T16:35:34Z",
-                "updated_at": "2019-06-01T16:35:34Z",
-                "mdate": "1559406934",
-                "status": "In progress",
-                "openbem_version": "10.1.1",
-                "name": "test assessment 1",
-                "description": "test description 2",
-                "author": self.user.username,
-                "userid": f"{self.user.id}",
-            }
-
-            assert "id" in response.data
-            response.data.pop("id")
-            assert expected_result == response.data
-
-        with self.subTest("without a description"):
-            new_assessment = {
-                "name": "test assessment 1",
-                "openbem_version": "10.1.1",
-            }
-
-            with freeze_time("2019-06-01T16:35:34Z"):
-                response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
-
-            assert response.status_code == status.HTTP_201_CREATED
-
-            expected_result = {
-                "created_at": "2019-06-01T16:35:34Z",
-                "updated_at": "2019-06-01T16:35:34Z",
-                "mdate": "1559406934",
-                "status": "In progress",
-                "openbem_version": "10.1.1",
-                "name": "test assessment 1",
-                "description": "",
-                "author": self.user.username,
-                "userid": f"{self.user.id}",
-            }
-
-            assert "id" in response.data
-            response.data.pop("id")
-            assert expected_result == response.data
-
-    def test_create_assessment_doesnt_show_data_in_return_value(self):
+    def test_create_assessment_returns_expected_result_structure(self):
         self.client.force_authenticate(self.user)
 
         new_assessment = {
-            "name": "test assessment",
+            "name": "test assessment 1",
+            "description": "test description 1",
             "openbem_version": "10.1.1",
-            "data": {"foo": "baz"}
+            "data": {"foo": "baz"}  # data is specifically *not* returned
         }
 
         with freeze_time("2019-06-01T16:35:34Z"):
@@ -166,15 +110,60 @@ class TestCreateAssessment(APITestCase):
             "mdate": "1559406934",
             "status": "In progress",
             "openbem_version": "10.1.1",
-            "name": "test assessment",
-            "description": "",
+            "name": "test assessment 1",
+            "description": "test description 1",
             "author": self.user.username,
             "userid": f"{self.user.id}",
         }
 
         assert "id" in response.data
         response.data.pop("id")
+
         assert expected_result == response.data
+
+    def test_accepts_no_data(self):
+        self.client.force_authenticate(self.user)
+
+        new_assessment = {
+            "name": "test assessment 1",
+            "openbem_version": "10.1.1",
+            "description": "test description 1",
+        }
+
+        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+
+        assert response.status_code == status.HTTP_201_CREATED
+        created_assessment = Assessment.objects.get(pk=response.data["id"])
+        assert {} == created_assessment.data
+
+    def test_sets_owner_to_logged_in_user(self):
+        self.client.force_authenticate(self.user)
+
+        new_assessment = {
+            "name": "test assessment 1",
+            "openbem_version": "10.1.1",
+            "description": "test description 1",
+        }
+
+        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+
+        assert response.status_code == status.HTTP_201_CREATED
+        created_assessment = Assessment.objects.get(pk=response.data["id"])
+        assert self.user == created_assessment.owner
+
+    def test_accepts_no_description(self):
+        self.client.force_authenticate(self.user)
+
+        new_assessment = {
+            "name": "test assessment 1",
+            "openbem_version": "10.1.1",
+            "data": {"foo": "baz"},
+        }
+
+        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert "" == response.data["description"]
 
     def test_returns_forbidden_if_not_logged_in(self):
         new_assessment = {
