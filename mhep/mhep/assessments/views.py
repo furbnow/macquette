@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from mhep.assessments.models import Assessment, Library
+from mhep.assessments.models import Assessment, Library, Organisation
 from mhep.assessments.permissions import IsOwner, IsMemberOfConnectedOrganisation
 from mhep.assessments.serializers import (
     AssessmentFullSerializer,
@@ -196,11 +196,21 @@ class UpdateDestroyLibraryItem(
 
 
 class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
-    def get(self, request, *args, **kwargs):
-        return Response([], status.HTTP_200_OK)
+    serializer_class = AssessmentMetadataSerializer
 
-    def post(self, request, *args, **kwargs):
-        return Response(None, status.HTTP_400_BAD_REQUEST)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        try:
+            context["organisation"] = Organisation.objects.get(id=self.kwargs["pk"])
+        except Organisation.DoesNotExist:
+            raise exceptions.NotFound("Organisation not found")
+
+        return context
+
+    def get_queryset(self, **kwargs):
+        return Assessment.objects.all().filter(
+            organisation__in=self.request.user.organisations.all()
+        )
 
 
 class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):

@@ -37,6 +37,7 @@ class AssessmentMetadataSerializer(
 
     def create(self, validated_data):
         validated_data['owner'] = self.context['request'].user
+        validated_data["organisation"] = self.context.get("organisation", None)
         return super().create(validated_data)
 
     class Meta:

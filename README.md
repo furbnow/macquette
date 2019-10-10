@@ -46,8 +46,10 @@ An administrative interface is available at [localhost:9090/admin](http://localh
 # API endpoints
 
 * [List assessments](#list-assessments)
+* [List assessments for organisation](#list-assessments-for-organisation)
 * [Get assessment](#get-assessment)
 * [Create assessment](#create-assessment)
+* [Create assessment for organisation](#create-assessment-for-organisation)
 * [Update a field on assessment](#update-a-field-on-assessment)
 * [Delete assessment](#delete-assessment)
 * [List organisations](#list-organisations)
@@ -75,6 +77,43 @@ List all assessments the current user has access to.
 
 ```
 GET /assessments/
+```
+
+Returns:
+
+```
+HTTP 200 OK
+Content-Type: application/json
+[
+    {
+        "id": "1",
+        "name": "Example assessment",
+        "description": "Example description",
+        "openbem_version": "10.1.1",
+        "status": "In progress",
+        "created_at": "2019-08-15T15:25:37.634182Z",
+        "updated_at": "2019-08-21T10:40:58.830425Z",
+        "author": "localadmin",
+        "userid": "1",
+        "mdate": "1566384058",
+    }
+]
+```
+
+## List assessments for organisation
+
+```
+GET /organisations/:id/assessments/
+```
+
+List all assessments that belong to an organisation.
+
+ℹ️ porting notes: replaces previous `assessment/list` with `orgid` param.
+
+### Example
+
+```
+GET /organisations/1/assessments/
 ```
 
 Returns:
@@ -153,6 +192,49 @@ POST /assessments/
 > curl -v \
     -H "Content-Type: application/json" \
     http://localhost:9090/api/v1/assessments/ \
+    --data @- << EOF
+{
+    "name": "Example assessment",
+    "description": "Example description",
+    "openbem_version": "10.1.1"
+}
+EOF
+```
+
+Returns:
+
+```
+HTTP 201 Created
+Content-Type: application/json
+
+{
+    "id": 6,
+    "name": "Example assesment",
+    "description": "Example description",
+    "openbem_version": "10.1.1",
+    "status": "In progress",
+    "created_at": "2019-06-01T16:35:34Z",
+    "updated_at": "2019-06-01T16:35:34Z",
+    "mdate": "1559406934",
+    "author": "janedoe",
+    "userid": "2",
+}
+```
+
+## Create assessment for organisation
+
+```
+POST /organisations/:id/assessments/
+```
+
+ℹ️ porting notes: replaces previous `assessment/create` with `org` param.
+
+### Example
+
+```
+> curl -v \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/api/v1/organisations/1/assessments/ \
     --data @- << EOF
 {
     "name": "Example assessment",
