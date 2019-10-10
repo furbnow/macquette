@@ -231,3 +231,22 @@ class TestCreateAssessmentForOrganisation(CreateAssessmentTestsMixin, APITestCas
         assessment = Assessment.objects.get(pk=response.data["id"])
         assert organisation == assessment.organisation
 
+    def test_fails_if_not_a_member_of_organisation(self):
+        organisation = OrganisationFactory.create()
+
+        self.client.force_authenticate(self.user)
+
+        new_assessment = {
+            "name": "test assessment 1",
+            "description": "test description 1",
+            "openbem_version": "10.1.1",
+        }
+
+        response = self.client.post(
+            f"/api/v1/organisations/{organisation.pk}/assessments/",
+            new_assessment,
+            format="json"
+        )
+
+        assert status.HTTP_403_FORBIDDEN == response.status_code
+        assert {"detail": "You are not a member of the Organisation."} == response.json()
