@@ -19,6 +19,9 @@ class TestListAssessmentsForOrganisation(APITestCase):
         AssessmentFactory.create(organisation=self.organisation)
         AssessmentFactory.create(organisation=self.organisation)
 
+        AssessmentFactory.create()
+        AssessmentFactory.create(organisation=OrganisationFactory.create())
+
         self.call_and_assert_number_of_returns_assessments(2)
 
     def test_returns_structure_as_expected(self):
