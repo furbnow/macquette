@@ -12,7 +12,7 @@ User = get_user_model()
 
 
 class TestListAssessments(APITestCase):
-    def test_returns_assessments_for_logged_in_user_with_expected_result_structure(self):
+    def test_returns_assessments_with_expected_result_structure(self):
         user = UserFactory.create()
         self.client.force_authenticate(user)
 
@@ -24,20 +24,10 @@ class TestListAssessments(APITestCase):
                     openbem_version="10.1.1",
                     owner=user,
             )
-            AssessmentFactory.create(
-                    name="test assessment 2",
-                    description="test description",
-                    data={"foo": "baz"},
-                    openbem_version="10.1.1",
-                    owner=user,
-            )
 
         response = self.client.get("/api/v1/assessments/")
-        assert response.status_code == status.HTTP_200_OK
 
-        assert 2 == len(response.data)
-
-        expected_first_result = {
+        expected_structure = {
             "id": "{}".format(a1.pk),
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
@@ -50,7 +40,7 @@ class TestListAssessments(APITestCase):
             "userid": f"{user.id}",
         }
 
-        assert expected_first_result == response.data[0]
+        assert expected_structure == response.data.pop()
 
     def test_doesnt_return_assessments_in_connected_organisation(self):
         user = UserFactory.create()
