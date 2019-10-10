@@ -11,7 +11,11 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from mhep.assessments.models import Assessment, Library, Organisation
-from mhep.assessments.permissions import IsOwner, IsMemberOfConnectedOrganisation
+from mhep.assessments.permissions import (
+    IsMemberOfConnectedOrganisation,
+    IsMemberOfOrganisation,
+    IsOwner,
+)
 from mhep.assessments.serializers import (
     AssessmentFullSerializer,
     AssessmentMetadataSerializer,
@@ -196,6 +200,10 @@ class UpdateDestroyLibraryItem(
 
 
 class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
+    permission_classes = [
+        IsMemberOfOrganisation,
+        IsAuthenticated,
+    ]
     serializer_class = AssessmentMetadataSerializer
 
     def get_serializer_context(self):
