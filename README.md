@@ -108,7 +108,7 @@ GET /organisations/:id/assessments/
 
 List all assessments that belong to an organisation.
 
-ℹ️ porting notes: replaces previous `assessment/list` route.
+ℹ️ porting notes: replaces previous `assessment/list` with `orgid` param.
 
 ### Example
 
@@ -227,7 +227,7 @@ Content-Type: application/json
 POST /organisations/:id/assessments/
 ```
 
-ℹ️ porting notes: replaces previous `assessment/create` route.
+ℹ️ porting notes: replaces previous `assessment/create` with `org` param.
 
 ### Example
 
