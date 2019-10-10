@@ -18,6 +18,7 @@ class TestListCreateLibraries(APITestCase):
         with freeze_time("2019-06-01T16:35:34Z"):
             l1 = LibraryFactory.create(owner=self.me)
             l2 = LibraryFactory.create(owner=self.me)
+            LibraryFactory.create(owner=UserFactory.create())  # another library (someone else's)
 
         self.client.force_authenticate(self.me)
         response = self.client.get("/api/v1/libraries/")
