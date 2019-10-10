@@ -10,7 +10,7 @@ from mhep.users.tests.factories import UserFactory
 User = get_user_model()
 
 
-class TestCreateAssessment(APITestCase):
+class CreateAssessmentTestsMixin():
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -32,7 +32,7 @@ class TestCreateAssessment(APITestCase):
         }
 
         with freeze_time("2019-06-01T16:35:34Z"):
-            response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+            response = self.post_to_create_endpoint(new_assessment)
 
         assert response.status_code == status.HTTP_201_CREATED
 
@@ -62,7 +62,7 @@ class TestCreateAssessment(APITestCase):
             "description": "test description 1",
         }
 
-        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+        response = self.post_to_create_endpoint(new_assessment)
 
         assert response.status_code == status.HTTP_201_CREATED
         created_assessment = Assessment.objects.get(pk=response.data["id"])
@@ -77,7 +77,7 @@ class TestCreateAssessment(APITestCase):
             "description": "test description 1",
         }
 
-        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+        response = self.post_to_create_endpoint(new_assessment)
 
         assert response.status_code == status.HTTP_201_CREATED
         created_assessment = Assessment.objects.get(pk=response.data["id"])
@@ -92,7 +92,7 @@ class TestCreateAssessment(APITestCase):
             "data": {"foo": "baz"},
         }
 
-        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+        response = self.post_to_create_endpoint(new_assessment)
 
         assert response.status_code == status.HTTP_201_CREATED
         assert "" == response.data["description"]
@@ -103,8 +103,9 @@ class TestCreateAssessment(APITestCase):
                 "openbem_version": "10.1.1",
             }
 
-        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        response = self.post_to_create_endpoint(new_assessment)
+
+        assert status.HTTP_403_FORBIDDEN == response.status_code
 
     def test_create_assessment_fails_if_name_missing(self):
         self.client.force_authenticate(self.user)
@@ -180,6 +181,16 @@ class TestCreateAssessment(APITestCase):
     def assert_create_fails(self, new_assessment, expected_status, expected_response):
         self.client.force_authenticate(self.user)
 
-        response = self.client.post("/api/v1/assessments/", new_assessment, format="json")
+        response = self.post_to_create_endpoint(new_assessment)
+
         assert response.status_code == expected_status
         assert response.data == expected_response
+
+
+class TestCreateAssessment(CreateAssessmentTestsMixin, APITestCase):
+    def post_to_create_endpoint(self, assessment):
+        return self.client.post(
+            "/api/v1/assessments/",
+            assessment,
+            format="json"
+        )
