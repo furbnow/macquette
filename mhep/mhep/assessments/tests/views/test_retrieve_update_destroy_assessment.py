@@ -26,11 +26,11 @@ class TestGetAssessment(APITestCase):
             )
 
         self.client.force_authenticate(self.me)
-        response = self.client.get("/api/v1/assessments/{}/".format(a.pk))
+        response = self.client.get(f"/api/v1/assessments/{a.pk}/")
         assert response.status_code == status.HTTP_200_OK
 
         expected = {
-            "id": "{}".format(a.pk),
+            "id": f"{a.pk}",
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
             "mdate": "1559406934",
@@ -55,7 +55,7 @@ class TestGetAssessment(APITestCase):
             )
 
         self.client.force_authenticate(self.me)
-        response = self.client.get("/api/v1/assessments/{}/".format(a.pk))
+        response = self.client.get(f"/api/v1/assessments/{a.pk}/")
         assert response.status_code == status.HTTP_200_OK
 
         expected = {
@@ -75,7 +75,7 @@ class TestGetAssessment(APITestCase):
         assert expected == response.data
 
     def test_returns_404_for_bad_id(self):
-        response = self.client.get("/api/v1/assessments/{}/".format("bad-id"))
+        response = self.client.get("/api/v1/assessments/bad-id/")
         assert status.HTTP_404_NOT_FOUND == response.status_code
 
 
