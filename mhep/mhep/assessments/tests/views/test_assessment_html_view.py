@@ -21,7 +21,7 @@ class TestListAssessmentsHTMLView(TestCase):
         response = self.client.get(my_assessments_url)
         self.assertRedirects(response, f"{login_url}?next={my_assessments_url}")
 
-    def test_returns_204_for_logged_in_user_viewing_own_assessment(self):
+    def test_returns_200_for_logged_in_user_viewing_own_assessment(self):
         self.client.login(username=self.me.username, password="foo")
         my_assessments_url = "/"
         response = self.client.get(my_assessments_url)
@@ -43,7 +43,7 @@ class TestAssessmentHTMLView(TestCase):
         response = self.client.get(my_assessment_url)
         self.assertRedirects(response, f"{login_url}?next={my_assessment_url}")
 
-    def test_returns_204_for_logged_in_user_viewing_own_assessment(self):
+    def test_returns_200_for_logged_in_user_viewing_own_assessment(self):
         self.client.login(username=self.me.username, password="foo")
         my_assessment_url = "/assessments/{}/".format(self.my_assessment.pk)
         response = self.client.get(my_assessment_url)
