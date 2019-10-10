@@ -21,18 +21,18 @@ class TestCreateLibraryPermissions(CommonMixin, APITestCase):
         person = UserFactory.create()
 
         self.client.force_authenticate(person)
-        response = self._call_endpoint(self.library)
+        response = self._call_endpoint()
         assert status.HTTP_201_CREATED == response.status_code
 
     def test_unauthenticated_user_cannot_create_a_library(self):
-        response = self._call_endpoint(self.library)
+        response = self._call_endpoint()
         self._assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "Authentication credentials were not provided.",
         )
 
-    def _call_endpoint(self, library):
+    def _call_endpoint(self):
         new_library = {
             "name": "test library 1",
             "type": "test type 1",
