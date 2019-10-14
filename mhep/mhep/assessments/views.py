@@ -14,7 +14,7 @@ from mhep.assessments.models import Assessment, Library, Organisation
 from mhep.assessments.permissions import (
     IsMemberOfConnectedOrganisation,
     IsMemberOfOrganisation,
-    IsOwner,
+    IsAssessmentOwner,
     IsLibraryOwner,
 )
 from mhep.assessments.serializers import (
@@ -80,7 +80,7 @@ class RetrieveUpdateDestroyAssessment(
     serializer_class = AssessmentFullSerializer
     permission_classes = [
         IsAuthenticated,
-        IsOwner | IsMemberOfConnectedOrganisation,
+        IsAssessmentOwner | IsMemberOfConnectedOrganisation,
     ]
 
     def update(self, request, *args, **kwargs):

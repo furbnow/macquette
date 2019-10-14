@@ -3,7 +3,7 @@ from rest_framework import exceptions, permissions
 from mhep.assessments.models import Organisation
 
 
-class IsOwner(permissions.BasePermission):
+class IsAssessmentOwner(permissions.BasePermission):
     # https://www.django-rest-framework.org/api-guide/permissions/#custom-permissions
     message = "You are not the owner of the Assessment."
 
