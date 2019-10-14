@@ -141,7 +141,7 @@ class ListOrganisations(generics.ListAPIView):
         return self.request.user.organisations.all()
 
 
-class CreateLibraryItem(
+class CreateUpdateDeleteLibraryItem(
     generics.GenericAPIView,
 ):
     serializer_class = LibraryItemSerializer
@@ -179,19 +179,6 @@ class CreateLibraryItem(
         library.data = d
         library.save()
         return Response("", status=status.HTTP_204_NO_CONTENT)
-
-
-class UpdateDestroyLibraryItem(
-    generics.GenericAPIView,
-):
-    serializer_class = LibraryItemSerializer
-    permission_classes = [
-        IsAuthenticated,
-        IsLibraryOwner,
-    ]
-
-    def get_queryset(self, *args, **kwargs):
-        return self.request.user.libraries.all()
 
     def delete(self, request, pk, tag):
         library = self.get_object()

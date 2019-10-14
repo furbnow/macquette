@@ -52,12 +52,12 @@ def test_update_destroy_library(library: Library):
 
 def test_create_library_item(library: Library):
     assert (
-        reverse("assessments:create-library-item", kwargs={"pk": library.id})
+        reverse("assessments:create-update-delete-library-item", kwargs={"pk": library.id})
         == f"/api/v1/libraries/{library.id}/items/"
     )
     assert (
         resolve(f"/api/v1/libraries/{library.id}/items/").view_name
-        == "assessments:create-library-item"
+        == "assessments:create-update-delete-library-item"
     )
 
 
@@ -65,12 +65,12 @@ def test_update_destroy_library_item(library: Library):
     tag = "SW_01"
 
     assert (
-        reverse("assessments:update-destroy-library-item", kwargs={"pk": library.id, "tag": tag})
+        reverse("assessments:create-update-delete-library-item", kwargs={"pk": library.id, "tag": tag})
         == f"/api/v1/libraries/{library.id}/items/{tag}/"
     )
     assert (
         resolve(f"/api/v1/libraries/{library.id}/items/{tag}/").view_name
-        == "assessments:update-destroy-library-item"
+        == "assessments:create-update-delete-library-item"
     )
 
 
