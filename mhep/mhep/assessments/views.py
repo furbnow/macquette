@@ -15,6 +15,7 @@ from mhep.assessments.permissions import (
     IsMemberOfConnectedOrganisation,
     IsMemberOfOrganisation,
     IsOwner,
+    IsLibraryOwner,
 )
 from mhep.assessments.serializers import (
     AssessmentFullSerializer,
@@ -141,6 +142,10 @@ class CreateLibraryItem(
     generics.GenericAPIView,
 ):
     serializer_class = LibraryItemSerializer
+    permission_classes = [
+        IsAuthenticated,
+        IsLibraryOwner,
+    ]
 
     def get_queryset(self, *args, **kwargs):
         return self.request.user.libraries.all()
@@ -177,6 +182,10 @@ class UpdateDestroyLibraryItem(
     generics.GenericAPIView,
 ):
     serializer_class = LibraryItemSerializer
+    permission_classes = [
+        IsAuthenticated,
+        IsLibraryOwner,
+    ]
 
     def get_queryset(self, *args, **kwargs):
         return self.request.user.libraries.all()
