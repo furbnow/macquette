@@ -5,7 +5,7 @@ from mhep.assessments.tests.factories import AssessmentFactory, OrganisationFact
 from mhep.users.tests.factories import UserFactory
 
 
-class GetPermissionTestsMixin():
+class AssessmentPermissionTestsMixin():
     def test_owner_who_isnt_organisation_member_can_access(self):
         assessment = AssessmentFactory.create()
         self.client.force_authenticate(assessment.owner)
@@ -52,7 +52,7 @@ class GetPermissionTestsMixin():
         )
 
 
-class TestGetAssessmentPermissions(GetPermissionTestsMixin, APITestCase):
+class TestGetAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
     def call_endpoint_and_assert(self, assessment, expect_permit, *args):
         response = self.client.get("/api/v1/assessments/{}/".format(assessment.id))
 
@@ -66,7 +66,7 @@ class TestGetAssessmentPermissions(GetPermissionTestsMixin, APITestCase):
             assert {"detail": expected_error_detail} == response.json()
 
 
-class TestUpdateAssessmentPermissions(GetPermissionTestsMixin, APITestCase):
+class TestUpdateAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
     def call_endpoint_and_assert(self, assessment, expect_permit, *args):
         update_fields = {
             "data": {"new": "data"},
@@ -88,7 +88,7 @@ class TestUpdateAssessmentPermissions(GetPermissionTestsMixin, APITestCase):
             assert {"detail": expected_error_detail} == response.json()
 
 
-class TestDeleteAssessmentPermissions(GetPermissionTestsMixin, APITestCase):
+class TestDeleteAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
     def call_endpoint_and_assert(self, assessment, expect_permit, *args):
         response = self.client.delete("/api/v1/assessments/{}/".format(assessment.id))
 
