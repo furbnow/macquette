@@ -14,7 +14,6 @@ from mhep.assessments.views import (
     SubviewHTMLView,
     SubviewJavascriptView,
     UpdateDestroyLibrary,
-    logout_view,
 )
 
 app_name = "assessments"
@@ -100,5 +99,4 @@ urlpatterns = [
         view=CreateUpdateDeleteLibraryItem.as_view(),
         name="create-update-delete-library-item"
     ),
-    url(r'^logout', logout_view, name='logout'),
 ]
