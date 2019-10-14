@@ -201,8 +201,8 @@ class UpdateDestroyLibraryItem(
 
 class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
     permission_classes = [
-        IsMemberOfOrganisation,
         IsAuthenticated,
+        IsMemberOfOrganisation,
     ]
     serializer_class = AssessmentMetadataSerializer
 
