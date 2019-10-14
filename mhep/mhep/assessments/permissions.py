@@ -3,12 +3,19 @@ from rest_framework import exceptions, permissions
 from mhep.assessments.models import Organisation
 
 
-class IsOwner(permissions.BasePermission):
+class IsAssessmentOwner(permissions.BasePermission):
     # https://www.django-rest-framework.org/api-guide/permissions/#custom-permissions
     message = "You are not the owner of the Assessment."
 
     def has_object_permission(self, request, view, assessment):
         return request.user == assessment.owner
+
+
+class IsLibraryOwner(permissions.BasePermission):
+    message = "You are not the owner of the Library."
+
+    def has_object_permission(self, request, view, library):
+        return request.user == library.owner
 
 
 class IsMemberOfConnectedOrganisation(permissions.BasePermission):
