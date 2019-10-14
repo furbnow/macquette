@@ -482,7 +482,6 @@
         }
     });
     $("body").on("click", ".org-item", function () {
-        const apiURL = "http://localhost:9090/api/v1"
         orgid = $(this).attr("orgid");
         draw_organisation(orgid);
         $("#organisation").show();
