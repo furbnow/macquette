@@ -142,6 +142,9 @@ class CreateLibraryItem(
 ):
     serializer_class = LibraryItemSerializer
 
+    def get_queryset(self, *args, **kwargs):
+        return self.request.user.libraries.all()
+
     def post(self, request, pk):
         serializer = self.get_serializer_class()(data=request.data)
         if not serializer.is_valid():
@@ -151,7 +154,7 @@ class CreateLibraryItem(
         tag = serializer.validated_data['tag']
         item = serializer.validated_data['item']
 
-        library = Library.objects.get(id=pk)
+        library = self.get_object()
 
         if isinstance(library.data, str):
             d = json.loads(library.data)
@@ -175,8 +178,11 @@ class UpdateDestroyLibraryItem(
 ):
     serializer_class = LibraryItemSerializer
 
+    def get_queryset(self, *args, **kwargs):
+        return self.request.user.libraries.all()
+
     def delete(self, request, pk, tag):
-        library = Library.objects.get(id=pk)
+        library = self.get_object()
 
         if isinstance(library.data, str):
             d = json.loads(library.data)
@@ -192,7 +198,7 @@ class UpdateDestroyLibraryItem(
         return Response("", status=status.HTTP_204_NO_CONTENT)
 
     def put(self, request, pk, tag):
-        library = Library.objects.get(id=pk)
+        library = self.get_object()
 
         if isinstance(library.data, str):
             d = json.loads(library.data)
