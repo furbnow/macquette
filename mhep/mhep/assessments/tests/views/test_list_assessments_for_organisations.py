@@ -24,6 +24,17 @@ class TestListAssessmentsForOrganisation(APITestCase):
 
         self.call_and_assert_number_of_returns_assessments(2)
 
+    def test_returns_only_assessments_connected_to_the_organisation(self):
+        second_org = OrganisationFactory.create()
+        second_org.members.add(self.org_member)
+
+        AssessmentFactory.create(organisation=self.organisation)
+        AssessmentFactory.create(organisation=self.organisation)
+
+        AssessmentFactory.create(organisation=second_org)
+
+        self.call_and_assert_number_of_returns_assessments(2)
+
     def test_returns_structure_as_expected(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             assessment = AssessmentFactory.create(
