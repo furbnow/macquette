@@ -225,9 +225,12 @@ class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
         return context
 
     def get_queryset(self, **kwargs):
-        return Assessment.objects.all().filter(
-            organisation__in=self.request.user.organisations.all()
-        )
+        try:
+            return Assessment.objects.all().filter(
+                organisation=Organisation.objects.get(id=self.kwargs["pk"])
+            )
+        except Organisation.DoesNotExist:
+            raise exceptions.NotFound("Organisation not found")
 
 
 class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):
