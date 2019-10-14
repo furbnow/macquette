@@ -1,4 +1,4 @@
-
+from django.conf.urls import url
 from django.urls import path
 from django.views.generic import TemplateView
 
@@ -15,6 +15,7 @@ from mhep.assessments.views import (
     SubviewJavascriptView,
     UpdateDestroyLibraryItem,
     UpdateDestroyLibrary,
+    logout_view,
 )
 
 app_name = "assessments"
@@ -100,4 +101,5 @@ urlpatterns = [
         view=UpdateDestroyLibraryItem.as_view(),
         name="update-destroy-library-item"
     ),
+    url(r'^logout', logout_view, name='logout'),
 ]
