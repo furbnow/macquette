@@ -70,6 +70,22 @@ class TestListAssessmentsForOrganisation(APITestCase):
 
         self.call_and_assert_number_of_returns_assessments(0)
 
+    def test_returns_forbidden_if_not_logged_in(self):
+        AssessmentFactory.create(organisation=self.organisation)
+        response = self.client.get(f"/api/v1/organisations/{self.organisation.pk}/assessments/")
+
+        assert status.HTTP_403_FORBIDDEN == response.status_code
+        assert {"detail": "Authentication credentials were not provided."} == response.json()
+
+    def test_returns_forbidden_if_listing_for_organisation_not_a_member_of(self):
+        someone_else = UserFactory.create()
+        self.client.force_authenticate(someone_else)
+
+        response = self.client.get(f"/api/v1/organisations/{self.organisation.pk}/assessments/")
+
+        assert status.HTTP_403_FORBIDDEN == response.status_code
+        assert {"detail": "You are not a member of the Organisation."} == response.json()
+
     def call_and_assert_number_of_returns_assessments(self, expectedAssessmentCount):
         self.client.force_authenticate(self.org_member)
         response = self.client.get(f"/api/v1/organisations/{self.organisation.pk}/assessments/")
