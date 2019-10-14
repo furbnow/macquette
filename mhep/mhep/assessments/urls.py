@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 from mhep.assessments.views import (
     AssessmentHTMLView,
-    CreateLibraryItem,
+    CreateUpdateDeleteLibraryItem,
     ListAssessmentsHTMLView,
     ListCreateAssessments,
     ListCreateLibraries,
@@ -13,7 +13,6 @@ from mhep.assessments.views import (
     RetrieveUpdateDestroyAssessment,
     SubviewHTMLView,
     SubviewJavascriptView,
-    UpdateDestroyLibraryItem,
     UpdateDestroyLibrary,
     logout_view,
 )
@@ -92,14 +91,14 @@ urlpatterns = [
 
     path(
         "api/v1/libraries/<int:pk>/items/",
-        view=CreateLibraryItem.as_view(),
-        name="create-library-item"
+        view=CreateUpdateDeleteLibraryItem.as_view(),
+        name="create-update-delete-library-item"
     ),
 
     path(
         "api/v1/libraries/<int:pk>/items/<str:tag>/",
-        view=UpdateDestroyLibraryItem.as_view(),
-        name="update-destroy-library-item"
+        view=CreateUpdateDeleteLibraryItem.as_view(),
+        name="create-update-delete-library-item"
     ),
     url(r'^logout', logout_view, name='logout'),
 ]
