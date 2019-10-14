@@ -1,3 +1,6 @@
+import datetime
+import pytz
+
 from collections import OrderedDict
 
 from rest_framework.test import APITestCase
@@ -9,7 +12,7 @@ from mhep.users.tests.factories import UserFactory
 
 class TestListOrganisations(APITestCase):
     def test_shows_logged_in_users_organisations(self):
-        me = UserFactory.create()
+        me = UserFactory.create(last_login=datetime.datetime(2019, 6, 3, 16, 35, 0, 0, pytz.UTC))
         my_org = OrganisationFactory.create()
         AssessmentFactory.create(owner=me, organisation=my_org)
         AssessmentFactory.create(owner=me, organisation=my_org)
@@ -30,7 +33,7 @@ class TestListOrganisations(APITestCase):
                     {
                         "userid": f"{me.id}",
                         "name": me.username,
-                        "lastactive": "?"
+                        "last_login": me.last_login.isoformat(),
                     }
                 ]),
             ]),
