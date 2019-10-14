@@ -119,6 +119,7 @@ class UpdateDestroyLibrary(
         # IsAuthenticated will ensure we can filter (using get_queryset) based on User.libraries
         # (which is the reverse of Library.owner)
         IsAuthenticated,
+        IsLibraryOwner,
     ]
 
     def get_queryset(self, *args, **kwargs):
