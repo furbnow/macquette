@@ -27,7 +27,7 @@ class TestListAssessments(APITestCase):
 
         response = self.client.get("/api/v1/assessments/")
 
-        expected_structure = {
+        expected_structure = [{
             "id": "{}".format(a1.pk),
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
@@ -38,9 +38,9 @@ class TestListAssessments(APITestCase):
             "description": "test description",
             "author": user.username,
             "userid": f"{user.id}",
-        }
+        }]
 
-        assert expected_structure == response.data.pop()
+        assert expected_structure == response.data
 
     def test_doesnt_return_assessments_in_connected_organisation(self):
         user = UserFactory.create()
