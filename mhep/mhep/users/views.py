@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.views.generic import DetailView, RedirectView, UpdateView
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 User = get_user_model()
 

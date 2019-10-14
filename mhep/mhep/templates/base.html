@@ -67,6 +67,9 @@
 		  <div style="display: inline" class="menu-assessment cc pull-left">
 			CARBON COOP (DJANGO)
 		  </div>
+      {% if user.is_authenticated %}
+          <a style="display: inline" class="menu-assessment pull-right" href="{% url 'assessments:logout' %}" >Log out</a>
+      {% endif %}
 		</div>
 	  </div>
 

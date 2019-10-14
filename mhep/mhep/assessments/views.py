@@ -1,7 +1,10 @@
 import json
 import logging
 
+from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
 
@@ -232,3 +235,9 @@ class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
 
 class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):
     template_name = "assessments/assessments.html"
+
+
+def logout_view(request):
+    logout(request)
+    messages.info(request, "Logged out successfully!")
+    return redirect("assessments:home")
