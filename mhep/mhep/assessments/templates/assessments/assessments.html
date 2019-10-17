@@ -54,11 +54,10 @@
         <div style="padding:10px">
             <b>Members:</b><br>
             <div id="organisationmembers"></div>
+            {% if request.user.is_staff %}
             <br>
-            <div class="input-append">
-                <input id="organisation-add-member-name" type="text" style="width:180px" />
-                <button id="organisation-add-member" class="btn">Add member</button>
-            </div>
+            <a id="organisation-add-member" href="">Edit organisation</a>
+            {% endif %}
         </div>
     </div>
 
@@ -435,27 +434,11 @@
             //draw_organisation(8);
         }});
 
-    $("#organisation-add-member").click(function () {
-        var membername = $("#organisation-add-member-name").val();
-        if (membername == "") {
-            alert("Member name missing");
-        } else {
-            alert("Not currently supported.");
-            /* TODO(PMF): disabled for port phase 1.
-            $.ajax({url: path + "assessment/organisationaddmember.json", data: "orgid=" + orgid + "&membername=" + membername, success: function (result) {
-                    if (result.success) {
-                        myorganisations[orgid].members.push(result);
-                        draw_organisation(orgid);
-                    } else {
-                        alert(result.message);
-                    }
-                }});
-            */
-        }
-    });
     $("body").on("click", ".org-item", function () {
         orgid = $(this).attr("orgid");
         draw_organisation(orgid);
+        edit_org_link = "{% url 'admin:assessments_organisation_change' 12345 %}".replace(/12345/, orgid.toString());
+        $("#organisation-add-member").attr("href", edit_org_link);
         $("#organisation").show();
         viewmode = "organisation";
         $.ajax({url: apiURL + "/organisations/" + orgid + "/assessments/", success: function (result) {
