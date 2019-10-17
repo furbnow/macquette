@@ -3,8 +3,10 @@
     "model": "assessments.assessment",
     "pk": 1,
     "fields": {
-        "name": "Example assessment 1",
-        "description": "Example description 1",
+        "owner": 1,
+        "organisation": 1,
+        "name": "Chigley assessment 1",
+        "description": "Chigley description 1",
         "openbem_version": "10.1.1",
         "status": "Complete",
         "data": {
@@ -5770,15 +5772,17 @@
             }
         },
         "created_at": "2019-08-15T15:25:37.634Z",
-        "updated_at": "2019-08-21T12:32:18.117Z"
+        "updated_at": "2019-10-14T14:56:46.565Z"
     }
 },
 {
     "model": "assessments.assessment",
     "pk": 2,
     "fields": {
-        "name": "Example assessment 2",
-        "description": "Example description 2",
+        "owner": 1,
+        "organisation": 1,
+        "name": "Chigley assessment 2",
+        "description": "Chigley description 2",
         "openbem_version": "10.1.1",
         "status": "In progress",
         "data": {
@@ -11544,7 +11548,7 @@
             }
         },
         "created_at": "2019-08-21T12:32:08.105Z",
-        "updated_at": "2019-08-21T12:32:08.105Z"
+        "updated_at": "2019-10-14T14:56:46.565Z"
     }
 }
 ]
