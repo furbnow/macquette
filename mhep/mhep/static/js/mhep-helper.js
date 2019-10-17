@@ -7,9 +7,11 @@ var mhep_helper = {
             url: apiURL + "/assessments/",
             dataType: 'json',
             async: false,
+            error: handleServerError('listing assessments'),
             success: function (data) {
                 result = data;
-            }});
+            },
+        });
         if (result == "") {
             result = [];
         }
@@ -18,9 +20,13 @@ var mhep_helper = {
     'get': function (id)
     {
         var result = {};
-        $.ajax({url: apiURL + "/assessments/" + parseInt(id) + "/", async: false, success: function (data) {
+        $.ajax({
+            url: apiURL + "/assessments/" + parseInt(id) + "/", async: false,
+            error: handleServerError('loading assessment'),
+            success: function (data) {
                 result = data;
-            }});
+            },
+        });
         return result;
     },
     'set': function (id, project, callback)
@@ -38,9 +44,10 @@ var mhep_helper = {
           dataType: "json",
           contentType: "application/json;charset=utf-8",
           async: true,
+          error: handleServerError('updating assessment'),
           success: function (data) {
               callback(data)
-          }
+          },
         });
         //console.log(JSON.stringify(inputdata));
     },
@@ -52,6 +59,7 @@ var mhep_helper = {
             type: 'GET',
             async: false,
             url: "https://api.github.com/repos/carboncoop/openBEM/releases/latest",
+            error: handleServerError('getting latest openBEM version'),
             success: function (data) {
                 openBEM_version = data.tag_name;
                 const newAssessment = {
@@ -74,29 +82,27 @@ var mhep_helper = {
                     dataType: 'json',
                     contentType: "application/json;charset=utf-8",
                     async: false,
+                    error: handleServerError('creating assessment'),
                     success: function (data) {
-                        if (data == false) {
-                            window.alert("Assesment couldn't be created")
-                        } else {
+                        if (callback) {
                             callback(data);
                         }
-                    }});
+                    },
+                });
             }
         });
         return result;
     },
     'delete': function (id) {
-        var result = 0;
+        var result = false;
         $.ajax({
             type: 'DELETE',
             url: apiURL + "/assessments/" + id + "/",
             async: false,
+            error: handleServerError('deleting assessment'),
             success: function () {
-                result = 1;
+                result = true;
             },
-            error: function () {
-                result = 0;
-            }
         });
         return result;
     },
@@ -108,8 +114,10 @@ var mhep_helper = {
             dataType: "json",
             contentType: "application/json;charset=utf-8",
             async: false,
+            error: handleServerError('setting assessment status'),
             success: function (data) {
-            }});
+            },
+        });
     },
     'set_name_and_description': function (id, name, description)
     {
@@ -119,24 +127,42 @@ var mhep_helper = {
             dataType: "json",
             contentType: "application/json;charset=utf-8",
             async: false,
+            error: handleServerError('setting assessment name and description'),
             success: function (data) {
-            }});
+            },
+        });
     },
     'upload_images': function (id, form_data, callback)
     {
         var result = false;
         form_data.append("id", id);
-        $.ajax({type: 'POST', url: path + "assessment/uploadimages.json", data: form_data, processData: false, contentType: false, async: false, success: function (data) {
+        $.ajax({
+            type: 'POST',
+            url: path + "assessment/uploadimages.json",
+            data: form_data,
+            processData: false,
+            contentType: false,
+            async: false,
+            error: handleServerError('uploading images'),
+            success: function (data) {
                 callback(data)
-            }});
+            },
+        });
     },
     'delete_image': function (id, filename, callback)
     {
         var result = false;
-        $.ajax({type: 'POST', url: path + "assessment/deleteimage.json", data: "id=" + id + "&filename=" + filename, async: false, success: function (data) {
+        $.ajax({
+            type: 'POST',
+            url: path + "assessment/deleteimage.json",
+            data: "id=" + id + "&filename=" + filename,
+            async: false,
+            error: handleServerError('deleting image'),
+            success: function (data) {
                 if (callback != undefined)
                     callback(data);
-            }});
+            },
+        });
     },
     'set_openBEM_version': function (id, version, callback)
     {
@@ -145,12 +171,14 @@ var mhep_helper = {
             data: JSON.stringify({'openbem_version': version}),
             dataType: "json",
             contentType: "application/json;charset=utf-8",
+            error: handleServerError('setting openBEM version'),
             success: function (data) {
                 if (data == false) {
                     window.alert("There was an error updating openBEM version");
                 }
                 callback(data);
-            }});
+            },
+        });
     },
     extract_inputdata: function (data)
     {

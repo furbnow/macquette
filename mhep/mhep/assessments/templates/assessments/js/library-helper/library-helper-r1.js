@@ -266,7 +266,11 @@ libraryHelper.prototype.add_events = function () {
 libraryHelper.prototype.append_modals = function () {
     var html;
     var myself = this;
-    $.ajax({url: "{% url 'assessments:library-helper-html' %}", datatype: "json", success: function (result) {
+    $.ajax({
+        url: "{% url 'assessments:library-helper-html' %}",
+        datatype: "json",
+        error: handleServerError('loading library helper HTML'),
+        success: function (result) {
             html = result;
             myself.container.append(html);
             // Make modals draggable
@@ -317,6 +321,7 @@ libraryHelper.prototype.onShareLib = function (selected_library) {
         $.ajax({
             url: path + "assessment/sharelibrary.json",
             data: "id=" + selected_library + "&name=" + username + "&write_permissions=" + write_permissions,
+            error: handleServerError('sharing library'),
             success: function (data) {
                 $('#return-message').html(data);
                 myself.display_library_users(selected_library);
@@ -340,7 +345,11 @@ libraryHelper.prototype.onRemoveUserFromSharedLib = function (user_to_remove, se
     $('#return-message').html('');
     //var selected_library = $('#library-select').val();
     var myself = this;
-    $.ajax({url: path + "assessment/removeuserfromsharedlibrary.json", data: 'library_id=' + selected_library + '&user_to_remove=' + user_to_remove, success: function (result) {
+    $.ajax({
+        url: path + "assessment/removeuserfromsharedlibrary.json",
+        data: 'library_id=' + selected_library + '&user_to_remove=' + user_to_remove,
+        error: handleServerError('removing user from shared library'),
+        success: function (result) {
             $('#return-message').html(result);
             myself.display_library_users(selected_library);
         }});
@@ -407,6 +416,7 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
         data: JSON.stringify(new_library_body),
         datatype: "json",
         contentType: "application/json;charset=utf-8",
+        error: handleServerError('creating library'),
         success: function (result) {
             myself.load_user_libraries();
             $("#create-library-message").html('Library created');
@@ -415,9 +425,6 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
             $('#finishcreatelibrary').show('fast');
             UpdateUI(data);
         },
-        error: function (result) {
-            $("#create-library-message").html('Library could not be created');
-        }
     });
 
 };
@@ -480,14 +487,13 @@ libraryHelper.prototype.onCreateInLibraryOk = function (library_id) {
                 }),
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
+                error: handleServerError('adding item to library'),
                 success: function (result) {
                     $("#create-in-library-message").html("Item added to the library");
                     $('#modal-create-in-library button').hide('fast');
                     $('#create-in-library-finish').show('fast');
                 },
-                error: function (result) {
-                    $("#create-in-library-message").html("There were problems saving the library");
-                }});
+            });
         }
     }
 };
@@ -576,14 +582,11 @@ libraryHelper.prototype.onEditLibraryItemOk = function (library_id) {
             url: apiURL + "/libraries/"  + selected_library.id + "/items/" + tag + "/",
             data: item_string,
             contentType: "application/json;charset=utf-8",
-            complete: function(xhr) {
-                if (xhr.status == 204) {
-                    $("#edit-item-message").html("Item edited and library saved");
-                    $('#modal-edit-item button').hide('fast');
-                    $('#edit-item-finish').show('fast');
-                } else {
-                    $("#edit-item-message").html("There were problems saving the library - " + result);
-                }
+            error: handleServerError('saving library'),
+            success: function(xhr) {
+                $("#edit-item-message").html("Item edited and library saved");
+                $('#modal-edit-item button').hide('fast');
+                $('#edit-item-finish').show('fast');
             }
         });
     }
@@ -826,13 +829,11 @@ libraryHelper.prototype.onDeleteLibraryOk = function (library_id) {
         url: apiURL + "/libraries/" + library_id,
         type: 'DELETE',
         async: false,
+        error: handleServerError('deleting library'),
         success: function () {
             $('#confirm-delete-library-modal').modal('hide');
             myself.init();
             UpdateUI();
-        },
-        error : function (response) {
-            $('#confirm-delete-library-modal .message').html('Library could not be deleted - ' + response.responseJSON.detail);
         },
     });
 }
@@ -943,13 +944,11 @@ libraryHelper.prototype.onSaveLibraryEditMode = function (selector, library_id) 
         data: JSON.stringify({'data': data}),
         datatype: "json",
         contentType: "application/json;charset=utf-8",
+        error: handleServerError('saving library'),
         success: function (result) {
             $('#show-library-modal-edit-mode #save').attr('disabled', 'disabled');
             $('#show-library-modal-edit-mode #message').html('Saved');
         },
-        error: function (result) {
-            alert("Library could not be saved. The server said: " + result);
-        }
     });
 
 }
@@ -3355,6 +3354,7 @@ libraryHelper.prototype.load_user_libraries = function (callback) {
         url: apiURL + '/libraries/',
         async: false,
         datatype: "json",
+        error: handleServerError('loading libraries'),
         success: function (result) {
             for (library in result) {
                 if (mylibraries[result[library].type] === undefined)
@@ -3367,7 +3367,11 @@ libraryHelper.prototype.load_user_libraries = function (callback) {
         }});
 };
 libraryHelper.prototype.display_library_users = function (library_id) {
-    $.ajax({url: path + "assessment/getsharedlibrary.json", data: "id=" + library_id, success: function (shared) {
+    $.ajax({
+        url: path + "assessment/getsharedlibrary.json",
+        data: "id=" + library_id,
+        error: handleServerError('loading library users'),
+        success: function (shared) {
             var out = "<tr><th>Shared with:</th><th>Has write persmissions</th><th></th></tr>";
             var write = "";
             for (var i in shared) {
@@ -3413,17 +3417,13 @@ libraryHelper.prototype.set_library_name = function (library_id, new_name, callb
         async: false,
         datatype: "json",
         contentType: "application/json;charset=utf-8",
+        error: handleServerError('renaming library'),
         success: function (response) {
             var library = library_helper.get_library_by_id(library_id);
             library.name = new_name;
             UpdateUI(data);
             $('.modal').modal('hide');
         },
-        error: function (response) {
-            $('#edit-library-name-modal #message').html('Library name could not be changed: ' + response.responseJSON.detail);
-        }
-
-
     });
 };
 libraryHelper.prototype.populate_library_modal = function (origin) {
@@ -3465,13 +3465,11 @@ libraryHelper.prototype.delete_library_item = function (library_id, tag) {
             type: "DELETE",
             async: false,
             url: apiURL + "/libraries/"  + library_id + "/items/" + tag + "/",
+            error: handleServerError('deleting item from library'),
             success: function() {
                 $('#confirm-delete-library-item-modal').modal('hide');
                 myself.load_user_libraries();
             },
-            error: function() {
-                $('#confirm-delete-library-item-modal .message').html("Item could not be deleted - " + result);
-            }
         });
 }
 
