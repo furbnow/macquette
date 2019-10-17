@@ -508,9 +508,11 @@
         $("#organisation-name").html(myorganisations[orgid].name);
         var members = myorganisations[orgid].members;
         for (var z in members) {
+            const lastLogin = new Date(members[z].last_login);
+
             out += "<div class='recent-activity-item' style='height:40px'>";
             out += '<img src="{% static "img/defaultuser.png" %}" style="height:40px; float:left; padding-right:5px"/ >';
-            out += "<b>" + members[z].name + "</b><br>Last active: " + members[z].lastactive;
+            out += "<b>" + members[z].name + "</b><br>Last active: " + lastLogin;
             out += "</div>";
         }
         $("#organisationmembers").html(out);

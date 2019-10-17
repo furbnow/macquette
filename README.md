@@ -371,7 +371,7 @@ Content-Type: application/json
             {
                 "userid": "2",
                 "name": "janedoe",
-                "lastactive": "?"
+                "last_active": "2019-06-03T16:35:00+00:00"
             }
         ]
     },
@@ -383,12 +383,12 @@ Content-Type: application/json
             {
                 "userid": "2",
                 "name": "janedoe",
-                "lastactive": "?"
+                "last_login": "2019-06-03T16:35:00+00:00"
             },
             {
                 "userid": "3",
                 "name": "michael2",
-                "lastactive": "?"
+                "last_login": "2019-06-03T16:35:00+00:00"
             }
         ]
     }
@@ -693,7 +693,7 @@ Content-Type: application/json
             {
                 "userid": "1",
                 "name": "localadmin",
-                "lastactive": "?"
+                "last_login": "2019-06-03T16:35:00+00:00"
             }
         ]
     }
