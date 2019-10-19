@@ -4,6 +4,7 @@ import sentry_sdk
 
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
+import requests
 
 from .base import *  # noqa
 from .base import env
@@ -14,6 +15,28 @@ from .base import env
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["mhep.carbon.coop"])
+
+# Required for health monitoring on AWS Elastic Beanstalk
+LOCAL_IP = None
+try:
+    LOCAL_IP = requests.get(
+        "http://169.254.169.254/latest/meta-data/local-ipv4", timeout=0.01
+    ).text
+except requests.exceptions.RequestException:
+    pass
+if LOCAL_IP and not DEBUG:  # noqa F405
+    ALLOWED_HOSTS.append(LOCAL_IP)
+
+LOCAL_HOSTNAME = None
+try:
+    LOCAL_HOSTNAME = requests.get(
+        "http://169.254.169.254/latest/meta-data/local-hostname", timeout=0.01
+    ).text
+except requests.exceptions.RequestException:
+    pass
+if LOCAL_HOSTNAME and not DEBUG:  # noqa F405
+    ALLOWED_HOSTS.append(LOCAL_HOSTNAME)
+
 
 # DATABASES
 # ------------------------------------------------------------------------------
