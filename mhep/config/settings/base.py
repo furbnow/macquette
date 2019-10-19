@@ -3,7 +3,12 @@ Base settings to build other settings files upon.
 """
 
 import environ
+import logging
 
+import sentry_sdk
+
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 from corsheaders.defaults import default_methods
 from corsheaders.defaults import default_headers
 
@@ -40,6 +45,22 @@ USE_L10N = True
 USE_TZ = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths
 LOCALE_PATHS = [ROOT_DIR.path("locale")]
+
+
+# Sentry
+# ------------------------------------------------------------------------------
+# We set up Sentry early on so that other config errors get logged to Sentry.
+# If no DSN is provided, then we skip setup, that's fine.
+SENTRY_DSN = env("SENTRY_DSN", default=None)
+if SENTRY_DSN:
+    SENTRY_LOG_LEVEL = env.int("DJANGO_SENTRY_LOG_LEVEL", logging.INFO)
+
+    sentry_logging = LoggingIntegration(
+        level=SENTRY_LOG_LEVEL,  # Capture info and above as breadcrumbs
+        event_level=logging.ERROR,  # Send errors as events
+    )
+    sentry_sdk.init(dsn=SENTRY_DSN, integrations=[sentry_logging, DjangoIntegration()])
+
 
 # DATABASES
 # ------------------------------------------------------------------------------
