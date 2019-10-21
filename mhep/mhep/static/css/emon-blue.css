@@ -110,16 +110,6 @@ input[type=text][class=variable-name-edit] {
   overflow-y: auto;
 }
 
-.ajax-loader {
-    position: absolute;
-    top: 0; bottom:0; left: 0; right:0;
-    margin: auto;
-    background: rgba(255, 255, 255, .8)
-    	url(ajax-loader.gif)
-    	center
-    	no-repeat;
-}
-
 .navbar-inner {
     background-image:none !important;
     background-color:#44b3e2 !important;

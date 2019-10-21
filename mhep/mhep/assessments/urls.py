@@ -32,7 +32,10 @@ urlpatterns = [
 
     path(
         "js/library-helper/library-helper-r1.js",
-        TemplateView.as_view(template_name="assessments/js/library-helper/library-helper-r1.js"),
+        TemplateView.as_view(
+            template_name="assessments/js/library-helper/library-helper-r1.js",
+            content_type="text/javascript",
+        ),
         name="library-helper-r1-js",
     ),
 

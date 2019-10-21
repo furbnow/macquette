@@ -278,7 +278,7 @@
     $("#project-description").html(p.description);
     $("#project-author").html(p.author);
 
-    if (p.data == false || p.data == null)
+    if (p.data == false || p.data == null || Object.keys(p.data).length == 0)
         p.data = {'master': {}};
     var project = p.data;
 
