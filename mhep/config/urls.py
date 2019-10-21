@@ -5,6 +5,10 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
+admin.site.site_header = "My Home Energy Planner administration"
+admin.site.site_title = "Django admin"
+admin.site.index_title = "My Home Energy Planner administration"
+
 urlpatterns = [
     path(
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"

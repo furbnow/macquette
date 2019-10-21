@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db import models
+from django.forms import CheckboxSelectMultiple
 
 from mhep.assessments.models import Assessment, Library, Organisation
 
@@ -22,6 +24,9 @@ class LibraryAdmin(admin.ModelAdmin):
 class OrganisationAdmin(admin.ModelAdmin):
     list_display = ["name", "number_of_assessments"]
     search_fields = ["name"]
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': CheckboxSelectMultiple},
+    }
 
     def number_of_assessments(self, obj):
         return obj.assessments.all().count()
