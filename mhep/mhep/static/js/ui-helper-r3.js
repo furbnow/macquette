@@ -13,9 +13,11 @@ function load_view(eid, view)
         url: subviewBaseURL + '/' + view + ".html",
         async: false,
         cache: false,
+        error: handleServerError('loading HTML for subview "' + view + '"'),
         success: function (data) {
             result_html = data;
-        }});
+        },
+    });
 
     $(eid).html(result_html);
 
@@ -23,7 +25,8 @@ function load_view(eid, view)
     $.ajax({
         url: subviewBaseURL + '/' + view + ".js",
         dataType: 'script',
-        async: false
+        async: false,
+        error: handleServerError('loading Javascript for subview "' + view + '"'),
     });
 
     view_html[view] = result_html;
@@ -38,11 +41,17 @@ function load_report(eid, view)
         return report_html[view];
     }
 
-    // Load report html 
+    // Load report html
     var result_html = "";
-    $.ajax({url: jspath + "reports/" + view + "/" + view + ".html", async: false, cache: false, success: function (data) {
+    $.ajax({
+        url: jspath + "reports/" + view + "/" + view + ".html",
+        async: false,
+        cache: false,
+        error: handleServerError('loading report HTML'),
+        success: function (data) {
             result_html = data;
-        }});
+        },
+    });
 
     $(eid).html(result_html);
 
@@ -50,7 +59,8 @@ function load_report(eid, view)
     $.ajax({
         url: jspath + "reports/" + view + "/" + view + ".js",
         dataType: 'script',
-        async: false
+        async: false,
+        error: handleServerError('loading report Javascript'),
     });
 
     report_html[view] = result_html;
@@ -476,7 +486,7 @@ function cost_of_measures_by_id(list_of_measures_by_id) {
     }
     return cost;
 }
-function add_quantity_and_cost_to_measure(measure) { // Add extra properties to measure 
+function add_quantity_and_cost_to_measure(measure) { // Add extra properties to measure
     if (measure.cost_units == 'sqm') {
         if (measure.EWI != undefined && measure.EWI == true) // ares of EWI is bigger than the actual area of the wall
             measure.area != undefined ? measure.quantity = 1.15 * measure.area : measure.quantity = 0; // We use measure.area not measure.netarea (See issue 382: https://github.com/emoncms/MyHomeEnergyPlanner/issues/382#event-1681266801)
@@ -589,7 +599,7 @@ function revert_to_original(item_id, type_of_item) {
             default:
                 console.error('Type of item not valid');
         }
-        // copy the original element 
+        // copy the original element
         for (var e in original_items_array) {
             if (original_items_array[e].id == item_id) {
                 current_items_array[get_item_index_by_id(item_id, current_items_array)] = JSON.parse(JSON.stringify(original_items_array[e]));

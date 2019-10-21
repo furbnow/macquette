@@ -4,7 +4,8 @@ console.log('debug householdquestionnaire.js')
 $.ajax({
     url: '{% static "js/papaparse/papaparse.js" %}',
     dataType: 'script',
-    async: false
+    async: false,
+    error: handleServerError('loading papaparse.js'),
 });
 
 $('#add-shower').on('click', function () {

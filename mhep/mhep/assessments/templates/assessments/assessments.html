@@ -159,7 +159,6 @@
 </div>
 
 <script>
-
     var viewmode = "personal";
     var orgid = 0;
     var myusername = '{{ user.username|default:"anonymous" }}';
@@ -185,6 +184,7 @@
       url: apiURL + '/libraries/',
       async: true,
       datatype: "json",
+      error: handleServerError('listing libraries'),
       success: function (user_libraries) {
             // Check that the user at least one library of each type and if not create it from the default one
             var user_has_the_library = false;
@@ -211,6 +211,7 @@
                       datatype: "json",
                       contentType: "application/json;charset=utf-8",
                       async: false,
+                      error: handleServerError('creating new library'),
                      });
                 }
             }
@@ -239,6 +240,7 @@
                           data: JSON.stringify({'data': library_string}),
                           datatype: "json",
                           contentType: "application/json;charset=utf-8",
+                          error: handleServerError('updating library'),
                           success: function (response) {
                                 console.log("updated library: " + library_type);
                           }});
@@ -308,7 +310,11 @@
         /* TODO(PMF): disabled for port phase 1
         var projectid = $(this).attr('projectid');
         var z = $(this).attr('z');
-        $.ajax({url: path + "assessment/getshared.json", data: "id=" + projectid, success: function (shared) {
+        $.ajax({
+          url: path + "assessment/getshared.json",
+          data: "id=" + projectid,
+          error: handleServerError('getting shared assessments'),
+          success: function (shared) {
                 var out = "";
                 for (var i in shared) {
                     if (myusername != shared[i].username)
@@ -317,7 +323,7 @@
                 if (out == "")
                     out = "<tr><td>This assessment is currently private</td></tr>";
                 $("#shared-with-table").html(out);
-            }});
+        }});
         $('#modal-share-project').modal('show');
         $('#modal-share-project').attr('the_id', projectid);
         $('#modal-share-project').attr('the_row', z);
@@ -331,19 +337,27 @@
 
         var username = $("#sharename").val();
         var projectid = $('#modal-share-project').attr('the_id');
-        $.ajax({url: path + "assessment/share.json", data: "id=" + projectid + "&username=" + username, success: function (data) {
-                console.log(data);
-                $.ajax({url: path + "assessment/getshared.json", data: "id=" + projectid, success: function (shared) {
-                        var out = "";
-                        for (var i in shared) {
-                            if (myusername != shared[i].username)
-                                out += "<tr><td>" + shared[i].username + "</td></tr>";
-                        }
-                        if (out == "")
-                            out = "<tr><td>This assessment is currently private</td></tr>";
-                        $("#shared-with-table").html(out);
-                    }});
-            }});
+        $.ajax({
+          url: path + "assessment/share.json",
+          data: "id=" + projectid + "&username=" + username,
+          error: handleServerError('sharing assessment'),
+          success: function (data) {
+              console.log(data);
+              $.ajax({
+                  url: path + "assessment/getshared.json",
+                  data: "id=" + projectid,
+                  error: handleServerError('getting shared assessments'),
+                  success: function (shared) {
+                      var out = "";
+                      for (var i in shared) {
+                          if (myusername != shared[i].username)
+                              out += "<tr><td>" + shared[i].username + "</td></tr>";
+                      }
+                      if (out == "")
+                          out = "<tr><td>This assessment is currently private</td></tr>";
+                      $("#shared-with-table").html(out);
+                  }});
+          }});
         */
     });
 // -----------------------------------------------------------------------------------
@@ -424,7 +438,10 @@
 // ORGANISATIONS
 // ----------------------------------------------------------------------------
     var myorganisations = {};
-    $.ajax({url: apiURL + "/organisations/", success: function (result) {
+    $.ajax({
+      url: apiURL + "/organisations/",
+      error: handleServerError('listing organisations'),
+      success: function (result) {
             for (let i = 0; i < result.length; i++) {
                 const org = result[i];
                 org.orgid = org.id;
@@ -432,7 +449,8 @@
             }
             draw_organisation_list();
             //draw_organisation(8);
-        }});
+      },
+    });
 
     $("body").on("click", ".org-item", function () {
         orgid = $(this).attr("orgid");
@@ -441,12 +459,16 @@
         $("#organisation-add-member").attr("href", edit_org_link);
         $("#organisation").show();
         viewmode = "organisation";
-        $.ajax({url: apiURL + "/organisations/" + orgid + "/assessments/", success: function (result) {
-                projects = result;
-                draw_projects("#projects", projects);
-                $("#assessments-title").html(myorganisations[orgid].name + " Assessments");
-                $("#myview").hide();
-            }});
+        $.ajax({
+          url: apiURL + "/organisations/" + orgid + "/assessments/",
+          error: handleServerError('listing assessments for organisation'),
+          success: function (result) {
+            projects = result;
+            draw_projects("#projects", projects);
+            $("#assessments-title").html(myorganisations[orgid].name + " Assessments");
+            $("#myview").hide();
+          },
+        });
     });
     function draw_organisation_list() {
         var out = "";
