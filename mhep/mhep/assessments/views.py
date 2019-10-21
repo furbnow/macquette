@@ -26,17 +26,23 @@ from mhep.assessments.serializers import (
 )
 
 
+class AssessmentQuerySetMixin():
+    def get_queryset(self, *args, **kwargs):
+        my_assessments = Assessment.objects.filter(owner=self.request.user)
+        assessments_in_my_organisations = Assessment.objects.filter(
+            organisation__in=self.request.user.organisations.all()
+        )
+        return my_assessments | assessments_in_my_organisations
+
+
 class BadRequest(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
 
-class AssessmentHTMLView(LoginRequiredMixin, DetailView):
+class AssessmentHTMLView(AssessmentQuerySetMixin, LoginRequiredMixin, DetailView):
     template_name = "assessments/view.html"
     context_object_name = "assessment"
     model = Assessment
-
-    def get_queryset(self, *args, **kwargs):
-        return Assessment.objects.filter(owner=self.request.user)
 
     def get_context_data(self, object=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -74,9 +80,9 @@ class ListCreateAssessments(
 
 
 class RetrieveUpdateDestroyAssessment(
+    AssessmentQuerySetMixin,
     generics.RetrieveUpdateDestroyAPIView,
 ):
-    queryset = Assessment.objects.all()
     serializer_class = AssessmentFullSerializer
     permission_classes = [
         IsAuthenticated,

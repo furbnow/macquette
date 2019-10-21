@@ -36,6 +36,7 @@ class AssessmentPermissionTestsMixin():
             assessment,
             False,
             "Authentication credentials were not provided.",
+            status.HTTP_403_FORBIDDEN,
         )
 
     def test_user_who_isnt_owner_and_isnt_organisation_member_cannot_access(self):
@@ -48,7 +49,8 @@ class AssessmentPermissionTestsMixin():
         self.call_endpoint_and_assert(
             assessment,
             False,
-            "You do not have permission to perform this action."
+            "Not found.",
+            status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -58,12 +60,13 @@ class TestGetAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
 
         if expect_permit:
             assert status.HTTP_200_OK == response.status_code
-        else:
-            assert status.HTTP_403_FORBIDDEN == response.status_code
 
         if len(args) > 0:
             expected_error_detail = args[0]
             assert {"detail": expected_error_detail} == response.json()
+        if len(args) > 1:
+            expected_status_code = args[1]
+            assert expected_status_code == response.status_code
 
 
 class TestUpdateAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
@@ -80,12 +83,13 @@ class TestUpdateAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCas
 
         if expect_permit:
             assert status.HTTP_204_NO_CONTENT == response.status_code
-        else:
-            assert status.HTTP_403_FORBIDDEN == response.status_code
 
         if len(args) > 0:
             expected_error_detail = args[0]
             assert {"detail": expected_error_detail} == response.json()
+        if len(args) > 1:
+            expected_status_code = args[1]
+            assert expected_status_code == response.status_code
 
 
 class TestDeleteAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
@@ -94,9 +98,10 @@ class TestDeleteAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCas
 
         if expect_permit:
             assert status.HTTP_204_NO_CONTENT == response.status_code
-        else:
-            assert status.HTTP_403_FORBIDDEN == response.status_code
 
         if len(args) > 0:
             expected_error_detail = args[0]
             assert {"detail": expected_error_detail} == response.json()
+        if len(args) > 1:
+            expected_status_code = args[1]
+            assert expected_status_code == response.status_code
