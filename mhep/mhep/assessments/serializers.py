@@ -128,7 +128,7 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
             return {
                 "userid": f"{user.id}",
                 "name": user.username,
-                "last_login": user.last_login.isoformat(),
+                "last_login": user.last_login.isoformat() if user.last_login else "never"
             }
 
         return [userinfo(u) for u in obj.members.all()]

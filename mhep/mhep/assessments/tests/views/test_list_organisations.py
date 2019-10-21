@@ -44,3 +44,14 @@ class TestListOrganisations(APITestCase):
     def test_returns_forbidden_if_not_logged_in(self):
         response = self.client.get("/api/v1/organisations/")
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_if_last_login_is_none_shows_never(self):
+        me = UserFactory.create(last_login=None)
+        my_org = OrganisationFactory.create()
+        my_org.members.add(me)
+
+        self.client.force_authenticate(me)
+        response = self.client.get("/api/v1/organisations/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert "never" == response.data[0]["members"][0]["last_login"]
