@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from rest_framework import status
 
-from mhep.assessments.tests.factories import AssessmentFactory
+from mhep.assessments.tests.factories import AssessmentFactory, OrganisationFactory
 from mhep.users.tests.factories import UserFactory
 
 
@@ -47,6 +47,19 @@ class TestAssessmentHTMLView(TestCase):
         self.client.login(username=self.me.username, password="foo")
         my_assessment_url = "/assessments/{}/".format(self.my_assessment.pk)
         response = self.client.get(my_assessment_url)
+        assert status.HTTP_200_OK == response.status_code
+
+
+    def test_returns_200_for_organisation_member_viewing_assessment_in_organisation(self):
+        organisation = OrganisationFactory.create()
+        organisation_assessment = AssessmentFactory.create(
+            organisation=organisation,
+        )
+        organisation.members.add(self.me)
+
+        self.client.login(username=self.me.username, password="foo")
+        not_my_assessment_url = f"/assessments/{organisation_assessment.pk}/"
+        response = self.client.get(not_my_assessment_url)
         assert status.HTTP_200_OK == response.status_code
 
     def test_returns_not_found_if_not_owner(self):
