@@ -1,9 +1,7 @@
 import json
 import logging
 
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
 
@@ -12,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from mhep.assessments.models import Assessment, Library, Organisation
+from mhep.assessments.models import Assessment, Organisation
 from mhep.assessments.permissions import (
     IsMemberOfConnectedOrganisation,
     IsMemberOfOrganisation,
