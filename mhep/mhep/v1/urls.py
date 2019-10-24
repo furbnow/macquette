@@ -21,7 +21,7 @@ urlpatterns = [
     path(
         "",
         ListAssessmentsHTMLView.as_view(),
-        name="home",
+        name="list-assessments",
     ),
 
     path(
@@ -58,47 +58,47 @@ urlpatterns = [
     ),
 
     path(
-        "api/v1/assessments/",
+        "api/assessments/",
         view=ListCreateAssessments.as_view(),
         name="list-create-assessments"
     ),
     path(
-        "api/v1/assessments/<int:pk>/",
+        "api/assessments/<int:pk>/",
         view=RetrieveUpdateDestroyAssessment.as_view(),
         name="retrieve-update-destroy-assessment",
     ),
 
     path(
-        "api/v1/libraries/",
+        "api/libraries/",
         view=ListCreateLibraries.as_view(),
         name="list-create-libraries"
     ),
 
     path(
-        "api/v1/libraries/<int:pk>/",
+        "api/libraries/<int:pk>/",
         view=UpdateDestroyLibrary.as_view(),
         name="update-destroy-library"
     ),
 
     path(
-        "api/v1/organisations/",
+        "api/organisations/",
         view=ListOrganisations.as_view(),
         name="list-organisations"
     ),
     path(
-        "api/v1/organisations/<int:pk>/assessments/",
+        "api/organisations/<int:pk>/assessments/",
         view=ListCreateOrganisationAssessments.as_view(),
         name="list-create-organisation-assessments"
     ),
 
     path(
-        "api/v1/libraries/<int:pk>/items/",
+        "api/libraries/<int:pk>/items/",
         view=CreateUpdateDeleteLibraryItem.as_view(),
         name="create-update-delete-library-item"
     ),
 
     path(
-        "api/v1/libraries/<int:pk>/items/<str:tag>/",
+        "api/libraries/<int:pk>/items/<str:tag>/",
         view=CreateUpdateDeleteLibraryItem.as_view(),
         name="create-update-delete-library-item"
     ),

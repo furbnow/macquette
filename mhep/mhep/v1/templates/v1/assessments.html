@@ -416,7 +416,7 @@
                     }
 
 
-                    const assessmentURL = '/assessments/' + projects[z].id + '/';
+                    const assessmentURL = '{% url "v1:view-assessment" "12345" %}'.replace(/12345/, projects[z].id.toString());
                     out += '<td><a id="open-project-' + projects[z].id + '" href="' + assessmentURL + '"><span class="label label-info">Open <i class="icon-folder-open icon-white"></i></span></a></td>';
                     out += '<td><span class="share-project-openmodal" projectid=' + projects[z].id + ' z=' + z + ' style="cursor:pointer"><span class="label label-info"><i class="icon-share icon-white"></i></span></td>';
                     out += '<td><span class="delete-project" projectid=' + projects[z].id + ' z=' + z + ' style="cursor:pointer"><span class="label label-important"><i class="icon-trash icon-white"></i></span></td>';

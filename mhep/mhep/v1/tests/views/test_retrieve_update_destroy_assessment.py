@@ -26,7 +26,7 @@ class TestGetAssessment(APITestCase):
             )
 
         self.client.force_authenticate(self.me)
-        response = self.client.get(f"/api/v1/assessments/{a.pk}/")
+        response = self.client.get(f"/v1/api/assessments/{a.pk}/")
         assert response.status_code == status.HTTP_200_OK
 
         expected = {
@@ -55,7 +55,7 @@ class TestGetAssessment(APITestCase):
             )
 
         self.client.force_authenticate(self.me)
-        response = self.client.get(f"/api/v1/assessments/{a.pk}/")
+        response = self.client.get(f"/v1/api/assessments/{a.pk}/")
         assert response.status_code == status.HTTP_200_OK
 
         expected = {
@@ -75,7 +75,7 @@ class TestGetAssessment(APITestCase):
         assert expected == response.data
 
     def test_returns_404_for_bad_id(self):
-        response = self.client.get("/api/v1/assessments/bad-id/")
+        response = self.client.get("/v1/api/assessments/bad-id/")
         assert status.HTTP_404_NOT_FOUND == response.status_code
 
 
@@ -104,7 +104,7 @@ class TestUpdateAssessment(APITestCase):
 
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                f"/api/v1/assessments/{self.assessment.pk}/",
+                f"/v1/api/assessments/{self.assessment.pk}/",
                 updateFields,
                 format="json",
             )
@@ -126,7 +126,7 @@ class TestUpdateAssessment(APITestCase):
             }
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                f"/api/v1/assessments/{self.assessment.pk}/",
+                f"/v1/api/assessments/{self.assessment.pk}/",
                 updateFields,
                 format="json",
             )
@@ -149,7 +149,7 @@ class TestUpdateAssessment(APITestCase):
 
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                f"/api/v1/assessments/{self.assessment.pk}/",
+                f"/v1/api/assessments/{self.assessment.pk}/",
                 updateFields,
                 format="json",
             )
@@ -168,7 +168,7 @@ class TestUpdateAssessment(APITestCase):
 
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                f"/api/v1/assessments/{self.assessment.pk}/",
+                f"/v1/api/assessments/{self.assessment.pk}/",
                 updateFields,
                 format="json",
             )
@@ -205,7 +205,7 @@ class TestDestroyAssessment(APITestCase):
         assessment_count = Assessment.objects.count()
 
         self.client.force_authenticate(self.me)
-        response = self.client.delete(f"/api/v1/assessments/{a.pk}/")
+        response = self.client.delete(f"/v1/api/assessments/{a.pk}/")
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
         assert b"" == response.content

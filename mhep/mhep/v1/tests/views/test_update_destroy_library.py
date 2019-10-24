@@ -31,7 +31,7 @@ class TestUpdateLibrary(APITestCase):
             self.client.force_authenticate(self.me)
 
             response = self.client.patch(
-                "/api/v1/libraries/{}/".format(lib.pk),
+                "/v1/api/libraries/{}/".format(lib.pk),
                 updateFields,
                 format="json",
             )
@@ -56,7 +56,7 @@ class TestUpdateLibrary(APITestCase):
 
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                "/api/v1/libraries/{}/".format(lib.pk),
+                "/v1/api/libraries/{}/".format(lib.pk),
                 updateFields,
                 format="json",
             )
@@ -74,7 +74,7 @@ class TestUpdateLibrary(APITestCase):
         assessment_count = Library.objects.count()
 
         self.client.force_authenticate(self.me)
-        response = self.client.delete(f"/api/v1/libraries/{lib.pk}/")
+        response = self.client.delete(f"/v1/api/libraries/{lib.pk}/")
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
         assert b"" == response.content

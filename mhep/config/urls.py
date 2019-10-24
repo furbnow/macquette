@@ -1,8 +1,9 @@
 from django.conf import settings
-from django.urls import include, path
+from django.urls import include, path, reverse_lazy
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
 from django.views import defaults as default_views
 
 admin.site.site_header = "My Home Energy Planner administration"
@@ -20,7 +21,10 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
 
-    path("", include("mhep.v1.urls", namespace="v1")),
+    path("", RedirectView.as_view(url=reverse_lazy("v1:list-assessments")), name="index"),
+
+    path("v1/", include("mhep.v1.urls", namespace="v1")),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

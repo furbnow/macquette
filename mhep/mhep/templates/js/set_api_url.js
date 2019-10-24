@@ -1,4 +1,4 @@
 <script>
   'use strict';
-  const apiURL = '/api/v1';
+  const apiURL = '/v1/api';
 </script>

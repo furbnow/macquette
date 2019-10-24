@@ -61,7 +61,7 @@ An administrative interface is available at [localhost:9090/admin](http://localh
 * [Update item in library](#update-item-in-library)
 * [Delete item in library](#delete-item-in-library)
 
-All endpoints start with `/api/v1` e.g. `http://localhost:9090/api/v1/assessments/`.
+All endpoints start with `/v1/api` e.g. `http://localhost:9090/v1/api/assessments/`.
 
 ## List assessments
 
@@ -148,7 +148,7 @@ GET /assessments/:id/
 ### Example
 
 ```
-> curl http://localhost:9090/api/v1/assessments/1
+> curl http://localhost:9090/v1/api/assessments/1
 ```
 
 Returns:
@@ -191,7 +191,7 @@ POST /assessments/
 ```
 > curl -v \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/assessments/ \
+    http://localhost:9090/v1/api/assessments/ \
     --data @- << EOF
 {
     "name": "Example assessment",
@@ -234,7 +234,7 @@ POST /organisations/:id/assessments/
 ```
 > curl -v \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/organisations/1/assessments/ \
+    http://localhost:9090/v1/api/organisations/1/assessments/ \
     --data @- << EOF
 {
     "name": "Example assessment",
@@ -284,7 +284,7 @@ Content-Type: application/json
 > curl -v \
     -X PATCH \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/assessments/1/ \
+    http://localhost:9090/v1/api/assessments/1/ \
     --data @- << EOF
 
 {
@@ -311,7 +311,7 @@ HTTP 204 No content
 > curl -v \
     -X PATCH \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/assessments/1/ \
+    http://localhost:9090/v1/api/assessments/1/ \
     --data @- << EOF
 {
     "status": "Complete",
@@ -332,7 +332,7 @@ DELETE /assessments/:id/
 ```
 > curl -v \
     -X DELETE \
-    http://localhost:9090/api/v1/assessments/1/
+    http://localhost:9090/v1/api/assessments/1/
 ```
 
 Returns:
@@ -410,7 +410,7 @@ List all libraries and their library items that belong to me.
 ### Example
 
 ```
-> curl http://localhost:9090/api/v1/libraries/
+> curl http://localhost:9090/v1/api/libraries/
 ```
 
 Returns:
@@ -486,7 +486,7 @@ single request, where the previous route required the subsequent use of `savelib
 ```
 > curl -v \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/libraries/ \
+    http://localhost:9090/v1/api/libraries/ \
     --data @- << EOF
 {
     "name": "StandardLibrary - user",
@@ -530,7 +530,7 @@ Content-Type: application/json
 > curl -v \
     -X PATCH \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/libraries/1/ \
+    http://localhost:9090/v1/api/libraries/1/ \
     --data @- << EOF
 {
     "data": {},
@@ -557,7 +557,7 @@ DELETE /librarys/:id/
 ```
 > curl -v \
     -X DELETE \
-    http://localhost:9090/api/v1/libraries/1/
+    http://localhost:9090/v1/api/libraries/1/
 ```
 
 Returns:
@@ -579,7 +579,7 @@ POST /libraries/:id/items/
 ```
 > curl -v \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/libraries/1/items/ \
+    http://localhost:9090/v1/api/libraries/1/items/ \
     --data @- << EOF
 {
     "tag": "SWIN_04",
@@ -614,7 +614,7 @@ PUT /libraries/:id/items/:tag/
 > curl -v \
     -X PUT \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/libraries/1/item/SWIN_04/ \
+    http://localhost:9090/v1/api/libraries/1/item/SWIN_04/ \
     --data @- << EOF
 {
     "name": "100-140mm External Wall Insulation EWI on filled cavity wall.",
@@ -644,7 +644,7 @@ DELETE /libraries/:id/items/:tag/
 
 ```
 > curl -v -X DELETE \
-    http://localhost:9090/api/v1/libraries/1/item/SWIN_04/
+    http://localhost:9090/v1/api/libraries/1/item/SWIN_04/
 ```
 
 Returns:
@@ -675,7 +675,7 @@ List all organisations the logged in user is part of
 ### Example
 
 ```
-> curl http://localhost:9090/api/v1/organisations/
+> curl http://localhost:9090/v1/api/organisations/
 ```
 
 Returns:
@@ -713,7 +713,7 @@ POST /organisations/
 ```
 > curl -v \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/organisations/ \
+    http://localhost:9090/v1/api/organisations/ \
     --data @- << EOF
 {
     "name": "Example organisation"
@@ -745,7 +745,7 @@ List all assessments belonging to the organisation.
 ### Example
 
 ```
-> curl http://localhost:9090/api/v1/organisations/1/assessments/
+> curl http://localhost:9090/v1/api/organisations/1/assessments/
 ```
 
 Returns:
@@ -770,7 +770,7 @@ POST /organisations/:id/assessments/
 ```
 > curl -v \
     -H "Content-Type: application/json" \
-    http://localhost:9090/api/v1/organisations/1/assessments/ \
+    http://localhost:9090/v1/api/organisations/1/assessments/ \
     --data @- << EOF
 {
     "name": "Example assessment",

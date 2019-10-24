@@ -52,7 +52,7 @@ class AssessmentPermissionTestsMixin():
 
 class TestGetAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
     def _call_endpoint(self, assessment):
-        return self.client.get("/api/v1/assessments/{}/".format(assessment.id))
+        return self.client.get("/v1/api/assessments/{}/".format(assessment.id))
 
     def _assert_success(self, response):
         assert status.HTTP_200_OK == response.status_code
@@ -69,7 +69,7 @@ class TestUpdateAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCas
         }
 
         return self.client.patch(
-            "/api/v1/assessments/{}/".format(assessment.id),
+            "/v1/api/assessments/{}/".format(assessment.id),
             update_fields,
             format="json",
         )
@@ -84,7 +84,7 @@ class TestUpdateAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCas
 
 class TestDeleteAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
     def _call_endpoint(self, assessment):
-        return self.client.delete("/api/v1/assessments/{}/".format(assessment.id))
+        return self.client.delete("/v1/api/assessments/{}/".format(assessment.id))
 
     def _assert_success(self, response):
         assert status.HTTP_204_NO_CONTENT == response.status_code

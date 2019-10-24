@@ -18,7 +18,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         )
 
         self.client.force_authenticate(library.owner)
-        response = self.client.delete(f"/api/v1/libraries/{library.id}/items/tag2/")
+        response = self.client.delete(f"/v1/api/libraries/{library.id}/items/tag2/")
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -40,7 +40,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         with freeze_time("2019-06-01T16:35:34Z"):
             self.client.force_authenticate(library.owner)
             response = self.client.put(
-                f"/api/v1/libraries/{library.id}/items/tag1/",
+                f"/v1/api/libraries/{library.id}/items/tag1/",
                 replacement_data,
                 format="json"
             )
@@ -60,7 +60,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         self.client.force_authenticate(library.owner)
 
         response = self.client.put(
-            f"/api/v1/libraries/{library.id}/items/tag5/",
+            f"/v1/api/libraries/{library.id}/items/tag5/",
             replacement_data,
             format="json"
         )

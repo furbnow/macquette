@@ -21,7 +21,7 @@ class TestListCreateLibraries(APITestCase):
             LibraryFactory.create(owner=UserFactory.create())  # another library (someone else's)
 
         self.client.force_authenticate(self.me)
-        response = self.client.get("/api/v1/libraries/")
+        response = self.client.get("/v1/api/libraries/")
         assert response.status_code == status.HTTP_200_OK
 
         assert 2 == len(response.data)
@@ -50,7 +50,7 @@ class TestListCreateLibraries(APITestCase):
         LibraryFactory.create(owner=self.me)
         LibraryFactory.create(owner=self.me)
 
-        response = self.client.get("/api/v1/libraries/")
+        response = self.client.get("/v1/api/libraries/")
         assert status.HTTP_403_FORBIDDEN == response.status_code
 
     def test_create_library(self):
@@ -64,7 +64,7 @@ class TestListCreateLibraries(APITestCase):
 
             self.client.force_authenticate(self.me)
             with freeze_time("2019-06-01T16:35:34Z"):
-                response = self.client.post("/api/v1/libraries/", new_library, format="json")
+                response = self.client.post("/v1/api/libraries/", new_library, format="json")
 
             assert response.status_code == status.HTTP_201_CREATED
 
@@ -91,7 +91,7 @@ class TestListCreateLibraries(APITestCase):
             self.client.force_authenticate(self.me)
 
             with freeze_time("2019-06-01T16:35:34Z"):
-                response = self.client.post("/api/v1/libraries/", new_library, format="json")
+                response = self.client.post("/v1/api/libraries/", new_library, format="json")
 
             assert status.HTTP_400_BAD_REQUEST == response.status_code
             assert {
@@ -110,7 +110,7 @@ class TestListCreateLibraries(APITestCase):
         self.client.force_authenticate(self.me)
 
         with freeze_time("2019-06-01T16:35:34Z"):
-            response = self.client.post("/api/v1/libraries/", new_library, format="json")
+            response = self.client.post("/v1/api/libraries/", new_library, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
 
