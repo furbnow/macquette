@@ -11,7 +11,7 @@ function commentary_initUI() {
         url: '{% url "assessments:subview-javascript" "householdquestionnaire" %}',
         dataType: 'script',
         async: false,
-        error: handleServerError('loading householdquestionnaire.html'),
+        error: handleServerError('loading householdquestionnaire.js'),
     });
     householdquestionnaire_initUI();
 
