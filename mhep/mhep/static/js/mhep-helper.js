@@ -54,42 +54,34 @@ var mhep_helper = {
     'create': function (name, description, orgid, callback)
     {
         var result = 0;
-        var openBEM_version = {}
+        // TODO: Link this version of openBEM to the app, don't hard code it like this.
+        const openBEM_version = "10.1.1";
+        const newAssessment = {
+            "name": name,
+            "description": description,
+            "openbem_version": openBEM_version,
+        };
+
+        var endpoint;
+        if (orgid != null) {
+            endpoint = apiURL + '/organisations/' + orgid + '/assessments/';
+        } else {
+            endpoint = apiURL + '/assessments/';
+        }
+
         $.ajax({
-            type: 'GET',
+            type: 'POST',
+            url: endpoint,
+            data: JSON.stringify(newAssessment),
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
             async: false,
-            url: "https://api.github.com/repos/carboncoop/openBEM/releases/latest",
-            error: handleServerError('getting latest openBEM version'),
+            error: handleServerError('creating assessment'),
             success: function (data) {
-                openBEM_version = data.tag_name;
-                const newAssessment = {
-                    "name": name,
-                    "description": description,
-                    "openbem_version": openBEM_version,
-                };
-
-                var endpoint;
-                if (orgid != null) {
-                    endpoint = apiURL + '/organisations/' + orgid + '/assessments/';
-                } else {
-                    endpoint = apiURL + '/assessments/';
+                if (callback) {
+                    callback(data);
                 }
-
-                $.ajax({
-                    type: 'POST',
-                    url: endpoint,
-                    data: JSON.stringify(newAssessment),
-                    dataType: 'json',
-                    contentType: "application/json;charset=utf-8",
-                    async: false,
-                    error: handleServerError('creating assessment'),
-                    success: function (data) {
-                        if (callback) {
-                            callback(data);
-                        }
-                    },
-                });
-            }
+            },
         });
         return result;
     },
