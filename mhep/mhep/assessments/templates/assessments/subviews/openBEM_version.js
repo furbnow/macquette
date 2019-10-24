@@ -5,18 +5,9 @@ function openBEM_version_UpdateUI()
 }
 
 function openBEM_version_initUI() {
-    if (p.openbem_version == undefined) {
-        $('#model-version').html("10.1.0");
-    } else {
-        $('#model-version').html(p.openbem_version);
-    }
-
-    $.ajax({type: 'GET', url: "https://api.github.com/repos/carboncoop/openBEM/releases", success: function (data) {
-            data.forEach(function (release) {
-                $('#releases').append("<option value='" + release.tag_name + "'>" + release.name + "</option>");
-            });
-        }
-    });
+    // TODO: Link this version of openBEM to the app, don't hard code it like this.
+    openBEM_version = "10.1.1";
+    $('#releases').append("<option value='" + openBEM_version + "'>" + openBEM_version + "</option>");
 }
 
 
