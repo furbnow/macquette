@@ -184,10 +184,6 @@ configure_emoncms_settings_for_mhep_assessment() {
    chmod 774 /var/www/html/emoncms/Modules/assessment/images
 }
 
-install_openfuvc() {
-  run_as_vagrant "cd /var/www/html/emoncms/Modules/assessment && git submodule init && git submodule update"
-}
-
 add_emoncms_apache_config() {
   # https://github.com/emoncms/emoncms/blob/master/docs/LinuxInstall.md#configure-apache
 
@@ -244,7 +240,6 @@ install_database_dump
 configure_emoncms_settings_php
 install_emoncms_mhep_theme
 configure_emoncms_settings_for_mhep_assessment
-install_openfuvc
 add_emoncms_apache_config
 
 set +x
