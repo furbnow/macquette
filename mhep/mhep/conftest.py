@@ -3,13 +3,13 @@ from django.conf import settings
 from django.test import RequestFactory
 
 from mhep.users.tests.factories import UserFactory, UserWithOrganisationFactory
-from mhep.assessments.tests.factories import (
+from mhep.v1.tests.factories import (
     AssessmentFactory,
     LibraryFactory,
     OrganisationFactory,
     OrganisationWithExtrasFactory,
 )
-from mhep.assessments.models import Assessment, Library, Organisation
+from mhep.v1.models import Assessment, Library, Organisation
 
 
 @pytest.fixture(autouse=True)
