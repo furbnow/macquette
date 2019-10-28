@@ -1,8 +1,7 @@
-{% load static i18n %}
 console.log('debug householdquestionnaire.js')
 
 $.ajax({
-    url: '{% static "v1/js/papaparse/papaparse.js" %}',
+    url: staticURL('v1/js/papaparse/papaparse.js'),
     dataType: 'script',
     async: false,
     error: handleServerError('loading papaparse.js'),
