@@ -13,9 +13,9 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
 
-    <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}">
+    <link rel="icon" href="{% static 'v1/img/favicons/favicon.ico' %}">
 
-    <script src="{% static 'js/jquery-1.11.3.min.js' %}"></script>
+    <script src="{% static 'v1/js/jquery-1.11.3.min.js' %}"></script>
 
     {% include "v1/js/handle_server_error.js" %}
     {% include "v1/js/set_api_url.js" %}
@@ -23,16 +23,16 @@
 
     {% block css %}
 
-    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
-    <link href="{% static 'css/bootstrap-responsive.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/emon-blue.css' %}" rel="stylesheet">
-    <link href="{% static 'css/emon-CCoop.css' %}" rel="stylesheet">
+    <link href="{% static 'v1/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'v1/css/bootstrap-responsive.min.css' %}" rel="stylesheet">
+    <link href="{% static 'v1/css/emon-blue.css' %}" rel="stylesheet">
+    <link href="{% static 'v1/css/emon-CCoop.css' %}" rel="stylesheet">
 
     <!-- Your stuff: Third-party CSS libraries go here -->
 
     <!-- This file stores project-specific CSS -->
 
-    <link href="{% static 'css/project.css' %}" rel="stylesheet">
+    <link href="{% static 'v1/css/project.css' %}" rel="stylesheet">
 
 
     {% endblock %}
@@ -110,12 +110,12 @@
     <!-- Placed at the end of the document so the pages load faster -->
     {% block javascript %}
 
-      <script src="{% static 'js/bootstrap.js' %}"></script>
+      <script src="{% static 'v1/js/bootstrap.js' %}"></script>
 
 
       <!-- place project specific Javascript in this file -->
 
-      <script src="{% static 'js/project.js' %}"></script>
+      <script src="{% static 'v1/js/project.js' %}"></script>
 
 
     {% endblock javascript %}

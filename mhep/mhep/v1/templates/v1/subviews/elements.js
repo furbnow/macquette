@@ -595,7 +595,7 @@ function elements_UpdateUI()
             options += "<option value='" + data.fabric.elements[z].id + "'>" + data.fabric.elements[z].location + "</option>";
     }
 
-    $('.revert-to-original-icon').attr('src', '{% static 'img/undo.gif' %}');
+    $('.revert-to-original-icon').attr('src', '{% static 'v1/img/undo.gif' %}');
 
     // Fill up the substractfrom selects
     $('.subtractfrom').each(function (i, obj) {

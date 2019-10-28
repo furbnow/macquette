@@ -2,7 +2,7 @@
 console.log('debug householdquestionnaire.js')
 
 $.ajax({
-    url: '{% static "js/papaparse/papaparse.js" %}',
+    url: '{% static "v1/js/papaparse/papaparse.js" %}',
     dataType: 'script',
     async: false,
     error: handleServerError('loading papaparse.js'),
