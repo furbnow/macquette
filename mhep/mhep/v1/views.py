@@ -55,20 +55,6 @@ class AssessmentHTMLView(AssessmentQuerySetMixin, LoginRequiredMixin, DetailView
         return context
 
 
-class SubviewHTMLView(TemplateView):
-    def get_template_names(self, *kwargs):
-        view_name = self.kwargs['name']
-
-        return "v1/subviews/" + view_name + ".html"
-
-
-class SubviewJavascriptView(TemplateView):
-    def get_template_names(self, *kwargs):
-        view_name = self.kwargs['name']
-
-        return "v1/subviews/" + view_name + ".js"
-
-
 class ListCreateAssessments(
     generics.ListCreateAPIView
 ):
