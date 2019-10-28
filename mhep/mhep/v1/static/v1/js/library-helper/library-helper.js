@@ -1,5 +1,3 @@
-{% load static i18n %}
-
 function libraryHelper(type, container) {
     this.container = container;
     this.library_list = {};
@@ -267,7 +265,7 @@ libraryHelper.prototype.append_modals = function () {
     var html;
     var myself = this;
     $.ajax({
-        url: "{% url 'v1:library-helper-html' %}",
+        url: staticURL('v1/js/library-helper/library-helper.html'),
         datatype: "json",
         error: handleServerError('loading library helper HTML'),
         success: function (result) {

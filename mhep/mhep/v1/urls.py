@@ -25,21 +25,6 @@ urlpatterns = [
     ),
 
     path(
-        "js/library-helper/library-helper.html",
-        TemplateView.as_view(template_name="v1/js/library-helper/library-helper.html"),
-        name="library-helper-html",
-    ),
-
-    path(
-        "js/library-helper/library-helper-r1.js",
-        TemplateView.as_view(
-            template_name="v1/js/library-helper/library-helper-r1.js",
-            content_type="text/javascript",
-        ),
-        name="library-helper-r1-js",
-    ),
-
-    path(
         "assessments/<int:pk>/",
         AssessmentHTMLView.as_view(),
         name="view-assessment",
