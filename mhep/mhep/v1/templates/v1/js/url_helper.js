@@ -52,6 +52,13 @@
           return dummyURL.replace(/12345/, parseInt(libraryID)).replace(/abcde/, tag);
         },
       },
+
+      html: {
+        assessment: function(assessmentID) {
+          return '{% url "v1:view-assessment" "12345" %}'.replace(/12345/, assessmentID.toString());
+        },
+
+      },
     }
   }();
 </script>
