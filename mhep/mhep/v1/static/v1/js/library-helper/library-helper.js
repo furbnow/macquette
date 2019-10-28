@@ -409,7 +409,7 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
         new_library_body['data'] = library['data'];
     }
     $.ajax({
-        url: apiURL + '/libraries/',
+        url: urlHelper.api.libraries(),
         type: 'POST',
         data: JSON.stringify(new_library_body),
         datatype: "json",
@@ -478,7 +478,7 @@ libraryHelper.prototype.onCreateInLibraryOk = function (library_id) {
         else {
             $.ajax({
                 type: "POST",
-                url: apiURL + '/libraries/' + selected_library.id + '/items/',
+                url: urlHelper.api.libraryItems(selected_library.id),
                 data: JSON.stringify({
                     'tag': tag,
                     'item': item[tag],
@@ -577,7 +577,7 @@ libraryHelper.prototype.onEditLibraryItemOk = function (library_id) {
         item_string = item_string.replace(/&/g, 'and');
         //item[tag].number_of_intermittentfans="\\+2";
         $.ajax({type: "PUT",
-            url: apiURL + "/libraries/"  + selected_library.id + "/items/" + tag + "/",
+            url: urlHelper.api.libraryItem(selected_library.id, tag),
             data: item_string,
             contentType: "application/json;charset=utf-8",
             error: handleServerError('saving library'),
@@ -824,7 +824,7 @@ libraryHelper.prototype.onDeleteLibrary = function (library_id) {
 libraryHelper.prototype.onDeleteLibraryOk = function (library_id) {
     var myself = this;
     $.ajax({
-        url: apiURL + "/libraries/" + library_id,
+        url: urlHelper.api.library(library_id),
         type: 'DELETE',
         async: false,
         error: handleServerError('deleting library'),
@@ -938,7 +938,7 @@ libraryHelper.prototype.onSaveLibraryEditMode = function (selector, library_id) 
 
     $.ajax({
         type: 'PATCH',
-        url: apiURL + '/libraries/' + library_id + '/',
+        url: urlHelper.api.library(library_id),
         data: JSON.stringify({'data': data}),
         datatype: "json",
         contentType: "application/json;charset=utf-8",
@@ -3349,7 +3349,7 @@ libraryHelper.prototype.load_user_libraries = function (callback) {
     var mylibraries = {};
     var myself = this;
     $.ajax({
-        url: apiURL + '/libraries/',
+        url: urlHelper.api.libraries(),
         async: false,
         datatype: "json",
         error: handleServerError('loading libraries'),
@@ -3409,7 +3409,7 @@ libraryHelper.prototype.set_library_name = function (library_id, new_name, callb
     });
 
     $.ajax({
-        url: apiURL + "/libraries/" + library_id + "/",
+        url: urlHelper.api.library(library_id),
         type: 'PATCH',
         data: body,
         async: false,
@@ -3462,7 +3462,7 @@ libraryHelper.prototype.delete_library_item = function (library_id, tag) {
         $.ajax({
             type: "DELETE",
             async: false,
-            url: apiURL + "/libraries/"  + library_id + "/items/" + tag + "/",
+            url: urlHelper.api.libraryItem(library_id, tag),
             error: handleServerError('deleting item from library'),
             success: function() {
                 $('#confirm-delete-library-item-modal').modal('hide');

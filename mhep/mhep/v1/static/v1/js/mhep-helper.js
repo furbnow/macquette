@@ -4,7 +4,7 @@ var mhep_helper = {
     {
         var result = [];
         $.ajax({
-            url: apiURL + "/assessments/",
+            url: urlHelper.api.assessments(),
             dataType: 'json',
             async: false,
             error: handleServerError('listing assessments'),
@@ -21,7 +21,8 @@ var mhep_helper = {
     {
         var result = {};
         $.ajax({
-            url: apiURL + "/assessments/" + parseInt(id) + "/", async: false,
+            url: urlHelper.api.assessment(id),
+            async: false,
             error: handleServerError('loading assessment'),
             success: function (data) {
                 result = data;
@@ -39,7 +40,7 @@ var mhep_helper = {
         var result = {};
         $.ajax({
           type: 'PATCH',
-          url: apiURL + "/assessments/" + parseInt(id) + "/",
+          url: urlHelper.api.assessment(id),
           data: JSON.stringify({'data': inputdata}),
           dataType: "json",
           contentType: "application/json;charset=utf-8",
@@ -64,9 +65,9 @@ var mhep_helper = {
 
         var endpoint;
         if (orgid != null) {
-            endpoint = apiURL + '/organisations/' + orgid + '/assessments/';
+            endpoint = urlHelper.api.organisationAssessments(orgid);
         } else {
-            endpoint = apiURL + '/assessments/';
+            endpoint = urlHelper.api.assessments();
         }
 
         $.ajax({
@@ -89,7 +90,7 @@ var mhep_helper = {
         var result = false;
         $.ajax({
             type: 'DELETE',
-            url: apiURL + "/assessments/" + id + "/",
+            url: urlHelper.api.assessment(id),
             async: false,
             error: handleServerError('deleting assessment'),
             success: function () {
@@ -101,7 +102,7 @@ var mhep_helper = {
     'set_status': function (id, status)
     {
         $.ajax({type: 'PATCH',
-            url: apiURL + "/assessments/" + parseInt(id) + "/",
+            url: urlHelper.api.assessment(id),
             data: JSON.stringify({'status': status}),
             dataType: "json",
             contentType: "application/json;charset=utf-8",
@@ -114,7 +115,7 @@ var mhep_helper = {
     'set_name_and_description': function (id, name, description)
     {
         $.ajax({type: 'PATCH',
-            url: apiURL + "/assessments/" + parseInt(id) + "/",
+            url: urlHelper.api.assessment(id),
             data: JSON.stringify({'name': name, 'description': description}),
             dataType: "json",
             contentType: "application/json;charset=utf-8",
@@ -159,7 +160,7 @@ var mhep_helper = {
     'set_openBEM_version': function (id, version, callback)
     {
         $.ajax({type: 'PATCH',
-            url: apiURL + "/assessments/" + parseInt(id) + "/",
+            url: urlHelper.api.assessment(id),
             data: JSON.stringify({'openbem_version': version}),
             dataType: "json",
             contentType: "application/json;charset=utf-8",

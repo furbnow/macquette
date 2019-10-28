@@ -181,7 +181,7 @@
 
     var libraries = {};
     $.ajax({
-      url: apiURL + '/libraries/',
+      url: urlHelper.api.libraries(),
       async: true,
       datatype: "json",
       error: handleServerError('listing libraries'),
@@ -205,7 +205,7 @@
 
                     // create new library
                     $.ajax({
-                      url: apiURL + '/libraries/',
+                      url: urlHelper.api.libraries(),
                       type: 'POST',
                       data: body,
                       datatype: "json",
@@ -236,7 +236,7 @@
                         library_string = library_string.replace(/&/g, 'and');
                         $.ajax({
                           type: 'PATCH',
-                          url: apiURL + '/libraries/' + user_libraries[library_index].id + '/',
+                          url: urlHelper.api.library(user_libraries[library_index].id),
                           data: JSON.stringify({'data': library_string}),
                           datatype: "json",
                           contentType: "application/json;charset=utf-8",
@@ -439,7 +439,7 @@
 // ----------------------------------------------------------------------------
     var myorganisations = {};
     $.ajax({
-      url: apiURL + "/organisations/",
+      url: urlHelper.api.organisations(),
       error: handleServerError('listing organisations'),
       success: function (result) {
             for (let i = 0; i < result.length; i++) {
@@ -460,7 +460,7 @@
         $("#organisation").show();
         viewmode = "organisation";
         $.ajax({
-          url: apiURL + "/organisations/" + orgid + "/assessments/",
+          url: urlHelper.api.organisationAssessments(orgid),
           error: handleServerError('listing assessments for organisation'),
           success: function (result) {
             projects = result;
