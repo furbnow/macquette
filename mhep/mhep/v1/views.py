@@ -54,6 +54,16 @@ class AssessmentHTMLView(AssessmentQuerySetMixin, LoginRequiredMixin, DetailView
         context["locked_javascript"] = json.dumps(locked)
         context["reports_javascript"] = json.dumps([])
         context["use_image_gallery"] = False
+        context["VERSION"] = VERSION
+        return context
+
+
+class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):
+    template_name = f"{VERSION}/assessments.html"
+
+    def get_context_data(self, object=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["VERSION"] = VERSION
         return context
 
 
@@ -228,7 +238,3 @@ class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
             )
         except Organisation.DoesNotExist:
             raise exceptions.NotFound("Organisation not found")
-
-
-class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):
-    template_name = f"{VERSION}/assessments.html"

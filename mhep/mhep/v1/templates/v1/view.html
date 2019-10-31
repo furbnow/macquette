@@ -681,7 +681,7 @@
             scenarios_measures_complete = {}
             if (view_html['compare'] == undefined) {
                 $.ajax({
-                    url: urlHelper.static('v1/subviews/compare.js'),
+                    url: urlHelper.static('subviews/compare.js'),
                     async: false,
                     cache: false,
                     error: handleServerError('loading subview compare.js'),

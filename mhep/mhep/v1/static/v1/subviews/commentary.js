@@ -8,7 +8,7 @@ function commentary_UpdateUI()
 function commentary_initUI() {
     // The commentary was originally in "Household Questionnaire", we need to for several reasons we need to initilize it
     $.ajax({
-        url: urlHelper.static('v1/subviews/householdquestionnaire.js'),
+        url: urlHelper.static('subviews/householdquestionnaire.js'),
         dataType: 'script',
         async: false,
         error: handleServerError('loading householdquestionnaire.js'),
