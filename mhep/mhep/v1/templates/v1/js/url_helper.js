@@ -10,45 +10,45 @@
     return {
       api: {
         assessments: function() {
-          return '{% url "v1:list-create-assessments" %}';
+          return '{% url VERSION|add:":list-create-assessments" %}';
         },
 
         assessment: function(assessmentID) {
-          const dummyURL = '{% url "v1:retrieve-update-destroy-assessment" "12345" %}';
+          const dummyURL = '{% url VERSION|add:":retrieve-update-destroy-assessment" "12345" %}';
           return dummyURL.replace(/12345/, parseInt(assessmentID));
         },
 
         organisationAssessments: function(organisationID) {
-          const dummyURL = '{% url "v1:list-create-organisation-assessments" "12345" %}';
+          const dummyURL = '{% url VERSION|add:":list-create-organisation-assessments" "12345" %}';
           return dummyURL.replace(/12345/, parseInt(organisationID));
         },
 
         organisations: function() {
-          return '{% url "v1:list-organisations" %}';
+          return '{% url VERSION|add:":list-organisations" %}';
         },
 
         libraries: function() {
-          return '{% url "v1:list-create-libraries" %}';
+          return '{% url VERSION|add:":list-create-libraries" %}';
         },
 
         library: function(libraryID) {
-          return '{% url "v1:update-destroy-library" "12345" %}'.replace(/12345/, parseInt(libraryID));
+          return '{% url VERSION|add:":update-destroy-library" "12345" %}'.replace(/12345/, parseInt(libraryID));
         },
 
         libraryItems: function(libraryID) {
-          const dummyURL = '{% url "v1:create-update-delete-library-item" "12345" %}';
+          const dummyURL = '{% url VERSION|add:":create-update-delete-library-item" "12345" %}';
           return dummyURL.replace(/12345/, parseInt(libraryID));
         },
 
         libraryItem: function(libraryID, tag) {
-          const dummyURL = '{% url "v1:create-update-delete-library-item" "12345" "abcde" %}';
+          const dummyURL = '{% url VERSION|add:":create-update-delete-library-item" "12345" "abcde" %}';
           return dummyURL.replace(/12345/, parseInt(libraryID)).replace(/abcde/, tag);
         },
       },
 
       html: {
         assessment: function(assessmentID) {
-          return '{% url "v1:view-assessment" "12345" %}'.replace(/12345/, assessmentID.toString());
+          return '{% url VERSION|add:":view-assessment" "12345" %}'.replace(/12345/, assessmentID.toString());
         },
       },
 
