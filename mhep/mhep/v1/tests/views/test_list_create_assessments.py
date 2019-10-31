@@ -5,9 +5,12 @@ from freezegun import freeze_time
 from rest_framework.test import APITestCase
 from rest_framework import exceptions, status
 
+from ... import VERSION
 from ...models import Assessment
 from ..factories import AssessmentFactory, OrganisationFactory
+
 from mhep.users.tests.factories import UserFactory
+
 User = get_user_model()
 
 
@@ -25,7 +28,7 @@ class TestListAssessments(APITestCase):
                     owner=user,
             )
 
-        response = self.client.get("/v1/api/assessments/")
+        response = self.client.get(f"/{VERSION}/api/assessments/")
 
         expected_structure = [{
             "id": "{}".format(a1.pk),
@@ -54,7 +57,7 @@ class TestListAssessments(APITestCase):
 
         AssessmentFactory.create(organisation=organisation)
 
-        response = self.client.get("/v1/api/assessments/")
+        response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_200_OK
 
         assert 2 == len(response.data)
@@ -68,13 +71,13 @@ class TestListAssessments(APITestCase):
         AssessmentFactory.create(owner=me)
         AssessmentFactory.create(owner=someone_else)
 
-        response = self.client.get("/v1/api/assessments/")
+        response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_200_OK
 
         assert 2 == len(response.data)
 
     def test_returns_forbidden_if_not_logged_in(self):
-        response = self.client.get("/v1/api/assessments/")
+        response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
@@ -100,7 +103,11 @@ class TestCreateAssessment(APITestCase):
         }
 
         with freeze_time("2019-06-01T16:35:34Z"):
-            response = self.client.post("/v1/api/assessments/", new_assessment, format="json")
+            response = self.client.post(
+                    f"/{VERSION}/api/assessments/",
+                    new_assessment,
+                    format="json"
+            )
 
         assert response.status_code == status.HTTP_201_CREATED
 
@@ -130,7 +137,7 @@ class TestCreateAssessment(APITestCase):
             "description": "test description 1",
         }
 
-        response = self.client.post("/v1/api/assessments/", new_assessment, format="json")
+        response = self.client.post(f"/{VERSION}/api/assessments/", new_assessment, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
         created_assessment = Assessment.objects.get(pk=response.data["id"])
@@ -145,7 +152,7 @@ class TestCreateAssessment(APITestCase):
             "description": "test description 1",
         }
 
-        response = self.client.post("/v1/api/assessments/", new_assessment, format="json")
+        response = self.client.post(f"/{VERSION}/api/assessments/", new_assessment, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
         created_assessment = Assessment.objects.get(pk=response.data["id"])
@@ -160,7 +167,7 @@ class TestCreateAssessment(APITestCase):
             "data": {"foo": "baz"},
         }
 
-        response = self.client.post("/v1/api/assessments/", new_assessment, format="json")
+        response = self.client.post(f"/{VERSION}/api/assessments/", new_assessment, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
         assert "" == response.data["description"]
@@ -171,7 +178,7 @@ class TestCreateAssessment(APITestCase):
                 "openbem_version": "10.1.1",
             }
 
-        response = self.client.post("/v1/api/assessments/", new_assessment, format="json")
+        response = self.client.post(f"/{VERSION}/api/assessments/", new_assessment, format="json")
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_create_assessment_fails_if_name_missing(self):
@@ -248,6 +255,6 @@ class TestCreateAssessment(APITestCase):
     def assert_create_fails(self, new_assessment, expected_status, expected_response):
         self.client.force_authenticate(self.user)
 
-        response = self.client.post("/v1/api/assessments/", new_assessment, format="json")
+        response = self.client.post(f"/{VERSION}/api/assessments/", new_assessment, format="json")
         assert response.status_code == expected_status
         assert response.data == expected_response

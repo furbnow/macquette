@@ -6,7 +6,9 @@ from collections import OrderedDict
 from rest_framework.test import APITestCase
 from rest_framework import status
 
+from ... import VERSION
 from ..factories import AssessmentFactory, OrganisationFactory
+
 from mhep.users.tests.factories import UserFactory
 
 
@@ -21,7 +23,7 @@ class TestListOrganisations(APITestCase):
         OrganisationFactory.create()  # make another organisation: it shouldn't show up
 
         self.client.force_authenticate(me)
-        response = self.client.get("/v1/api/organisations/")
+        response = self.client.get(f"/{VERSION}/api/organisations/")
         assert response.status_code == status.HTTP_200_OK
 
         expected = [
@@ -42,7 +44,7 @@ class TestListOrganisations(APITestCase):
         assert expected == response.data
 
     def test_returns_forbidden_if_not_logged_in(self):
-        response = self.client.get("/v1/api/organisations/")
+        response = self.client.get(f"/{VERSION}/api/organisations/")
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_if_last_login_is_none_shows_never(self):
@@ -51,7 +53,7 @@ class TestListOrganisations(APITestCase):
         my_org.members.add(me)
 
         self.client.force_authenticate(me)
-        response = self.client.get("/v1/api/organisations/")
+        response = self.client.get(f"/{VERSION}/api/organisations/")
         assert response.status_code == status.HTTP_200_OK
 
         assert "never" == response.data[0]["members"][0]["last_login"]

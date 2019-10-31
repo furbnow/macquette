@@ -5,8 +5,11 @@ from freezegun import freeze_time
 from rest_framework.test import APITestCase
 from rest_framework import status
 
+from ... import VERSION
 from ..factories import AssessmentFactory, OrganisationFactory
+
 from mhep.users.tests.factories import UserFactory
+
 User = get_user_model()
 
 
@@ -24,7 +27,7 @@ class TestListAssessments(APITestCase):
                     owner=user,
             )
 
-        response = self.client.get("/v1/api/assessments/")
+        response = self.client.get(f"/{VERSION}/api/assessments/")
 
         expected_structure = {
             "id": "{}".format(a1.pk),
@@ -53,7 +56,7 @@ class TestListAssessments(APITestCase):
 
         AssessmentFactory.create(organisation=organisation)
 
-        response = self.client.get("/v1/api/assessments/")
+        response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_200_OK
 
         assert 2 == len(response.data)
@@ -67,11 +70,11 @@ class TestListAssessments(APITestCase):
         AssessmentFactory.create(owner=me)
         AssessmentFactory.create(owner=someone_else)
 
-        response = self.client.get("/v1/api/assessments/")
+        response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_200_OK
 
         assert 2 == len(response.data)
 
     def test_returns_forbidden_if_not_logged_in(self):
-        response = self.client.get("/v1/api/assessments/")
+        response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_403_FORBIDDEN

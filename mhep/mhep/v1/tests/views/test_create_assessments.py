@@ -5,9 +5,11 @@ from freezegun import freeze_time
 from rest_framework.test import APITestCase
 from rest_framework import exceptions, status
 
-from ..factories import OrganisationFactory
-from ...models import Assessment
 from mhep.users.tests.factories import UserFactory
+
+from ... import VERSION
+from ...models import Assessment
+from ..factories import OrganisationFactory
 
 User = get_user_model()
 
@@ -192,7 +194,7 @@ class CreateAssessmentTestsMixin():
 class TestCreateAssessment(CreateAssessmentTestsMixin, APITestCase):
     def post_to_create_endpoint(self, assessment):
         return self.client.post(
-            "/v1/api/assessments/",
+            f"/{VERSION}/api/assessments/",
             assessment,
             format="json"
         )
@@ -204,7 +206,7 @@ class TestCreateAssessmentForOrganisation(CreateAssessmentTestsMixin, APITestCas
         organisation.members.add(self.user)
 
         return self.client.post(
-            f"/v1/api/organisations/{organisation.pk}/assessments/",
+            f"/{VERSION}/api/organisations/{organisation.pk}/assessments/",
             assessment,
             format="json"
         )
@@ -222,7 +224,7 @@ class TestCreateAssessmentForOrganisation(CreateAssessmentTestsMixin, APITestCas
         }
 
         response = self.client.post(
-            f"/v1/api/organisations/{organisation.pk}/assessments/",
+            f"/{VERSION}/api/organisations/{organisation.pk}/assessments/",
             new_assessment,
             format="json"
         )
@@ -244,7 +246,7 @@ class TestCreateAssessmentForOrganisation(CreateAssessmentTestsMixin, APITestCas
         }
 
         response = self.client.post(
-            f"/v1/api/organisations/{organisation.pk}/assessments/",
+            f"/{VERSION}/api/organisations/{organisation.pk}/assessments/",
             new_assessment,
             format="json"
         )

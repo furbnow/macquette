@@ -1,8 +1,10 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from ..factories import LibraryFactory
 from mhep.users.tests.factories import UserFactory
+
+from ... import VERSION
+from ..factories import LibraryFactory
 
 
 class CommonMixin():
@@ -39,7 +41,7 @@ class TestCreateLibraryPermissions(CommonMixin, APITestCase):
             "data": {"foo": "bar"}
         }
 
-        return self.client.post("/v1/api/libraries/", new_library, format="json")
+        return self.client.post(f"/{VERSION}/api/libraries/", new_library, format="json")
 
 
 class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
@@ -74,7 +76,7 @@ class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
         }
 
         return self.client.patch(
-            "/v1/api/libraries/{}/".format(library.id),
+            f"/{VERSION}/api/libraries/{library.id}/",
             update_fields,
             format="json",
         )
@@ -107,4 +109,4 @@ class TestDeleteLibraryPermissions(CommonMixin, APITestCase):
         )
 
     def _call_endpoint(self, library):
-        return self.client.delete("/v1/api/libraries/{}/".format(library.id))
+        return self.client.delete(f"/{VERSION}/api/libraries/{library.id}/")
