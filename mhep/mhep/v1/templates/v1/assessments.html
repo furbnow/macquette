@@ -455,8 +455,7 @@
     $("body").on("click", ".org-item", function () {
         orgid = $(this).attr("orgid");
         draw_organisation(orgid);
-        edit_org_link = "{% url 'admin:v1_organisation_change' 12345 %}".replace(/12345/, orgid.toString());
-        $("#organisation-add-member").attr("href", edit_org_link);
+        $("#organisation-add-member").attr("href", urlHelper.admin.organisation(orgid));
         $("#organisation").show();
         viewmode = "organisation";
         $.ajax({
