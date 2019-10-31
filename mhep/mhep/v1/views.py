@@ -25,6 +25,8 @@ from .serializers import (
     OrganisationSerializer,
 )
 
+from . import VERSION
+
 
 class AssessmentQuerySetMixin():
     def get_queryset(self, *args, **kwargs):
@@ -40,7 +42,7 @@ class BadRequest(exceptions.APIException):
 
 
 class AssessmentHTMLView(AssessmentQuerySetMixin, LoginRequiredMixin, DetailView):
-    template_name = "v1/view.html"
+    template_name = f"{VERSION}/view.html"
     context_object_name = "assessment"
     model = Assessment
 
@@ -229,4 +231,4 @@ class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
 
 
 class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):
-    template_name = "v1/assessments.html"
+    template_name = f"{VERSION}/assessments.html"
