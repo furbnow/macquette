@@ -1,6 +1,6 @@
 from rest_framework import exceptions, permissions
 
-from mhep.v1.models import Organisation
+from .models import Organisation
 
 
 class IsAssessmentOwner(permissions.BasePermission):

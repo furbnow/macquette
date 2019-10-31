@@ -3,8 +3,8 @@ from freezegun import freeze_time
 from rest_framework.test import APITestCase
 from rest_framework import exceptions, status
 
-from mhep.v1.models import Library
-from mhep.v1.tests.factories import LibraryFactory
+from ...models import Library
+from ..factories import LibraryFactory
 from mhep.users.tests.factories import UserFactory
 
 

@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from mhep.v1.tests.factories import LibraryFactory
+from ..factories import LibraryFactory
 
 
 class TestCreateLibraryItem(APITestCase):

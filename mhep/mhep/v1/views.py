@@ -10,14 +10,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from mhep.v1.models import Assessment, Organisation
-from mhep.v1.permissions import (
+from .models import Assessment, Organisation
+from .permissions import (
     IsMemberOfConnectedOrganisation,
     IsMemberOfOrganisation,
     IsAssessmentOwner,
     IsLibraryOwner,
 )
-from mhep.v1.serializers import (
+from .serializers import (
     AssessmentFullSerializer,
     AssessmentMetadataSerializer,
     LibraryItemSerializer,

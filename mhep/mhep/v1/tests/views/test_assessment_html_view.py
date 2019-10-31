@@ -3,7 +3,7 @@ from django.urls import reverse
 
 from rest_framework import status
 
-from mhep.v1.tests.factories import AssessmentFactory, OrganisationFactory
+from ..factories import AssessmentFactory, OrganisationFactory
 from mhep.users.tests.factories import UserFactory
 
 

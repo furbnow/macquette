@@ -1,7 +1,7 @@
 import datetime
 
 from rest_framework import serializers
-from mhep.v1.models import Assessment, Library, Organisation
+from .models import Assessment, Library, Organisation
 
 
 class AuthorUserIDMixin():

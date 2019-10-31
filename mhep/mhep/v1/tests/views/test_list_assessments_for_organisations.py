@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from mhep.users.tests.factories import UserFactory
-from mhep.v1.tests.factories import AssessmentFactory, OrganisationFactory
+from ..factories import AssessmentFactory, OrganisationFactory
 
 
 class TestListAssessmentsForOrganisation(APITestCase):

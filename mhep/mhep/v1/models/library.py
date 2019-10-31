@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.postgres.fields import JSONField
-from mhep.v1.validators import validate_dict
+from ..validators import validate_dict
 
 
 class Library(models.Model):

@@ -2,7 +2,7 @@ import pytest
 # from django.conf import settings
 from django.urls import reverse, resolve
 
-from mhep.v1.models import Assessment, Library
+from ..models import Assessment, Library
 
 pytestmark = pytest.mark.django_db
 
