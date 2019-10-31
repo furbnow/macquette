@@ -2,24 +2,24 @@
 {% load static i18n %}
 
 {% block extra_head %}
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/mhep-helper.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/ui-helper-r3.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/ui-mhep.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/library-r6.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/openbem/datasets.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/openbem/openBEM.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/targetbar-r3.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/arrow-r3.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/library-helper/library-helper.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/mhep-helper.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/ui-helper-r3.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/ui-mhep.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/library-r6.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/openbem/datasets.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/openbem/openBEM.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/targetbar-r3.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/arrow-r3.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/library-helper/library-helper.js' %}"></script>
 
 
-<link rel="stylesheet" href="{% static 'v1/js/jquery-ui-1.12.1/jquery-ui.min.css' %}">
-<script src="{% static 'v1/js/jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
+<link rel="stylesheet" href="{% static VERSION|add:'/js/jquery-ui-1.12.1/jquery-ui.min.css' %}">
+<script src="{% static VERSION|add:'/js/jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
 
 <!-- open floor uvalue calculator -->
-<script type="text/javascript" src="{% static 'v1/js/openFUVC/openFUVC.js' %}"></script>
-<script type="text/javascript" src="{% static 'v1/js/openFUVC/openFUVC-ui-helper.js' %}"></script>
-<link rel="stylesheet" href="{% static 'v1/js/openFUVC/openFUVC.css' %}">
+<script type="text/javascript" src="{% static VERSION|add:'/js/openFUVC/openFUVC.js' %}"></script>
+<script type="text/javascript" src="{% static VERSION|add:'/js/openFUVC/openFUVC-ui-helper.js' %}"></script>
+<link rel="stylesheet" href="{% static VERSION|add:'/js/openFUVC/openFUVC.css' %}">
 
 <style>
     :root {
@@ -288,8 +288,8 @@
     var historical_index; // pointer for the historical array, pointing the current version of project
     historical.unshift(JSON.stringify(project));
     historical_index = 0;
-    $('.navbar-inner').append('<div style="display:inline" class="menu-assessment pull-right" id="redo"><a><img src="{% static "v1/img/redo.gif" %}" title="Redo" style="width:14px" /></a></div>');
-    $('.navbar-inner').append('<div style="display:inline" class="menu-assessment pull-right" id="undo"><a><img src="{% static "v1/img/undo.gif" %}" title="Undo" style="width:14px" / > </a></div> ');
+    $('.navbar-inner').append('<div style="display:inline" class="menu-assessment pull-right" id="redo"><a><img src="{% static VERSION|add:"/img/redo.gif" %}" title="Redo" style="width:14px" /></a></div>');
+    $('.navbar-inner').append('<div style="display:inline" class="menu-assessment pull-right" id="undo"><a><img src="{% static VERSION|add:"/img/undo.gif" %}" title="Undo" style="width:14px" / > </a></div> ');
     refresh_undo_redo_buttons();
 
     //**************************
