@@ -15,9 +15,9 @@
 
     <script src="{% static VERSION|add:'/js/jquery-1.11.3.min.js' %}"></script>
 
-    {% include "v1/js/handle_server_error.js" %}
-    {% include "v1/js/add_csrf_token_to_ajax.js" %}
-    {% include "v1/js/url_helper.js" %}
+    {% include VERSION|add:"/js/handle_server_error.js" %}
+    {% include VERSION|add:"/js/add_csrf_token_to_ajax.js" %}
+    {% include VERSION|add:"/js/url_helper.js" %}
 
     {% block css %}
 
