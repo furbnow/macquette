@@ -29,4 +29,4 @@ class OrganisationAdmin(admin.ModelAdmin):
     }
 
     def number_of_assessments(self, obj):
-        return obj.assessments.all().count()
+        return obj.assessments.count()

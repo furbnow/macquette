@@ -12,4 +12,4 @@ def test_organisation_assessments(organisation_with_extras: Organisation):
 
 
 def test_organisations_related_name_on_user_model(user_with_org: settings.AUTH_USER_MODEL):
-    assert user_with_org.organisations.all().count() == 1
+    assert user_with_org.v1_organisations.all().count() == 1
