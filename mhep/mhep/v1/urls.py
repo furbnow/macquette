@@ -1,6 +1,7 @@
-from django.conf.urls import url
-from django.urls import path
-from django.views.generic import TemplateView
+from django.urls import path, reverse_lazy
+from django.views.generic.base import RedirectView
+
+from . import VERSION
 
 from .views import (
     AssessmentHTMLView,
@@ -18,6 +19,12 @@ app_name = "assessments"
 urlpatterns = [
     path(
         "",
+        RedirectView.as_view(url=reverse_lazy(f"{VERSION}:list-assessments")),
+        name="index",
+    ),
+
+    path(
+        "assessments/",
         ListAssessmentsHTMLView.as_view(),
         name="list-assessments",
     ),
