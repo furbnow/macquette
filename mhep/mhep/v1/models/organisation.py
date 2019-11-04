@@ -9,7 +9,7 @@ class Organisation(models.Model):
     members = models.ManyToManyField(
         User,
         blank=True,
-        related_name='organisations',
+        related_name='%(app_label)s_organisations',
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
