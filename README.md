@@ -43,7 +43,42 @@ Browse to [localhost:9090](http://localhost:9090)
 
 An administrative interface is available at [localhost:9090/admin](http://localhost:9090/admin), the username is `localadmin`, password `localadmin`
 
-# API endpoints
+
+## Working with app versions
+
+The app is fully versioned at the Django application level, with names like `v1`, `v2` etc.
+
+Different app versions live under a URL prefix e.g. `/v1/`.
+
+App versions are highly isolated, meaning each version has its own:
+
+* templates & static assets
+* URL schema (including API URLs)
+* database models
+
+
+### Starting a new app version
+
+To start working on a new version of the app, cd into `./mhep` and run the script
+[`upversion.sh`](https://github.com/mhep-transition/mhep-django/blob/master/mhep/upversion.sh)
+and set the new version as `dev`.
+
+The script copies an app version to a new version, for example, going from `v1` to `dev`:
+
+* copy-pastes the whole directory `mhep/mhep/v1` to `/mhep/mhep/dev`
+* renames the `static/v1` and `templates/v1` subdirectories
+* adds the new `dev` app to Django's `LOCAL_APPS` setting and `urls.py`
+* modifies the `dev/fixtures/*.json` files with the updated app label
+
+
+### Finalising an app version
+
+When the `dev` app is finished it should be renamed to e.g. `v2`.
+
+Once an app is assigned a version number its code should never be modified again.
+
+
+# v1 API endpoints
 
 * [List assessments](#list-assessments)
 * [List assessments for organisation](#list-assessments-for-organisation)
