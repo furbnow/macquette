@@ -1,20 +1,29 @@
 #!/bin/sh -eu
 
-
-ls -al mhep/
-echo
-echo "What's the latest version number? (e.g. v2)"
-
-read CURRENT_V
-NEW_V="dev"
-
-
-if [ -d "mhep/${NEW_V}" ]; then
-	echo "directory mhep/${NEW_V} already exists"
+check_django_working() {
+    ./manage.py check && DJANGO_OK=1 || DJANGO_OK=0
+    if [ $DJANGO_OK -ne 1 ]; then
+	echo
+	echo "Run from the ./mhep directory inside the Vagrant machine"
 	exit 1
-fi
+    fi
+}
+
+get_latest_version() {
+    ls -al mhep/
+    echo
+    echo "What's the latest version number? (e.g. v2)"
+
+    read CURRENT_V
+}
 
 
+check_destination_directory_doesnt_exist() {
+    if [ -d "mhep/${NEW_V}" ]; then
+	    echo "directory mhep/${NEW_V} already exists"
+	    exit 1
+    fi
+}
 
 copy_app_directory() {
     # copy whole app directory
@@ -56,6 +65,12 @@ update_fixtures() {
 
 	sed -i "s|\"model\": \"${CURRENT_V}\.|\"model\": \"${NEW_V}.|g" mhep/${NEW_V}/fixtures/*.json
 }
+
+NEW_V="dev"
+check_django_working
+get_latest_version
+check_destination_directory_doesnt_exist
+
 
 echo "Copying mhep/${CURRENT_V} to mhep/${NEW_V}"
 echo
