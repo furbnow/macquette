@@ -10,9 +10,9 @@ pytestmark = pytest.mark.django_db
 
 def test_assessments_home():
     assert (
-        reverse(f"{VERSION}:list-assessments") == f"/{VERSION}/"
+        reverse(f"{VERSION}:list-assessments") == f"/{VERSION}/assessments/"
     )
-    assert resolve(f"/{VERSION}/").view_name == f"{VERSION}:list-assessments"
+    assert resolve(f"/{VERSION}/assessments/").view_name == f"{VERSION}:list-assessments"
 
 
 def test_list_create_assessments(assessment: Assessment):
