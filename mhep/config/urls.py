@@ -25,6 +25,8 @@ urlpatterns = [
 
     path("v1/", include("mhep.v1.urls", namespace="v1")),
 
+    path("versions/", include("mhep.versions.urls", namespace="versions")),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

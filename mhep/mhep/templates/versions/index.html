@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}List MHEP Versions{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>Versions of My Home Energy Planner</h1>
+
+      <ul>
+      {% for app in app_list %}
+        <li><a href="{{ app.index_url }}">{{ app.verbose_name }}</a></li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
+
