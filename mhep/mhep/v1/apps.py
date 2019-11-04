@@ -1,6 +1,7 @@
 from django.apps import AppConfig
+from . import VERSION
 
 
 class AssessmentsConfig(AppConfig):
-    name = 'mhep.v1'
-    verbose_name = "Assessments v1"
+    name = f"mhep.{VERSION}"
+    verbose_name = f"Assessments {VERSION}"

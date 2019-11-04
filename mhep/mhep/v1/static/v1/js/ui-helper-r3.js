@@ -10,7 +10,7 @@ function load_view(eid, view)
 
     var result_html = "";
     $.ajax({
-        url: urlHelper.static('v1/subviews/' + view + '.html'),
+        url: urlHelper.static('subviews/' + view + '.html'),
         async: false,
         cache: false,
         error: handleServerError('loading HTML for subview "' + view + '"'),
@@ -23,7 +23,7 @@ function load_view(eid, view)
 
     // Load js
     $.ajax({
-        url: urlHelper.static('v1/subviews/' + view + '.js'),
+        url: urlHelper.static('subviews/' + view + '.js'),
         dataType: 'script',
         async: false,
         error: handleServerError('loading Javascript for subview "' + view + '"'),

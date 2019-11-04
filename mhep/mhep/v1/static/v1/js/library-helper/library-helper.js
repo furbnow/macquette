@@ -265,7 +265,7 @@ libraryHelper.prototype.append_modals = function () {
     var html;
     var myself = this;
     $.ajax({
-        url: urlHelper.static('v1/js/library-helper/library-helper.html'),
+        url: urlHelper.static('js/library-helper/library-helper.html'),
         datatype: "json",
         error: handleServerError('loading library helper HTML'),
         success: function (result) {

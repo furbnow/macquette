@@ -1,7 +1,8 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from mhep.v1.tests.factories import LibraryFactory
+from ... import VERSION
+from ..factories import LibraryFactory
 
 
 class TestCreateLibraryItem(APITestCase):
@@ -20,7 +21,7 @@ class TestCreateLibraryItem(APITestCase):
 
         self.client.force_authenticate(self.library.owner)
         response = self.client.post(
-            f"/v1/api/libraries/{self.library.id}/items/",
+            f"/{VERSION}/api/libraries/{self.library.id}/items/",
             item_data,
             format="json"
         )
@@ -37,7 +38,7 @@ class TestCreateLibraryItem(APITestCase):
 
         self.client.force_authenticate(self.library.owner)
         response = self.client.post(
-            f"/v1/api/libraries/{self.library.id}/items/",
+            f"/{VERSION}/api/libraries/{self.library.id}/items/",
             item_data,
             format="json"
         )

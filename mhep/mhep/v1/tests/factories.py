@@ -2,7 +2,7 @@ import factory
 
 from typing import Any, Sequence
 
-from mhep.v1.models import Assessment, Library, Organisation
+from ..models import Assessment, Library, Organisation
 from mhep.users.tests.factories import UserFactory
 
 

@@ -1,6 +1,6 @@
 import pytest
 
-from mhep.v1.models import Organisation
+from ..models import Organisation
 
 pytestmark = pytest.mark.django_db
 

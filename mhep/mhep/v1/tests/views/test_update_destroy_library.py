@@ -3,8 +3,10 @@ from freezegun import freeze_time
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from mhep.v1.models import Library
-from mhep.v1.tests.factories import LibraryFactory
+from ... import VERSION
+from ...models import Library
+from ..factories import LibraryFactory
+
 from mhep.users.tests.factories import UserFactory
 
 
@@ -31,7 +33,7 @@ class TestUpdateLibrary(APITestCase):
             self.client.force_authenticate(self.me)
 
             response = self.client.patch(
-                "/v1/api/libraries/{}/".format(lib.pk),
+                f"/{VERSION}/api/libraries/{lib.pk}/",
                 updateFields,
                 format="json",
             )
@@ -56,7 +58,7 @@ class TestUpdateLibrary(APITestCase):
 
             self.client.force_authenticate(self.me)
             response = self.client.patch(
-                "/v1/api/libraries/{}/".format(lib.pk),
+                f"/{VERSION}/api/libraries/{lib.pk}/",
                 updateFields,
                 format="json",
             )
@@ -74,7 +76,7 @@ class TestUpdateLibrary(APITestCase):
         assessment_count = Library.objects.count()
 
         self.client.force_authenticate(self.me)
-        response = self.client.delete(f"/v1/api/libraries/{lib.pk}/")
+        response = self.client.delete(f"/{VERSION}/api/libraries/{lib.pk}/")
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
         assert b"" == response.content

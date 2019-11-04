@@ -10,20 +10,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from mhep.v1.models import Assessment, Organisation
-from mhep.v1.permissions import (
+from .models import Assessment, Organisation
+from .permissions import (
     IsMemberOfConnectedOrganisation,
     IsMemberOfOrganisation,
     IsAssessmentOwner,
     IsLibraryOwner,
 )
-from mhep.v1.serializers import (
+from .serializers import (
     AssessmentFullSerializer,
     AssessmentMetadataSerializer,
     LibraryItemSerializer,
     LibrarySerializer,
     OrganisationSerializer,
 )
+
+from . import VERSION
 
 
 class AssessmentQuerySetMixin():
@@ -40,7 +42,7 @@ class BadRequest(exceptions.APIException):
 
 
 class AssessmentHTMLView(AssessmentQuerySetMixin, LoginRequiredMixin, DetailView):
-    template_name = "v1/view.html"
+    template_name = f"{VERSION}/view.html"
     context_object_name = "assessment"
     model = Assessment
 
@@ -52,6 +54,16 @@ class AssessmentHTMLView(AssessmentQuerySetMixin, LoginRequiredMixin, DetailView
         context["locked_javascript"] = json.dumps(locked)
         context["reports_javascript"] = json.dumps([])
         context["use_image_gallery"] = False
+        context["VERSION"] = VERSION
+        return context
+
+
+class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):
+    template_name = f"{VERSION}/assessments.html"
+
+    def get_context_data(self, object=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["VERSION"] = VERSION
         return context
 
 
@@ -226,7 +238,3 @@ class ListCreateOrganisationAssessments(generics.ListCreateAPIView):
             )
         except Organisation.DoesNotExist:
             raise exceptions.NotFound("Organisation not found")
-
-
-class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):
-    template_name = "v1/assessments.html"

@@ -1,8 +1,10 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from mhep.v1.tests.factories import AssessmentFactory, OrganisationFactory
 from mhep.users.tests.factories import UserFactory
+
+from ... import VERSION
+from ..factories import AssessmentFactory, OrganisationFactory
 
 
 class AssessmentPermissionTestsMixin():
@@ -52,7 +54,7 @@ class AssessmentPermissionTestsMixin():
 
 class TestGetAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
     def _call_endpoint(self, assessment):
-        return self.client.get("/v1/api/assessments/{}/".format(assessment.id))
+        return self.client.get(f"/{VERSION}/api/assessments/{assessment.id}/")
 
     def _assert_success(self, response):
         assert status.HTTP_200_OK == response.status_code
@@ -69,7 +71,7 @@ class TestUpdateAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCas
         }
 
         return self.client.patch(
-            "/v1/api/assessments/{}/".format(assessment.id),
+            f"/{VERSION}/api/assessments/{assessment.id}/",
             update_fields,
             format="json",
         )
@@ -84,7 +86,7 @@ class TestUpdateAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCas
 
 class TestDeleteAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
     def _call_endpoint(self, assessment):
-        return self.client.delete("/v1/api/assessments/{}/".format(assessment.id))
+        return self.client.delete(f"/{VERSION}/api/assessments/{assessment.id}/")
 
     def _assert_success(self, response):
         assert status.HTTP_204_NO_CONTENT == response.status_code

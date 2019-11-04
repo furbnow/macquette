@@ -1,4 +1,4 @@
-{% extends "v1/mhep_base.html" %}
+{% extends VERSION|add:"/mhep_base.html" %}
 {% load static i18n %}
 
 
@@ -34,8 +34,8 @@
     }
 </style>
 
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/mhep-helper.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static 'v1/js/library-r6.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/mhep-helper.js' %}"></script>
+<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/library-r6.js' %}"></script>
 
 {% endblock %}
 
@@ -67,7 +67,7 @@
             <div id="myorganisations"></div>
             {% if request.user.is_staff %}
             <br>
-            <a href="{% url "admin:v1_organisation_changelist" %}">Manage organisations</a>
+            <a href="{% url "admin:"|add:VERSION|add:"_organisation_changelist" %}">Manage organisations</a>
             {% endif %}
         </div>
     </div>
@@ -455,8 +455,7 @@
     $("body").on("click", ".org-item", function () {
         orgid = $(this).attr("orgid");
         draw_organisation(orgid);
-        edit_org_link = "{% url 'admin:v1_organisation_change' 12345 %}".replace(/12345/, orgid.toString());
-        $("#organisation-add-member").attr("href", edit_org_link);
+        $("#organisation-add-member").attr("href", urlHelper.admin.organisation(orgid));
         $("#organisation").show();
         viewmode = "organisation";
         $.ajax({
@@ -488,7 +487,7 @@
             const lastLogin = new Date(members[z].last_login);
 
             out += "<div class='recent-activity-item' style='height:40px'>";
-            out += '<img src="{% static "v1/img/defaultuser.png" %}" style="height:40px; float:left; padding-right:5px"/ >';
+            out += '<img src="' + urlHelper.static('img/defaultuser.png') + '" style="height:40px; float:left; padding-right:5px"/ >';
             out += "<b>" + members[z].name + "</b><br>Last active: " + lastLogin;
             out += "</div>";
         }

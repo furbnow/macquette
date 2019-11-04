@@ -4,7 +4,9 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from mhep.users.tests.factories import UserFactory
-from mhep.v1.tests.factories import AssessmentFactory, OrganisationFactory
+
+from ... import VERSION
+from ..factories import AssessmentFactory, OrganisationFactory
 
 
 class TestListAssessmentsForOrganisation(APITestCase):
@@ -47,7 +49,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
             )
 
         self.client.force_authenticate(self.org_member)
-        response = self.client.get(f"/v1/api/organisations/{self.organisation.pk}/assessments/")
+        response = self.client.get(f"/{VERSION}/api/organisations/{self.organisation.pk}/assessments/")
 
         expected_result = {
             "id": "{}".format(assessment.pk),
@@ -66,7 +68,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
 
     def test_returns_404_for_bad_organisation_id(self):
         self.client.force_authenticate(self.org_member)
-        response = self.client.get("/v1/api/organisations/2/assessments/")
+        response = self.client.get(f"/{VERSION}/api/organisations/2/assessments/")
 
         assert status.HTTP_404_NOT_FOUND == response.status_code
         assert {"detail": "Organisation not found"} == response.json()
@@ -83,7 +85,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
 
     def test_returns_forbidden_if_not_logged_in(self):
         AssessmentFactory.create(organisation=self.organisation)
-        response = self.client.get(f"/v1/api/organisations/{self.organisation.pk}/assessments/")
+        response = self.client.get(f"/{VERSION}/api/organisations/{self.organisation.pk}/assessments/")
 
         assert status.HTTP_403_FORBIDDEN == response.status_code
         assert {"detail": "Authentication credentials were not provided."} == response.json()
@@ -92,14 +94,14 @@ class TestListAssessmentsForOrganisation(APITestCase):
         someone_else = UserFactory.create()
         self.client.force_authenticate(someone_else)
 
-        response = self.client.get(f"/v1/api/organisations/{self.organisation.pk}/assessments/")
+        response = self.client.get(f"/{VERSION}/api/organisations/{self.organisation.pk}/assessments/")
 
         assert status.HTTP_403_FORBIDDEN == response.status_code
         assert {"detail": "You are not a member of the Organisation."} == response.json()
 
     def call_and_assert_number_of_returns_assessments(self, expectedAssessmentCount):
         self.client.force_authenticate(self.org_member)
-        response = self.client.get(f"/v1/api/organisations/{self.organisation.pk}/assessments/")
+        response = self.client.get(f"/{VERSION}/api/organisations/{self.organisation.pk}/assessments/")
 
         assert response.status_code == status.HTTP_200_OK
         assert expectedAssessmentCount == len(response.data)

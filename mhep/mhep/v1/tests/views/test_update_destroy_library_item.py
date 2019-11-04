@@ -4,8 +4,9 @@ from freezegun import freeze_time
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from mhep.v1.models import Library
-from mhep.v1.tests.factories import LibraryFactory
+from ... import VERSION
+from ...models import Library
+from ..factories import LibraryFactory
 
 
 class TestUpdateDestroyLibraryItem(APITestCase):
@@ -18,7 +19,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         )
 
         self.client.force_authenticate(library.owner)
-        response = self.client.delete(f"/v1/api/libraries/{library.id}/items/tag2/")
+        response = self.client.delete(f"/{VERSION}/api/libraries/{library.id}/items/tag2/")
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -40,7 +41,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         with freeze_time("2019-06-01T16:35:34Z"):
             self.client.force_authenticate(library.owner)
             response = self.client.put(
-                f"/v1/api/libraries/{library.id}/items/tag1/",
+                f"/{VERSION}/api/libraries/{library.id}/items/tag1/",
                 replacement_data,
                 format="json"
             )
@@ -60,7 +61,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         self.client.force_authenticate(library.owner)
 
         response = self.client.put(
-            f"/v1/api/libraries/{library.id}/items/tag5/",
+            f"/{VERSION}/api/libraries/{library.id}/items/tag5/",
             replacement_data,
             format="json"
         )

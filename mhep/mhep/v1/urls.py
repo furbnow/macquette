@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.urls import path
 from django.views.generic import TemplateView
 
-from mhep.v1.views import (
+from .views import (
     AssessmentHTMLView,
     CreateUpdateDeleteLibraryItem,
     ListAssessmentsHTMLView,
