@@ -1,6 +1,4 @@
-from django.conf.urls import url
 from django.urls import path, reverse_lazy
-from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from . import VERSION
