@@ -23,6 +23,7 @@ urlpatterns = [
 
     path("", RedirectView.as_view(url=reverse_lazy("v1:list-assessments")), name="index"),
 
+    # Add app versions after this line
     path("v1/", include("mhep.v1.urls", namespace="v1")),
 
     path("versions/", include("mhep.versions.urls", namespace="versions")),
