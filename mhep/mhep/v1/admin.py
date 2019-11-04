@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import CheckboxSelectMultiple
 
+from . import VERSION
 from .models import Assessment, Library, Organisation
 
 
