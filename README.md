@@ -59,8 +59,8 @@ App versions are highly isolated, meaning each version has its own:
 
 ### Starting a new app version
 
-To start working on a new version of the app, run the script
-[`mhep/upversion.sh`](https://github.com/mhep-transition/mhep-django/blob/master/mhep/upversion.sh)
+To start working on a new version of the app, cd into `./mhep` and run the script
+[`upversion.sh`](https://github.com/mhep-transition/mhep-django/blob/master/mhep/upversion.sh)
 and set the new version as `dev`.
 
 The script copies an app version to a new version, for example, going from `v1` to `dev`:
