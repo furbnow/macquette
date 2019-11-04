@@ -12,7 +12,7 @@ class Library(models.Model):
         settings.AUTH_USER_MODEL,
         null=False, blank=False,
         on_delete=models.PROTECT,
-        related_name="libraries",
+        related_name="%(app_label)s_libraries",
     )
 
     name = models.TextField()

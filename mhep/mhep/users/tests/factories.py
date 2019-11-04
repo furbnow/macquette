@@ -32,4 +32,4 @@ class UserWithOrganisationFactory(UserFactory):
     @post_generation
     def organisations(self, create: bool, extracted: Sequence[Any], **kwargs):
         org = Organisation.objects.create(name='fake organisation')
-        self.organisations.add(org)
+        self.v1_organisations.add(org)

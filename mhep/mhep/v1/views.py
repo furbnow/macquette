@@ -32,7 +32,7 @@ class AssessmentQuerySetMixin():
     def get_queryset(self, *args, **kwargs):
         my_assessments = Assessment.objects.filter(owner=self.request.user)
         assessments_in_my_organisations = Assessment.objects.filter(
-            organisation__in=self.request.user.organisations.all()
+            organisation__in=getattr(self.request.user, f"{VERSION}_organisations").all()
         )
         return my_assessments | assessments_in_my_organisations
 
@@ -108,7 +108,7 @@ class ListCreateLibraries(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
-        return self.request.user.libraries.all()
+        return getattr(self.request.user, f"{VERSION}_libraries").all()
 
 
 class UpdateDestroyLibrary(
@@ -124,7 +124,7 @@ class UpdateDestroyLibrary(
     ]
 
     def get_queryset(self, *args, **kwargs):
-        return self.request.user.libraries.all()
+        return getattr(self.request.user, f"{VERSION}_libraries").all()
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
@@ -140,7 +140,7 @@ class ListOrganisations(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
-        return self.request.user.organisations.all()
+        return getattr(self.request.user, f"{VERSION}_organisations").all()
 
 
 class CreateUpdateDeleteLibraryItem(
@@ -153,7 +153,7 @@ class CreateUpdateDeleteLibraryItem(
     ]
 
     def get_queryset(self, *args, **kwargs):
-        return self.request.user.libraries.all()
+        return getattr(self.request.user, f"{VERSION}_libraries").all()
 
     def post(self, request, pk):
         serializer = self.get_serializer_class()(data=request.data)
