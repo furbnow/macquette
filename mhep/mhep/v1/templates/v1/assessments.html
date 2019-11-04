@@ -67,7 +67,7 @@
             <div id="myorganisations"></div>
             {% if request.user.is_staff %}
             <br>
-            <a href="{% url "admin:v1_organisation_changelist" %}">Manage organisations</a>
+            <a href="{% url "admin:"|add:VERSION|add:"_organisation_changelist" %}">Manage organisations</a>
             {% endif %}
         </div>
     </div>
