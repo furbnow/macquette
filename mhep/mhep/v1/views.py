@@ -41,7 +41,14 @@ class BadRequest(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
 
-class AssessmentHTMLView(AssessmentQuerySetMixin, LoginRequiredMixin, DetailView):
+class CommonContextMixin():
+    def get_context_data(self, object=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["VERSION"] = VERSION
+        return context
+
+
+class AssessmentHTMLView(CommonContextMixin, AssessmentQuerySetMixin, LoginRequiredMixin, DetailView):
     template_name = f"{VERSION}/view.html"
     context_object_name = "assessment"
     model = Assessment
@@ -54,17 +61,12 @@ class AssessmentHTMLView(AssessmentQuerySetMixin, LoginRequiredMixin, DetailView
         context["locked_javascript"] = json.dumps(locked)
         context["reports_javascript"] = json.dumps([])
         context["use_image_gallery"] = False
-        context["VERSION"] = VERSION
         return context
 
 
-class ListAssessmentsHTMLView(LoginRequiredMixin, TemplateView):
+class ListAssessmentsHTMLView(CommonContextMixin, LoginRequiredMixin, TemplateView):
     template_name = f"{VERSION}/assessments.html"
 
-    def get_context_data(self, object=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["VERSION"] = VERSION
-        return context
 
 
 class ListCreateAssessments(
