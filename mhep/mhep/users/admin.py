@@ -13,8 +13,5 @@ class UserAdmin(auth_admin.UserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     fieldsets = (("User", {"fields": ("name",)}),) + auth_admin.UserAdmin.fieldsets
-    list_display = ["username", "is_staff", "is_superuser", "organisation_names"]
+    list_display = ["username", "is_staff", "is_superuser"]
     search_fields = ["name"]
-
-    def organisation_names(self, obj):
-        return ", ".join(org.name for org in obj.organisations.all())
