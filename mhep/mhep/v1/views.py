@@ -26,6 +26,9 @@ from .serializers import (
 )
 
 from . import VERSION
+from .helpers import build_static_dictionary
+
+STATIC_URLS = build_static_dictionary()
 
 
 class AssessmentQuerySetMixin():
@@ -45,6 +48,7 @@ class CommonContextMixin():
     def get_context_data(self, object=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context["VERSION"] = VERSION
+        context["static_urls"] = json.dumps(STATIC_URLS, indent=4)
         return context
 
 

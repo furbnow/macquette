@@ -54,8 +54,12 @@
 
       static: function (resourcePath) {
         // returns the full URL for the given static file e.g. 'img/graphic.png'
-        const dummyURL = '{% static VERSION|add:"/12345" %}';
-        return dummyURL.replace(/12345/, resourcePath);
+        const appStaticURLs = {{ static_urls |safe }};
+        if (!appStaticURLs.hasOwnProperty(resourcePath)) {
+          console.error("no app static URL for '" + resourcePath + "'");
+        }
+
+        return appStaticURLs[resourcePath];
       },
 
       admin: {
