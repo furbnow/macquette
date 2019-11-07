@@ -3,13 +3,6 @@ from django.conf import settings
 from django.test import RequestFactory
 
 from mhep.users.tests.factories import UserFactory, UserWithOrganisationFactory
-from mhep.v1.tests.factories import (
-    AssessmentFactory,
-    LibraryFactory,
-    OrganisationFactory,
-    OrganisationWithExtrasFactory,
-)
-from mhep.v1.models import Assessment, Library, Organisation
 
 
 @pytest.fixture(autouse=True)
@@ -30,23 +23,3 @@ def user_with_org() -> settings.AUTH_USER_MODEL:
 @pytest.fixture
 def request_factory() -> RequestFactory:
     return RequestFactory()
-
-
-@pytest.fixture
-def assessment() -> Assessment:
-    return AssessmentFactory()
-
-
-@pytest.fixture
-def library() -> Library:
-    return LibraryFactory()
-
-
-@pytest.fixture
-def organisation() -> Organisation:
-    return OrganisationFactory()
-
-
-@pytest.fixture
-def organisation_with_extras() -> Organisation:
-    return OrganisationWithExtrasFactory()
