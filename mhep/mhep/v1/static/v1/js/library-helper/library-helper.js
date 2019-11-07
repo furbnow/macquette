@@ -354,20 +354,17 @@ libraryHelper.prototype.onRemoveUserFromSharedLib = function (user_to_remove, se
 };
 libraryHelper.prototype.onSelectingLibraryToShow = function (origin) {
     var id = $('#library-select').val();
-    if (id == -1)  // id is -1 when choosing "Create new"
-        this.onNewLibraryOption();
-    else {
-        $('#library_table').html('');
-        var function_name = this.type + '_library_to_html';
-        out = this[function_name](origin, id);
-        $("#library_table").html(out);
-        $('#create-in-library').attr('library-id', id);
-        // Hide/show "share" option according to the permissions
-        const library = this.get_library_by_id(id);
-        if (!library.writeable)
-            $('.if-write').hide('fast');
-        else
-            $('.if-write').show('fast');
+    $('#library_table').html('');
+    var function_name = this.type + '_library_to_html';
+    out = this[function_name](origin, id);
+    $("#library_table").html(out);
+    $('#create-in-library').attr('library-id', id);
+    // Hide/show "share" option according to the permissions
+    const library = this.get_library_by_id(id);
+    if (!library.writeable) {
+        $('.if-write').hide('fast');
+    } else {
+        $('.if-write').show('fast');
     }
 };
 libraryHelper.prototype.onNewLibraryOption = function () {
@@ -3430,7 +3427,6 @@ libraryHelper.prototype.populate_library_modal = function (origin) {
     this.library_list[this.type].forEach(function (library) {
         out += "<option value=" + library.id + ">" + library.name + "</option>";
     });
-    out += "<option value=-1 class='newlibraryoption' style='background-color:#eee'>Create new</option>";
     $("#library-select").html(out);
     // Heading of the modal
     $('#show-library-modal .modal-header h3').html(this.library_names[this.type]);
