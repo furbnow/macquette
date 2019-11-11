@@ -55,9 +55,6 @@ libraryHelper.prototype.add_events = function () {
         myself.init(); // Reload the lobrary before we display it
         myself.onAddItemFromLib($(this));
     });
-    this.container.on('click', '#open-share-library', function () {
-        myself.onOpenShareLib($(this).attr('library-id'));
-    });
     this.container.on('click', "#share-library", function () {
         var library = null;
         if ($(this).attr('library-id') != '')
@@ -359,13 +356,6 @@ libraryHelper.prototype.onSelectingLibraryToShow = function (origin) {
     out = this[function_name](origin, id);
     $("#library_table").html(out);
     $('#create-in-library').attr('library-id', id);
-    // Hide/show "share" option according to the permissions
-    const library = this.get_library_by_id(id);
-    if (!library.writeable) {
-        $('.if-write').hide('fast');
-    } else {
-        $('.if-write').show('fast');
-    }
 };
 libraryHelper.prototype.onNewLibraryOption = function () {
     $('#new-library-modal #new-library-type').html(this.library_names[this.type]);
@@ -3438,11 +3428,6 @@ libraryHelper.prototype.populate_library_modal = function (origin) {
     $("#library_table").html(out);
     // Add library id to "Add item from library" button
     $('#create-in-library').attr('library-id', id);
-    // Hide/show "share" option according to the permissions
-    if (!this.get_library_by_id(id).writeable)
-        $('.if-write').hide('fast');
-    else
-        $('.if-write').show('fast');
 };
 libraryHelper.prototype.populate_selects_in_apply_measure_modal = function (type_of_library) {
     var out = '';
