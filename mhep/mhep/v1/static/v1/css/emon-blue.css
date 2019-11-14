@@ -132,3 +132,7 @@ input[type=text][class=variable-name-edit] {
 .caret {
    border-top-color: #fff !important;
 }
+
+tr.item {
+    vertical-align: top;
+}
