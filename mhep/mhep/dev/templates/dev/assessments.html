@@ -438,19 +438,15 @@
 // ORGANISATIONS
 // ----------------------------------------------------------------------------
     var myorganisations = {};
-    $.ajax({
-      url: urlHelper.api.organisations(),
-      error: handleServerError('listing organisations'),
-      success: function (result) {
-            for (let i = 0; i < result.length; i++) {
-                const org = result[i];
-                org.orgid = org.id;
-                myorganisations[org.id] = org;
-            }
-            draw_organisation_list();
-            //draw_organisation(8);
-      },
-    });
+
+    mhep_helper.list_organisations().then(result => {
+      for (let i = 0; i < result.length; i++) {
+        const org = result[i];
+        org.orgid = org.id;
+        myorganisations[org.id] = org;
+      }
+      draw_organisation_list();
+    })
 
     $("body").on("click", ".org-item", function () {
         orgid = $(this).attr("orgid");
