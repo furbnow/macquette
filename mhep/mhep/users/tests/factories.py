@@ -2,7 +2,6 @@ from typing import Any, Sequence
 
 from django.contrib.auth import get_user_model
 from factory import DjangoModelFactory, Faker, post_generation
-from mhep.v1.models import Organisation
 
 
 class UserFactory(DjangoModelFactory):
@@ -26,10 +25,3 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = get_user_model()
         django_get_or_create = ["username"]
-
-
-class UserWithOrganisationFactory(UserFactory):
-    @post_generation
-    def organisations(self, create: bool, extracted: Sequence[Any], **kwargs):
-        org = Organisation.objects.create(name='fake organisation')
-        self.v1_organisations.add(org)
