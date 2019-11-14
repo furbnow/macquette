@@ -139,6 +139,32 @@ var mhep_helper = {
             });
         })
     },
+    'create_library': function(libraryData, organisationID) {
+        var apiURL = '';
+        if(organisationID == null) {
+            apiURL = urlHelper.api.libraries();
+        } else {
+            apiURL = urlHelper.api.organisationLibraries(organisationID);
+        }
+
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: apiURL,
+                type: 'POST',
+                data: JSON.stringify(libraryData),
+                datatype: "json",
+                contentType: "application/json;charset=utf-8",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError('creating library')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data)
+                },
+            });
+        });
+    },
+
     'upload_images': function (id, form_data, callback)
     {
         var result = false;
