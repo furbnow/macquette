@@ -31,6 +31,10 @@
           return '{% url VERSION|add:":list-create-libraries" %}';
         },
 
+        organisationLibraries: function(organisationID) {
+          return '{% url VERSION|add:":create-organisation-libraries" "12345" %}'.replace(/12345/, parseInt(organisationID));
+        },
+
         library: function(libraryID) {
           return '{% url VERSION|add:":update-destroy-library" "12345" %}'.replace(/12345/, parseInt(libraryID));
         },
