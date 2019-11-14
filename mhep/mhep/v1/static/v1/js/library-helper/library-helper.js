@@ -169,10 +169,6 @@ libraryHelper.prototype.add_events = function () {
         $('#replace-from-lib-items').html(options);
     });
 
-    this.container.on('click', '.manage-users', function () {
-        myself.init(); // Reload the lobrary before we display it
-        myself.onOpenShareLib($(this).attr('library-id'));
-    });
     this.container.on('click', '.create-new-library', function () {
         myself.type = $(this).attr('library-type');
         myself.onNewLibraryOption();
