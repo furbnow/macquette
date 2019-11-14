@@ -914,6 +914,9 @@ libraryHelper.prototype.onSaveLibraryEditMode = function (selector, library_id) 
                 else if ($(this).children('select')[0] != undefined) {
                     data[tag][key] = $(this).children('select')[0].value;
                 }
+                else if ($(this).children('textarea')[0] != undefined) {
+                    data[tag][key] = $(this).children('textarea')[0].value;
+                }
                 else
                     console.error("Type of input not recognized: ");
                 /*if(element.type)
@@ -1250,17 +1253,17 @@ libraryHelper.prototype.generation_measures_library_to_html = function (origin, 
  * Libraries to html - Edit mode (for lilbraries manager)
  **********************************************/
 libraryHelper.prototype.measure_fields_for_library_to_html_edit_mode = function (item) {
-    var out = '<td index="description" title="' + item.description + '"><input type="text" value="' + item.description + '" /></td>';
-    out += '<td index="performance" title="' + item.performance + '"><input class="w100" type="text" value="' + item.performance + '" /></td>';
-    out += '<td index="benefits" class="" title="' + item.benefits + '"><input type="text" value="' + item.benefits + '" /></td>';
+    var out = '<td index="description" title="' + item.description + '"><textarea rows="8" style="width: 400px;">' + item.description + '</textarea></td>';
+    out += '<td index="performance" title="' + item.performance + '"><textarea rows="3">' + item.performance + '</textarea></td>';
+    out += '<td index="benefits" class="" title="' + item.benefits + '"><textarea rows="3">' + item.benefits + '</textarea></td>';
     out += '<td index="cost"><input class="w50" type="text" value="' + item.cost + '" /></td>';
     out += '<td index="cost_units">' + this.get_cost_units_select(item) + '</td>';
     out += '<td index="who_by" class="" title="' + item.who_by + '"><input type="text" value="' + item.who_by + '" /></td>';
     out += '<td index="disruption" title="' + item.disruption + '"><input class="w100" type="text" value="' + item.disruption + '" /></td>';
-    out += '<td index="associated_work" class="" title="' + item.associated_work + '"><input type="text" value="' + item.associated_work + '" /></td>';
-    out += '<td index="key_risks" class="" title="' + item.key_risks + '"><input type="text" value="' + item.key_risks + '" /></td>';
-    out += '<td index="notes" class="" title="' + item.notes + '"><input type="text" value="' + item.notes + '" /></td>';
-    out += '<td index="maintenance" title="' + item.maintenance + '"><input class="w100" type="text" value="' + item.maintenance + '" /></td>';
+    out += '<td index="associated_work" class="" title="' + item.associated_work + '"><textarea rows="5">' + item.associated_work + '</textarea></td>';
+    out += '<td index="key_risks" class="" title="' + item.key_risks + '"><textarea rows="5">' + item.key_risks + '</textarea></td>';
+    out += '<td index="notes" class="" title="' + item.notes + '"><textarea rows="8" style="width: 400px;">' + item.notes + '</textarea></td>';
+    out += '<td index="maintenance" title="' + item.maintenance + '"><textarea rows="8" style="width: 400px;">' + item.maintenance + '</textarea></td>';
     return out;
 };
 libraryHelper.prototype.elements_library_to_html_edit_mode = function (origin, library_id) {
