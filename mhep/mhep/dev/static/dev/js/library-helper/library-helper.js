@@ -356,12 +356,21 @@ libraryHelper.prototype.onSelectingLibraryToShow = function (origin) {
 libraryHelper.prototype.onNewLibraryOption = function () {
     $('#new-library-modal #new-library-type').html(this.library_names[this.type]);
     $('#create-library-message').html('');
-    // Populate the select to choose library to copy
-    var out = '';
+
+    var libraryOptionsHTML = '';
     this.library_list[this.type].forEach(function (library) {
-        out += "<option value=" + library.id + ">" + library.name + "</option>";
+        libraryOptionsHTML += "<option value=" + library.id + ">" + library.name + "</option>";
     });
-    $("#library-to-copy-select").html(out);
+    $("#library-to-copy-select").html(libraryOptionsHTML);
+
+    mhep_helper.list_organisations().then(organisations => {
+        var orgInputsHTML = '';
+        organisations.forEach(function (org) {
+          orgInputsHTML += '<p><input type="radio" name="organisation_id" value="' + org.id + '" />' + org.name + '</p>';
+        });
+        $('#organisations-to-add-library-to').html(orgInputsHTML);
+    });
+
     $('#new-library-name').val('New name');
     $(".modal").modal('hide');
     $('#new-library-modal .btn').show('fast');
@@ -391,21 +400,20 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
         const library = myself.get_library_by_id(id);
         new_library_body['data'] = library['data'];
     }
-    $.ajax({
-        url: urlHelper.api.libraries(),
-        type: 'POST',
-        data: JSON.stringify(new_library_body),
-        datatype: "json",
-        contentType: "application/json;charset=utf-8",
-        error: handleServerError('creating library'),
-        success: function (result) {
-            myself.load_user_libraries();
-            $("#create-library-message").html('Library created');
-            $('#cancelnewlibrary').hide('fast');
-            $('#newlibrary').hide('fast');
-            $('#finishcreatelibrary').show('fast');
-            UpdateUI(data);
-        },
+
+    var organisationID = $('input[name=organisation_id]:checked').val();
+
+    if(organisationID == 'personal') {
+        organisationID = null;
+    }
+
+    mhep_helper.create_library(new_library_body, organisationID).then(result => {
+        myself.load_user_libraries();
+        $("#create-library-message").html('Library created');
+        $('#cancelnewlibrary').hide('fast');
+        $('#newlibrary').hide('fast');
+        $('#finishcreatelibrary').show('fast');
+        UpdateUI(data);
     });
 
 };
