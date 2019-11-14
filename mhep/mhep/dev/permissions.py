@@ -15,7 +15,7 @@ class IsLibraryOwner(permissions.BasePermission):
     message = "You are not the owner of the Library."
 
     def has_object_permission(self, request, view, library):
-        return request.user == library.owner
+        return request.user == library.owner_user
 
 
 class IsMemberOfConnectedOrganisation(permissions.BasePermission):

@@ -1,16 +1,25 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+
 from ..validators import validate_dict
+from .organisation import Organisation
 
 
 class Library(models.Model):
     class Meta:
         verbose_name_plural = "libraries"
 
-    owner = models.ForeignKey(
+    owner_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        null=False, blank=False,
+        null=True, blank=True,
+        on_delete=models.PROTECT,
+        related_name="%(app_label)s_libraries",
+    )
+
+    owner_organisation = models.ForeignKey(
+        Organisation,
+        null=True, blank=True,
         on_delete=models.PROTECT,
         related_name="%(app_label)s_libraries",
     )

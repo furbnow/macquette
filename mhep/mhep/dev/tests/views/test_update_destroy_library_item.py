@@ -18,7 +18,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
             },
         )
 
-        self.client.force_authenticate(library.owner)
+        self.client.force_authenticate(library.owner_user)
         response = self.client.delete(f"/{VERSION}/api/libraries/{library.id}/items/tag2/")
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -39,7 +39,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
         }
 
         with freeze_time("2019-06-01T16:35:34Z"):
-            self.client.force_authenticate(library.owner)
+            self.client.force_authenticate(library.owner_user)
             response = self.client.put(
                 f"/{VERSION}/api/libraries/{library.id}/items/tag1/",
                 replacement_data,
@@ -58,7 +58,7 @@ class TestUpdateDestroyLibraryItem(APITestCase):
             "other": "data",
         }
 
-        self.client.force_authenticate(library.owner)
+        self.client.force_authenticate(library.owner_user)
 
         response = self.client.put(
             f"/{VERSION}/api/libraries/{library.id}/items/tag5/",

@@ -23,7 +23,7 @@ class TestUpdateLibrary(APITestCase):
 
     def test_update_library(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            lib = LibraryFactory.create(owner=self.me)
+            lib = LibraryFactory.create(owner_user=self.me)
 
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
@@ -49,7 +49,7 @@ class TestUpdateLibrary(APITestCase):
 
     def test_update_library_name(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            lib = LibraryFactory.create(owner=self.me)
+            lib = LibraryFactory.create(owner_user=self.me)
 
         with freeze_time("2019-07-13T12:10:12Z"):
             updateFields = {
@@ -71,7 +71,7 @@ class TestUpdateLibrary(APITestCase):
         assert "updated name" == updated_library.name
 
     def test_destroy_library(self):
-        lib = LibraryFactory.create(owner=self.me)
+        lib = LibraryFactory.create(owner_user=self.me)
 
         assessment_count = Library.objects.count()
 

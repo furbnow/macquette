@@ -18,9 +18,9 @@ class TestListCreateLibraries(APITestCase):
 
     def test_list_libraries(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            l1 = LibraryFactory.create(owner=self.me)
-            l2 = LibraryFactory.create(owner=self.me)
-            LibraryFactory.create(owner=UserFactory.create())  # another library (someone else's)
+            l1 = LibraryFactory.create(owner_user=self.me)
+            l2 = LibraryFactory.create(owner_user=self.me)
+            LibraryFactory.create(owner_user=UserFactory.create())  # another library (someone else's)
 
         self.client.force_authenticate(self.me)
         response = self.client.get(f"/{VERSION}/api/libraries/")
@@ -49,8 +49,8 @@ class TestListCreateLibraries(APITestCase):
         } == response.data[1]
 
     def test_list_libraries_fails_if_not_logged_in(self):
-        LibraryFactory.create(owner=self.me)
-        LibraryFactory.create(owner=self.me)
+        LibraryFactory.create(owner_user=self.me)
+        LibraryFactory.create(owner_user=self.me)
 
         response = self.client.get(f"/{VERSION}/api/libraries/")
         assert status.HTTP_403_FORBIDDEN == response.status_code
@@ -120,4 +120,4 @@ class TestListCreateLibraries(APITestCase):
         new_id = response.data.pop("id")
 
         retrieved = Library.objects.get(id=new_id)
-        assert self.me == retrieved.owner
+        assert self.me == retrieved.owner_user
