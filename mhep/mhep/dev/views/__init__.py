@@ -12,3 +12,4 @@ from .libraries import CreateUpdateDeleteLibraryItem
 
 from .organisations import ListOrganisations
 from .organisations import ListCreateOrganisationAssessments
+from .organisations import CreateOrganisationLibraries

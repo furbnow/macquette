@@ -90,6 +90,7 @@ Once an app is assigned a version number its code should never be modified again
 * [List organisations](#list-organisations)
 * [List libraries](#list-libraries)
 * [Create a library](#create-a-library)
+* [Create a library for organisation](#create-a-library-for-organisation)
 * [Update a library](#update-a-library)
 * [Delete a library](#delete-a-library)
 * [Create item in library](#create-item-in-library)
@@ -525,6 +526,46 @@ single request, where the previous route required the subsequent use of `savelib
     --data @- << EOF
 {
     "name": "StandardLibrary - user",
+    "type": "draught_proofing_measures",
+    "data": {
+        "DP_01": {
+            "name": "Basic Draught-proofing Measures",
+            "q50": 12,
+            "description": "This may include DIY draught-proofing measures to doors...",
+            "performance": "Dependent on existing. 8-12 ...",
+            "maintenance": "Minimal. Ensure any draught-proofing strips are replaced..."
+        },
+        "DP_02": {
+            "name": "Another draught proofing measure",
+            "q50": 12,
+            "description": "This may include DIY draught-proofing measures to doors...",
+            "performance": "Dependent on existing. 8-12 ...",
+            "maintenance": "Minimal. Ensure any draught-proofing strips are replaced..."
+        }
+}
+```
+
+Returns:
+
+```
+HTTP 204 No content
+```
+
+## Create a library for organisation
+
+```
+POST /organisations/:id/libraries/
+```
+
+### Example
+
+```
+> curl -v \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/v2/api/organisations/1/libraries/ \
+    --data @- << EOF
+{
+    "name": "My organisation library",
     "type": "draught_proofing_measures",
     "data": {
         "DP_01": {

@@ -121,3 +121,4 @@ class TestListCreateLibraries(APITestCase):
 
         retrieved = Library.objects.get(id=new_id)
         assert self.me == retrieved.owner_user
+        assert None is retrieved.owner_organisation
