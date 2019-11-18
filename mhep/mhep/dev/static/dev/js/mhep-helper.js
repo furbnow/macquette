@@ -125,6 +125,20 @@ var mhep_helper = {
             },
         });
     },
+    'list_organisations': function() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.organisations(),
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError("listing organisations")(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                }
+            });
+        })
+    },
     'upload_images': function (id, form_data, callback)
     {
         var result = false;
