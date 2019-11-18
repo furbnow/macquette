@@ -19,7 +19,7 @@ class Library(models.Model):
         Organisation,
         null=True, blank=True,
         on_delete=models.PROTECT,
-        related_name="%(app_label)s_libraries",
+        related_name="libraries",
     )
 
     name = models.TextField()
