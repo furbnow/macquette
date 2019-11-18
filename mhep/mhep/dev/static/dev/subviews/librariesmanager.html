@@ -6,7 +6,7 @@
     <h3>Libraries</h3>
     <hr>
 
-    <table id="libraries-manager-table-template" style="display:none">
+    <table id="libraries-manager-table-template" style="display:none; width: 100%;">
         <thead>
             <tr style="background-color:#eee">
                 <th class="library-type-name" colspan="3"></th>
@@ -25,13 +25,13 @@
         </thead>
         <tbody>
             <tr id="libraries-manager-row-template" style="display: none;">
-                <td width="50px">
+                <td style="white-space:nowrap; width: 50px;">
                     <i data-library-id="" data-library-name="" class="icon-edit if-write-access edit-library-name" style="cursor:pointer;margin-right:5px"></i>
                     <i data-library-id="" class="icon-trash delete-library if-write-access" style="cursor:pointer;margin-right:15px"></i>
                 </td>
-                <td class="library-name"></td>
-                <td class="library-access"></td>
-                <td>
+                <td class="library-name" style="width: 60%;"></td>
+                <td class="library-access" style="width: 10%; white-space:nowrap;"></td>
+                <td style="width: 30%; white-space:nowrap;">
                     <button data-library-id="" data-library-type="" class="add-item if-write-access" style="margin-right:15px">Add item</button>
                     <button data-library-id="" class="show-items-edit-mode" style="margin-right:15px">Show items</button>
                 </td>
@@ -39,6 +39,6 @@
         </tbody>
     </table>
 
-    <div id="libraries-table" class="table">
+    <div id="libraries-table" class="table" style="width: 100%;">
     </div>
 </div>
