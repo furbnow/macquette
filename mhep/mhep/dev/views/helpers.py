@@ -34,7 +34,7 @@ def find_app_static_files():
     note that the version static subdirectory is stripped
     """
 
-    static_dir = join(abspath(dirname(__file__)), "static", VERSION)
+    static_dir = join(abspath(dirname(__file__)), "..", "static", VERSION)
 
     for root, dirs, files in os.walk(static_dir):
         for fn in files:
