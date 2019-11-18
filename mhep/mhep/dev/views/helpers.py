@@ -4,7 +4,7 @@ from os.path import abspath, dirname, join
 
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
-from . import VERSION
+from .. import VERSION
 
 
 def build_static_dictionary():
