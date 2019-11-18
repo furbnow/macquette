@@ -14,7 +14,7 @@ class AssessmentAdmin(admin.ModelAdmin):
 
 @admin.register(Library)
 class LibraryAdmin(admin.ModelAdmin):
-    list_display = ["name", "type", "owner", "number_of_items"]
+    list_display = ["name", "type", "owner_user", "owner_organisation", "number_of_items"]
     search_fields = ["name", "type"]
 
     def number_of_items(self, obj):

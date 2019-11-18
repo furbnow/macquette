@@ -19,7 +19,7 @@ class TestCreateLibraryItem(APITestCase):
             }
         }
 
-        self.client.force_authenticate(self.library.owner)
+        self.client.force_authenticate(self.library.owner_user)
         response = self.client.post(
             f"/{VERSION}/api/libraries/{self.library.id}/items/",
             item_data,
@@ -36,7 +36,7 @@ class TestCreateLibraryItem(APITestCase):
             }
         }
 
-        self.client.force_authenticate(self.library.owner)
+        self.client.force_authenticate(self.library.owner_user)
         response = self.client.post(
             f"/{VERSION}/api/libraries/{self.library.id}/items/",
             item_data,

@@ -45,8 +45,8 @@ class TestCreateLibraryPermissions(CommonMixin, APITestCase):
 
 
 class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
-    def test_owner_can_update_library(self):
-        self.client.force_authenticate(self.library.owner)
+    def test_owner_user_can_update_library(self):
+        self.client.force_authenticate(self.library.owner_user)
 
         response = self._call_endpoint(self.library)
         assert status.HTTP_204_NO_CONTENT == response.status_code
@@ -83,8 +83,8 @@ class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
 
 
 class TestDeleteLibraryPermissions(CommonMixin, APITestCase):
-    def test_owner_can_delete_library(self):
-        self.client.force_authenticate(self.library.owner)
+    def test_owner_user_can_delete_library(self):
+        self.client.force_authenticate(self.library.owner_user)
 
         response = self._call_endpoint(self.library)
         assert status.HTTP_204_NO_CONTENT == response.status_code

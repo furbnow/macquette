@@ -31,21 +31,22 @@ class AssessmentFactory(factory.DjangoModelFactory):
         model = Assessment
 
 
-class LibraryFactory(factory.DjangoModelFactory):
-    name = "Standard Library - exampleuser"
-    type = "generation_measures"
-    data = {}
-    owner = factory.SubFactory(UserFactory)
-
-    class Meta:
-        model = Library
-
-
 class OrganisationFactory(factory.DjangoModelFactory):
     name = factory.Faker("company")
 
     class Meta:
         model = Organisation
+
+
+class LibraryFactory(factory.DjangoModelFactory):
+    name = "Standard Library - exampleuser"
+    type = "generation_measures"
+    data = {}
+    owner_user = factory.SubFactory(UserFactory)
+    owner_organisation = None
+
+    class Meta:
+        model = Library
 
 
 class OrganisationWithExtrasFactory(OrganisationFactory):
