@@ -5,18 +5,18 @@ from rest_framework import exceptions, status
 
 from ... import VERSION
 from ...models import Library
-from ..factories import LibraryFactory
+from ..factories import LibraryFactory, OrganisationFactory
 
 from mhep.users.tests.factories import UserFactory
 
 
-class TestListCreateLibraries(APITestCase):
+class TestListLibraries(APITestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.me = UserFactory.create()
 
-    def test_list_libraries(self):
+    def test_returns_libraries_in_correct_format(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             l1 = LibraryFactory.create(owner_user=self.me)
             l2 = LibraryFactory.create(owner_user=self.me)
@@ -48,12 +48,46 @@ class TestListCreateLibraries(APITestCase):
             "data": l2.data,
         } == response.data[1]
 
+    def test_includes_libraries_from_my_organisations(self):
+        my_lib = LibraryFactory.create(owner_user=self.me, owner_organisation=None)
+
+        org1 = OrganisationFactory.create()
+        org1.members.add(self.me)
+        org_lib_1 = LibraryFactory.create(owner_organisation=org1, owner_user=None)
+
+        org2 = OrganisationFactory.create()
+        org2.members.add(self.me)
+        org_lib_2 = LibraryFactory.create(owner_organisation=org2, owner_user=None)
+
+        other_org = OrganisationFactory.create()  # not a member of this org
+        other_lib = LibraryFactory.create(owner_organisation=other_org, owner_user=None)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert 3 == len(response.data)
+
+        retrieved_ids = [int(l["id"]) for l in response.data]
+
+        assert my_lib.id in retrieved_ids
+        assert org_lib_1.id in retrieved_ids
+        assert org_lib_2.id in retrieved_ids
+        assert other_lib.id not in retrieved_ids
+
     def test_list_libraries_fails_if_not_logged_in(self):
         LibraryFactory.create(owner_user=self.me)
         LibraryFactory.create(owner_user=self.me)
 
         response = self.client.get(f"/{VERSION}/api/libraries/")
         assert status.HTTP_403_FORBIDDEN == response.status_code
+
+
+class TestCreateLibraries(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.me = UserFactory.create()
 
     def test_create_library(self):
 

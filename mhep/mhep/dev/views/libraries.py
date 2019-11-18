@@ -30,7 +30,16 @@ class ListCreateLibraries(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
-        return getattr(self.request.user, f"{VERSION}_libraries").all()
+        user_libraries = getattr(self.request.user, f"{VERSION}_libraries").all()
+        user_orgs = getattr(self.request.user, f"{VERSION}_organisations").all()
+
+        all_libraries = user_libraries
+
+        for org in user_orgs:
+            org_libraries = org.libraries.all()
+            all_libraries |= org_libraries
+
+        return all_libraries
 
 
 class UpdateDestroyLibrary(
