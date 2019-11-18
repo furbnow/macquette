@@ -99,7 +99,11 @@ class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
         return True
 
     def create(self, validated_data):
-        validated_data['owner_user'] = self.context['request'].user
+        organisation = self.context.get("organisation", None)
+        if organisation is not None:
+            validated_data['owner_organisation'] = organisation
+        else:
+            validated_data['owner_user'] = self.context['request'].user
         return super().create(validated_data)
 
 
