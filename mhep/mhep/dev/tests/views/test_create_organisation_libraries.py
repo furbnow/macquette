@@ -43,7 +43,12 @@ class TestCreateOrganisationLibraries(APITestCase):
                 "name": "test library 1",
                 "type": "test type 1",
                 "writeable": True,
-                "data": {"foo": "bar"}
+                "data": {"foo": "bar"},
+                "owner": {
+                    "id": f"{self.org.id}",
+                    "name": f"{self.org.name}",
+                    "type": "organisation"
+                },
             }
 
             assert "id" in response.data

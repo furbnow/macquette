@@ -82,6 +82,7 @@ class AssessmentFullSerializer(AssessmentMetadataSerializer):
 class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     writeable = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
 
     class Meta:
         model = Library
@@ -93,10 +94,33 @@ class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "writeable",
+            "owner",
         ]
 
     def get_writeable(self, obj):
         return True
+
+    def get_owner(self, obj):
+        owner_organisation = obj.owner_organisation
+        owner_user = obj.owner_user
+        if owner_organisation is not None:
+            return {
+                "type": "organisation",
+                "id": f"{owner_organisation.id}",
+                "name": owner_organisation.name,
+            }
+        elif owner_user is not None:
+            return {
+                "type": "personal",
+                "id": f"{owner_user.id}",
+                "name": owner_user.username,
+            }
+        else:
+            return {
+                "type": "global",
+                "id": None,
+                "name": "Global",
+            }
 
     def create(self, validated_data):
         organisation = self.context.get("organisation", None)

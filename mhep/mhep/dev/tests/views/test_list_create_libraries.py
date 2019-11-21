@@ -36,6 +36,11 @@ class TestListLibraries(APITestCase):
             "type": l1.type,
             "writeable": True,
             "data": l1.data,
+            "owner": {
+                "id": f"{self.me.id}",
+                "name": f"{self.me.username}",
+                "type": "personal",
+            },
         } == response.data[0]
 
         assert {
@@ -46,6 +51,11 @@ class TestListLibraries(APITestCase):
             "type": l2.type,
             "writeable": True,
             "data": l2.data,
+            "owner": {
+                "id": f"{self.me.id}",
+                "name": f"{self.me.username}",
+                "type": "personal",
+            },
         } == response.data[1]
 
     def test_includes_libraries_from_my_organisations(self):
@@ -110,7 +120,12 @@ class TestCreateLibraries(APITestCase):
                 "name": "test library 1",
                 "type": "test type 1",
                 "writeable": True,
-                "data": {"foo": "bar"}
+                "data": {"foo": "bar"},
+                "owner": {
+                    "id": f"{self.me.id}",
+                    "name": f"{self.me.username}",
+                    "type": "personal",
+                },
             }
 
             assert "id" in response.data
