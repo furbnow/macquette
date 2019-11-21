@@ -42,6 +42,7 @@ function librariesmanager_UpdateUI()
                 row.find('.if-write-access[data-library-id="' + library.id + '"]').hide();
             }
             row.find('.library-access').html(access);
+            row.find('.library-owner').html(library.owner.name);
 
             row.show();
             table.find('tbody').append(row);
