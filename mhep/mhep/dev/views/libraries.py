@@ -25,11 +25,8 @@ class BadRequest(exceptions.APIException):
     status_code = status.HTTP_400_BAD_REQUEST
 
 
-class ListCreateLibraries(generics.ListCreateAPIView):
-    serializer_class = LibrarySerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self, *args, **kwargs):
+class MyLibrariesMixin():
+    def my_libraries(self):
         user_libraries = getattr(self.request.user, f"{VERSION}_libraries").all()
         user_orgs = getattr(self.request.user, f"{VERSION}_organisations").all()
 
@@ -42,7 +39,20 @@ class ListCreateLibraries(generics.ListCreateAPIView):
         return all_libraries
 
 
+class ListCreateLibraries(
+        MyLibrariesMixin,
+        generics.ListCreateAPIView
+):
+
+    serializer_class = LibrarySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self, *args, **kwargs):
+        return self.my_libraries()
+
+
 class UpdateDestroyLibrary(
+    MyLibrariesMixin,
     generics.UpdateAPIView,
     generics.DestroyAPIView,
 ):
@@ -55,7 +65,7 @@ class UpdateDestroyLibrary(
     ]
 
     def get_queryset(self, *args, **kwargs):
-        return getattr(self.request.user, f"{VERSION}_libraries").all()
+        return self.my_libraries()
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
@@ -67,6 +77,7 @@ class UpdateDestroyLibrary(
 
 
 class CreateUpdateDeleteLibraryItem(
+    MyLibrariesMixin,
     generics.GenericAPIView,
 ):
     serializer_class = LibraryItemSerializer
@@ -76,7 +87,7 @@ class CreateUpdateDeleteLibraryItem(
     ]
 
     def get_queryset(self, *args, **kwargs):
-        return getattr(self.request.user, f"{VERSION}_libraries").all()
+        return self.my_libraries()
 
     def post(self, request, pk):
         serializer = self.get_serializer_class()(data=request.data)
