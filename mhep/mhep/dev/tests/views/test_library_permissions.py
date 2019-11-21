@@ -141,6 +141,32 @@ class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
             "Not found.",
         )
 
+    def test_user_who_is_superuser_can_update_a_global_library(self):
+        library = LibraryFactory.create(
+            owner_organisation=None,
+            owner_user=None,
+        )
+
+        self.client.force_authenticate(UserFactory.create(is_superuser=True))
+
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_user_who_isnt_superuser_cannot_update_a_global_library(self):
+        library = LibraryFactory.create(
+            owner_organisation=None,
+            owner_user=None,
+        )
+
+        self.client.force_authenticate(UserFactory.create(is_superuser=False))
+
+        response = self._call_endpoint(library)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You do not have permission to perform this action.",
+        )
+
     def _call_endpoint(self, library):
         update_fields = {
             "data": {"new": "data"},
@@ -207,6 +233,32 @@ class TestDeleteLibraryPermissions(CommonMixin, APITestCase):
             response,
             status.HTTP_404_NOT_FOUND,
             "Not found.",
+        )
+
+    def test_user_who_is_superuser_can_delete_a_global_library(self):
+        library = LibraryFactory.create(
+            owner_organisation=None,
+            owner_user=None,
+        )
+
+        self.client.force_authenticate(UserFactory.create(is_superuser=True))
+
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_user_who_isnt_superuser_cannot_delete_a_global_library(self):
+        library = LibraryFactory.create(
+            owner_organisation=None,
+            owner_user=None,
+        )
+
+        self.client.force_authenticate(UserFactory.create(is_superuser=False))
+
+        response = self._call_endpoint(library)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You do not have permission to perform this action.",
         )
 
     def _call_endpoint(self, library):
