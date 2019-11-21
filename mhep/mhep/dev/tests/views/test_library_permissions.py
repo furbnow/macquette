@@ -182,5 +182,11 @@ class TestDeleteLibraryPermissions(CommonMixin, APITestCase):
             "Not found.",
         )
 
+    def test_member_of_organisation_can_delete_a_library_in_organisation(self):
+        pass
+
+    def test_user_who_isnt_member_cannot_delete_a_library_in_organisation(self):
+        pass
+
     def _call_endpoint(self, library):
         return self.client.delete(f"/{VERSION}/api/libraries/{library.id}/")

@@ -47,6 +47,12 @@ class TestCreateLibraryItemPermissions(CommonMixin, APITestCase):
             "Not found.",
         )
 
+    def test_member_of_organisation_can_create_a_library_item_in_organisation(self):
+        pass
+
+    def test_user_who_isnt_member_cannot_create_a_library_item_in_organisation(self):
+        pass
+
     def _call_endpoint(self, library):
         item_data = {
             "tag": "new_tag",
@@ -88,6 +94,12 @@ class TestUpdateLibraryItemPermissions(CommonMixin, APITestCase):
             "Not found.",
         )
 
+    def test_member_of_organisation_can_update_a_library_item_in_organisation(self):
+        pass
+
+    def test_user_who_isnt_member_cannot_update_a_library_item_in_organisation(self):
+        pass
+
     def _call_endpoint(self, library):
         replacement_data = {
             "name": "bar",
@@ -126,6 +138,12 @@ class TestDeleteLibraryItemPermissions(CommonMixin, APITestCase):
             status.HTTP_404_NOT_FOUND,
             "Not found.",
         )
+
+    def test_member_of_organisation_can_delete_a_library_item_in_organisation(self):
+        pass
+
+    def test_user_who_isnt_member_cannot_delete_a_library_item_in_organisation(self):
+        pass
 
     def _call_endpoint(self, library):
         return self.client.delete(f"/{VERSION}/api/libraries/{self.library.id}/items/tag2/")
