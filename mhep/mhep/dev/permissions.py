@@ -28,6 +28,16 @@ class IsMemberOfConnectedOrganisation(permissions.BasePermission):
         return request.user in assessment.organisation.members.all()
 
 
+class IsMemberOfLibraryOrganisation(permissions.BasePermission):
+    message = "You are not a member of the Library's Organisation."
+
+    def has_object_permission(self, request, view, library):
+        if library.owner_organisation is None:
+            return False
+
+        return request.user in library.owner_organisation.members.all()
+
+
 class IsMemberOfOrganisation(permissions.BasePermission):
     message = "You are not a member of the Organisation."
 

@@ -10,6 +10,7 @@ from .. import VERSION
 
 from ..permissions import (
     IsLibraryOwner,
+    IsMemberOfLibraryOrganisation,
 )
 from ..serializers import (
     LibraryItemSerializer,
@@ -61,7 +62,7 @@ class UpdateDestroyLibrary(
         # IsAuthenticated will ensure we can filter (using get_queryset) based on User.libraries
         # (which is the reverse of Library.owner)
         IsAuthenticated,
-        IsLibraryOwner,
+        IsLibraryOwner | IsMemberOfLibraryOrganisation,
     ]
 
     def get_queryset(self, *args, **kwargs):
@@ -83,7 +84,7 @@ class CreateUpdateDeleteLibraryItem(
     serializer_class = LibraryItemSerializer
     permission_classes = [
         IsAuthenticated,
-        IsLibraryOwner,
+        IsLibraryOwner | IsMemberOfLibraryOrganisation,
     ]
 
     def get_queryset(self, *args, **kwargs):
