@@ -2,7 +2,7 @@ import os
 
 from os.path import abspath, dirname, join
 
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 
 from . import VERSION
 
