@@ -1,110 +1,12 @@
 function draw_openbem_graphics(parent)
 {
     $(`${parent} .house-container`).html(houseSVG(data))
-    draw_targetbars(data);
-}
 
-function draw_targetbars(data) {
+    draw_space_heating_targetbar(parent, data)
+    draw_primary_energy_targetbar(parent, data)
+    draw_co2_targetbar(parent, data)
+    draw_perperson_targetbar(parent, data)
 
-    var targetbarwidth = $(parent + " #targetbars").width();
-
-    $(parent + " #spaceheating").css("width", targetbarwidth);
-    $(parent + " #primaryenergy").css("width", targetbarwidth);
-    $(parent + " #co2").css("width", targetbarwidth);
-    $(parent + " #perperson").css("width", targetbarwidth);
-
-    var targetbarheight = 60;// 0.13 * targetbarwidth;
-    if (targetbarheight < 60)
-        targetbarheight = 60;
-    $(parent + " #spaceheating").css("height", targetbarheight);
-    $(parent + " #primaryenergy").css("height", targetbarheight);
-    $(parent + " #co2").css("height", targetbarheight);
-    $(parent + " #perperson").css("height", targetbarheight);
-
-    // ---------------------------------------------------------------------------------
-    var value = '';
-    var units = '';
-    // ---------------------------------------------------------------------------------
-    if (isNaN(data.space_heating_demand_m2) == true) {
-        value = 'No data yet';
-        units = '';
-    }
-    else {
-        value = Math.round(data.space_heating_demand_m2);
-        units = "kWh/m" + String.fromCharCode(178);
-    }
-    var options = {
-        name: "Space heating demand",
-        value: value,
-        units: units,
-        targets: {
-            //"Passivhaus": 15,
-            "Min target": datasets.target_values.space_heating_demand_lower,
-            "Max target": datasets.target_values.space_heating_demand_upper,
-            "UK Average": datasets.uk_average_values.space_heating_demand
-        }
-    };
-    targetbar(parent + " #spaceheating", options);
-    // ---------------------------------------------------------------------------------
-    if (isNaN(data.primary_energy_use_m2) == true) {
-        value = 'No data yet';
-        units = '';
-    }
-    else {
-        value = Math.round(data.primary_energy_use_m2);
-        units = "kWh/m" + String.fromCharCode(178);
-    }
-    var options = {
-        name: "Primary energy demand",
-        value: value,
-        units: units,
-        targets: {
-            "Target": datasets.target_values.primary_energy_demand_passive_house,
-            "UK Average": datasets.uk_average_values.primary_energy_demand
-        }
-    };
-    targetbar(parent + " #primaryenergy", options);
-    // ---------------------------------------------------------------------------------
-    if (isNaN(data.kgco2perm2) == true) {
-        value = 'No data yet';
-        units = '';
-    }
-    else {
-        value = Math.round(data.kgco2perm2);
-        units = "kgCO" + String.fromCharCode(8322) + "/m" + String.fromCharCode(178);
-    }
-    var options = {
-        name: "CO2 Emission rate",
-        value: value,
-        units: units,
-        targets: {
-
-            "Zero Carbon": 0,
-            "80% by 2050": 17,
-            "UK Average": datasets.uk_average_values.co2_emission_rate
-        }
-    };
-    targetbar(parent + " #co2", options);
-    // ---------------------------------------------------------------------------------
-    if (isNaN(data.kwhdpp) == true) {
-        value = 'No data yet';
-        units = '';
-    }
-    else {
-        value = Math.round(data.kwhdpp.toFixed(1));
-        units = "kWh/day";
-    }
-    var options = {
-        name: "Per person energy use",
-        value: value,
-        units: units,
-        targets: {
-            "70% heating saving": datasets.target_values.energy_use_per_person,
-            "UK Average": datasets.uk_average_values.energy_use_per_person
-        }
-    };
-    targetbar(parent + " #perperson", options);
-    // ---------------------------------------------------------------------------------
     if (scenario != undefined) {
         if (page != 'report' && scenario != 'master')
             $('#measures-costs').html('Measures cost: £' + measures_costs(scenario).toFixed(2));
@@ -212,60 +114,148 @@ function houseSVG(data) {
         </svg>`
 }
 
-function targetbar(element, options)
-{
-    var width = $(element).width();
-    var height = $(element).height();
+/*
+ * Draw a 'target bar'.
+ *
+ * name - string to label the graph with
+ * unknown - is this value unknown?
+ * value - numeric value
+ * units - units for value
+ * targets - array of objects with "label" and "value" keys, to display on the graph
+ */
+function targetbarSVG({ width, name, unknown, value, units, targets }) {
+    const height = 40
 
-    $(element).html("<div style='padding-bottom:5px; font-size:16px; color:rgba(99,86,71,0.8);'>"+options.name+": <b style='float:right'>"+options.value+" "+options.units+"</b></div>");
-    var titleheight = $(element+" div").height();
-    var barheight = height - titleheight - 5;
-    $(element).append('<canvas id="'+element+'-canvas" width="'+width+'" height="'+barheight+'"></canvas>');
+    // Always 25% larger than max target or value
+    const targetValues = targets.map(t => t.value)
+    const maxval = Math.max(value, ...targetValues) * 1.25;
+    const xscale = width / maxval;
 
-    var c = document.getElementById(element+"-canvas");
-    var ctx = c.getContext("2d");
+    const header =
+        unknown === true
+            ? `Not enough data`
+            : `${value} ${units}`
 
-    ctx.fillStyle = "rgba(99,86,71,0.2)";
-    ctx.strokeStyle = "rgba(99,86,71,0.8)";
-    ctx.fillRect(1,1,width-2,barheight-2);
-    ctx.strokeRect(1,1,width-2,barheight-2);
+    const drawLine = target => {
+        const x = target.value * xscale
 
-    var maxval = options.value;
-    for (z in options.targets) {
-        if (options.targets[z]>maxval) maxval = options.targets[z];
-    }
-    maxval *= 1.2; // Always 20% larger than max target or value
-
-    var xscale = width / maxval;
-    /*
-    ctx.font="12px Ubuntu";
-    ctx.textAlign = "left";
-    ctx.fillStyle = "rgba(99,86,71,0.8)";
-    ctx.fillText(options.name,1,10);
-
-    ctx.textAlign = "right";
-    ctx.fillStyle = "rgba(99,86,71,0.8)";
-    ctx.fillText(options.value+" "+options.units,width,10);
-    */
-    ctx.font="10px Ubuntu";
-    ctx.setLineDash([4, 4]);
-
-    for (z in options.targets) {
-        xpos = options.targets[z] * xscale;
-
-        ctx.strokeStyle = "rgba(99,86,71,0.8)";
-        ctx.beginPath();
-        ctx.moveTo(xpos,1);
-        ctx.lineTo(xpos,barheight-1);
-        ctx.stroke();
-
-        ctx.textAlign = "left";
-        ctx.fillStyle = "rgba(99,86,71,0.8)";
-        ctx.fillText(options.targets[z]+" "+options.units,xpos+5,barheight-18);
-        ctx.fillStyle = "rgba(99,86,71,1.0)";
-        ctx.fillText(z,xpos+5,barheight-8);
+        return `
+            <line x1="${x}" y1="1" x2="${x}" y2="${height-1}" stroke="rgba(99,86,71,0.8)" stroke-dasharray="4.33 4.33" />
+            <text x="${x+5}" y="${height-22}" fill="rgba(99,86,71,0.8)">
+                ${target.value} ${units}
+            </text>
+            <text x="${x+5}" y="${height-8}" fill="rgba(99,86,71,0.8)" style="font-weight: bold;">
+                ${target.label}
+            </text>
+        `
     }
 
-    ctx.fillStyle = "rgba(99,86,71,0.2)";
-    ctx.fillRect(1,1,(options.value*xscale)-2,barheight-2);
+    return `
+        <div class='targetbar-head'>
+            <span>${name}:</span>
+            <span><b>${header}</b></span>
+        </div>
+
+        <svg viewBox="0 0 ${width} ${height}" height="${height}">
+            <rect x="1" y="1" width="${width-2}" height="${height-2}" style="fill: rgba(99,86,71,0.2); stroke: rgba(99,86,71, 0.5); stroke-width: 2px" />
+            <rect x="1" y="1" width="${(value*xscale)-2}" height="${height-2}" fill="rgba(99,86,71,0.2)" />
+
+            ${unknown ? "" : targets.map(drawLine)}
+        </svg>
+    `
+}
+
+function draw_space_heating_targetbar(parent, data) {
+    const is_unknown = isNaN(data.space_heating_demand_m2) || data.space_heating_demand_m2 == Infinity
+    const value =
+        is_unknown
+            ? 0
+            : Math.round(data.space_heating_demand_m2)
+    const width = Math.min($(`${parent} #spaceheating`).width(), 400)
+
+    $(`${parent} #spaceheating`).html(
+        targetbarSVG({
+            name: "Space heating demand",
+            width: width,
+            unknown: is_unknown,
+            value: value,
+            units: "kWh/m²",
+            targets: [
+                //"Passivhaus": 15,
+                { label: "Min target", value: datasets.target_values.space_heating_demand_lower, },
+                { label: "Max target", value: datasets.target_values.space_heating_demand_upper, },
+                { label: "UK Average", value: datasets.uk_average_values.space_heating_demand },
+            ]
+        })
+    )
+}
+
+function draw_primary_energy_targetbar(parent, data) {
+    const is_unknown = isNaN(data.primary_energy_use_m2) || data.primary_energy_use_m2 === Infinity
+    const value =
+        is_unknown
+            ? 0
+            : Math.round(data.primary_energy_use_m2)
+    const width = Math.min($(`${parent} #primaryenergy`).width(), 400)
+
+    $(`${parent} #primaryenergy`).html(
+        targetbarSVG({
+            name: "Primary energy demand",
+            width: width,
+            unknown: is_unknown,
+            value: value,
+            units: "kWh/m²",
+            targets: [
+                { label: "Target", value: datasets.target_values.primary_energy_demand_passive_house },
+                { label: "UK Average", value: datasets.uk_average_values.primary_energy_demand },
+            ]
+        })
+    )
+}
+
+function draw_co2_targetbar(parent, data) {
+    const is_unknown = isNaN(data.kgco2perm2) || data.kgco2perm2 === Infinity
+    const value =
+        is_unknown
+            ? 0
+            : Math.round(data.kgco2perm2)
+    const width = Math.min($(`${parent} #co2`).width(), 400)
+
+    $(`${parent} #co2`).html(
+        targetbarSVG({
+            name: "CO2 Emission rate",
+            width: width,
+            unknown: is_unknown,
+            value: value,
+            units: "kgCO₂/m²",
+            targets: [
+                { label: "Zero Carbon", value: 0 },
+                { label: "80% by 2050", value: 17 },
+                { label: "UK Average", value: datasets.uk_average_values.co2_emission_rate },
+            ]
+        })
+    )
+}
+
+function draw_perperson_targetbar(parent, data) {
+    const is_unknown = isNaN(data.kwhdpp) || data.kwhdpp === Infinity
+    const value =
+        is_unknown
+            ? 0
+            : Math.round(data.kwhdpp.toFixed(1))
+    const width = Math.min($(`${parent} #perperson`).width(), 400)
+
+    $(`${parent} #perperson`).html(
+        targetbarSVG({
+            name: "Per person energy use",
+            width: width,
+            unknown: is_unknown,
+            value: value,
+            units: "kWh/day",
+            targets: [
+                { label: "70% heating saving", value: datasets.target_values.energy_use_per_person },
+                { label: "UK Average", value: datasets.uk_average_values.energy_use_per_person },
+            ]
+        })
+    )
 }
