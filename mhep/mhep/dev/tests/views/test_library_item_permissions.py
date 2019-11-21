@@ -4,7 +4,7 @@ from rest_framework import status
 from mhep.users.tests.factories import UserFactory
 
 from ... import VERSION
-from ..factories import LibraryFactory
+from ..factories import LibraryFactory, OrganisationFactory
 
 
 class CommonMixin():
@@ -48,10 +48,33 @@ class TestCreateLibraryItemPermissions(CommonMixin, APITestCase):
         )
 
     def test_member_of_organisation_can_create_a_library_item_in_organisation(self):
-        pass
+        organisation = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=organisation,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+        organisation.members.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
 
     def test_user_who_isnt_member_cannot_create_a_library_item_in_organisation(self):
-        pass
+        org_with_no_members = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=org_with_no_members,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        self._assert_error(
+            response,
+            status.HTTP_404_NOT_FOUND,
+            "Not found.",
+        )
 
     def _call_endpoint(self, library):
         item_data = {
@@ -95,10 +118,35 @@ class TestUpdateLibraryItemPermissions(CommonMixin, APITestCase):
         )
 
     def test_member_of_organisation_can_update_a_library_item_in_organisation(self):
-        pass
+        organisation = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=organisation,
+            owner_user=None,
+            data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}},
+        )
+        person = UserFactory.create()
+        organisation.members.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
 
     def test_user_who_isnt_member_cannot_update_a_library_item_in_organisation(self):
-        pass
+        org_with_no_members = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=org_with_no_members,
+            owner_user=None,
+            data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}},
+        )
+        person = UserFactory.create()
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        self._assert_error(
+            response,
+            status.HTTP_404_NOT_FOUND,
+            "Not found.",
+        )
 
     def _call_endpoint(self, library):
         replacement_data = {
@@ -140,10 +188,35 @@ class TestDeleteLibraryItemPermissions(CommonMixin, APITestCase):
         )
 
     def test_member_of_organisation_can_delete_a_library_item_in_organisation(self):
-        pass
+        organisation = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=organisation,
+            owner_user=None,
+            data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}},
+        )
+        person = UserFactory.create()
+        organisation.members.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
 
     def test_user_who_isnt_member_cannot_delete_a_library_item_in_organisation(self):
-        pass
+        org_with_no_members = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=org_with_no_members,
+            owner_user=None,
+            data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}},
+        )
+        person = UserFactory.create()
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        self._assert_error(
+            response,
+            status.HTTP_404_NOT_FOUND,
+            "Not found.",
+        )
 
     def _call_endpoint(self, library):
         return self.client.delete(f"/{VERSION}/api/libraries/{library.id}/items/tag2/")
