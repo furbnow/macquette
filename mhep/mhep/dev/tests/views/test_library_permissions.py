@@ -115,6 +115,35 @@ class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
             "Not found.",
         )
 
+    def test_member_of_organisation_can_update_a_library_in_organisation(self):
+        organisation = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=organisation,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+        organisation.members.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_user_who_isnt_member_cannot_update_a_library_in_organisation(self):
+        org_with_no_members = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=org_with_no_members,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        self._assert_error(
+            response,
+            status.HTTP_404_NOT_FOUND,
+            "Not found.",
+        )
+
     def _call_endpoint(self, library):
         update_fields = {
             "data": {"new": "data"},
