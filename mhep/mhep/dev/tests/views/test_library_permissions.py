@@ -15,11 +15,6 @@ class CommonMixin():
         assert expected_status == response.status_code
         assert {"detail": expected_detail} == response.json()
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.library = LibraryFactory.create()
-
 
 class TestCreateLibraryPermissions(CommonMixin, APITestCase):
     def test_authenticated_user_can_create_a_library(self):
@@ -91,13 +86,15 @@ class TestCreateOrganisationLibraryPermissions(CommonMixin, APITestCase):
 
 class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
     def test_owner_user_can_update_library(self):
-        self.client.force_authenticate(self.library.owner_user)
+        library = LibraryFactory.create()
+        self.client.force_authenticate(library.owner_user)
 
-        response = self._call_endpoint(self.library)
+        response = self._call_endpoint(library)
         assert status.HTTP_204_NO_CONTENT == response.status_code
 
     def test_unauthenticated_user_cannot_update_library(self):
-        response = self._call_endpoint(self.library)
+        library = LibraryFactory.create()
+        response = self._call_endpoint(library)
         self._assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
@@ -108,7 +105,36 @@ class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
         non_owner = UserFactory.create()
         self.client.force_authenticate(non_owner)
 
-        response = self._call_endpoint(self.library)
+        response = self._call_endpoint(LibraryFactory.create())
+        self._assert_error(
+            response,
+            status.HTTP_404_NOT_FOUND,
+            "Not found.",
+        )
+
+    def test_member_of_organisation_can_update_a_library_in_organisation(self):
+        organisation = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=organisation,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+        organisation.members.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_user_who_isnt_member_cannot_update_a_library_in_organisation(self):
+        org_with_no_members = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=org_with_no_members,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
         self._assert_error(
             response,
             status.HTTP_404_NOT_FOUND,
@@ -129,13 +155,14 @@ class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
 
 class TestDeleteLibraryPermissions(CommonMixin, APITestCase):
     def test_owner_user_can_delete_library(self):
-        self.client.force_authenticate(self.library.owner_user)
+        library = LibraryFactory.create()
+        self.client.force_authenticate(library.owner_user)
 
-        response = self._call_endpoint(self.library)
+        response = self._call_endpoint(library)
         assert status.HTTP_204_NO_CONTENT == response.status_code
 
     def test_unauthenticated_user_cannot_delete_library(self):
-        response = self._call_endpoint(self.library)
+        response = self._call_endpoint(LibraryFactory.create())
         self._assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
@@ -146,7 +173,36 @@ class TestDeleteLibraryPermissions(CommonMixin, APITestCase):
         non_owner = UserFactory.create()
         self.client.force_authenticate(non_owner)
 
-        response = self._call_endpoint(self.library)
+        response = self._call_endpoint(LibraryFactory.create())
+        self._assert_error(
+            response,
+            status.HTTP_404_NOT_FOUND,
+            "Not found.",
+        )
+
+    def test_member_of_organisation_can_delete_a_library_in_organisation(self):
+        organisation = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=organisation,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+        organisation.members.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_user_who_isnt_member_cannot_delete_a_library_in_organisation(self):
+        org_with_no_members = OrganisationFactory.create()
+        library = LibraryFactory.create(
+            owner_organisation=org_with_no_members,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
         self._assert_error(
             response,
             status.HTTP_404_NOT_FOUND,
