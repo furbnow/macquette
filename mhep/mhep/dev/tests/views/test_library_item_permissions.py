@@ -62,7 +62,7 @@ class TestCreateLibraryItemPermissions(CommonMixin, APITestCase):
         }
 
         return self.client.post(
-            f"/{VERSION}/api/libraries/{self.library.id}/items/",
+            f"/{VERSION}/api/libraries/{library.id}/items/",
             item_data,
             format="json"
         )
@@ -107,7 +107,7 @@ class TestUpdateLibraryItemPermissions(CommonMixin, APITestCase):
         }
 
         return self.client.put(
-            f"/{VERSION}/api/libraries/{self.library.id}/items/tag1/",
+            f"/{VERSION}/api/libraries/{library.id}/items/tag1/",
             replacement_data,
             format="json"
         )
@@ -146,4 +146,4 @@ class TestDeleteLibraryItemPermissions(CommonMixin, APITestCase):
         pass
 
     def _call_endpoint(self, library):
-        return self.client.delete(f"/{VERSION}/api/libraries/{self.library.id}/items/tag2/")
+        return self.client.delete(f"/{VERSION}/api/libraries/{library.id}/items/tag2/")
