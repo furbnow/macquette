@@ -4,7 +4,10 @@ from rest_framework import status
 from mhep.users.tests.factories import UserFactory
 
 from ... import VERSION
-from ..factories import LibraryFactory
+from ..factories import (
+    LibraryFactory,
+    OrganisationFactory,
+)
 
 
 class CommonMixin():
@@ -42,6 +45,48 @@ class TestCreateLibraryPermissions(CommonMixin, APITestCase):
         }
 
         return self.client.post(f"/{VERSION}/api/libraries/", new_library, format="json")
+
+
+class TestCreateOrganisationLibraryPermissions(CommonMixin, APITestCase):
+    def test_member_of_organisation_can_create_a_library_in_organisation(self):
+        person = UserFactory.create()
+        organisation = OrganisationFactory.create()
+        organisation.members.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(organisation)
+        assert status.HTTP_201_CREATED == response.status_code
+
+    def test_unauthenticated_user_cannot_create_a_library_in_organisation(self):
+        response = self._call_endpoint(OrganisationFactory.create())
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "Authentication credentials were not provided.",
+        )
+
+    def test_user_who_isnt_member_cannot_create_a_library_in_organisation(self):
+        person = UserFactory.create()
+        org_with_no_members = OrganisationFactory.create()
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(org_with_no_members)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You are not a member of the Organisation.",
+        )
+
+    def _call_endpoint(self, org):
+        new_library = {
+            "name": "test library 1",
+            "type": "test type 1",
+            "data": {"foo": "bar"}
+        }
+
+        return self.client.post(
+            f"/{VERSION}/api/organisations/{org.id}/libraries/", new_library, format="json"
+        )
 
 
 class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
