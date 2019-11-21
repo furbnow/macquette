@@ -8,6 +8,7 @@ from rest_framework import status
 
 from .. import VERSION
 
+from ..models import Library
 from ..permissions import (
     IsLibraryOwner,
     IsMemberOfLibraryOrganisation,
@@ -36,6 +37,9 @@ class MyLibrariesMixin():
         for org in user_orgs:
             org_libraries = org.libraries.all()
             all_libraries |= org_libraries
+
+        global_libraries = Library.objects.filter(owner_user=None, owner_organisation=None)
+        all_libraries |= global_libraries
 
         return all_libraries
 
