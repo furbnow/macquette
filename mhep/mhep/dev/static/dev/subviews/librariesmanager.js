@@ -17,33 +17,40 @@ function librariesmanager_UpdateUI()
         return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
     });
 
+    var templateTable = $('#libraries-manager-table-template');
+    var templateRow = $('#libraries-manager-row-template');
+
     library_list.forEach(function (array_libraries_of_same_type, index) {
         var type = array_libraries_of_same_type[0].type;
-        // Add header
-        $('#libraries-table').append($('#library-table-header-template').html());
-        $("#libraries-table .header[library-type='template']").html(library_helper.library_names[type]);
-        $("#libraries-table [library-type='template']").attr('library-type', type);
-        
-        //Add libraries
-        array_libraries_of_same_type.forEach(function (library) {
-            var access = '';
-            $('#libraries-table').append($('#library-template').html());
-            $('#libraries-table td[library-name="template"]').html(library.name);
-            $('#libraries-table [library-name="template"]').attr('library-name', library.name);
-            $('#libraries-table [library-id="template"]').attr('library-id', library.id);
-            $("#libraries-table [library-type='template']").attr('library-type', library.type);
-            if (!library.writeable) {
-                access = "Read";
-                $('.if-write-access[library-id=' + library.id + ']').hide('fast');
-            }
-            else {
-                access = 'Write';
-            }
-            $('#libraries-table [library-access="template"]').html(access);
-            $('#libraries-table [library-access="template"]').attr('library-access', access);
 
+        var table = templateTable.clone();
+        table.removeAttr('id');
+
+        table.find('.library-type-name').html(library_helper.library_names[type]);
+
+        array_libraries_of_same_type.forEach(function (library) {
+            var row = templateRow.clone();
+            row.removeAttr('id');
+
+            row.find('.library-name').html(library.name);
+            row.find('[data-library-id=""]').attr('data-library-id', library.id);
+            row.find('[data-library-name=""]').attr('data-library-name', library.name);
+
+            var access = 'Write';
+            if (!library.writeable) {
+                access = 'Read';
+                row.find('.if-write-access[data-library-id="' + library.id + '"]').hide();
+            }
+            row.find('.library-access').html(access);
+
+            row.show();
+            table.find('tbody').append(row);
         });
 
+        table.find('[data-library-type=""]').attr('data-library-type', type);
+
+        table.show();
+        $('#libraries-table').append(table);
 
     });
 }
