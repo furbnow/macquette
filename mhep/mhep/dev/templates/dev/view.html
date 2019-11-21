@@ -619,8 +619,14 @@
             $("#scenario-list").append(tmp);
         }
         for (s in project) {
-            //project[s] = calc.run(calc.run(project[s]));
-            $("." + s + "_scenario_emissions").html(project[s].kgco2perm2.toFixed(0));
+            const $emissions = $(`.${s}_scenario_emissions`)
+
+            const emissions_value = typeof(project[s].kgco2perm2) == "number"
+                ? project[s].kgco2perm2.toFixed(0)
+                : "?"
+
+            $emissions.html(emissions_value);
+
             if (s != 'master' && project[s].created_from != undefined) {
                 $("." + s + "_scenario_created_from").html("(From " + project[s].created_from + ')');
                 // Check if the original scenario has changed since the the creation of the current one
