@@ -79,37 +79,42 @@
             </div>
         </div>
 
-        <div id="scenario-menu-template" style="display:none">
+        <div class="side-block scenario-block" id="scenario-menu-template" style="display:none; cursor:pointer">
+            <div class="block-header" style="height:40px; display: flex; justify-content: space-between;">
+                <div>
+                    <span class="block_title"></span>
+                    <br>
+                    <span class="block_created_from"></span>
+                </div>
 
-            <div class="side-block scenario-block" scenario="template" style="cursor:pointer">
-
-                <div class="block-header" style="height:40px">title<span style="float:right">scenarioname<br>(<span class="template_scenario_emissions"></span> <span style="font-size:12px">kgCO<sub>2</sub>/m<sup>2</sup></span>)</span><br /><span class="template_scenario_created_from" style='float:left'></span></div>
-
-                <div class="menu-content">
-                    <div style="padding:10px">
-                        <div class="scenario-nav" style="float:right"><span class="lock">Lock</span></div>
-                        <div class="scenario-nav-heading">Core input</div>
-                        <div class="scenario-nav"><a href="#template/context">Basic Dwelling Data</a></div>
-                        <div class="scenario-nav"><a href="#template/ventilation">Ventilation and Infiltration</a></div>
-                        <div class="scenario-nav"><a href="#template/elements">Fabric</a></div>
-                        <div class="scenario-nav"><a href="#template/LAC">Lighting, Appliances & Cooking</a></div>
-                        <div class="scenario-nav"><a href="#template/heating">Heating</a></div>
-                        <div class="scenario-nav"><a href="#template/fuel_requirements">Fuel requirements</a></div>
-                        <div class="scenario-nav"><a href="#template/generation">Generation</a></div>
-                        <div class="scenario-nav-heading">Extended input</a></div>
-                        <div class="scenario-nav"><input type="checkbox" key="data.use_SHW"/> <a href="#template/solarhotwater">Solar Hot Water heating</a></div>
-                        <div class="scenario-nav-heading">Other</a></div>
-                        <!--<div class="scenario-nav"><a href="#template/compare">Show difference</a></div>
-                        <div class="scenario-nav"><a href="#template/detail">Detailed view</a></div>-->
-                        <div class="scenario-nav"><a href="#template/worksheets">SAP worksheets</a></div>
-                        <!--<div class="scenario-nav"><a href="#template/changelog">Session change log</a></div>-->
-                        <br>
-                        <div class="scenario-nav delete-scenario-launch">Delete scenario <i class="icon-trash"></i></div>
-                    </div>
-
+                <div style="text-align: right">
+                    <span class="block_name"></span>
+                    <br>
+                    <span class="block_emissions"></span>
+                    <span style="font-size:12px">kgCO<sub>2</sub>/m<sup>2</sup></span>
                 </div>
             </div>
 
+            <div class="menu-content" style="padding:10px">
+                <div class="scenario-nav" style="float:right"><span class="lock">Lock</span></div>
+                <div class="scenario-nav-heading">Core input</div>
+                <div class="scenario-nav"><a href="#template/context">Basic Dwelling Data</a></div>
+                <div class="scenario-nav"><a href="#template/ventilation">Ventilation and Infiltration</a></div>
+                <div class="scenario-nav"><a href="#template/elements">Fabric</a></div>
+                <div class="scenario-nav"><a href="#template/LAC">Lighting, Appliances & Cooking</a></div>
+                <div class="scenario-nav"><a href="#template/heating">Heating</a></div>
+                <div class="scenario-nav"><a href="#template/fuel_requirements">Fuel requirements</a></div>
+                <div class="scenario-nav"><a href="#template/generation">Generation</a></div>
+                <div class="scenario-nav-heading">Extended input</a></div>
+                <div class="scenario-nav"><input type="checkbox" key="data.use_SHW"/> <a href="#template/solarhotwater">Solar Hot Water heating</a></div>
+                <div class="scenario-nav-heading">Other</a></div>
+                <!--<div class="scenario-nav"><a href="#template/compare">Show difference</a></div>
+                <div class="scenario-nav"><a href="#template/detail">Detailed view</a></div>-->
+                <div class="scenario-nav"><a href="#template/worksheets">SAP worksheets</a></div>
+                <!--<div class="scenario-nav"><a href="#template/changelog">Session change log</a></div>-->
+                <br>
+                <div class="scenario-nav delete-scenario-launch">Delete scenario <i class="icon-trash"></i></div>
+            </div>
         </div>
 
         <div id="scenario-list"></div>
@@ -310,7 +315,6 @@
     //******************************
     for (s in project) {
         project[s] = calc.run(project[s]);
-        $("." + s + "_scenario_emissions").html(project[s].kgco2perm2.toFixed(0));
     }
 
     //**********************************************
@@ -321,7 +325,7 @@
     //************************
     // Side Menus
     //************************
-    add_scenarios_to_menu();
+    redraw_scenario_menu();
 
     //***********************************
     // Add links to reports in the menu
@@ -400,6 +404,10 @@
 
             console.log(key + " changed from " + lastval + " to " + val);
             changelog += key + " changed from " + lastval + " to " + val + "<br>";
+
+            if (key == 'data.scenario_name') {
+              redraw_scenario_menu();
+            }
         }
         update(false, false);
     });
@@ -423,10 +431,8 @@
         $(window).scrollTop(650);
     });
     $("#openbem").on('click', ".block-header", function () {
-
-        var s = $(this).parent().attr('scenario');
-        //  if (s != scenario) {
-        window.location = '#' + s + '/' + page;
+        const projectId = this.closest("[scenario]").getAttribute('scenario');
+        window.location = '#' + projectId + '/' + page;
 
         var menu_content = $(this).parent().find(".menu-content");
         var visible = menu_content.is(":visible");
@@ -482,7 +488,7 @@
         project = JSON.parse(JSON.stringify(temp_project));
 
         $(".menu-content").hide();
-        add_scenarios_to_menu();
+        redraw_scenario_menu();
         $('#modal-create-scenario').modal('hide');
 
         scenario = s;
@@ -591,7 +597,7 @@
         UpdateUI(data);
         draw_openbem_graphics('#topgraphic');
 
-        $("." + scenario + "_scenario_emissions").html(project[scenario].kgco2perm2.toFixed(0));
+        redraw_emissions();
 
         mhep_helper.set(projectid, project, function (result) {
             alertifnotlogged(result);
@@ -606,44 +612,78 @@
             $('#content .disabled-if-not-master').attr('disabled', 'true');
         }
     }
-    function add_scenarios_to_menu() {
-        $("#scenario-list").html('');
-        var mastermenu = $("#scenario-menu-template").html();
-        for (s in project) {
-            var tmp = mastermenu.replace(/template/g, s);
-            tmp = tmp.replace("title", s.charAt(0).toUpperCase() + s.slice(1));
-            var name = "";
-            if (project[s].scenario_name != undefined)
-                name = project[s].scenario_name;
-            tmp = tmp.replace("scenarioname", " " + String(name).charAt(0).toUpperCase() + String(name).slice(1));
-            $("#scenario-list").append(tmp);
+    function has_changed_base_scenario(scenario_id) {
+        const creation_hash = project[scenario_id].creation_hash
+        if (!creation_hash) {
+            return false;
         }
-        for (s in project) {
-            const $emissions = $(`.${s}_scenario_emissions`)
 
-            const emissions_value = typeof(project[s].kgco2perm2) == "number"
-                ? project[s].kgco2perm2.toFixed(0)
-                : "?"
+        const created_from = project[scenario_id].created_from
+        let original_scenario = JSON.parse(JSON.stringify(project[created_from]));
+        original_scenario.locked = false;
+        let current_hash = generate_hash(JSON.stringify(original_scenario));
 
-            $emissions.html(emissions_value);
+        return creation_hash != current_hash;
+    }
+    function redraw_scenario_menu() {
+        $("#scenario-list").html('');
 
-            if (s != 'master' && project[s].created_from != undefined) {
-                $("." + s + "_scenario_created_from").html("(From " + project[s].created_from + ')');
-                // Check if the original scenario has changed since the the creation of the current one
-                if (project[project[s].created_from] == undefined) // If the parent scenario has been deleted
-                    $("." + s + "_scenario_created_from").html("(From " + project[s].created_from + ' - deleted)');
-                else if (project[s].creation_hash != undefined) {
-                    var original_scenario = JSON.parse(JSON.stringify(project[project[s].created_from]));
-                    original_scenario.locked = false;
-                    hash_original = generate_hash(JSON.stringify(original_scenario));
-                    if (project[s].creation_hash != generate_hash(JSON.stringify(original_scenario))) {
-                        $("." + s + "_scenario_created_from").html("(From " + project[s].created_from + '*)');
-                        $("." + s + "_scenario_created_from").attr('title', 'The original scenario has changed since the creation of Scenario ' + s.split('scenario')[1]);
-                    }
+        const template = document.getElementById("scenario-menu-template")
+        for (let id in project) {
+            const project_title = id.charAt(0).toUpperCase() + id.slice(1)
+            const project_name = project[id].scenario_name || ""
+            const created_from = project[id].created_from
+
+            const row = template.cloneNode(true) // Deep clone
+            const $row = $(row)
+
+            $row.show()
+            $row.attr("id", "")
+            $row.attr("scenario", id)
+            $row.find(".block_title").html(project_title)
+            $row.find(".block_name").html(project_name)
+
+            for (let link of row.querySelectorAll("a")) {
+                link.href = link.href.replace("template", id)
+            }
+
+            if (created_from) {
+                let created_from_extra = ""
+
+                if (project[created_from] == undefined) {
+                    // If the parent scenario has been deleted
+                    created_from_extra = " - deleted"
+                } else if (has_changed_base_scenario(id)) {
+                    created_from_extra = '*'
+
+                    $row.find(".block_created_from").attr(
+                        'title',
+                        `${created_from} has changed since the creation of ${project_title}`
+                    );
                 }
+
+                $row.find(".block_created_from").html(
+                    `(From ${created_from}${created_from_extra})`
+                );
+            }
+
+            $("#scenario-list").append(row)
+        }
+
+        redraw_emissions();
+
+        $('div [scenario="' + scenario + '"]').click();
+    }
+    function redraw_emissions() {
+        for (let s in project) {
+            const $emissions = $(`[scenario="${s}"] .block_emissions`)
+            const kgco2perm2 = project[s].kgco2perm2
+            if (typeof(kgco2perm2) == "number" && !isNaN(kgco2perm2)) {
+              $emissions.html(kgco2perm2.toFixed(0));
+            } else {
+              $emissions.html("-")
             }
         }
-        $('div [scenario="' + scenario + '"]').click();
     }
     function add_reports_to_menu() {
         var reports = {{ reports_javascript }}; // populated via Django template
