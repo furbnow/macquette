@@ -5,6 +5,7 @@ from . import VERSION
 
 from .views import (
     AssessmentHTMLView,
+    CreateDeleteOrganisationLibrarians,
     CreateUpdateDeleteLibraryItem,
     CreateOrganisationLibraries,
     ListAssessmentsHTMLView,
@@ -75,6 +76,12 @@ urlpatterns = [
         "api/organisations/<int:pk>/libraries/",
         view=CreateOrganisationLibraries.as_view(),
         name="create-organisation-libraries"
+    ),
+
+    path(
+        "api/organisations/<int:pk>/librarians/<int:userid>/",
+        view=CreateDeleteOrganisationLibrarians.as_view(),
+        name="create-delete-organisation-librarians"
     ),
 
     path(
