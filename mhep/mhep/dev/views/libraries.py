@@ -8,9 +8,12 @@ from rest_framework import status
 
 from .. import VERSION
 
+from ..models import Library
 from ..permissions import (
-    IsLibraryOwner,
-    IsMemberOfLibraryOrganisation,
+    CanReadLibrary,
+    CanWriteLibrary,
+    IsReadRequest,
+    IsWriteRequest,
 )
 from ..serializers import (
     LibraryItemSerializer,
@@ -37,6 +40,9 @@ class MyLibrariesMixin():
             org_libraries = org.libraries.all()
             all_libraries |= org_libraries
 
+        global_libraries = Library.objects.filter(owner_user=None, owner_organisation=None)
+        all_libraries |= global_libraries
+
         return all_libraries
 
 
@@ -62,7 +68,7 @@ class UpdateDestroyLibrary(
         # IsAuthenticated will ensure we can filter (using get_queryset) based on User.libraries
         # (which is the reverse of Library.owner)
         IsAuthenticated,
-        IsLibraryOwner | IsMemberOfLibraryOrganisation,
+        (IsReadRequest & CanReadLibrary) | (IsWriteRequest & CanWriteLibrary),
     ]
 
     def get_queryset(self, *args, **kwargs):
@@ -84,7 +90,7 @@ class CreateUpdateDeleteLibraryItem(
     serializer_class = LibraryItemSerializer
     permission_classes = [
         IsAuthenticated,
-        IsLibraryOwner | IsMemberOfLibraryOrganisation,
+        (IsReadRequest & CanReadLibrary) | (IsWriteRequest & CanWriteLibrary),
     ]
 
     def get_queryset(self, *args, **kwargs):

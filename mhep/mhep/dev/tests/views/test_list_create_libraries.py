@@ -20,13 +20,14 @@ class TestListLibraries(APITestCase):
         with freeze_time("2019-06-01T16:35:34Z"):
             l1 = LibraryFactory.create(owner_user=self.me)
             l2 = LibraryFactory.create(owner_user=self.me)
+            global_lib = LibraryFactory.create(owner_user=None, owner_organisation=None)
             LibraryFactory.create(owner_user=UserFactory.create())  # another library (someone else's)
 
         self.client.force_authenticate(self.me)
         response = self.client.get(f"/{VERSION}/api/libraries/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 2 == len(response.data)
+        assert 3 == len(response.data)
 
         assert {
             "id": "{}".format(l1.pk),
@@ -58,6 +59,21 @@ class TestListLibraries(APITestCase):
             },
         } == response.data[1]
 
+        assert {
+            "id": "{}".format(global_lib.pk),
+            "created_at": "2019-06-01T16:35:34Z",
+            "updated_at": "2019-06-01T16:35:34Z",
+            "name": global_lib.name,
+            "type": global_lib.type,
+            "writeable": False,
+            "data": global_lib.data,
+            "owner": {
+                "id": None,
+                "name": "Global",
+                "type": "global",
+            },
+        } == response.data[2]
+
     def test_includes_libraries_from_my_organisations(self):
         my_lib = LibraryFactory.create(owner_user=self.me, owner_organisation=None)
 
@@ -84,6 +100,19 @@ class TestListLibraries(APITestCase):
         assert org_lib_1.id in retrieved_ids
         assert org_lib_2.id in retrieved_ids
         assert other_lib.id not in retrieved_ids
+
+    def test_includes_global_libraries_with_no_owner(self):
+        global_lib = LibraryFactory.create(owner_organisation=None, owner_user=None)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert 1 == len(response.data)
+
+        retrieved_ids = [int(l["id"]) for l in response.data]
+
+        assert global_lib.id in retrieved_ids
 
     def test_list_libraries_fails_if_not_logged_in(self):
         LibraryFactory.create(owner_user=self.me)

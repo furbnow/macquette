@@ -11,13 +11,6 @@ class IsAssessmentOwner(permissions.BasePermission):
         return request.user == assessment.owner
 
 
-class IsLibraryOwner(permissions.BasePermission):
-    message = "You are not the owner of the Library."
-
-    def has_object_permission(self, request, view, library):
-        return request.user == library.owner_user
-
-
 class IsMemberOfConnectedOrganisation(permissions.BasePermission):
     message = "You are not a member of the Assessment's Organisation."
 
@@ -26,16 +19,6 @@ class IsMemberOfConnectedOrganisation(permissions.BasePermission):
             return False
 
         return request.user in assessment.organisation.members.all()
-
-
-class IsMemberOfLibraryOrganisation(permissions.BasePermission):
-    message = "You are not a member of the Library's Organisation."
-
-    def has_object_permission(self, request, view, library):
-        if library.owner_organisation is None:
-            return False
-
-        return request.user in library.owner_organisation.members.all()
 
 
 class IsMemberOfOrganisation(permissions.BasePermission):
@@ -47,3 +30,49 @@ class IsMemberOfOrganisation(permissions.BasePermission):
         except Organisation.DoesNotExist:
             raise exceptions.NotFound("Organisation not found")
         return request.user in organisation.members.all()
+
+
+class IsReadRequest(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS
+
+    def has_object_permission(self, request, view, library):
+        return request.method in permissions.SAFE_METHODS
+
+
+class IsWriteRequest(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.method not in permissions.SAFE_METHODS
+
+    def has_object_permission(self, request, view, library):
+        return request.method not in permissions.SAFE_METHODS
+
+
+class CanReadLibrary(permissions.BasePermission):
+    def has_object_permission(self, request, view, library):
+        if library.owner_organisation is None and library.owner_user is None:
+            # It's a global library
+            return True
+
+        if library.owner_user == request.user:
+            return True
+
+        if library.owner_organisation is not None:
+            return request.user in library.owner_organisation.members.all()
+
+        return False
+
+
+class CanWriteLibrary(permissions.BasePermission):
+    def has_object_permission(self, request, view, library):
+        if library.owner_organisation is None and library.owner_user is None:
+            # It's a global library
+            return request.user.is_superuser
+
+        if library.owner_user == request.user:
+            return True
+
+        if library.owner_organisation is not None:
+            return request.user in library.owner_organisation.members.all()
+
+        return False
