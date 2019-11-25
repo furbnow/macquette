@@ -108,6 +108,7 @@ load_django_fixtures() {
 
   run_as_vagrant "python manage.py loaddata organisations"
   run_as_vagrant "python manage.py loaddata assessments"
+  run_as_vagrant "python manage.py loaddata standard_library"
 }
 
 install_emoncms() {
