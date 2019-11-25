@@ -30,39 +30,50 @@ function currentenergy_initUI() {
 
 function currentenergy_UpdateUI()
 {
-    // ---------------------------------------------------------------------------------
-    var options = {
-        name: "Primary energy demand",
-        value: Math.round(data.currentenergy.primaryenergy_annual_kwhm2),
-        units: "kWh/m" + String.fromCharCode(178),
-        targets: {
-            "Passivhaus": 120,
-            "UK Average": 360
-        }
-    };
-    targetbar("#currentenergy-primaryenergy", options);
-    // ---------------------------------------------------------------------------------
-    var options = {
-        name: "CO2 Emission rate",
-        value: Math.round(data.currentenergy.total_co2m2),
-        units: "kgCO" + String.fromCharCode(8322) + "/m" + String.fromCharCode(178),
-        targets: {
-            "80% by 2050": 17,
-            "UK Average": 50.3
-        }
-    };
-    targetbar("#currentenergy-co2", options);
-    // ---------------------------------------------------------------------------------
-    var options = {
-        name: "Per person energy use",
-        value: data.currentenergy.energyuseperperson.toFixed(1),
-        units: "kWh/day",
-        targets: {
-            "70% heating saving": 8.6,
-            "UK Average": 19.6
-        }
-    };
-    targetbar("#currentenergy-perperson", options);
+    const width = $("#currentenergy-primaryenergy").width()
+
+    document.getElementById("currentenergy-primaryenergy").innerHTML =
+        targetbarSVG({
+            name: "Primary energy demand",
+            width: width,
+            unknown: typeof(data.currentenergy.primaryenergy_annual_kwhm2) === undefined ||
+                isNaN(data.currentenergy.primaryenergy_annual_kwhm2) ||
+                data.currentenergy.primaryenergy_annual_kwhm2 === Infinity,
+            value: Math.round(data.currentenergy.primaryenergy_annual_kwhm2),
+            units: "kWh/m²",
+            targets: [
+                { label: "Passivhaus", value: 120 },
+                { label: "UK Average", value: 360 },
+            ]
+        })
+
+    document.getElementById("currentenergy-co2").innerHTML =
+        targetbarSVG({
+            name: "CO2 Emission rate",
+            width: width,
+            unknown: typeof(data.currentenergy.total_co2m2) === undefined ||
+                isNaN(data.currentenergy.total_co2m2) ||
+                data.currentenergy.total_co2m2 === Infinity,
+            value: Math.round(data.currentenergy.total_co2m2),
+            units: "kgCO₂/m²",
+            targets: [
+                { label: "80% by 2050", value: 17 },
+                { label: "UK Average", value: 50.3 },
+            ]
+        })
+
+    document.getElementById("currentenergy-perperson").innerHTML =
+        targetbarSVG({
+            name: "Per person energy use",
+            width: width,
+            unknown: false,
+            value: data.currentenergy.energyuseperperson.toFixed(1),
+            units: "kWh/day",
+            targets: [
+                { label: "70% heating saving", value: 8.6 },
+                { label: "UK Average", value: 19.6 },
+            ]
+        })
 }
 
 

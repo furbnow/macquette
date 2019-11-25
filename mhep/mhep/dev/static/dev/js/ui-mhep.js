@@ -1,141 +1,12 @@
 function draw_openbem_graphics(parent)
 {
-    var floorwk = data.fabric.total_floor_WK;
-    var ventilationwk = data.ventilation.average_ventilation_WK;
-    var infiltrationwk = data.ventilation.average_infiltration_WK;
-    var windowswk = data.fabric.total_window_WK;
-    var wallswk = data.fabric.total_wall_WK;
-    var roofwk = data.fabric.total_roof_WK;
-    var thermalbridgewk = data.fabric.thermal_bridging_heat_loss;
+    $(`${parent} .house-container`).html(houseSVG(data))
 
-    var totalwk = floorwk + ventilationwk + infiltrationwk + windowswk + wallswk + roofwk + thermalbridgewk;
+    draw_space_heating_targetbar(parent, data)
+    draw_primary_energy_targetbar(parent, data)
+    draw_co2_targetbar(parent, data)
+    draw_perperson_targetbar(parent, data)
 
-    var uscale = 30;
-
-    var s1 = Math.sqrt(floorwk / uscale);
-    var s2 = Math.sqrt(ventilationwk / uscale);
-    var s3 = Math.sqrt(windowswk / uscale);
-    var s4 = Math.sqrt(wallswk / uscale);
-    var s5 = Math.sqrt(roofwk / uscale);
-    var s6 = Math.sqrt(thermalbridgewk / uscale);
-    var s7 = Math.sqrt(infiltrationwk / uscale);
-
-    $(parent + " #house-floor").attr("transform", "translate(460,620) rotate(90) scale(" + s1 + ")");
-    $(parent + " #house-ventilation").attr("transform", "translate(260,535) rotate(180) scale(" + s2 + ")");
-    $(parent + " #house-windows").attr("transform", "translate(260,345) rotate(180) scale(" + s3 + ")");
-    $(parent + " #house-walls").attr("transform", "translate(730,535) rotate(0) scale(" + s4 + ")");
-    $(parent + " #house-roof").attr("transform", "translate(640,185) rotate(-55) scale(" + s5 + ")");
-    $(parent + " #house-thermalbridge").attr("transform", "translate(730,345) rotate(0) scale(" + s6 + ")");
-    $(parent + " #house-infiltration").attr("transform", "translate(340,205) rotate(235) scale(" + s7 + ")");
-
-    $(parent + " #house-floorwk").html(Math.round(floorwk) + " W/K");
-    $(parent + " #house-ventilationwk").html(Math.round(ventilationwk) + " W/K");
-    $(parent + " #house-windowswk").html(Math.round(windowswk) + " W/K");
-    $(parent + " #house-wallswk").html(Math.round(wallswk) + " W/K");
-    $(parent + " #house-roofwk").html(Math.round(roofwk) + " W/K");
-    $(parent + " #house-thermalbridgewk").html(Math.round(thermalbridgewk) + " W/K");
-    $(parent + " #house-infiltrationwk").html(Math.round(infiltrationwk) + " W/K");
-    $(parent + " #house-totalwk").html(Math.round(totalwk) + " W/K");
-
-    var targetbarwidth = $(parent + " #targetbars").width();
-
-    $(parent + " #spaceheating").css("width", targetbarwidth);
-    $(parent + " #primaryenergy").css("width", targetbarwidth);
-    $(parent + " #co2").css("width", targetbarwidth);
-    $(parent + " #perperson").css("width", targetbarwidth);
-
-    var targetbarheight = 60;// 0.13 * targetbarwidth;
-    if (targetbarheight < 60)
-        targetbarheight = 60;
-    $(parent + " #spaceheating").css("height", targetbarheight);
-    $(parent + " #primaryenergy").css("height", targetbarheight);
-    $(parent + " #co2").css("height", targetbarheight);
-    $(parent + " #perperson").css("height", targetbarheight);
-
-    // ---------------------------------------------------------------------------------
-    var value = '';
-    var units = '';
-    // ---------------------------------------------------------------------------------
-    if (isNaN(data.space_heating_demand_m2) == true) {
-        value = 'No data yet';
-        units = '';
-    }
-    else {
-        value = Math.round(data.space_heating_demand_m2);
-        units = "kWh/m" + String.fromCharCode(178);
-    }
-    var options = {
-        name: "Space heating demand",
-        value: value,
-        units: units,
-        targets: {
-            //"Passivhaus": 15,
-            "Min target": datasets.target_values.space_heating_demand_lower,
-            "Max target": datasets.target_values.space_heating_demand_upper,
-            "UK Average": datasets.uk_average_values.space_heating_demand
-        }
-    };
-    targetbar(parent + " #spaceheating", options);
-    // ---------------------------------------------------------------------------------
-    if (isNaN(data.primary_energy_use_m2) == true) {
-        value = 'No data yet';
-        units = '';
-    }
-    else {
-        value = Math.round(data.primary_energy_use_m2);
-        units = "kWh/m" + String.fromCharCode(178);
-    }
-    var options = {
-        name: "Primary energy demand",
-        value: value,
-        units: units,
-        targets: {
-            "Target": datasets.target_values.primary_energy_demand_passive_house,
-            "UK Average": datasets.uk_average_values.primary_energy_demand
-        }
-    };
-    targetbar(parent + " #primaryenergy", options);
-    // ---------------------------------------------------------------------------------
-    if (isNaN(data.kgco2perm2) == true) {
-        value = 'No data yet';
-        units = '';
-    }
-    else {
-        value = Math.round(data.kgco2perm2);
-        units = "kgCO" + String.fromCharCode(8322) + "/m" + String.fromCharCode(178);
-    }
-    var options = {
-        name: "CO2 Emission rate",
-        value: value,
-        units: units,
-        targets: {
-
-            "Zero Carbon": 0,
-            "80% by 2050": 17,
-            "UK Average": datasets.uk_average_values.co2_emission_rate
-        }
-    };
-    targetbar(parent + " #co2", options);
-    // ---------------------------------------------------------------------------------
-    if (isNaN(data.kwhdpp) == true) {
-        value = 'No data yet';
-        units = '';
-    }
-    else {
-        value = Math.round(data.kwhdpp.toFixed(1));
-        units = "kWh/day";
-    }
-    var options = {
-        name: "Per person energy use",
-        value: value,
-        units: units,
-        targets: {
-            "70% heating saving": datasets.target_values.energy_use_per_person,
-            "UK Average": datasets.uk_average_values.energy_use_per_person
-        }
-    };
-    targetbar(parent + " #perperson", options);
-    // ---------------------------------------------------------------------------------
     if (scenario != undefined) {
         if (page != 'report' && scenario != 'master')
             $('#measures-costs').html('Measures cost: £' + measures_costs(scenario).toFixed(2));
@@ -144,61 +15,247 @@ function draw_openbem_graphics(parent)
     }
 }
 
-function draw_rating(ctx)
-{
+function houseSVG(data) {
+    const SCALE = 30
 
-    var sap_rating = data.SAP.rating.toFixed(0);
-    var kwhm2 = "?";
-    var letter = "";
-    var color = 0;
-    var kwhd = 0;
-    var kwhdpp = 0;
+    const floorwk = data.fabric.total_floor_WK
+    const ventilationwk = data.ventilation.average_ventilation_WK
+    const infiltrationwk = data.ventilation.average_infiltration_WK
+    const windowswk = data.fabric.total_window_WK
+    const wallswk = data.fabric.total_wall_WK
+    const roofwk = data.fabric.total_roof_WK
+    const thermalbridgewk = data.fabric.thermal_bridging_heat_loss
 
-    var band = 0;
-    for (z in datasets.ratings)
-    {
-        if (sap_rating >= datasets.ratings[z].start && sap_rating <= datasets.ratings[z].end)
-        {
-            band = z;
-            break;
-        }
+    const scaled_floor = Math.sqrt(floorwk / SCALE)
+    const scaled_ventilation = Math.sqrt(ventilationwk / SCALE)
+    const scaled_windows = Math.sqrt(windowswk / SCALE)
+    const scaled_walls = Math.sqrt(wallswk / SCALE)
+    const scaled_roof = Math.sqrt(roofwk / SCALE)
+    const scaled_thermalbridge = Math.sqrt(thermalbridgewk / SCALE)
+    const scaled_infiltration = Math.sqrt(infiltrationwk / SCALE)
+
+    const totalwk = floorwk + ventilationwk + infiltrationwk + windowswk + wallswk + roofwk + thermalbridgewk
+
+    return `
+        <svg class="house" viewBox="0 0 1040 800" preserveAspectRatio="xMinYMin">
+            <defs>
+                <g id="house-arrow">
+                    <path d="M0 25h65V0l35 50-35 50V75H0z" />
+                </g>
+
+                <g id="house-house">
+                    <path fill="rgba(99,86,71,.8)" d="M220 100h10v110h-10zM10 140h10v30H10z" />
+                    <path fill="rgba(99,86,71,0.8)" d="M120 235h100v-25h10v35H10v-35h10v25zM20 90v10H10V90H0v-5L120 0l120 85v5h-10v10h-10V90L120 20z" />
+                    <path fill="rgba(99,86,71,.3)" d="M11 100h8v40h-8zM11 170h8v40h-8z" />
+                </g>
+            </defs>
+
+            <use xlink:href="#house-house" x="128" y="55" transform="scale(2)" />
+            <text x="500" y="400" class="text-bold house--dark" text-anchor="middle">TOTAL</text>
+            <text class="house--dark" x="500" y="435" text-anchor="middle">
+                ${Math.round(thermalbridgewk)} W/K
+            </text>
+
+            <use transform="translate(460,615) rotate(90) scale(${scaled_floor}) translate(0,-50)"
+                 xlink:href="#house-arrow"
+                 class="house--darker" />
+            <text x="540" y="650" class="text-bold house--darker">Floor</text>
+            <text class="house--dark" x="540" y="685">
+                ${Math.round(floorwk)} W/K
+            </text>
+
+            <use transform="translate(645,200) rotate(-55) scale(${scaled_roof}) translate(0,-50)"
+                 xlink:href="#house-arrow"
+                 class="house--darker" />
+            <text x="530" y="50" class="text-bold house--darker">Roof</text>
+            <text class="house--dark" x="530" y="85">
+                ${Math.round(roofwk)} W/K
+            </text>
+
+            <use transform="translate(730,535) rotate(0) scale(${scaled_walls}) translate(0,-50)"
+                 xlink:href="#house-arrow"
+                 class="house--light" />
+            <text x="730" y="650" class="text-bold house--dark">Walls</text>
+            <text class="house--dark" x="730" y="685">
+                ${Math.round(wallswk)} W/K
+            </text>
+
+            <use transform="translate(260,535) rotate(180) scale(${scaled_ventilation}) translate(0,-50)"
+                 xlink:href="#house-arrow"
+                 class="house--light" />
+            <text x="260" y="650" class="text-bold house--dark" text-anchor="end">Ventilation</text>
+            <text class="house--dark" x="260" y="685" text-anchor="end">
+                ${Math.round(ventilationwk)} W/K
+            </text>
+
+            <use transform="translate(260,350) rotate(180) scale(${scaled_windows}) translate(0,-50)"
+                 xlink:href="#house-arrow"
+                 class="house--light" />
+            <text x="260" y="215" class="text-bold house--dark" text-anchor="end">Windows</text>
+            <text class="house--dark" x="260" y="250" text-anchor="end">
+                ${Math.round(windowswk)} W/K
+            </text>
+
+            <use transform="translate(730,350) rotate(0) scale(${scaled_thermalbridge}) translate(0,-50)"
+                 xlink:href="#house-arrow"
+                 class="house--light" />
+            <text x="730" y="210" class="text-bold house--dark">Thermal bridging</text>
+            <text class="house--dark" x="730" y="245">
+                ${Math.round(thermalbridgewk)} W/K
+            </text>
+
+            <use transform="translate(340,205) rotate(235) scale(${scaled_infiltration}) translate(0,-50)"
+                 xlink:href="#house-arrow"
+                 class="house--darker" />
+            <text x="315" y="50" class="text-bold house--darker">Infiltration</text>
+            <text class="house--dark" x="315" y="85">
+                ${Math.round(infiltrationwk)} W/K
+            </text>
+        </svg>`
+}
+
+/*
+ * Draw a 'target bar'.
+ *
+ * name - string to label the graph with
+ * unknown - is this value unknown?
+ * value - numeric value
+ * units - units for value
+ * targets - array of objects with "label" and "value" keys, to display on the graph
+ */
+function targetbarSVG({ width, name, unknown, value, units, targets }) {
+    const height = 40
+
+    // Always 25% larger than max target or value
+    const targetValues = targets.map(t => t.value)
+    const maxval = Math.max(value, ...targetValues) * 1.25;
+    const xscale = width / maxval;
+
+    const header =
+        unknown === true
+            ? `Not enough data`
+            : `${value} ${units}`
+
+    const drawLine = target => {
+        const x = target.value * xscale
+
+        return `
+            <line x1="${x}" y1="1" x2="${x}" y2="${height-1}" stroke="rgba(99,86,71,0.8)" stroke-dasharray="4.33 4.33" />
+            <text x="${x+5}" y="${height-22}" fill="rgba(99,86,71,0.8)">
+                ${target.value} ${units}
+            </text>
+            <text x="${x+5}" y="${height-8}" fill="rgba(99,86,71,0.8)" style="font-weight: bold;">
+                ${target.label}
+            </text>
+        `
     }
 
-    color = datasets.ratings[band].color;
-    letter = datasets.ratings[band].letter;
+    return `
+        <div class='targetbar-head'>
+            <span>${name}:</span>
+            <span><b>${header}</b></span>
+        </div>
 
-    ctx.clearRect(0, 0, 269, 350);
+        <svg viewBox="0 0 ${width} ${height}" height="${height}">
+            <rect x="1" y="1" width="${width-2}" height="${height-2}" style="fill: rgba(99,86,71,0.2); stroke: rgba(99,86,71, 0.5); stroke-width: 2px" />
+            <rect x="1" y="1" width="${(value*xscale)-2}" height="${height-2}" fill="rgba(99,86,71,0.2)" />
 
-    ctx.fillStyle = color;
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
-    ctx.fillRect(0, 0, 269, 350);
+            ${unknown ? "" : targets.map(drawLine)}
+        </svg>
+    `
+}
 
-    ctx.fillStyle = "rgba(255,255,255,0.6)";
-    ctx.fillRect(0, 0, 269, 350);
-    ctx.strokeRect(0, 0, 269, 350);
+function draw_space_heating_targetbar(parent, data) {
+    const is_unknown = isNaN(data.space_heating_demand_m2) || data.space_heating_demand_m2 == Infinity
+    const value =
+        is_unknown
+            ? 0
+            : Math.round(data.space_heating_demand_m2)
+    const width = Math.min($(`${parent} #spaceheating`).width(), 400)
 
-    var mid = 269 / 2;
+    $(`${parent} #spaceheating`).html(
+        targetbarSVG({
+            name: "Space heating demand",
+            width: width,
+            unknown: is_unknown,
+            value: value,
+            units: "kWh/m²",
+            targets: [
+                //"Passivhaus": 15,
+                { label: "Min target", value: datasets.target_values.space_heating_demand_lower, },
+                { label: "Max target", value: datasets.target_values.space_heating_demand_upper, },
+                { label: "UK Average", value: datasets.uk_average_values.space_heating_demand },
+            ]
+        })
+    )
+}
 
-    ctx.beginPath();
-    ctx.arc(mid, mid, 100, 0, 2 * Math.PI, false);
-    ctx.closePath();
-    ctx.fillStyle = "rgba(255,255,255,0.6)";
-    ctx.fill();
-    ctx.stroke();
+function draw_primary_energy_targetbar(parent, data) {
+    const is_unknown = isNaN(data.primary_energy_use_m2) || data.primary_energy_use_m2 === Infinity
+    const value =
+        is_unknown
+            ? 0
+            : Math.round(data.primary_energy_use_m2)
+    const width = Math.min($(`${parent} #primaryenergy`).width(), 400)
 
-    ctx.fillStyle = color;
-    ctx.textAlign = "center";
-    ctx.font = "bold 22px arial";
-    ctx.fillText("SAP", mid, 90);
-    ctx.font = "bold 92px arial";
-    ctx.fillText(sap_rating, mid, mid + 30);
-    ctx.font = "bold 22px arial";
-    ctx.fillText(letter + " RATING", mid, mid + 60);
-    ctx.font = "bold 32px arial";
-    ctx.fillText(kwhm2, mid, 280);
-    ctx.font = "bold 18px arial";
-    ctx.fillText("DAILY: " + kwhd, mid, 308);
-    ctx.font = "bold 18px arial";
-    ctx.fillText("PER PERSON: " + kwhdpp, mid, 336);
+    $(`${parent} #primaryenergy`).html(
+        targetbarSVG({
+            name: "Primary energy demand",
+            width: width,
+            unknown: is_unknown,
+            value: value,
+            units: "kWh/m²",
+            targets: [
+                { label: "Target", value: datasets.target_values.primary_energy_demand_passive_house },
+                { label: "UK Average", value: datasets.uk_average_values.primary_energy_demand },
+            ]
+        })
+    )
+}
+
+function draw_co2_targetbar(parent, data) {
+    const is_unknown = isNaN(data.kgco2perm2) || data.kgco2perm2 === Infinity
+    const value =
+        is_unknown
+            ? 0
+            : Math.round(data.kgco2perm2)
+    const width = Math.min($(`${parent} #co2`).width(), 400)
+
+    $(`${parent} #co2`).html(
+        targetbarSVG({
+            name: "CO2 Emission rate",
+            width: width,
+            unknown: is_unknown,
+            value: value,
+            units: "kgCO₂/m²",
+            targets: [
+                { label: "Zero Carbon", value: 0 },
+                { label: "80% by 2050", value: 17 },
+                { label: "UK Average", value: datasets.uk_average_values.co2_emission_rate },
+            ]
+        })
+    )
+}
+
+function draw_perperson_targetbar(parent, data) {
+    const is_unknown = isNaN(data.kwhdpp) || data.kwhdpp === Infinity
+    const value =
+        is_unknown
+            ? 0
+            : Math.round(data.kwhdpp.toFixed(1))
+    const width = Math.min($(`${parent} #perperson`).width(), 400)
+
+    $(`${parent} #perperson`).html(
+        targetbarSVG({
+            name: "Per person energy use",
+            width: width,
+            unknown: is_unknown,
+            value: value,
+            units: "kWh/day",
+            targets: [
+                { label: "70% heating saving", value: datasets.target_values.energy_use_per_person },
+                { label: "UK Average", value: datasets.uk_average_values.energy_use_per_person },
+            ]
+        })
+    )
 }
