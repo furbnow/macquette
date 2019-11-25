@@ -25,6 +25,18 @@ def test_organisations_related_name_on_user_model():
     assert getattr(user, f"{VERSION}_organisations").all().count() == 1
 
 
+def test_organisations_where_admin_related_name_on_user_model():
+    user = UserFactory.create()
+    org = OrganisationFactory.create()
+
+    org.admins.add(user)
+    # `Organisation.members` is the forward relationship
+    # `User.{version}_organisations` is the reverse
+
+    assert getattr(user, f"{VERSION}_organisations_where_admin").all().count() == 1
+
+
+
 def test_libraries_related_name_on_user_model():
     user = UserFactory.create()
 
