@@ -17,6 +17,7 @@ class TestCreateOrganisationLibraries(APITestCase):
         cls.me = UserFactory.create()
         cls.org = OrganisationFactory.create()
         cls.org.members.add(cls.me)
+        cls.org.librarians.add(cls.me)
 
     def test_create_returns_correct_format(self):
 

@@ -43,6 +43,17 @@ class IsAdminOfOrganisation(permissions.BasePermission):
         return request.user in organisation.admins.all()
 
 
+class IsLibrarianOfOrganisation(permissions.BasePermission):
+    message = "You are not a librarian of the Organisation."
+
+    def has_permission(self, request, view):
+        try:
+            organisation = Organisation.objects.get(pk=view.kwargs["pk"])
+        except Organisation.DoesNotExist:
+            raise exceptions.NotFound("Organisation not found")
+        return request.user in organisation.librarians.all()
+
+
 class IsReadRequest(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.method in permissions.SAFE_METHODS
@@ -84,6 +95,6 @@ class CanWriteLibrary(permissions.BasePermission):
             return True
 
         if library.owner_organisation is not None:
-            return request.user in library.owner_organisation.members.all()
+            return request.user in library.owner_organisation.librarians.all()
 
         return False
