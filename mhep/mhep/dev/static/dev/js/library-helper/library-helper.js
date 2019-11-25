@@ -276,20 +276,6 @@ libraryHelper.prototype.append_modals = function () {
  * Events methods
  *************************************/
 libraryHelper.prototype.onAddItemFromLib = function (origin) {
-    // Check if the user has a library of this type and if not create it. THIS HAS BEEN IMPLEMENTED IN projects.php
-    /* if (this.library_list[this.type] === undefined) {
-     this.library_list[this.type] = [];
-     var library_name = "StandardLibrary - " + p.author;
-     var myself = this;
-     $.ajax({url: path + "assessment/newlibrary.json", data: "name=" + library_name + '&type=' + myself.type, datatype: "json", async: false, success: function (result) {
-     library_id = result;
-     myself.library_list[myself.type] = [{id: library_id, name: library_name, type: myself.type, data: standard_library[myself.type]}];
-     myself.library_permissions[library_id] = {write: 1};
-     $.ajax({type: "POST", url: path + "assessment/savelibrary.json", data: "id=" + library_id + "&data=" + JSON.stringify(standard_library[myself.type]), success: function (result) {
-     console.log("save library result: " + result);
-     }});
-     }});
-     }*/
     this.populate_library_modal(origin);
     $("#show-library-modal").modal('show');
 };
