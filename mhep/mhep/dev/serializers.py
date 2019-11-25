@@ -2,7 +2,6 @@ import datetime
 
 from rest_framework import serializers
 
-from . import VERSION
 from .models import Assessment, Library, Organisation
 
 
