@@ -35,7 +35,6 @@
 </style>
 
 <script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/mhep-helper.js' %}"></script>
-<script language="javascript" type="text/javascript" src="{% static VERSION|add:'/js/library-r6.js' %}"></script>
 
 {% endblock %}
 
@@ -174,81 +173,9 @@
     draw_projects("#projects", projects);
 
     $("#assessments-title").html("My Assessments");
-// -----------------------------------------------------------------------------------
-// Check that the user at least one library of each type and if not create it from the default one
-// Check that all the elements in the default library are in the user's Standard library, copy over the ones that are not (kind of getting in sync)
-// -----------------------------------------------------------------------------------
 
     var libraries = {};
-    $.ajax({
-      url: urlHelper.api.libraries(),
-      async: true,
-      datatype: "json",
-      error: handleServerError('listing libraries'),
-      success: function (user_libraries) {
-            // Check that the user at least one library of each type and if not create it from the default one
-            var user_has_the_library = false;
-            for (library_type in standard_library) {
-                user_has_the_library = false;
-                for (library_index in user_libraries) {
-                    if (user_libraries[library_index].type == library_type)
-                        user_has_the_library = true;
-                }
-                if (!user_has_the_library) {
-                    const library_name = "StandardLibrary - " + myusername;
 
-                    const body = JSON.stringify({
-                      'name': library_name,
-                      'type': library_type,
-                      'data': standard_library[library_type],
-                    });
-
-                    // create new library
-                    $.ajax({
-                      url: urlHelper.api.libraries(),
-                      type: 'POST',
-                      data: body,
-                      datatype: "json",
-                      contentType: "application/json;charset=utf-8",
-                      async: false,
-                      error: handleServerError('creating new library'),
-                     });
-                }
-            }
-            // Check that all the elements in the default library are in the user's Standard library, copy over the ones that are not (kind of getting in sync)
-            for (library_type in standard_library) { // e.g. 'appliances_and_cooking'
-                for (let i=0; i < user_libraries.length; i++) {
-                    const user_library = user_libraries[i];
-                    let library_changed = false;
-                    if (user_library.type == library_type && user_library.name == "StandardLibrary - " + myusername) {
-                        var user_library_data = user_library.data;
-                        for (item in standard_library[library_type]) {
-                            if (user_library_data[item] == undefined) {
-                                console.log('added missing library item `', item, '` to user library ',
-                                            user_library.type, ' ', user_library.name);
-                                user_library_data[item] = standard_library[library_type][item];
-                                library_changed = true;
-                            }
-                        }
-                    }
-                    if (library_changed) {
-                        var library_string = JSON.stringify(user_library);
-                        library_string = library_string.replace(/&/g, 'and');
-                        $.ajax({
-                          type: 'PATCH',
-                          url: urlHelper.api.library(user_libraries[library_index].id),
-                          data: JSON.stringify({'data': library_string}),
-                          datatype: "json",
-                          contentType: "application/json;charset=utf-8",
-                          error: handleServerError('updating library'),
-                          success: function (response) {
-                                console.log("updated library: " + library_type);
-                          }});
-                    }
-                }
-            }
-        }
-    });
 // -----------------------------------------------------------------------------------
 // Create new assessment
 // -----------------------------------------------------------------------------------
