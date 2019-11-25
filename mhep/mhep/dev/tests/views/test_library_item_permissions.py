@@ -61,7 +61,7 @@ class TestCreateLibraryItemPermissions(CommonMixin, APITestCase):
 
     def test_user_who_isnt_member_cannot_create_a_library_item_in_organisation(self):
         org_with_no_members = OrganisationFactory.create()
-        library = LibraryFactory.create(
+        library = self.create_library(
             owner_organisation=org_with_no_members,
             owner_user=None,
         )
@@ -76,7 +76,7 @@ class TestCreateLibraryItemPermissions(CommonMixin, APITestCase):
         )
 
     def test_user_who_is_superuser_can_create_item_in_global_library(self):
-        library = LibraryFactory.create(
+        library = self.create_library(
             owner_organisation=None,
             owner_user=None,
         )
@@ -240,10 +240,9 @@ class TestDeleteLibraryItemPermissions(CommonMixin, APITestCase):
 
     def test_member_of_organisation_can_delete_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
-        library = LibraryFactory.create(
+        library = self.create_library(
             owner_organisation=organisation,
             owner_user=None,
-            data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}},
         )
         person = UserFactory.create()
         organisation.members.add(person)
@@ -254,10 +253,9 @@ class TestDeleteLibraryItemPermissions(CommonMixin, APITestCase):
 
     def test_user_who_isnt_member_cannot_delete_a_library_item_in_organisation(self):
         org_with_no_members = OrganisationFactory.create()
-        library = LibraryFactory.create(
+        library = self.create_library(
             owner_organisation=org_with_no_members,
             owner_user=None,
-            data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}},
         )
         person = UserFactory.create()
 
