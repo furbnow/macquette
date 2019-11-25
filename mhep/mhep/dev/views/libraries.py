@@ -20,13 +20,10 @@ from ..serializers import (
     LibrarySerializer,
 )
 
+from .exceptions import BadRequest
 from .helpers import build_static_dictionary
 
 STATIC_URLS = build_static_dictionary()
-
-
-class BadRequest(exceptions.APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
 
 
 class MyLibrariesMixin():
