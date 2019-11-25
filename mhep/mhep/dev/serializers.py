@@ -97,8 +97,9 @@ class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
             "owner",
         ]
 
-    def get_writeable(self, obj):
-        return True
+    def get_writeable(self, library):
+        from .views.helpers import check_library_write_permissions
+        return check_library_write_permissions(library, self.context["request"])
 
     def get_owner(self, obj):
         owner_organisation = obj.owner_organisation

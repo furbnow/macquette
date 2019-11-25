@@ -1,8 +1,12 @@
+import logging
 import os
 
 from os.path import abspath, dirname, join
 
+from django.urls import reverse
 from django.templatetags.static import static
+
+from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 
 from .. import VERSION
 
@@ -42,3 +46,41 @@ def find_app_static_files():
             relative_filename = full_filename[len(static_dir)+1:]
             # print("relative: {}".format(relative_filename))
             yield relative_filename
+
+
+def check_library_write_permissions(library, original_request):
+    """
+    check_library_write_permissions returns True if the given `library` is write-accessible
+    based on `original_request`
+
+    This allows the `list-libraries` view to query whether each library in the list is writeable
+    based on the authentication present in the list view.
+
+    It works by:
+    * modifying the request method to `PATCH
+    * calling UpdateDestroyLibrary().check_object_permissions(modified_request)
+    * checking for permissions exceptions
+
+    Using this function means the permissions are defined in a single place
+    (UpdateDestroyLibrary.permission_classes).
+
+    This should be used as a *hint* rather than as actual access control.
+    """
+
+    from ..views import UpdateDestroyLibrary  # avoid circular import
+    original_method = original_request.method
+
+    original_request.method = "PATCH"
+    view = UpdateDestroyLibrary()
+
+    allowed = False
+    try:
+        view.check_object_permissions(original_request, library)
+    except (PermissionDenied, NotAuthenticated) as e:
+        logging.debug(f"no permission to modify {library}: {e}")
+        allowed = False
+    else:
+        allowed = True
+
+    original_request.method = original_method
+    return allowed
