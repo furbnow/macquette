@@ -162,3 +162,9 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
             }
 
         return [userinfo(u) for u in obj.members.all()]
+
+
+class OrganisationLibrarianSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organisation
+        fields = []
