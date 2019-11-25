@@ -326,6 +326,7 @@
     // Side Menus
     //************************
     redraw_scenario_menu();
+    toggle_scenario_menu(scenario);
 
     //***********************************
     // Add links to reports in the menu
@@ -431,16 +432,14 @@
         $(window).scrollTop(650);
     });
     $("#openbem").on('click', ".block-header", function () {
-        const projectId = this.closest("[scenario]").getAttribute('scenario');
-        window.location = '#' + projectId + '/' + page;
+        const project_id = this.closest("[scenario]").getAttribute('scenario');
 
-        var menu_content = $(this).parent().find(".menu-content");
-        var visible = menu_content.is(":visible");
-        $(".menu-content").hide();
-        if (!visible)
-            menu_content.show();
+        if (project_id !== scenario) {
+            window.location = '#' + project_id + '/' + page;
+            $(window).scrollTop(0);
+        }
 
-        $(window).scrollTop(0);
+        toggle_scenario_menu(project_id);
     });
     $('#openbem').on('click', '.project-menu-item', function () {
         $('.scenario-block[scenario=master]').click();
@@ -671,8 +670,6 @@
         }
 
         redraw_emissions();
-
-        $('div [scenario="' + scenario + '"]').click();
     }
     function redraw_emissions() {
         for (let s in project) {
@@ -832,6 +829,15 @@
         $("#wrapper").css("padding-left", "0");
         $("#wrapper").css("margin", "0 auto");
         $("#sidenav-open").show();
+    }
+    function toggle_scenario_menu(project_id) {
+        const $menu_content = $(`div[scenario="${project_id}"] .menu-content`);
+        const visible = $menu_content.is(":visible");
+
+        $(".menu-content").hide();
+        if (!visible) {
+            $menu_content.show();
+        }
     }
 
 </script>
