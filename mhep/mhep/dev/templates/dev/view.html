@@ -600,9 +600,8 @@
         return creation_hash != current_hash;
     }
     function scenario_block(id, currently_open) {
-        const title = id.charAt(0).toUpperCase() + id.slice(1)
+        const title = project[id].scenario_name || id.charAt(0).toUpperCase() + id.slice(1)
         const locked = project[id].locked
-        const name = project[id].scenario_name || ""
         const menu_class = id === currently_open ? "active" : ""
         const is_master = id === "master"
 
@@ -620,7 +619,7 @@
                 created_from_title = `title="${created_from} has changed since the creation of ${title}"`
             }
 
-            created_from_html = `<span ${created_from_extra}>(From ${created_from}${created_from_extra})</span>`
+            created_from_html = `<span style="font-weight: normal" ${created_from_title}>Based on ${created_from}${created_from_extra}</span>`
         }
 
         return `
@@ -633,11 +632,9 @@
                     ${created_from_html}
                 </div>
 
-                <div style="text-align: right">
-                    ${name}
-                    <br>
+                <div style="text-align: right; font-weight: normal">
                     <span class="block_emissions"></span>
-                    <span style="font-size:12px">kgCO<sub>2</sub>/m<sup>2</sup></span>
+                    <small>kgCO<sub>2</sub>/m<sup>2</sup></small>
                 </div>
             </div>
 
