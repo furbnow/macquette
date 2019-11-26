@@ -56,13 +56,16 @@ a:hover {
 
 .block-header {
     background-color:#dbd6ce;
-    color:#897A67; 
+    color:#897A67;
     padding:10px;
     font-weight:bold;
+}
+
+.block-header--clickable {
     cursor:pointer;
 }
 
-.block-header:hover {
+.block-header--clickable:hover {
     background-color:#e2ded7;
 }
 

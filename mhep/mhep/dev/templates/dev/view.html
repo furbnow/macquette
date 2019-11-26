@@ -56,7 +56,10 @@
 <div id="openbem">
     <div id="sidebar">
         <div class="side-block">
-            <div class="block-header">Project: <span id="project-title"></span> <a id="edit-project-name-and-description" href="#"><i class="icon-edit"></i></a></div>
+            <div class="block-header">
+              Project: <span id="project-title"></span>
+              <a id="edit-project-name-and-description" href="#"><i class="icon-edit"></i></a>
+            </div>
             <div style="padding:10px">
 
                 <p style="font-size:14px">Description: <span id="project-description"></span></p>
@@ -79,8 +82,8 @@
             </div>
         </div>
 
-        <div class="side-block scenario-block" id="scenario-menu-template" style="display:none; cursor:pointer">
-            <div class="block-header" style="height:40px; display: flex; justify-content: space-between;">
+        <div class="side-block scenario-block" id="scenario-menu-template" style="display:none;">
+            <div class="block-header block-header--clickable" style="height:40px; display: flex; justify-content: space-between;">
                 <div>
                     <span class="block_title"></span>
                     <br>
@@ -120,7 +123,7 @@
         <div id="scenario-list"></div>
 
         <div class="side-block">
-            <div id="create-new" class="block-header">
+            <div id="create-new" class="block-header block-header--clickable">
                 Create new scenario
             </div>
         </div>
@@ -431,7 +434,7 @@
     $("#openbem").on('click', ".scenario-nav", function () {
         $(window).scrollTop(650);
     });
-    $("#openbem").on('click', ".block-header", function () {
+    $("#openbem").on('click', ".scenario-block .block-header", function () {
         const project_id = this.closest("[scenario]").getAttribute('scenario');
 
         if (project_id !== scenario) {
@@ -442,7 +445,7 @@
         toggle_scenario_menu(project_id);
     });
     $('#openbem').on('click', '.project-menu-item', function () {
-        $('.scenario-block[scenario=master]').click();
+        $('.scenario-block[scenario=master] .block-header').click();
         $('.menu-content').hide();
         $(window).scrollTop(0);
     });
@@ -508,7 +511,7 @@
 
         if (s != "master")
             delete project[s];
-        $(".scenario-block[scenario=" + s + "]").hide();
+        $(`.scenario-block[scenario=${s}] .block-header`).hide();
         scenario = 'master';
         page = "context"
 
