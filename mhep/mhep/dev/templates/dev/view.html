@@ -55,85 +55,63 @@
 
 <div id="openbem">
     <div id="sidebar">
-        <div class="side-block">
-            <div class="block-header">
-              Project: <span id="project-title"></span>
-              <a id="edit-project-name-and-description" href="#"><i class="icon-edit"></i></a>
-            </div>
-            <div style="padding:10px">
-
-                <p style="font-size:14px">Description: <span id="project-description"></span></p>
-                <p style="font-size:14px">Author: <span id="project-author"></span></p>
-
-                <div class="scenario-nav-heading">Project input</div>
-                <div class="scenario-nav"><a class="project-menu-item" href="#master/householdquestionnaire">Household Questionnaire</a></div>
-                <div class="scenario-nav"><a class="project-menu-item" href="#master/commentary">Commentary</a></div>
-                <div class="scenario-nav"><a class="project-menu-item" href="#master/currentenergy">Current Energy</a></div>
-                {% if use_image_gallery %}
-                <div class="scenario-nav"><a class="project-menu-item" href="#master/imagegallery">Image gallery</a></div>
-                {% endif %}
-                <div class="scenario-nav-heading">Other</div>
-                <div id="links-to-reports"></div>
-                <div class="scenario-nav"><a class="project-menu-item" href="#master/compare">MHEP Report</a></div>
-                <div class="scenario-nav"><a class="project-menu-item" href="#master/export">Import/Export</a></div>
-                <div class="scenario-nav"><a class="project-menu-item" href="#master/librariesmanager">Libraries manager</a></div>
-                <div class="scenario-nav"><a class="project-menu-item" href="#master/fuelsmanager">Fuels manager</a></div>
-                <div class="scenario-nav"><a class="project-menu-item" href="#master/openBEM_version">openBEM version</a></div>
-            </div>
+        <div class="side-block" style="background-color: #EEECE5 !important; padding: 15px;">
+            <button id="edit-project-name-and-description" style="float:right">
+                <i class="icon-edit"></i>
+            </button>
+            <p style="margin-bottom: 0">
+                <b><span id="project-title"></span></b><br>
+                <span id="project-description"></span><br>
+                Author: <span id="project-author"></span>
+            </p>
         </div>
 
-        <div class="side-block scenario-block" id="scenario-menu-template" style="display:none;">
-            <div class="block-header block-header--clickable" style="height:40px; display: flex; justify-content: space-between;">
-                <div>
-                    <span class="block_title"></span>
-                    <br>
-                    <span class="block_created_from"></span>
-                </div>
+        <div class="side-block">
+            <div class="side-section">
+                <div class="side-section--header">Assessment input</div>
 
-                <div style="text-align: right">
-                    <span class="block_name"></span>
-                    <br>
-                    <span class="block_emissions"></span>
-                    <span style="font-size:12px">kgCO<sub>2</sub>/m<sup>2</sup></span>
-                </div>
+                <ul>
+                    <li><a class="project-menu-item" href="#master/householdquestionnaire">Household Questionnaire</a></li>
+                    <li><a class="project-menu-item" href="#master/commentary">Commentary</a></li>
+                    <li><a class="project-menu-item" href="#master/currentenergy">Current Energy</a></li>
+                    {% if use_image_gallery %}
+                    <li><a class="project-menu-item" href="#master/imagegallery">Image gallery</a></li>
+                    {% endif %}
+                </ul>
             </div>
 
-            <div class="menu-content" style="padding:10px">
-                <div class="scenario-nav" style="float:right"><span class="lock">Lock</span></div>
-                <div class="scenario-nav-heading">Core input</div>
-                <div class="scenario-nav"><a href="#template/context">Basic Dwelling Data</a></div>
-                <div class="scenario-nav"><a href="#template/ventilation">Ventilation and Infiltration</a></div>
-                <div class="scenario-nav"><a href="#template/elements">Fabric</a></div>
-                <div class="scenario-nav"><a href="#template/LAC">Lighting, Appliances & Cooking</a></div>
-                <div class="scenario-nav"><a href="#template/heating">Heating</a></div>
-                <div class="scenario-nav"><a href="#template/fuel_requirements">Fuel requirements</a></div>
-                <div class="scenario-nav"><a href="#template/generation">Generation</a></div>
-                <div class="scenario-nav-heading">Extended input</a></div>
-                <div class="scenario-nav"><input type="checkbox" key="data.use_SHW"/> <a href="#template/solarhotwater">Solar Hot Water heating</a></div>
-                <div class="scenario-nav-heading">Other</a></div>
-                <!--<div class="scenario-nav"><a href="#template/compare">Show difference</a></div>
-                <div class="scenario-nav"><a href="#template/detail">Detailed view</a></div>-->
-                <div class="scenario-nav"><a href="#template/worksheets">SAP worksheets</a></div>
-                <!--<div class="scenario-nav"><a href="#template/changelog">Session change log</a></div>-->
-                <br>
-                <div class="scenario-nav delete-scenario-launch">Delete scenario <i class="icon-trash"></i></div>
+            <div class="side-section">
+                <div class="side-section--header">Other</div>
+
+                <ul>
+                    <div id="links-to-reports"></div>
+                    <li><a class="project-menu-item" href="#master/compare">MHEP Report</a></li>
+                    <li><a class="project-menu-item" href="#master/export">Import/Export</a></li>
+                    <li><a class="project-menu-item" href="#master/librariesmanager">Libraries manager</a></li>
+                    <li><a class="project-menu-item" href="#master/fuelsmanager">Fuels manager</a></li>
+                    <li><a class="project-menu-item" href="#master/openBEM_version">openBEM version</a></li>
+                </ul>
             </div>
         </div>
 
         <div id="scenario-list"></div>
 
         <div class="side-block">
-            <div id="create-new" class="block-header block-header--clickable">
-                Create new scenario
+            <div id="create-new" class="block-header block-header--clickable" style="display: flex">
+                <i class="icon-plus" style="margin-right: 0.25rem"></i> Create new scenario
             </div>
         </div>
 
-        <div style="background:none; padding:20px">
+        <div class="side-block">
+            <div class="side-section">
+                <div class="side-section--header">Documentation</div>
 
-            <div class="scenario-nav-heading">Documentation</a></div>
-            <div class="scenario-nav"><a target='_blank' href="https://learn.openenergymonitor.org/sustainable-energy/building-energy-model/MyHomeEnergyPlanner">User guide</a></div>
-            <div class="scenario-nav"><a target='_blank' href="https://learn.openenergymonitor.org/sustainable-energy/building-energy-model/ElementLibrary">A Fabric elements Library</a></div>
-            <div class="scenario-nav"><a target='_blank' href="https://learn.openenergymonitor.org/sustainable-energy/building-energy-model/readme">Building Energy Modelling</a></div>
+                <ul>
+                    <li><a target='_blank' rel="noopener" href="https://learn.openenergymonitor.org/sustainable-energy/building-energy-model/MyHomeEnergyPlanner">User guide</a></li>
+                    <li><a target='_blank' rel="noopener" href="https://learn.openenergymonitor.org/sustainable-energy/building-energy-model/ElementLibrary">A Fabric elements Library</a></li>
+                    <li><a target='_blank' rel="noopener" href="https://learn.openenergymonitor.org/sustainable-energy/building-energy-model/readme">Building Energy Modelling</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -157,11 +135,11 @@
     <div class="modal-body">
         <p>
             <span class="muted">Project name</span>
-            <br><input id="project-name-input" type="text" style="width:82%" />
+            <br><input id="project-name-input" type="text" style="width:90%" />
         </p>
         <p>
             <span class="muted">Project description</span>
-            <br><input id="project-description-input" type="text" style="width:82%" />
+            <br><input id="project-description-input" type="text" style="width:90%" />
         </p>
     </div>
     <div class="modal-footer">
@@ -212,7 +190,7 @@
 <div id="modal-create-scenario" class="modal modal-sm hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3>Select from the list below the scenario you want to duplicate</h3>
+        <h3>Which scenario do you want to duplicate?</h3>
     </div>
     <div class="modal-body">
         <select id="select-scenario"></select>
@@ -297,13 +275,6 @@
     $('.navbar-inner').append('<div style="display:inline" class="menu-assessment pull-right" id="undo"><a><img src="{% static VERSION|add:"/img/undo.gif" %}" title="Undo" style="width:14px" / > </a></div> ');
     refresh_undo_redo_buttons();
 
-    //**************************
-    // Initialize some menus
-    //**************************
-    $(".menu-content").hide();
-    $(".scenario-block[scenario=master]").find(".delete-scenario-launch").hide();
-    $(".scenario-block[scenario=master]").find(".menu-content").show();
-
     //*******************************************************************
     // Initialize fuels: ensure all the scenarios have the same fuels
     //*******************************************************************
@@ -369,16 +340,16 @@
     // Events
     //**********
     $("#openbem").on('click', '.lock', function () {
-        if (data.locked == false) {
-            data.locked = true;
-            $(".scenario-block[scenario=" + scenario + "]").find(".lock").html('<i class="icon-lock"></i> Unlock');
+        const id = this.dataset.scenario
+        project[id].locked = !project[id].locked
+
+        if (project[id].locked) {
             $('.if-not-locked').hide();
-        }
-        else {
-            data.locked = false;
-            $(".scenario-block[scenario=" + scenario + "]").find(".lock").html('Lock');
+        } else {
             $('.if-not-locked').show();
         }
+
+        redraw_scenario_menu();
 
         // Disable measures if master
         show_hide_if_master();
@@ -446,7 +417,7 @@
     });
     $('#openbem').on('click', '.project-menu-item', function () {
         $('.scenario-block[scenario=master] .block-header').click();
-        $('.menu-content').hide();
+        toggle_scenario_menu(null);
         $(window).scrollTop(0);
     });
     // Scenarios management
@@ -500,10 +471,11 @@
         $(window).scrollTop(0);
     });
     $("#openbem").on('click', ".delete-scenario-launch", function () {
-        var s = $(this).parent().parent().parent().attr('scenario');
-        if (s != "master") {
+        const id = this.dataset.scenario
+
+        if (id != "master") {
             $("#modal-delete-scenario").modal("show");
-            $("#modal-delete-scenario").attr("scenario", s);
+            $("#modal-delete-scenario").attr("scenario", id);
         }
     });
     $("#delete-scenario-confirm").click(function () {
@@ -627,50 +599,97 @@
 
         return creation_hash != current_hash;
     }
-    function redraw_scenario_menu() {
-        $("#scenario-list").html('');
+    function scenario_block(id, currently_open) {
+        const title = id.charAt(0).toUpperCase() + id.slice(1)
+        const locked = project[id].locked
+        const name = project[id].scenario_name || ""
+        const menu_class = id === currently_open ? "active" : ""
+        const is_master = id === "master"
 
-        const template = document.getElementById("scenario-menu-template")
-        for (let id in project) {
-            const project_title = id.charAt(0).toUpperCase() + id.slice(1)
-            const project_name = project[id].scenario_name || ""
-            const created_from = project[id].created_from
+        const created_from = project[id].created_from
+        let created_from_html = ""
+        if (created_from) {
+            let created_from_extra = ""
+            let created_from_title = ""
 
-            const row = template.cloneNode(true) // Deep clone
-            const $row = $(row)
-
-            $row.show()
-            $row.attr("id", "")
-            $row.attr("scenario", id)
-            $row.find(".block_title").html(project_title)
-            $row.find(".block_name").html(project_name)
-
-            for (let link of row.querySelectorAll("a")) {
-                link.href = link.href.replace("template", id)
+            if (project[created_from] == undefined) {
+                // If the parent scenario has been deleted
+                created_from_extra = " - deleted"
+            } else if (has_changed_base_scenario(id)) {
+                created_from_extra = '*'
+                created_from_title = `title="${created_from} has changed since the creation of ${title}"`
             }
 
-            if (created_from) {
-                let created_from_extra = ""
-
-                if (project[created_from] == undefined) {
-                    // If the parent scenario has been deleted
-                    created_from_extra = " - deleted"
-                } else if (has_changed_base_scenario(id)) {
-                    created_from_extra = '*'
-
-                    $row.find(".block_created_from").attr(
-                        'title',
-                        `${created_from} has changed since the creation of ${project_title}`
-                    );
-                }
-
-                $row.find(".block_created_from").html(
-                    `(From ${created_from}${created_from_extra})`
-                );
-            }
-
-            $("#scenario-list").append(row)
+            created_from_html = `<span ${created_from_extra}>(From ${created_from}${created_from_extra})</span>`
         }
+
+        return `
+        <div class="side-block scenario-block" scenario="${id}">
+            <div class="block-header block-header--clickable" style="height:40px; display: flex; justify-content: space-between;">
+                <div>
+                    ${title}
+                    ${locked ? '<i class="icon-lock"></i>' : ''}
+                    <br>
+                    ${created_from_html}
+                </div>
+
+                <div style="text-align: right">
+                    ${name}
+                    <br>
+                    <span class="block_emissions"></span>
+                    <span style="font-size:12px">kgCO<sub>2</sub>/m<sup>2</sup></span>
+                </div>
+            </div>
+
+            <div class="menu-content" class="${menu_class}">
+                <div class="side-section" style="margin-top: 10px">
+                    <ul>
+                        <li><a href="#${id}/context">Basic Dwelling Data</a></li>
+                        <li><a href="#${id}/ventilation">Ventilation and Infiltration</a></li>
+                        <li><a href="#${id}/elements">Fabric</a></li>
+                        <li><a href="#${id}/LAC">Lighting, Appliances & Cooking</a></li>
+                        <li><a href="#${id}/heating">Heating</a></li>
+                        <li><a href="#${id}/fuel_requirements">Fuel requirements</a></li>
+                        <li><a href="#${id}/generation">Generation</a></li>
+                        <li>
+                            <a href="#${id}/solarhotwater">
+                                <input type="checkbox" key="data.use_SHW">
+                                Solar Hot Water heating
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="side-section">
+                    <div class="side-section--header">Other</div>
+                        <ul>
+                        <li><a href="#${id}/worksheets">SAP worksheets</a></li>
+                        <li>
+                            <button class="lock" data-scenario="${id}">
+                                ${locked ? "Unlock scenario" : "Lock scenario" }
+                            </button>
+                        </li>
+
+                        <li ${is_master ? "hidden" : ""}>
+                            <button class="delete-scenario-launch" data-scenario="${id}">
+                                <i class="icon-trash"></i>
+                                Delete scenario
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        `
+    }
+    function redraw_scenario_menu() {
+        const currently_open = $("[scenario] .menu-content").filter(".active").closest("[scenario]").attr("scenario")
+
+        $("#scenario-list").html(
+            Object.keys(project).map(id => scenario_block(id, currently_open)).join("")
+        )
+
+        toggle_scenario_menu(currently_open);
 
         redraw_emissions();
     }
@@ -835,11 +854,11 @@
     }
     function toggle_scenario_menu(project_id) {
         const $menu_content = $(`div[scenario="${project_id}"] .menu-content`);
-        const visible = $menu_content.is(":visible");
+        const visible = $menu_content.hasClass("active");
 
-        $(".menu-content").hide();
+        $(".menu-content").removeClass("active")
         if (!visible) {
-            $menu_content.show();
+            $menu_content.addClass("active");
         }
     }
 
