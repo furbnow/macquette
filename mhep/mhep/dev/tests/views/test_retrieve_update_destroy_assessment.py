@@ -96,7 +96,7 @@ class TestGetAssessment(APITestCase):
         response = self.client.get(f"/{VERSION}/api/assessments/bad-id/")
         assert status.HTTP_404_NOT_FOUND == response.status_code
 
-    def test_image_featured(self):
+    def test_structure_of_featured_and_normal_image(self):
         a = AssessmentFactory.create(
                 owner=self.me,
                 name="test name",
