@@ -73,6 +73,22 @@
 
             <div id="organisation-members-container"></div>
 
+            <hr style="margin-bottom: 1rem;" />
+
+            <form id="promote-librarian-form-template" style="display: none;">
+                <div style="display: flex; align-items: center;">
+                    <label id="promote-librarian-label-template" style="margin-right: 1rem;">
+                        Add a librarian:
+                    </label>
+                    <select name="user-id" id="promote-librarian-select-template" style="margin-right: 1rem;">
+                        <option value="">-- Select a member --</option>
+                    </select>
+                    <input type="submit" value="Add">
+                </div>
+            </form>
+
+            <div id="promote-librarian-form-container"></div>
+
             {% if request.user.is_staff %}
             <br>
             <a id="organisation-add-member" href="">Edit organisation</a>
@@ -470,6 +486,23 @@
         }
 
         $("#organisation-members-container").html(table);
+
+        var promoteLibrarianFormTemplate = $("#promote-librarian-form-template");
+        var promoteLibrarianForm = promoteLibrarianFormTemplate.clone();
+        promoteLibrarianForm.removeAttr('id');
+
+        promoteLibrarianForm.find("#promote-librarian-select-template").removeAttr("id").attr(
+            "id", "promote-librarian-select-" + orgid
+        )
+        promoteLibrarianForm.find("#promote-librarian-label-template").removeAttr("id").attr(
+            "for", "promote-librarian-select-" + orgid
+        )
+        promoteLibrarianForm.on("submit", handleSubmitPromoteLibrarian);
+
+        populatePromoteLibrarianSelect(promoteLibrarianForm);
+        promoteLibrarianForm.show();
+
+        $("#promote-librarian-form-container").html(promoteLibrarianForm);
     }
 
     function handleClickDemoteLibrarian(e) {
@@ -481,6 +514,33 @@
         mhep_helper.demote_librarian_role(orgid, userid).then(result => {
             fetchAndRedrawOrganisation(orgid);
         });
+    };
+
+    function handleSubmitPromoteLibrarian(e) {
+        e.preventDefault();
+        var submitButton = $(this).find(':submit');
+        submitButton.attr("disabled", true);
+        submitButton.val("Adding...");
+        var userid = $('#promote-librarian-select-' + orgid).val();
+        mhep_helper.promote_librarian_role(orgid, userid).then(result => {
+            submitButton.attr("disabled", false);
+            submitButton.val("Add");
+            fetchAndRedrawOrganisation(orgid);
+        });
+    };
+
+    function populatePromoteLibrarianSelect(promoteLibrarianForm) {
+        var members = myorganisations[orgid].members;
+        var select = promoteLibrarianForm.find("select");
+        for (var z in members) {
+            member = members[z];
+            if (!member.is_librarian) {
+                var option = document.createElement("option");
+                option.textContent = member.name;
+                option.value = member.userid;
+                select.append(option);
+            }
+        };
     };
 
     $("#back-myview").click(function () {
