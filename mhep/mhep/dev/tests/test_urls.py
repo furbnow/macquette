@@ -93,3 +93,19 @@ def test_list_create_organisation_assessments():
         resolve(f"/{VERSION}/api/organisations/1/assessments/").view_name
         == f"{VERSION}:list-create-organisation-assessments"
     )
+
+
+def test_create_delete_organisation_librarians():
+    assert (
+        reverse(
+            f"{VERSION}:create-delete-organisation-librarians",
+            kwargs={
+                "pk": 1,
+                "userid": 5,
+                }
+        ) == f"/{VERSION}/api/organisations/1/librarians/5/"
+    )
+    assert (
+        resolve(f"/{VERSION}/api/organisations/1/librarians/5/").view_name
+        == f"{VERSION}:create-delete-organisation-librarians"
+    )

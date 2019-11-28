@@ -88,6 +88,8 @@ Once an app is assigned a version number its code should never be modified again
 * [Update a field on assessment](#update-a-field-on-assessment)
 * [Delete assessment](#delete-assessment)
 * [List organisations](#list-organisations)
+* [Set organisation user as librarian](#set-organisation-user-as-librarian)
+* [Unset organisation user as librarian](#unset-organisation-user-as-librarian)
 * [List libraries](#list-libraries)
 * [Create a library](#create-a-library)
 * [Create a library for organisation](#create-a-library-for-organisation)
@@ -429,6 +431,30 @@ Content-Type: application/json
         ]
     }
 ]
+```
+
+## Set organisation user as librarian
+
+```
+POST /organisations/:orgid/librarians/:userid/
+```
+
+### Example
+
+```
+> curl -X POST http://localhost:9090/dev/api/organisation/1/librarians/5/
+```
+
+## Unset organisation user as librarian
+
+### Example
+
+```
+DELETE /organisations/:orgid/librarians/:userid/
+```
+
+```
+> curl -X DELETE http://localhost:9090/dev/api/organisation/1/librarians/5/
 ```
 
 ## List libraries

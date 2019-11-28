@@ -32,6 +32,17 @@ class IsMemberOfOrganisation(permissions.BasePermission):
         return request.user in organisation.members.all()
 
 
+class IsAdminOfOrganisation(permissions.BasePermission):
+    message = "You are not an admin of the Organisation."
+
+    def has_permission(self, request, view):
+        try:
+            organisation = Organisation.objects.get(pk=view.kwargs["pk"])
+        except Organisation.DoesNotExist:
+            raise exceptions.NotFound("Organisation not found")
+        return request.user in organisation.admins.all()
+
+
 class IsReadRequest(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.method in permissions.SAFE_METHODS
