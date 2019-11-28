@@ -812,7 +812,9 @@ Content-Type: application/json
             {
                 "userid": "1",
                 "name": "localadmin",
-                "last_login": "2019-06-03T16:35:00+00:00"
+                "last_login": "2019-06-03T16:35:00+00:00",
+                "is_admin": true,
+                "is_librarian": true
             }
         ]
     }

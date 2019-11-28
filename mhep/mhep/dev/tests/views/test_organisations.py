@@ -35,6 +35,8 @@ class TestListOrganisations(APITestCase):
                     {
                         "userid": f"{me.id}",
                         "name": me.username,
+                        "is_admin": False,
+                        "is_librarian": False,
                         "last_login": me.last_login.isoformat(),
                     }
                 ]),

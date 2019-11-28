@@ -195,15 +195,17 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
     def get_assessments(self, obj):
         return obj.assessments.count()
 
-    def get_members(self, obj):
+    def get_members(self, org):
         def userinfo(user):
             return {
                 "userid": f"{user.id}",
                 "name": user.username,
-                "last_login": user.last_login.isoformat() if user.last_login else "never"
+                "last_login": user.last_login.isoformat() if user.last_login else "never",
+                "is_admin": user in org.admins.all(),
+                "is_librarian": user in org.librarians.all()
             }
 
-        return [userinfo(u) for u in obj.members.all()]
+        return [userinfo(u) for u in org.members.all()]
 
 
 class OrganisationLibrarianSerializer(serializers.ModelSerializer):
