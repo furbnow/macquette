@@ -2,7 +2,7 @@ import factory
 
 from typing import Any, Sequence
 
-from ..models import Assessment, Library, Organisation
+from ..models import Assessment, Image, Library, Organisation
 from mhep.users.tests.factories import UserFactory
 
 
@@ -29,6 +29,21 @@ class AssessmentFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = Assessment
+
+
+class ImageFactory(factory.DjangoModelFactory):
+    image = factory.Faker("url")
+    height = 300
+    width = 400
+
+    thumbnail = factory.Faker("url")
+    thumbnail_height = 30
+    thumbnail_width = 40
+
+    note = factory.Faker("sentence")
+
+    class Meta:
+        model = Image
 
 
 class OrganisationFactory(factory.DjangoModelFactory):

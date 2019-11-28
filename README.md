@@ -204,13 +204,22 @@ Content-Type: application/json
     "author": "localadmin",
     "userid": "1",
     "mdate": "1566384058",
+    "images": [
+        {
+            "id": 7,
+            "url": "https://gallery.img/6.jpg",
+            "width": 400,
+            "height": 300,
+            "thumbnail_url": "https://gallery.img/6_thumb.jpg",
+            "thumbnail_width": 200,
+            "thumbnail_height": 150,
+            "note": "",
+            "is_featured": true
+        }
+    ],
     "data": {
-        "master": {
-            "scenario_name": "Master",
-            "household": {
-                "3a_heatinghours_weekday_on1_hours": 6,
-                "3a_heatinghours_weekday_on1_mins": 45,
-...
+        ...
+    }
 }
 ```
 

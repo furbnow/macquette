@@ -3,7 +3,12 @@ from django.db import models
 from django.forms import CheckboxSelectMultiple
 
 from . import VERSION
-from .models import Assessment, Library, Organisation
+from .models import Assessment, Image, Library, Organisation
+
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ["id", "created_at", "assessment", "note", "image"]
 
 
 @admin.register(Assessment)
