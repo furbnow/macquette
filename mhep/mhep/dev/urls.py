@@ -19,6 +19,7 @@ from .views import (
     RetrieveUpdateDestroyAssessment,
     ShareUnshareOrganisationLibraries,
     UploadAssessmentImage,
+    SetFeaturedImage,
     UpdateDestroyLibrary,
 )
 
@@ -51,6 +52,12 @@ urlpatterns = [
         "api/assessments/<int:pk>/",
         view=RetrieveUpdateDestroyAssessment.as_view(),
         name="retrieve-update-destroy-assessment",
+    ),
+
+    path(
+        "api/assessments/<int:pk>/images/featured/",
+        view=SetFeaturedImage.as_view(),
+        name="set-featured-image",
     ),
 
     path(

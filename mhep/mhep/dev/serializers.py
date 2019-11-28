@@ -67,6 +67,10 @@ class ImageSerializer(IsFeaturedMixin, serializers.ModelSerializer):
         ]
 
 
+class FeaturedImageSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
 class AssessmentMetadataSerializer(
         MdateMixin,
         StringIDMixin,

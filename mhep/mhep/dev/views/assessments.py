@@ -17,6 +17,7 @@ from ..serializers import (
     AssessmentFullSerializer,
     AssessmentMetadataSerializer,
     ImageSerializer,
+    FeaturedImageSerializer,
 )
 from .mixins import AssessmentQuerySetMixin
 
@@ -55,6 +56,42 @@ class RetrieveUpdateDestroyAssessment(
             return Response(None, status.HTTP_204_NO_CONTENT)
         else:
             return response
+
+
+class SetFeaturedImage(
+    AssessmentQuerySetMixin,
+    generics.GenericAPIView
+):
+    permission_classes = [
+        IsAuthenticated,
+        IsAssessmentOwner | IsMemberOfConnectedOrganisation,
+    ]
+
+    def post(self, request, pk):
+        assessment = self.get_object()
+
+        serializer = FeaturedImageSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"detail": "invalid id"}, status.HTTP_400_BAD_REQUEST)
+
+        try:
+            image = Image.objects.get(pk=serializer.validated_data["id"])
+        except Image.DoesNotExist:
+            return Response(
+                {"detail": "image ID doesn't exist"},
+                status.HTTP_400_BAD_REQUEST
+            )
+
+        if image not in assessment.images.all():
+            return Response(
+                {"detail": "image ID provided doesn't belong to this assessment"},
+                status.HTTP_400_BAD_REQUEST
+            )
+
+        assessment.featured_image = image
+        assessment.save()
+
+        return Response(None, status.HTTP_204_NO_CONTENT)
 
 
 class UploadAssessmentImage(

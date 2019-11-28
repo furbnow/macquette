@@ -494,6 +494,32 @@ Returns:
 HTTP 204 No content
 ```
 
+## Changing the featured image
+
+```
+POST /assessments/:id/images/featured/
+```
+
+### Example
+
+```
+> curl -v \
+    -X POST \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/dev/api/assessments/1/images/featured/ \
+    --data @- << EOF
+{
+    "id": 6
+}
+EOF
+```
+
+Returns:
+
+```
+HTTP/1.1 204 No Content
+```
+
 ## Upload an image to the image gallery
 
 ```
