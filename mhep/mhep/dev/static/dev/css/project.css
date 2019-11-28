@@ -56,13 +56,16 @@ a:hover {
 
 .block-header {
     background-color:#dbd6ce;
-    color:#897A67; 
-    padding:10px;
+    color:#897A67;
+    padding:10px 15px;
     font-weight:bold;
+}
+
+.block-header--clickable {
     cursor:pointer;
 }
 
-.block-header:hover {
+.block-header--clickable:hover {
     background-color:#e2ded7;
 }
 
@@ -81,16 +84,51 @@ a:hover {
 }
 
 .scenario-nav {
-    padding:5px;
+    padding:5px 5px 5px 0px;
     font-size:16px;
 }
 
-.scenario-nav-heading {
-    padding-top:20px;
-    padding-bottom:5px;
-    font-size:14px;
+.menu-content {
+    display: none;
+}
+
+.menu-content.active {
+    display: block;
+}
+
+.side-section {
+    padding-bottom: 10px;
+}
+
+.side-section--header {
+    padding: 15px 15px 2px 15px;
+    font-size: 0.8rem;
     font-weight:bold;
-    color:#555;
+    color:#777;
+    text-transform: uppercase;
+}
+
+.side-section ul, .side-section li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.side-section li button {
+    margin: 7px 15px;
+}
+
+.side-section li a {
+    display: block;
+    padding: 5px 15px;
+}
+
+.side-section li a:hover {
+    background-color:#dbd6ceee;
+}
+
+.side-section-item--buttoned a {
+    display: ;
 }
 
 input[type="checkbox"] {

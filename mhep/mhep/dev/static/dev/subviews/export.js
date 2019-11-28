@@ -8,7 +8,7 @@ $('#openbem').on('click', "#import-data", function () {
     mhep_helper.set(projectid, project, function (result) {
         alertifnotlogged(result);
     });
-    add_scenarios_to_menu();
+    redraw_scenario_menu();
 });
 
 $('#openbem').on('click', "#input-data", function () {
@@ -46,7 +46,7 @@ $('#upload_project').submit(function (e) {
                 project.master.imagegallery = [];
                 update();
                 $('#upload-result').css('color', 'black').html("Project uploaded and imported");
-                add_scenarios_to_menu();
+                redraw_scenario_menu();
             } catch (e) {
                 $('#upload-result').css('color', 'red').html("The uploaded project is corrupted");
             }
