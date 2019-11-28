@@ -3,6 +3,8 @@ from .assessments import RetrieveUpdateDestroyAssessment
 from .assessments import UploadAssessmentImage
 from .assessments import SetFeaturedImage
 
+from .images import DeleteImage
+
 from .html import CommonContextMixin
 from .html import AssessmentHTMLView
 from .html import ListAssessmentsHTMLView
