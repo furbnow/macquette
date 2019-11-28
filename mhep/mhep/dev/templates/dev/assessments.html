@@ -57,6 +57,16 @@
                         <span class="member-name"></span>
                         <span class="member-last-active">Last active: </span>
                     </td>
+                    <td style="width: 25%;">
+                        <span class="member-is-librarian" style="display: none;" data-user-id="" data-org-id="">
+                            <b>Librarian</b>
+                        </span>
+                    </td>
+                    <td style="width: 25%;">
+                        <span class="member-is-admin" style="display: none;" data-user-id="" data-org-id="">
+                            <b>Admin</b>
+                        </span>
+                    </td>
                 </tr>
             </table>
 
@@ -427,10 +437,16 @@
             row = rowTemplate.clone()
             row.removeAttr('id');
 
+            row.find('[data-user-id=""]').attr('data-user-id', members[z].userid);
+            row.find('[data-org-id=""]').attr('data-org-id', orgid);
+
             row.find('.member-name').html(members[z].name);
             row.find('.member-last-active').html(
                 "Last active: " + new Date(members[z].last_login).toLocaleString()
             );
+
+            if (members[z].is_admin) row.find('.member-is-admin').show();
+            if (members[z].is_librarian) row.find('.member-is-librarian').show();
 
             row.show();
             table.append(row);
