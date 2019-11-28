@@ -51,13 +51,17 @@
         </div>
 
         <div style="padding:10px">
-            <b>Members:</b><br>
-            <div id="organisation-members">
-                <div class="recent-activity-item" style="height:40px; display: none;" id="organisation-member-template">
-                    <b class="member-name"></b>
-                    <span class="member-last-active"></span>
-                </div>
-            </div>
+            <table id="organisation-members" class="table">
+                <tr id="organisation-member-template" class="organisation-member" style="display: none;">
+                    <td style="width: 50%;">
+                        <span class="member-name"></span>
+                        <span class="member-last-active">Last active: </span>
+                    </td>
+                </tr>
+            </table>
+
+            <div id="organisation-members-container"></div>
+
             {% if request.user.is_staff %}
             <br>
             <a id="organisation-add-member" href="">Edit organisation</a>
@@ -408,23 +412,31 @@
     }
 
     function draw_organisation(orgid) {
-        var out = "";
-        $("#organisation-name").html(myorganisations[orgid].name);
-        var members = myorganisations[orgid].members;
 
-        const rowTemplate = $('#organisation-member-template');
+        var tableTemplate = $("#organisation-members");
+
+        var table = tableTemplate.clone();
+        table.show();
+
+        $("#organisation-name").html(myorganisations[orgid].name);
+
+        var rowTemplate = $('#organisation-member-template');
+        var members = myorganisations[orgid].members;
 
         for (var z in members) {
             row = rowTemplate.clone()
             row.removeAttr('id');
-            const lastLogin = new Date(members[z].last_login);
 
             row.find('.member-name').html(members[z].name);
-            row.find('.member-last-active').html("Last active: " + lastLogin.toLocaleString());
+            row.find('.member-last-active').html(
+                "Last active: " + new Date(members[z].last_login).toLocaleString()
+            );
 
             row.show();
-            $("#organisation-members").append(row);
+            table.append(row);
         }
+
+        $("#organisation-members-container").html(table);
     }
 
     $("#back-myview").click(function () {

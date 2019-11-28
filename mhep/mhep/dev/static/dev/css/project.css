@@ -211,6 +211,11 @@ body .modal {
   color: rgba(99,86,71,0.8);
 }
 
+.organisation-member {
+  padding: 8px 4px;
+  border-bottom: 1px solid #ccc;
+}
+
 .member-name {
   font-weight: bold;
   display: block;
