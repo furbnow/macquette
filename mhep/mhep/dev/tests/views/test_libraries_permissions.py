@@ -12,6 +12,13 @@ from ..factories import (
 from .mixins import AssertErrorMixin
 
 
+class CreateLibraryMixin():
+    def create_library(self, *args, **kwargs):
+        return LibraryFactory.create(
+            data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}},
+            *args, **kwargs)
+
+
 class TestCreateLibraryPermissions(AssertErrorMixin, APITestCase):
     def test_authenticated_user_can_create_a_library(self):
         person = UserFactory.create()
@@ -311,14 +318,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
         return self.client.delete(f"/{VERSION}/api/libraries/{library.id}/")
 
 
-class CommonMixin():
-    def create_library(self, *args, **kwargs):
-        return LibraryFactory.create(
-            data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}},
-            *args, **kwargs)
-
-
-class TestCreateLibraryItemPermissions(CommonMixin, AssertErrorMixin, APITestCase):
+class TestCreateLibraryItemPermissions(CreateLibraryMixin, AssertErrorMixin, APITestCase):
     def test_owner_can_create_library_item(self):
         library = self.create_library()
         self.client.force_authenticate(library.owner_user)
@@ -434,7 +434,7 @@ class TestCreateLibraryItemPermissions(CommonMixin, AssertErrorMixin, APITestCas
         )
 
 
-class TestUpdateLibraryItemPermissions(CommonMixin, AssertErrorMixin, APITestCase):
+class TestUpdateLibraryItemPermissions(CreateLibraryMixin, AssertErrorMixin, APITestCase):
     def test_owner_can_update_library(self):
         library = self.create_library()
         self.client.force_authenticate(library.owner_user)
@@ -547,7 +547,7 @@ class TestUpdateLibraryItemPermissions(CommonMixin, AssertErrorMixin, APITestCas
         )
 
 
-class TestDeleteLibraryItemPermissions(CommonMixin, AssertErrorMixin, APITestCase):
+class TestDeleteLibraryItemPermissions(CreateLibraryMixin, AssertErrorMixin, APITestCase):
     def test_owner_can_delete_library_item(self):
         library = self.create_library()
         self.client.force_authenticate(library.owner_user)
