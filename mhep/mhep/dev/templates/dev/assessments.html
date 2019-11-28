@@ -60,6 +60,7 @@
                     <td style="width: 25%;">
                         <span class="member-is-librarian" style="display: none;" data-user-id="" data-org-id="">
                             <b>Librarian</b>
+                            <button class="demote-librarian demote-role" data-user-id="" data-org-id="">Demote</button>
                         </span>
                     </td>
                     <td style="width: 25%;">
@@ -429,6 +430,12 @@
         $("#myorganisations").html(out);
     }
 
+    function fetchAndRedrawOrganisation(orgid) {
+        fetchOrganisations().then(result => {
+            draw_organisation(orgid);
+        });
+    }
+
     function draw_organisation(orgid) {
 
         var tableTemplate = $("#organisation-members");
@@ -456,12 +463,25 @@
             if (members[z].is_admin) row.find('.member-is-admin').show();
             if (members[z].is_librarian) row.find('.member-is-librarian').show();
 
+            row.find('.demote-librarian').click(handleClickDemoteLibrarian);
+
             row.show();
             table.append(row);
         }
 
         $("#organisation-members-container").html(table);
     }
+
+    function handleClickDemoteLibrarian(e) {
+        e.preventDefault();
+        $(this).attr("disabled", true);
+        $(this).text("Revoking...");
+        var orgid = $(this).attr('data-org-id');
+        var userid = $(this).attr('data-user-id');
+        mhep_helper.demote_librarian_role(orgid, userid).then(result => {
+            fetchAndRedrawOrganisation(orgid);
+        });
+    };
 
     $("#back-myview").click(function () {
         var viewmode = "personal";

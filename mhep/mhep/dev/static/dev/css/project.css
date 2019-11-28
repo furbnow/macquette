@@ -225,3 +225,7 @@ body .modal {
   color: #777;
 }
 
+button.demote-role {
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
