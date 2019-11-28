@@ -385,32 +385,40 @@
 // ----------------------------------------------------------------------------
     var myorganisations = {};
 
-    mhep_helper.list_organisations().then(result => {
-      for (let i = 0; i < result.length; i++) {
-        const org = result[i];
-        org.orgid = org.id;
-        myorganisations[org.id] = org;
-      }
-      draw_organisation_list();
-    })
+    function fetchOrganisations() {
+        return new Promise((resolve, reject) => {
+            mhep_helper.list_organisations().then(result => {
+                for (let i = 0; i < result.length; i++) {
+                    const org = result[i];
+                    org.orgid = org.id;
+                    myorganisations[org.id] = org;
+                }
+                draw_organisation_list();
+                resolve();
+            })
+        });
+    };
 
-    $("body").on("click", ".org-item", function () {
-        orgid = $(this).attr("orgid");
-        draw_organisation(orgid);
-        $("#organisation-add-member").attr("href", urlHelper.admin.organisation(orgid));
-        $("#organisation").show();
-        viewmode = "organisation";
-        $.ajax({
-          url: urlHelper.api.organisationAssessments(orgid),
-          error: handleServerError('listing assessments for organisation'),
-          success: function (result) {
-            projects = result;
-            draw_projects("#projects", projects);
-            $("#assessments-title").html(myorganisations[orgid].name + " Assessments");
-            $("#myview").hide();
-          },
+    fetchOrganisations().then(result => {
+        $("body").on("click", ".org-item", function () {
+            orgid = $(this).attr("orgid");
+            draw_organisation(orgid);
+            $("#organisation-add-member").attr("href", urlHelper.admin.organisation(orgid));
+            $("#organisation").show();
+            viewmode = "organisation";
+            $.ajax({
+            url: urlHelper.api.organisationAssessments(orgid),
+            error: handleServerError('listing assessments for organisation'),
+            success: function (result) {
+                projects = result;
+                draw_projects("#projects", projects);
+                $("#assessments-title").html(myorganisations[orgid].name + " Assessments");
+                $("#myview").hide();
+            },
+            });
         });
     });
+
     function draw_organisation_list() {
         var out = "";
         for (var z in myorganisations) {
