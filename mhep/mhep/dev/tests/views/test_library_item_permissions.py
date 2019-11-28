@@ -46,7 +46,21 @@ class TestCreateLibraryItemPermissions(CommonMixin, APITestCase):
             "Not found.",
         )
 
-    def test_member_of_organisation_can_create_a_library_item_in_organisation(self):
+    def test_librarian_of_organisation_can_create_a_library_item_in_organisation(self):
+        organisation = OrganisationFactory.create()
+        library = self.create_library(
+            owner_organisation=organisation,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+        organisation.members.add(person)
+        organisation.librarians.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_member_of_organisation_cannot_create_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
         library = self.create_library(
             owner_organisation=organisation,
@@ -57,7 +71,11 @@ class TestCreateLibraryItemPermissions(CommonMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You do not have permission to perform this action.",
+        )
 
     def test_user_who_isnt_member_cannot_create_a_library_item_in_organisation(self):
         org_with_no_members = OrganisationFactory.create()
@@ -143,7 +161,21 @@ class TestUpdateLibraryItemPermissions(CommonMixin, APITestCase):
             "Not found.",
         )
 
-    def test_member_of_organisation_can_update_a_library_item_in_organisation(self):
+    def test_librarian_of_organisation_can_update_a_library_item_in_organisation(self):
+        organisation = OrganisationFactory.create()
+        library = self.create_library(
+            owner_organisation=organisation,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+        organisation.members.add(person)
+        organisation.librarians.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_member_of_organisation_cannot_update_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
         library = self.create_library(
             owner_organisation=organisation,
@@ -154,7 +186,11 @@ class TestUpdateLibraryItemPermissions(CommonMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You do not have permission to perform this action.",
+        )
 
     def test_user_who_isnt_member_cannot_update_a_library_item_in_organisation(self):
         org_with_no_members = OrganisationFactory.create()
@@ -238,6 +274,20 @@ class TestDeleteLibraryItemPermissions(CommonMixin, APITestCase):
             "Not found.",
         )
 
+    def test_librarian_of_organisation_can_delete_a_library_item_in_organisation(self):
+        organisation = OrganisationFactory.create()
+        library = self.create_library(
+            owner_organisation=organisation,
+            owner_user=None,
+        )
+        person = UserFactory.create()
+        organisation.members.add(person)
+        organisation.librarians.add(person)
+
+        self.client.force_authenticate(person)
+        response = self._call_endpoint(library)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
     def test_member_of_organisation_can_delete_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
         library = self.create_library(
@@ -249,7 +299,11 @@ class TestDeleteLibraryItemPermissions(CommonMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You do not have permission to perform this action.",
+        )
 
     def test_user_who_isnt_member_cannot_delete_a_library_item_in_organisation(self):
         org_with_no_members = OrganisationFactory.create()

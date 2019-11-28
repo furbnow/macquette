@@ -6,8 +6,9 @@ from rest_framework.response import Response
 
 from ..models import Assessment, Organisation
 from ..permissions import (
-    IsMemberOfOrganisation,
     IsAdminOfOrganisation,
+    IsMemberOfOrganisation,
+    IsLibrarianOfOrganisation,
 )
 
 from ..serializers import (
@@ -70,7 +71,7 @@ class CreateOrganisationLibraries(
     serializer_class = LibrarySerializer
     permission_classes = [
         IsAuthenticated,
-        IsMemberOfOrganisation,
+        IsLibrarianOfOrganisation,
     ]
 
     def get_queryset(self, *args, **kwargs):
