@@ -218,7 +218,15 @@ Content-Type: application/json
         }
     ],
     "data": {
-        ...
+        "master": {
+            "scenario_name": "Master",
+            "household": {
+                "3a_heatinghours_weekday_on1_hours": 6,
+                "3a_heatinghours_weekday_on1_mins": 45,
+                ...
+            },
+            ...
+        }
     }
 }
 ```
