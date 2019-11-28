@@ -494,6 +494,38 @@ Returns:
 HTTP 204 No content
 ```
 
+## Upload an image to the image gallery
+
+```
+POST /assessments/:id/images/
+```
+
+### Example
+
+```
+curl -v \
+    -F 'file=@image.png' \
+    http://localhost:9090/dev/api/assessments/1/images/
+```
+
+Returns:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+    "id": 3,
+    "url": "/media/images/342e8902-b709-4fff-b6da-73acc0c9488d.png",
+    "width": 800,
+    "height": 127,
+    "thumbnail_url": "/media/images/342e8902-b709-4fff-b6da-73acc0c9488d_thumb.jpg",
+    "thumbnail_width": 600,
+    "thumbnail_height": 95,
+    "note": "image",
+    "is_featured": false
+}
+```
+
 ## List users
 
 ```

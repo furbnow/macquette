@@ -1,5 +1,6 @@
 from .assessments import ListCreateAssessments
 from .assessments import RetrieveUpdateDestroyAssessment
+from .assessments import UploadAssessmentImage
 
 from .html import CommonContextMixin
 from .html import AssessmentHTMLView

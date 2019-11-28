@@ -18,6 +18,7 @@ from .views import (
     ListUsers,
     RetrieveUpdateDestroyAssessment,
     ShareUnshareOrganisationLibraries,
+    UploadAssessmentImage,
     UpdateDestroyLibrary,
 )
 
@@ -50,6 +51,12 @@ urlpatterns = [
         "api/assessments/<int:pk>/",
         view=RetrieveUpdateDestroyAssessment.as_view(),
         name="retrieve-update-destroy-assessment",
+    ),
+
+    path(
+        "api/assessments/<int:pk>/images/",
+        view=UploadAssessmentImage.as_view(),
+        name="upload-image-to-assessment",
     ),
 
     path(

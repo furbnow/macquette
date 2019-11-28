@@ -1,13 +1,13 @@
-import json
-import logging
+import io
+import os
+import PIL
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from rest_framework import generics, exceptions
+from django.core.files.base import ContentFile
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics, status, parsers
 
-from ..models import Assessment, Organisation
+from ..models import Assessment, Image
 from ..permissions import (
     IsMemberOfConnectedOrganisation,
     IsMemberOfOrganisation,
@@ -16,8 +16,8 @@ from ..permissions import (
 from ..serializers import (
     AssessmentFullSerializer,
     AssessmentMetadataSerializer,
+    ImageSerializer,
 )
-
 from .mixins import AssessmentQuerySetMixin
 
 
@@ -55,3 +55,61 @@ class RetrieveUpdateDestroyAssessment(
             return Response(None, status.HTTP_204_NO_CONTENT)
         else:
             return response
+
+
+class UploadAssessmentImage(
+    AssessmentQuerySetMixin,
+    generics.GenericAPIView
+):
+    parser_class = [parsers.FileUploadParser]
+    permission_classes = [
+        IsAuthenticated,
+        IsAssessmentOwner | IsMemberOfConnectedOrganisation,
+    ]
+
+    @staticmethod
+    def _make_thumbnail(record: Image):
+        image = PIL.Image.open(record.image)
+
+        # We paste transparent images onto a new image with a white background,
+        # and then use that as our image.  This is because we're saving as JPEG, which
+        # famously does not support transparency.
+        if image.mode in ["RGBA", "LA"]:
+            background = PIL.Image.new(image.mode[:-1], image.size, "white")
+            background.paste(image, image.split()[-1])
+            image = background
+
+        # 600x600 is a substantial size saving on bigger images while still not looking
+        # super-lossy on a high DPI screen
+        image.thumbnail((600, 600), PIL.Image.ANTIALIAS)
+
+        # Save thumbnail to in-memory file
+        temp_thumb = io.BytesIO()
+        image.save(temp_thumb, "JPEG")
+        temp_thumb.seek(0)
+
+        # save=False is because otherwise it will run in an infinite loop
+        record.thumbnail.save("thumb.jpg", ContentFile(temp_thumb.read()), save=False)
+        temp_thumb.close()
+
+        record.thumbnail_width = image.width
+        record.thumbnail_height = image.height
+
+    @staticmethod
+    def _set_note(record: Image):
+        leaf, ext = os.path.splitext(os.path.basename(record.image.name))
+        record.note = leaf
+
+    def post(self, request, pk):
+        if "file" not in request.FILES:
+            return Response({"detail": "no file provided"}, status.HTTP_400_BAD_REQUEST)
+
+        assessment = self.get_object()
+        file = request.FILES['file']
+        record = Image(assessment=assessment, image=file)
+        self._make_thumbnail(record)
+        self._set_note(record)
+        record.save()
+        response = ImageSerializer(record).data
+
+        return Response(response, status.HTTP_200_OK)
