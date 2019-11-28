@@ -211,3 +211,12 @@ body .modal {
   color: rgba(99,86,71,0.8);
 }
 
+.member-name {
+  font-weight: bold;
+  display: block;
+}
+
+.member-last-active {
+  color: #777;
+}
+

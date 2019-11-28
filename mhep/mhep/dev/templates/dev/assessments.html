@@ -52,7 +52,12 @@
 
         <div style="padding:10px">
             <b>Members:</b><br>
-            <div id="organisationmembers"></div>
+            <div id="organisation-members">
+                <div class="recent-activity-item" style="height:40px; display: none;" id="organisation-member-template">
+                    <b class="member-name"></b>
+                    <span class="member-last-active"></span>
+                </div>
+            </div>
             {% if request.user.is_staff %}
             <br>
             <a id="organisation-add-member" href="">Edit organisation</a>
@@ -406,15 +411,20 @@
         var out = "";
         $("#organisation-name").html(myorganisations[orgid].name);
         var members = myorganisations[orgid].members;
+
+        const rowTemplate = $('#organisation-member-template');
+
         for (var z in members) {
+            row = rowTemplate.clone()
+            row.removeAttr('id');
             const lastLogin = new Date(members[z].last_login);
 
-            out += "<div class='recent-activity-item' style='height:40px'>";
-            out += '<img src="' + urlHelper.static('img/defaultuser.png') + '" style="height:40px; float:left; padding-right:5px"/ >';
-            out += "<b>" + members[z].name + "</b><br>Last active: " + lastLogin;
-            out += "</div>";
+            row.find('.member-name').html(members[z].name);
+            row.find('.member-last-active').html("Last active: " + lastLogin.toLocaleString());
+
+            row.show();
+            $("#organisation-members").append(row);
         }
-        $("#organisationmembers").html(out);
     }
 
     $("#back-myview").click(function () {
