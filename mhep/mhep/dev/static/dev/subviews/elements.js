@@ -247,7 +247,7 @@ $("#openbem").on("change", '#bulk-measure-check-all', function () {
 $("#openbem").on("click", '.revert-to-original', function () {
     var element_id = $(this).attr('item_id');
     if (element_exists_in_original(data.created_from, element_id) == true) {
-        // copy the original element 
+        // copy the original element
         for (var e in project[data.created_from].fabric.elements) {
             if (project[data.created_from].fabric.elements[e].id == element_id) {
                 data.fabric.elements[get_element_index_by_id(element_id)] = JSON.parse(JSON.stringify(project[data.created_from].fabric.elements[e]));
@@ -433,7 +433,7 @@ function add_floor(z)
     if (data.fabric.elements[z].uvalue == 0)
         $(id + " [key='data.fabric.elements." + z + ".uvalue']").css('color', 'red');
 
-    // Revert to original 
+    // Revert to original
     init_revert_to_original(id, z);
 }
 
@@ -519,6 +519,7 @@ function elements_initUI()
     // Initial addition of floors
     for (z in data.fabric.elements) {
         var type = data.fabric.elements[z].type;
+
         if (type == 'Wall' || type == 'wall') {
             add_element("#elements", z);
         }
@@ -577,13 +578,13 @@ function elements_UpdateUI()
         /*if (data.fabric.elements[z].type == 'Window') {
          var name = data.fabric.elements[z].name;
          name = name.toLowerCase();
-         
+
          var color = "#fff";
          if (name.indexOf("door") != -1)
          color = '#ffeeee';
          if (name.indexOf("roof") != -1)
          color = '#ddffdd';
-         
+
          // $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', color);
          }*/
 
