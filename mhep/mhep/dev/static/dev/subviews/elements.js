@@ -135,7 +135,7 @@ $("#openbem").on("click", '#bulk-measure-next', function () {
     var out = '<div id="modal-bulk-measure-body" style="padding: 15px" >';
     out += '<p>Choose elements to appply measures to.</p>';
     out += '<table class="table" style="margin-left:15px">';
-    var label = $(this).attr('tags') == 'Window' ? 'Substract from' : '';
+    var label = $(this).attr('tags') == 'Window' ? 'Subtract from' : '';
     out += '<tr><th><input type="checkbox" id="bulk-measure-check-all" /></th>\n\
         <th>Name</th><th>Label</th><th>' + label + '</th></tr>';
     if ($(this).attr('tags') == 'Window') { // We sort them by the wall the windows are substrated from
@@ -551,7 +551,7 @@ function elements_initUI()
         $("[key='data.fabric.global_TMP_value']").prop('disabled', false);
     else
         $("[key='data.fabric.global_TMP_value']").prop('disabled', true);
-    // Check all the windows, doors, etc are substracted from somewhere and if not attach them to the first wall, floor, etc from the list. This is a bug fix with backwards compatibility, that's why it's done here
+    // Check all the windows, doors, etc are subtracted from somewhere and if not attach them to the first wall, floor, etc from the list. This is a bug fix with backwards compatibility, that's why it's done here
     elements_UpdateUI()
     for (z in data.fabric.elements) {
         if (isOpening(data.fabric.elements[z].type)) {
@@ -609,7 +609,7 @@ function elements_UpdateUI()
 
     $('.revert-to-original-icon').attr('src', urlHelper.static('img/undo.gif'));
 
-    // Fill up the substractfrom selects
+    // Fill up the subtractfrom selects
     $('.subtractfrom').each(function (i, obj) {
         $(this).html(options);
     });
