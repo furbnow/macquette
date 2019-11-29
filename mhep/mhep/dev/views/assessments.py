@@ -108,6 +108,9 @@ class UploadAssessmentImage(
     def _make_thumbnail(record: Image):
         image = PIL.Image.open(record.image)
 
+        record.width = image.width
+        record.height = image.height
+
         # We paste transparent images onto a new image with a white background,
         # and then use that as our image.  This is because we're saving as JPEG, which
         # famously does not support transparency.

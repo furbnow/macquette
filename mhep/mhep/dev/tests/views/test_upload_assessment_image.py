@@ -11,9 +11,12 @@ from ... import models
 from ...serializers import ImageSerializer
 from ..factories import AssessmentFactory
 
+IMG_WIDTH = 400
+IMG_HEIGHT = 300
+
 
 def make_image():
-    image = Image.new("RGB", (400, 300))
+    image = Image.new("RGB", (IMG_WIDTH, IMG_HEIGHT))
     file = tempfile.NamedTemporaryFile(suffix=".jpg")
     image.save(file)
     file.seek(0)
@@ -54,6 +57,9 @@ class TestUploadImage(APITestCase):
 
         assert response.data["thumbnail_url"].endswith("_thumb.jpg")
         assert response.data["note"] == pathlib.PurePath(file.name).stem
+
+        assert response.data["thumbnail_width"] == IMG_WIDTH
+        assert response.data["thumbnail_height"] == IMG_HEIGHT
 
         assert response.data["thumbnail_width"] <= 600
         assert response.data["thumbnail_height"] <= 600
