@@ -33,27 +33,29 @@ $("#openbem").on("click", '.add-element', function () {
             element[z] = library[lib][z];
     }
 
-// Set a default value for orientation and overshading
     if (isExternalOpening(type)) {
+        // Set a default value for orientation and overshading
         element.orientation = 3;
         element.overshading = 2;
+
+        // Set a default value for subtractfrom
+        element.subtractfrom = $('.subtractfrom')[0][0].value;
     }
 
-// Set a default value for subtractfrom
-    if (isExternalOpening(type))
-        element.subtractfrom = $('.subtractfrom')[0][0].value;
     data.fabric.elements.push(element);
     var newelementid = data.fabric.elements.length - 1;
+
     if (type == "Wall")
         add_element("#elements", newelementid);
-    if (type == "Roof" || type == "Loft")
+    else if (type == "Roof" || type == "Loft")
         add_element("#roofs", newelementid);
-    if (type == "Floor")
+    else if (type == "Floor")
         add_floor(newelementid);
-    if (isOpening(type))
+    else if (isOpening(type))
         add_window(newelementid);
-    if (isPartyWall(type))
+    else if (isPartyWall(type))
         add_element("#party_walls", newelementid);
+
     update();
     $('#myModal').modal('hide');
 });
@@ -487,12 +489,10 @@ function add_window(z)
     if (isDoor(data.fabric.elements[z].type)) {
         $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', '#ffeeee');
     }
-
-    if (isRoofLight(data.fabric.elements[z].type)) {
+    else if (isRoofLight(data.fabric.elements[z].type)) {
         $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', '#eeffee');
     }
-
-    if (isHatch(data.fabric.elements[z].type)) {
+    else if (isHatch(data.fabric.elements[z].type)) {
         $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', '#ddeeff');
     }
 
@@ -553,9 +553,9 @@ function elements_initUI()
     // Check all the windows, doors, etc are subtracted from somewhere and if not attach them to the first wall, floor, etc from the list. This is a bug fix with backwards compatibility, that's why it's done here
     elements_UpdateUI()
     for (z in data.fabric.elements) {
-        if (isOpening(data.fabric.elements[z].type)) {
-            if (data.fabric.elements[z].subtractfrom == undefined)
-                data.fabric.elements[z].subtractfrom = $('.subtractfrom')[0][0].value;
+        if (isOpening(data.fabric.elements[z].type) &&
+                data.fabric.elements[z].subtractfrom == undefined) {
+            data.fabric.elements[z].subtractfrom = $('.subtractfrom')[0][0].value;
         }
     }
 
@@ -567,18 +567,16 @@ function elements_initUI()
 function elements_UpdateUI()
 {
     for (z in data.fabric.elements) {
-        var color = "#fff";
+        let color
 
         if (isDoor(data.fabric.elements[z].type)) {
             color = '#ffeeee';
-        }
-
-        if (isRoofLight(data.fabric.elements[z].type)) {
+        } else if (isRoofLight(data.fabric.elements[z].type)) {
             color = '#ddffdd';
-        }
-
-        if (isHatch(data.fabric.elements[z].type)) {
+        } else if (isHatch(data.fabric.elements[z].type)) {
             color = '#ddeeff';
+        } else {
+            color = "#ffffff";
         }
 
         $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', color);
