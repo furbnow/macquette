@@ -12,8 +12,10 @@ const isWindow    = type => type.toLowerCase() == 'window'
 const isDoor      = type => type.toLowerCase() == 'door'
 const isRoofLight = type => type.toLowerCase() == 'roof_light'
 const isHatch     = type => type.toLowerCase() == 'hatch'
+const isPartyWall = type => type.toLowerCase() == 'party_wall'
 
 const isOpening = type => isWindow(type) || isDoor(type) || isRoofLight(type) || isHatch(type)
+
 
 // button defined in: libraryHelper:elements_library_to_html
 $("#openbem").on("click", '.add-element', function () {
@@ -50,7 +52,7 @@ $("#openbem").on("click", '.add-element', function () {
         add_floor(newelementid);
     if (isOpening(type))
         add_window(newelementid);
-    if (type == "Party_wall" || type == "party_wall")
+    if (isPartyWall(type))
         add_element("#party_walls", newelementid);
     update();
     $('#myModal').modal('hide');
@@ -298,7 +300,7 @@ $("#openbem").on("click", '.move-up', function () {
     var move = false;
     // Find next item  of the same type up
     for (var i = 1.0 * index_original_element - 1; i >= 0; i--) {
-        if (original_element.type == "Wall" || original_element.type == "Party_wall" || original_element.type == "Floor") {
+        if (original_element.type == "Wall" || isPartyWall(original_element.type) || original_element.type == "Floor") {
             if (original_element.type == data.fabric.elements[i].type) {
                 move = true;
                 data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
@@ -334,7 +336,7 @@ $("#openbem").on("click", '.move-down', function () {
     var move = false;
     // Find next item  of the same type up
     for (var i = 1.0 * index_original_element + 1; i < data.fabric.elements.length; i++) {
-        if (original_element.type == "Wall" || original_element.type == "Party_wall" || original_element.type == "Floor") {
+        if (original_element.type == "Wall" || isPartyWall(original_element.type) || original_element.type == "Floor") {
             if (original_element.type == data.fabric.elements[i].type) {
                 move = true;
                 data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
@@ -539,7 +541,7 @@ function elements_initUI()
         else if (isOpening(type)) {
             add_window(z);
         }
-        else if (type == 'Party_wall' || type == 'party_wall') {
+        else if (isPartyWall(type)) {
             add_element("#party_walls", z);
         }
     }
