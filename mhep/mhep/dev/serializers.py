@@ -71,6 +71,10 @@ class FeaturedImageSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
+class ImageUpdateSerializer(serializers.Serializer):
+    note = serializers.CharField(max_length=200)
+
+
 class AssessmentMetadataSerializer(
         MdateMixin,
         StringIDMixin,

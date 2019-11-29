@@ -2,10 +2,11 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
 from .. import models
+from .. import serializers
 from . import helpers
 
 
-class DeleteImage(generics.GenericAPIView):
+class UpdateDestroyImage(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = models.Image.objects
 
@@ -19,3 +20,20 @@ class DeleteImage(generics.GenericAPIView):
         image.delete()
 
         return Response(None, status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, pk):
+        image = self.get_object()
+
+        allowed_assessments = helpers.get_assessments_for_user(request.user)
+        if image.assessment not in allowed_assessments:
+            return Response(None, status.HTTP_403_FORBIDDEN)
+
+        serializer = serializers.ImageUpdateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"detail": serializer.errors}, status.HTTP_400_BAD_REQUEST)
+
+        image.note = serializer.validated_data["note"]
+        image.save()
+
+        response = serializers.ImageSerializer(image).data
+        return Response(response, status.HTTP_200_OK)

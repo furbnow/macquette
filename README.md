@@ -552,6 +552,38 @@ Returns:
 HTTP/1.1 204 No Content
 ```
 
+## Edit an image's note
+
+```
+PATCH /images/:id/
+```
+
+### Example
+
+```
+> curl -v \
+    -X PATCH \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/dev/api/images/10/ \
+    --data @- << EOF
+{
+    "note": "Corbyn's greenhouse"
+}
+EOF
+```
+
+Returns:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+    "id": 10,
+    "note": "Corbyn's greenhouse",
+    ...                     # All other fields the same
+}
+```
+
 ## Delete an image
 
 ```

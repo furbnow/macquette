@@ -20,7 +20,7 @@ from .views import (
     ShareUnshareOrganisationLibraries,
     UploadAssessmentImage,
     SetFeaturedImage,
-    DeleteImage,
+    UpdateDestroyImage,
     UpdateDestroyLibrary,
 )
 
@@ -69,8 +69,8 @@ urlpatterns = [
 
     path(
         "api/images/<int:pk>/",
-        view=DeleteImage.as_view(),
-        name="delete-image",
+        view=UpdateDestroyImage.as_view(),
+        name="image",
     ),
 
     path(
