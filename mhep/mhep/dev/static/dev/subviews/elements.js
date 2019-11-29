@@ -8,6 +8,9 @@ else
 // Capitalise first letter
 const capitalise = str => str.charAt(0).toUpperCase() + str.slice(1)
 
+const isWindow = type => type.toLowerCase() == 'window'
+
+
 // button defined in: libraryHelper:elements_library_to_html
 $("#openbem").on("click", '.add-element', function () {
 
@@ -25,13 +28,13 @@ $("#openbem").on("click", '.add-element', function () {
     }
 
 // Set a default value for orientation and overshading
-    if (type == "Window" || type == "Door" || type == "Roof_light") {
+    if (isWindow(type) || type == "Door" || type == "Roof_light") {
         element.orientation = 3;
         element.overshading = 2;
     }
 
 // Set a default value for subtractfrom
-    if (type == "Window" || type == "Door" || type == "Roof_light")
+    if (isWindow(type) || type == "Door" || type == "Roof_light")
         element.subtractfrom = $('.subtractfrom')[0][0].value;
     data.fabric.elements.push(element);
     var newelementid = data.fabric.elements.length - 1;
@@ -41,7 +44,7 @@ $("#openbem").on("click", '.add-element', function () {
         add_element("#roofs", newelementid);
     if (type == "Floor")
         add_floor(newelementid);
-    if (type == "Window" || type == "Door" || type == "Roof_light" || type == "Hatch")
+    if (isWindow(type) || type == "Door" || type == "Roof_light" || type == "Hatch")
         add_window(newelementid);
     if (type == "Party_wall" || type == "party_wall")
         add_element("#party_walls", newelementid);
@@ -133,7 +136,7 @@ $("#openbem").on("click", '#bulk-measure-next', function () {
         var window_by_wall = {};
         for (var row in data.fabric.elements) {
             var element = data.fabric.elements[row];
-            if (element.type == "Window") {
+            if (isWindow(element.type)) {
                 if (window_by_wall[element.subtractfrom] == undefined)
                     window_by_wall[element.subtractfrom] = [];
                 window_by_wall[element.subtractfrom].push({element: element, row: row});
@@ -308,7 +311,7 @@ $("#openbem").on("click", '.move-up', function () {
             }
         }
         else {
-            if (data.fabric.elements[i].type == "Window" || data.fabric.elements[i].type == "Door" || data.fabric.elements[i].type == "Roof_light" || data.fabric.elements[i].type == "Hatch") {
+            if (isWindow(data.fabric.elements[i].type) || data.fabric.elements[i].type == "Door" || data.fabric.elements[i].type == "Roof_light" || data.fabric.elements[i].type == "Hatch") {
                 move = true;
                 data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
                 data.fabric.elements[i] = original_element;
@@ -344,7 +347,7 @@ $("#openbem").on("click", '.move-down', function () {
             }
         }
         else {
-            if (data.fabric.elements[i].type == "Window" || data.fabric.elements[i].type == "Door" || data.fabric.elements[i].type == "Roof_light" || data.fabric.elements[i].type == "Hatch") {
+            if (isWindow(data.fabric.elements[i].type) || data.fabric.elements[i].type == "Door" || data.fabric.elements[i].type == "Roof_light" || data.fabric.elements[i].type == "Hatch") {
                 move = true;
                 data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
                 data.fabric.elements[i] = original_element;
@@ -496,7 +499,7 @@ function add_window(z)
     var subtractfromhtml = "<option value='no' ></option>";
     for (i in data.fabric.elements) {
         // here
-        if (data.fabric.elements[i].type != 'Window' && data.fabric.elements[i].type != 'Door' && data.fabric.elements[i].type != 'Roof_light' && data.fabric.elements[i].type != 'Floor' && data.fabric.elements[i].type != 'Hatch')
+        if (!isWindow(data.fabric.elements[i].type) && data.fabric.elements[i].type != 'Door' && data.fabric.elements[i].type != 'Roof_light' && data.fabric.elements[i].type != 'Floor' && data.fabric.elements[i].type != 'Hatch')
             subtractfromhtml += "<option value='" + data.fabric.elements[i].id + "'>" + data.fabric.elements[i].location + "</option>";
         //subtractfromhtml += "<option value='" + i + "'>" + data.fabric.elements[i].name + "</option>";
     }
@@ -529,7 +532,7 @@ function elements_initUI()
         else if (type == 'Roof' || type == 'roof' || type == 'Loft') {
             add_element("#roofs", z);
         }
-        else if (type == 'Window' || type == 'window' || type == 'Door' || type == 'Roof_light' || type == 'Hatch') {
+        else if (isWindow(type) || type == 'Door' || type == 'Roof_light' || type == 'Hatch') {
             add_window(z);
         }
         else if (type == 'Party_wall' || type == 'party_wall') {
@@ -545,7 +548,7 @@ function elements_initUI()
     // Check all the windows, doors, etc are substracted from somewhere and if not attach them to the first wall, floor, etc from the list. This is a bug fix with backwards compatibility, that's why it's done here
     elements_UpdateUI()
     for (z in data.fabric.elements) {
-        if (data.fabric.elements[z].type == "Window" || data.fabric.elements[z].type == "Door" || data.fabric.elements[z].type == "Roof_light" || data.fabric.elements[z].type == "Hatch") {
+        if (isWindow(data.fabric.elements[z].type) || data.fabric.elements[z].type == "Door" || data.fabric.elements[z].type == "Roof_light" || data.fabric.elements[z].type == "Hatch") {
             if (data.fabric.elements[z].subtractfrom == undefined)
                 data.fabric.elements[z].subtractfrom = $('.subtractfrom')[0][0].value;
         }
@@ -594,7 +597,7 @@ function elements_UpdateUI()
     // Get all the locations (walls, party walls, roofs and lofts
     var options = '';
     for (z in data.fabric.elements) {
-        if (data.fabric.elements[z].type != "Window" && data.fabric.elements[z].type != "Door" && data.fabric.elements[z].type != "Roof_light" && data.fabric.elements[z].type != "Hatch" && data.fabric.elements[z].type != "Floor")
+        if (!isWindow(data.fabric.elements[z].type) && data.fabric.elements[z].type != "Door" && data.fabric.elements[z].type != "Roof_light" && data.fabric.elements[z].type != "Hatch" && data.fabric.elements[z].type != "Floor")
             options += "<option value='" + data.fabric.elements[z].id + "'>" + data.fabric.elements[z].location + "</option>";
     }
 
