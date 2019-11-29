@@ -742,17 +742,20 @@ function add_quantity_and_cost_to_bulk_fabric_measure(measure_id) {
 }
 
 function init_revert_to_original(id, z) {
-    if (measure_applied_to_element(data.fabric.elements[z].id) != false) {
+    const element = data.fabric.elements[z]
+    const $button = $(id + ' .revert-to-original[item_id="' + element.id + '"]');
+
+    if (measure_applied_to_element(element.id) != false) {
         if (data.created_from != undefined && data.created_from != 'master') {
-            var inner_html = $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').html();
+            var inner_html = $button.html();
             inner_html = inner_html.replace(/Revert to master/g, 'Revert to Scenario ' + data.created_from.split('scenario')[1]);
-            $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').html(inner_html);
+            $button.html(inner_html);
         }
-        $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').show();
-        if (data.created_from != undefined && element_exists_in_original(data.created_from, data.fabric.elements[z].id) == false)
-            $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').removeClass('revert-to-original').css('cursor', 'default').html('Original element doesn\'t<br />exist, cannot revert');
+        $button.show();
+        if (data.created_from != undefined && element_exists_in_original(data.created_from, element.id) == false)
+            $button.removeClass('revert-to-original').css('cursor', 'default').html('Original element doesn\'t<br />exist, cannot revert');
     }
     else {
-        $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').hide();
+        $button.hide();
     }
 }
