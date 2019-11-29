@@ -97,15 +97,19 @@ $("#openbem").on("click", '#apply-measure-TB', function () {
 $("#openbem").on("click", '#apply-measure-TB-modal-ok', function () {
 //We only record the original value if this is the first time we apply the measure in this scenario
     if (data.measures.thermal_bridging == undefined) {
-        data.measures.thermal_bridging = {original_element: {}, measure: {}};
-        data.measures.thermal_bridging.original_element.value = data.fabric.thermal_bridging_yvalue;
+        data.measures.thermal_bridging = {
+            original_element: {
+                value: data.fabric.thermal_bridging_yvalue
+            },
+            measure: {}
+        };
     }
 
 //Apply measure
     data.fabric.thermal_bridging_yvalue = $('#TB-measure-value').val();
     data.measures.thermal_bridging.measure.value = $('#TB-measure-value').val();
     data.measures.thermal_bridging.measure.description = $('#TB-measure-description').val();
-    ;
+
     $('#apply-measure-TB-modal').modal('hide');
     elements_initUI();
     update();
