@@ -193,6 +193,83 @@ body .modal {
 
 .text-bold { font-weight: bold; }
 
+.d-i { display: inline; }
+.d-flex { display: flex; }
+.d-b { display: block; }
+
+.align-items-start { align-items: start; }
+.align-items-center { align-items: center; }
+
+.mt-0 { margin-top: 0px !important; }
+.ml-0 { margin-left: 0px !important; }
+.mb-0 { margin-bottom: 0px !important; }
+.mr-0 { margin-right: 0px !important; }
+.mx-0 { margin-left: 0px !important; margin-right: 0px !important; }
+.my-0 { margin-top: 0px !important; margin-bottom: 0px !important; }
+.ma-0 { margin: 0px !important; }
+
+.pt-0 { padding-top: 0px !important; }
+.pl-0 { padding-left: 0px !important; }
+.pb-0 { padding-bottom: 0px !important; }
+.pr-0 { padding-right: 0px !important; }
+.px-0 { padding-left: 0px !important; padding-right: 0px !important; }
+.py-0 { padding-top: 0px !important; padding-bottom: 0px !important; }
+.pa-0 { padding: 0px !important; }
+
+.mt-7 { margin-top: 7px !important; }
+.ml-7 { margin-left: 7px !important; }
+.mb-7 { margin-bottom: 7px !important; }
+.mr-7 { margin-right: 7px !important; }
+.mx-7 { margin-left: 7px !important; margin-right: 7px !important; }
+.my-7 { margin-top: 7px !important; margin-bottom: 7px !important; }
+.ma-7 { margin: 7px !important; }
+
+.pt-7 { padding-top: 7px !important; }
+.pl-7 { padding-left: 7px !important; }
+.pb-7 { padding-bottom: 7px !important; }
+.pr-7 { padding-right: 7px !important; }
+.px-7 { padding-left: 7px !important; padding-right: 7px !important; }
+.py-7 { padding-top: 7px !important; padding-bottom: 7px !important; }
+.pa-7 { padding: 7px !important; }
+
+.mt-15 { margin-top: 15px !important; }
+.ml-15 { margin-left: 15px !important; }
+.mb-15 { margin-bottom: 15px !important; }
+.mr-15 { margin-right: 15px !important; }
+.mx-15 { margin-left: 15px !important; margin-right: 15px !important; }
+.my-15 { margin-top: 15px !important; margin-bottom: 15px !important; }
+.ma-15 { margin: 15px !important; }
+
+.pt-15 { padding-top: 15px !important; }
+.pl-15 { padding-left: 15px !important; }
+.pb-15 { padding-bottom: 15px !important; }
+.pr-15 { padding-right: 15px !important; }
+.px-15 { padding-left: 15px !important; padding-right: 15px !important; }
+.py-15 { padding-top: 15px !important; padding-bottom: 15px !important; }
+.pa-15 { padding: 15px !important; }
+
+.mb-45 {
+    margin-bottom: 45px;
+}
+
+
+.line-top {
+    border-top: 1px solid #ff2712;
+    padding-top: 0.5rem;
+}
+.line-bottom {
+    border-bottom: 1px solid #ff2712;
+    padding-bottom: 0.5rem;
+}
+.line-both {
+    border-top: 1px solid #ff2712;
+    border-bottom: 1px solid #ff2712;
+    padding: 0.5rem 0;
+}
+.big-checkbox {
+    width: 1.2rem !important;
+    height: 1.2rem !important;
+}
 .house { width: 100%; max-width: 500px; font-size: 36px; }
 .house--light { fill: #ac9d93 }
 .house--dark { fill: rgba(99, 86, 71, 0.6); }

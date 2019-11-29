@@ -18,20 +18,28 @@
 </style>
 
 <div id="elements-container" class="page">
+<!-- XXX Remove this container - doesn't do anything. -->
 
+<h3 class="line-top">Thermal Mass Parameter (TMP)</h3>
 
-    <h3> Thermal Mass Parameter (TMP)</h3>
-    <hr>
-    <p><input type="checkbox" key="data.fabric.global_TMP" style="margin:0 15px"/>Use global TMP value (ignore the k value of individual elements)</p>
-    <div id="global_TMP_value" style="margin-left:40px">
+<div class="d-flex align-items-start mb-45">
+    <input
+        type="checkbox"
+        id="global_TMP"
+        key="data.fabric.global_TMP"
+        class="ma-0 big-checkbox">
+
+    <div class="ml-7">
+        <label for="global_TMP">
+            Ignore the <i>k</i> value of individual elements and use a global TMP value instead:
+        </label>
+
         <select key="data.fabric.global_TMP_value">
             <option value="100">Low TMP</option>
             <option value="250">Medium TMP</option>
             <option value="450">High TMP</option>
         </select>
-
     </div>
-    <br />
     <hr>
 
 
