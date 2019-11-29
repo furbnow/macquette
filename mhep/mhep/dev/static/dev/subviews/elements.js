@@ -379,32 +379,40 @@ $("[key='data.fabric.global_TMP']").change(function () {
         $("[key='data.fabric.global_TMP_value']").prop('disabled', true);
 });
 
+const selectFabricTemplate = (id, str) =>
+    $(`${id} [key='data.fabric.elements.template.${str}']`)
+
+const setFabricTemplateKey = (id, z, str) =>
+    selectFabricTemplate(id, str).attr("key", `data.fabric.elements.${z}.${str}`)
+
 function add_element(id, z)
 {
     var element = data.fabric.elements[z];
     $(id).append($("#element-template").html());
     var row = $(id + " [row='template']");
-    $(id + " [key='data.fabric.elements.template.type']").attr('key', 'data.fabric.elements.' + z + '.type');
-    $(id + " [key='data.fabric.elements.template.name']").attr('key', 'data.fabric.elements.' + z + '.name');
-    $(id + " [key='data.fabric.elements.template.location']").attr('key', 'data.fabric.elements.' + z + '.location');
-    $(id + " [key='data.fabric.elements.template.lib']").attr('key', 'data.fabric.elements.' + z + '.lib');
-    $(id + " [key='data.fabric.elements.template.l']").attr('key', 'data.fabric.elements.' + z + '.l');
-    $(id + " [key='data.fabric.elements.template.h']").attr('key', 'data.fabric.elements.' + z + '.h');
-    $(id + " [key='data.fabric.elements.template.area']").attr('key', 'data.fabric.elements.' + z + '.area');
-    $(id + " [key='data.fabric.elements.template.windowarea']").attr('key', 'data.fabric.elements.' + z + '.windowarea');
-    $(id + " [key='data.fabric.elements.template.netarea']").attr('key', 'data.fabric.elements.' + z + '.netarea');
-    $(id + " [key='data.fabric.elements.template.uvalue']").attr('key', 'data.fabric.elements.' + z + '.uvalue');
-    $(id + " [key='data.fabric.elements.template.kvalue']").attr('key', 'data.fabric.elements.' + z + '.kvalue');
-    $(id + " [key='data.fabric.elements.template.wk']").attr('key', 'data.fabric.elements.' + z + '.wk');
-    $(id + " [key='data.fabric.elements.template.EWI']").html(data.fabric.elements[z].EWI == true ? 'EWI' : '');
-    $(id + " [key='data.fabric.elements.template.EWI']").removeAttr('key');
+
+    setFabricTemplateKey(id, z, 'type');
+    setFabricTemplateKey(id, z, 'name');
+    setFabricTemplateKey(id, z, 'location');
+    setFabricTemplateKey(id, z, 'lib');
+    setFabricTemplateKey(id, z, 'l');
+    setFabricTemplateKey(id, z, 'h');
+    setFabricTemplateKey(id, z, 'area');
+    setFabricTemplateKey(id, z, 'windowarea');
+    setFabricTemplateKey(id, z, 'netarea');
+    setFabricTemplateKey(id, z, 'uvalue');
+    setFabricTemplateKey(id, z, 'kvalue');
+    setFabricTemplateKey(id, z, 'wk');
+
+    selectFabricTemplate(id, 'EWI').html(data.fabric.elements[z].EWI == true ? 'EWI' : '');
+    selectFabricTemplate(id, 'EWI').removeAttr('key');
     row.attr('row', z);
     row.attr('item_id', data.fabric.elements[z].id);
     row.attr('item', JSON.stringify(data.fabric.elements[z]));
     if (data.fabric.elements[z].cost_total != undefined)
-        $(id + " [key='data.fabric.elements.template.cost_total']").attr('key', '').html('<br />£' + data.fabric.elements[z].cost_total).show();
+        selectFabricTemplate(id, "cost_total").attr('key', '').html('<br />£' + data.fabric.elements[z].cost_total).show();
     else
-        $(id + " [key='data.fabric.elements.template.cost_total']").attr('key', '')
+        selectFabricTemplate(id, "cost_total").attr('key', '')
 
     if (data.fabric.elements[z].type != "Loft" && data.fabric.elements[z].type != "Roof")
         row.attr('tags', data.fabric.elements[z].type);
@@ -422,26 +430,29 @@ function add_floor(z)
     var element = data.fabric.elements[z];
     $(id).append($("#floor-template").html());
     var row = $(id + " [row='template']");
-    $(id + " [key='data.fabric.elements.template.type']").attr('key', 'data.fabric.elements.' + z + '.type');
-    $(id + " [key='data.fabric.elements.template.name']").attr('key', 'data.fabric.elements.' + z + '.name');
-    $(id + " [key='data.fabric.elements.template.location']").attr('key', 'data.fabric.elements.' + z + '.location');
-    $(id + " [key='data.fabric.elements.template.lib']").attr('key', 'data.fabric.elements.' + z + '.lib');
-    $(id + " [key='data.fabric.elements.template.perimeter']").attr('key', 'data.fabric.elements.' + z + '.perimeter');
-    $(id + " [key='data.fabric.elements.template.area']").attr('key', 'data.fabric.elements.' + z + '.area');
+
+    setFabricTemplateKey(id, z, 'type');
+    setFabricTemplateKey(id, z, 'name');
+    setFabricTemplateKey(id, z, 'location');
+    setFabricTemplateKey(id, z, 'lib');
+    setFabricTemplateKey(id, z, 'perimeter');
+    setFabricTemplateKey(id, z, 'area');
+    setFabricTemplateKey(id, z, 'uvalue');
+    setFabricTemplateKey(id, z, 'kvalue');
+    setFabricTemplateKey(id, z, 'wk');
+
+    selectFabricTemplate(id, 'EWI').html(data.fabric.elements[z].EWI == true ? 'EWI' : '');
+    selectFabricTemplate(id, 'EWI').removeAttr('key');
     $(id + " .calculate-floor-uvalue[z='template'").attr('z', z);
-    $(id + " [key='data.fabric.elements.template.uvalue']").attr('key', 'data.fabric.elements.' + z + '.uvalue');
-    $(id + " [key='data.fabric.elements.template.kvalue']").attr('key', 'data.fabric.elements.' + z + '.kvalue');
-    $(id + " [key='data.fabric.elements.template.wk']").attr('key', 'data.fabric.elements.' + z + '.wk');
-    $(id + " [key='data.fabric.elements.template.EWI']").html(data.fabric.elements[z].EWI == true ? 'EWI' : '');
-    $(id + " [key='data.fabric.elements.template.EWI']").removeAttr('key');
+
     row.attr('row', z);
     row.attr('item_id', data.fabric.elements[z].id);
     row.attr('item', JSON.stringify(data.fabric.elements[z]));
     row.attr('tags', data.fabric.elements[z].type);
     if (data.fabric.elements[z].cost_total != undefined)
-        $(id + " [key='data.fabric.elements.template.cost_total']").attr('key', '').html('<br />£' + data.fabric.elements[z].cost_total).show();
+        selectFabricTemplate(id, "cost_total").attr('key', '').html('<br />£' + data.fabric.elements[z].cost_total).show();
     else
-        $(id + " [key='data.fabric.elements.template.cost_total']").attr('key', '');
+        selectFabricTemplate(id, "cost_total").attr('key', '');
 
     if (data.fabric.elements[z].uvalue == 0)
         $(id + " [key='data.fabric.elements." + z + ".uvalue']").css('color', 'red');
@@ -452,38 +463,41 @@ function add_floor(z)
 
 function add_window(z)
 {
+    var id = "#windows";
     var element = data.fabric.elements[z];
     $("#windows").append($("#window-template").html());
     var row = $("#windows [row='template']");
-    $("#windows [key='data.fabric.elements.template.lib']").attr('key', 'data.fabric.elements.' + z + '.lib');
-    $("#windows [key='data.fabric.elements.template.name']").attr('key', 'data.fabric.elements.' + z + '.name');
-    $("#windows [key='data.fabric.elements.template.location']").attr('key', 'data.fabric.elements.' + z + '.location');
-    $("#windows [key='data.fabric.elements.template.description']").attr('key', 'data.fabric.elements.' + z + '.description');
-    $("#windows [key='data.fabric.elements.template.subtractfrom']").attr('key', 'data.fabric.elements.' + z + '.subtractfrom');
-    $("#windows [key='data.fabric.elements.template.l']").attr('key', 'data.fabric.elements.' + z + '.l');
-    $("#windows [key='data.fabric.elements.template.h']").attr('key', 'data.fabric.elements.' + z + '.h');
-    $("#windows [key='data.fabric.elements.template.area']").attr('key', 'data.fabric.elements.' + z + '.area');
-    $("#windows [key='data.fabric.elements.template.uvalue']").attr('key', 'data.fabric.elements.' + z + '.uvalue');
-    $("#windows [key='data.fabric.elements.template.kvalue']").attr('key', 'data.fabric.elements.' + z + '.kvalue');
+
+    setFabricTemplateKey(id, z, 'name');
+    setFabricTemplateKey(id, z, 'location');
+    setFabricTemplateKey(id, z, 'lib');
+    setFabricTemplateKey(id, z, 'description');
+    setFabricTemplateKey(id, z, 'subtractfrom');
+    setFabricTemplateKey(id, z, 'l');
+    setFabricTemplateKey(id, z, 'h');
+    setFabricTemplateKey(id, z, 'area');
+    setFabricTemplateKey(id, z, 'uvalue');
+    setFabricTemplateKey(id, z, 'kvalue');
+    setFabricTemplateKey(id, z, 'wk');
+
     if (!isHatch(data.fabric.elements[z].type)) {
-        $("#windows [key='data.fabric.elements.template.orientation']").attr('key', 'data.fabric.elements.' + z + '.orientation');
-        $("#windows [key='data.fabric.elements.template.overshading']").attr('key', 'data.fabric.elements.' + z + '.overshading');
-        $("#windows [key='data.fabric.elements.template.g']").attr('key', 'data.fabric.elements.' + z + '.g');
-        $("#windows [key='data.fabric.elements.template.gL']").attr('key', 'data.fabric.elements.' + z + '.gL');
-        $("#windows [key='data.fabric.elements.template.ff']").attr('key', 'data.fabric.elements.' + z + '.ff');
-        $("#windows [key='data.fabric.elements.template.gain']").attr('key', 'data.fabric.elements.' + z + '.gain');
+        setFabricTemplateKey(id, z, 'orientation');
+        setFabricTemplateKey(id, z, 'overshading');
+        setFabricTemplateKey(id, z, 'g');
+        setFabricTemplateKey(id, z, 'gL');
+        setFabricTemplateKey(id, z, 'ff');
+        setFabricTemplateKey(id, z, 'gain');
     }
     else {
-        $("#windows [key='data.fabric.elements.template.orientation']").parent().html('');
-        $("#windows [key='data.fabric.elements.template.overshading']").parent().html('');
-        $("#windows [key='data.fabric.elements.template.gain']").parent().html('');
+        selectFabricTemplate(id, "orientation").parent().html('');
+        selectFabricTemplate(id, "overshading").parent().html('');
+        selectFabricTemplate(id, "gain").parent().html('');
         $('#windows .window_fields_template').html('');
     }
-    $("#windows [key='data.fabric.elements.template.wk']").attr('key', 'data.fabric.elements.' + z + '.wk');
     if (data.fabric.elements[z].cost_total != undefined)
-        $("#windows [key='data.fabric.elements.template.cost_total']").attr('key', '').html('<br />£' + data.fabric.elements[z].cost_total).show();
+        selectFabricTemplate(id, "cost_total").attr('key', '').html('<br />£' + data.fabric.elements[z].cost_total).show();
     else
-        $("#windows [key='data.fabric.elements.template.cost_total']").attr('key', '');
+        selectFabricTemplate(id, "cost_total").attr('key', '');
 
     $('#windows .window_fields_template').removeClass('window_fields_template');
     data.fabric.elements[z].name = String(data.fabric.elements[z].name);
