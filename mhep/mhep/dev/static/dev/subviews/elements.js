@@ -251,11 +251,6 @@ $("#openbem").on("click", '#bulk-measure-finish', function () {
 });
 $("#openbem").on("change", '#bulk-measure-check-all', function () {
     $('.bulk-element').prop('checked', $('#bulk-measure-check-all')[0].checked);
-    /*if ($('#bulk-measure-check-all')[0].checked === true)
-     $('.bulk-element').attr('checked', 'checked');
-     else
-     $('.bulk-element').attr('checked', false);
-     */
 });
 $("#openbem").on("click", '.revert-to-original', function () {
     var element_id = $(this).attr('item_id');
@@ -573,8 +568,7 @@ function elements_UpdateUI()
 {
     for (z in data.fabric.elements) {
         var color = "#fff";
-        /*var name = data.fabric.elements[z].name;
-         name = name.toLowerCase();*/
+
         if (isDoor(data.fabric.elements[z].type)) {
             color = '#ffeeee';
         }
@@ -588,19 +582,6 @@ function elements_UpdateUI()
         }
 
         $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', color);
-        /*if (data.fabric.elements[z].type == 'Window') {
-         var name = data.fabric.elements[z].name;
-         name = name.toLowerCase();
-
-         var color = "#fff";
-         if (name.indexOf("door") != -1)
-         color = '#ffeeee';
-         if (name.indexOf("roof") != -1)
-         color = '#ddffdd';
-
-         // $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', color);
-         }*/
-
     }
 
     // populate the subtractfrom selects in windows, doors (etc). We do it everytime we update just in case the key that has changed is one of Label/Location
@@ -673,44 +654,6 @@ function apply_measure(measure) {
 
     elements_initUI();
     update();
-}
-
-function get_element_value(element) {
-    return element;
-}
-
-function check_and_add_measure_fields(element) {
-    console.log(element);
-    if (element.description == undefined || element.description == '')
-        element.description = '--';
-    if (element.performance == undefined || element.performance == '')
-        element.performance = '--';
-    if (element.performance_units == undefined || element.performance_units == '')
-        element.performance_units = '--';
-    if (element.benefits == undefined || element.benefits == '')
-        element.benefits = '--';
-    if (element.cost == undefined || element.cost == '')
-        element.cost = '--';
-    if (element.cost_units == undefined || element.cost_units == '')
-        element.cost_units = '--';
-    if (element.who_by == undefined || element.who_by == '')
-        element.who_by = '--';
-    if (element.who_by_units == undefined || element.who_by_units == '')
-        element.who_by_units = '--';
-    if (element.who_by_quantity == undefined || element.who_by_quantity == '')
-        element.who_by_quantity = '--';
-    if (element.who_by_total == undefined || element.who_by_total == '')
-        element.who_by_total = '--';
-    if (element.disruption == undefined || element.disruption == '')
-        element.disruption = '--';
-    if (element.associated_work == undefined || element.associated_work == '')
-        element.associated_work = '--';
-    if (element.key_risks == undefined || element.key_risks == '')
-        element.key_risks = '--';
-    if (element.notes == undefined || element.notes == '')
-        element.notes = '--';
-    if (element.maintenance == undefined || element.maintenance == '')
-        element.maintenance = '--';
 }
 
 function edit_item(element, row) {
@@ -812,4 +755,3 @@ function init_revert_to_original(id, z) {
         $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').hide();
     }
 }
-
