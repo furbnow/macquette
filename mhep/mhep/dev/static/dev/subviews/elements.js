@@ -14,8 +14,8 @@ const isRoofLight = type => type.toLowerCase() == 'roof_light'
 const isHatch     = type => type.toLowerCase() == 'hatch'
 const isPartyWall = type => type.toLowerCase() == 'party_wall'
 
-const isOpening = type => isWindow(type) || isDoor(type) || isRoofLight(type) || isHatch(type)
-
+const isExternalOpening = type => isWindow(type) || isDoor(type) || isRoofLight(type)
+const isOpening         = type => isExternalOpening(type) || isHatch(type)
 
 // button defined in: libraryHelper:elements_library_to_html
 $("#openbem").on("click", '.add-element', function () {
@@ -34,13 +34,13 @@ $("#openbem").on("click", '.add-element', function () {
     }
 
 // Set a default value for orientation and overshading
-    if (isWindow(type) || isDoor(type) || isRoofLight(type)) {
+    if (isExternalOpening(type)) {
         element.orientation = 3;
         element.overshading = 2;
     }
 
 // Set a default value for subtractfrom
-    if (isWindow(type) || isDoor(type) || isRoofLight(type))
+    if (isExternalOpening(type))
         element.subtractfrom = $('.subtractfrom')[0][0].value;
     data.fabric.elements.push(element);
     var newelementid = data.fabric.elements.length - 1;
