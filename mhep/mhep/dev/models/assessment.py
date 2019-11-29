@@ -46,6 +46,14 @@ class Assessment(models.Model):
         default='In progress',
     )
 
+    featured_image = models.ForeignKey(
+        "Image",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="featured_on",
+    )
+
     data = JSONField(default=dict, validators=[validate_dict])
 
     created_at = models.DateTimeField(auto_now_add=True)

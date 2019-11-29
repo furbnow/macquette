@@ -5,7 +5,7 @@ from rest_framework import exceptions, status
 
 from ... import VERSION
 from ...models import Assessment
-from ..factories import AssessmentFactory
+from ..factories import AssessmentFactory, ImageFactory
 
 from mhep.users.tests.factories import UserFactory
 
@@ -27,6 +27,8 @@ class TestGetAssessment(APITestCase):
                     openbem_version="10.1.1",
             )
 
+        i = ImageFactory.create(assessment=a)
+
         self.client.force_authenticate(self.me)
         response = self.client.get(f"/{VERSION}/api/assessments/{a.pk}/")
         assert response.status_code == status.HTTP_200_OK
@@ -42,6 +44,19 @@ class TestGetAssessment(APITestCase):
             "description": "test description",
             "author": self.me.username,
             "userid": f"{self.me.id}",
+            "images": [
+                {
+                    "id": i.id,
+                    "url": i.image.url,
+                    "width": i.width,
+                    "height": i.height,
+                    "thumbnail_url": i.thumbnail.url,
+                    "thumbnail_width": i.thumbnail_width,
+                    "thumbnail_height": i.thumbnail_height,
+                    "note": i.note,
+                    "is_featured": False,
+                }
+            ],
             "data": {"foo": "bar"},
         }
         assert expected == response.data
@@ -72,6 +87,7 @@ class TestGetAssessment(APITestCase):
             "author": self.me.username,
             "userid": f"{self.me.id}",
             "status": "In progress",
+            "images": [],
             "data": {},
         }
         assert expected == response.data
@@ -79,6 +95,52 @@ class TestGetAssessment(APITestCase):
     def test_returns_404_for_bad_id(self):
         response = self.client.get(f"/{VERSION}/api/assessments/bad-id/")
         assert status.HTTP_404_NOT_FOUND == response.status_code
+
+    def test_structure_of_featured_and_normal_image(self):
+        a = AssessmentFactory.create(
+                owner=self.me,
+                name="test name",
+                description="test description",
+                data={"foo": "bar"},
+                status="In progress",
+                openbem_version="10.1.1",
+        )
+
+        i1 = ImageFactory.create(assessment=a)
+        i2 = ImageFactory.create(assessment=a)
+
+        a.featured_image = i1
+        a.save()
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/assessments/{a.pk}/")
+        assert response.status_code == status.HTTP_200_OK
+
+        expected = [
+            {
+                "id": i2.id,
+                "url": i2.image.url,
+                "width": i2.width,
+                "height": i2.height,
+                "thumbnail_url": i2.thumbnail.url,
+                "thumbnail_width": i2.thumbnail_width,
+                "thumbnail_height": i2.thumbnail_height,
+                "note": i2.note,
+                "is_featured": False,
+            },
+            {
+                "id": i1.id,
+                "url": i1.image.url,
+                "width": i1.width,
+                "height": i1.height,
+                "thumbnail_url": i1.thumbnail.url,
+                "thumbnail_width": i1.thumbnail_width,
+                "thumbnail_height": i1.thumbnail_height,
+                "note": i1.note,
+                "is_featured": True,
+            },
+        ]
+        assert expected == response.data["images"]
 
 
 class TestUpdateAssessment(APITestCase):

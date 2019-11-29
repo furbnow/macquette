@@ -2,7 +2,7 @@ import datetime
 
 from rest_framework import serializers
 
-from .models import Assessment, Library, Organisation
+from .models import Assessment, Image, Library, Organisation
 
 
 class AuthorUserIDMixin():
@@ -23,6 +23,44 @@ class MdateMixin():
         return "{:d}".format(
             int(datetime.datetime.timestamp(obj.updated_at))
         )
+
+
+class ImagesMixin():
+    def get_images(self, obj):
+        if obj.featured_image is not None:
+            featured_id = obj.featured_image.id
+        else:
+            featured_id = None
+
+        s = ImageSerializer(obj.images, context={"featured_id": featured_id}, many=True)
+        return s.data
+
+class IsFeaturedMixin():
+    def get_is_featured(self, obj):
+        if "featured_id" in self.context:
+            return self.context["featured_id"] == obj.id
+        else:
+            return False
+
+
+class ImageSerializer(IsFeaturedMixin, serializers.ModelSerializer):
+    url = serializers.URLField(source="image.url")
+    thumbnail_url = serializers.URLField(source="thumbnail.url")
+    is_featured = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Image
+        fields = [
+            "id",
+            "url",
+            "width",
+            "height",
+            "thumbnail_url",
+            "thumbnail_width",
+            "thumbnail_height",
+            "note",
+            "is_featured",
+        ]
 
 
 class AssessmentMetadataSerializer(
@@ -57,10 +95,13 @@ class AssessmentMetadataSerializer(
         ]
 
 
-class AssessmentFullSerializer(AssessmentMetadataSerializer):
+class AssessmentFullSerializer(ImagesMixin, AssessmentMetadataSerializer):
     """
-    Identical to AssessmentMetadataSerializer except that it includes the `data` field"
+    Identical to AssessmentMetadataSerializer except that it includes the `data` and
+    `images` fields
     """
+    images = serializers.SerializerMethodField()
+
     class Meta:
         model = Assessment
         fields = [
@@ -74,6 +115,7 @@ class AssessmentFullSerializer(AssessmentMetadataSerializer):
             "author",
             "userid",
             "mdate",
+            "images",
             "data",
         ]
 
