@@ -5,6 +5,9 @@ if (typeof library_helper != "undefined")
 else
     var library_helper = new libraryHelper('elements', $("#openbem"));
 
+// Deep-clone an object of simple values
+const cloneObj = obj => JSON.parse(JSON.stringify(obj))
+
 // Capitalise first letter
 const capitalise = str => str.charAt(0).toUpperCase() + str.slice(1)
 
@@ -223,7 +226,7 @@ $("#openbem").on("click", '#bulk-measure-finish', function () {
             measure[lib].location += data.fabric.elements[row].location + ',<br>';
             for (var attr in measure[lib]) {
                 var element_id = data.fabric.elements[row].id;
-                data.fabric.measures[measure[lib].id].original_elements[element_id] = JSON.parse(JSON.stringify(data.fabric.elements[row]));
+                data.fabric.measures[measure[lib].id].original_elements[element_id] = cloneObj(data.fabric.elements[row]);
             }
         }
     });
@@ -260,7 +263,7 @@ $("#openbem").on("click", '.revert-to-original', function () {
         // copy the original element
         for (var e in project[data.created_from].fabric.elements) {
             if (project[data.created_from].fabric.elements[e].id == element_id) {
-                data.fabric.elements[get_element_index_by_id(element_id)] = JSON.parse(JSON.stringify(project[data.created_from].fabric.elements[e]));
+                data.fabric.elements[get_element_index_by_id(element_id)] = cloneObj(project[data.created_from].fabric.elements[e]);
                 break;
             }
         }
@@ -304,7 +307,7 @@ $("#openbem").on("click", '.move-up', function () {
         if (original_element.type == "Wall" || isPartyWall(original_element.type) || original_element.type == "Floor") {
             if (original_element.type == data.fabric.elements[i].type) {
                 move = true;
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
@@ -312,7 +315,7 @@ $("#openbem").on("click", '.move-up', function () {
         else if (original_element.type == "Roof" || original_element.type == "Loft") {
             move = true;
             if (data.fabric.elements[i].type == "Roof" || data.fabric.elements[i].type == "Loft") {
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
@@ -320,7 +323,7 @@ $("#openbem").on("click", '.move-up', function () {
         else {
             if (isOpening(data.fabric.elements[i].type)) {
                 move = true;
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
@@ -340,7 +343,7 @@ $("#openbem").on("click", '.move-down', function () {
         if (original_element.type == "Wall" || isPartyWall(original_element.type) || original_element.type == "Floor") {
             if (original_element.type == data.fabric.elements[i].type) {
                 move = true;
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
@@ -348,7 +351,7 @@ $("#openbem").on("click", '.move-down', function () {
         else if (original_element.type == "Roof" || original_element.type == "Loft") {
             move = true;
             if (data.fabric.elements[i].type == "Roof" || data.fabric.elements[i].type == "Loft") {
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
@@ -356,7 +359,7 @@ $("#openbem").on("click", '.move-down', function () {
         else {
             if (isOpening(data.fabric.elements[i].type)) {
                 move = true;
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
@@ -622,7 +625,7 @@ function apply_measure(measure) {
     // The first time we apply a measure to an element we record its original stage
     if (data.fabric.measures[measure.item_id] == undefined) { // If it is the first time we apply a measure to this element iin this scenario
         data.fabric.measures[measure.item_id] = {};
-        data.fabric.measures[measure.item_id].original_element = JSON.parse(JSON.stringify(data.fabric.elements[measure.row]));
+        data.fabric.measures[measure.item_id].original_element = cloneObj(data.fabric.elements[measure.row]);
     }
 
     for (z in measure.item) // measure.item only has one element, we do it this way to the "property", in this case somemthing like "CV1" oof "ROOF1"
