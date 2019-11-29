@@ -1,48 +1,60 @@
-<h3>Image gallery</h3>
+<style>
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-column-gap: 1.75rem;
+        grid-row-gap: 1.75rem;
+    }
+    .gallery-card {
+        border: 1px solid #CCC7B4;
+        background: #444;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .gallery-head {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+    .gallery-content {
+        padding: 1rem;
+        background-color: #EEECE5;
+    }
+    .gallery-card--selected .gallery-content {
+        background-color: #dff3ff;
+    }
+    .gallery-card--selected {
+        border-color: #8cd4ff;
+    }
+    .gallery-card p {
+        margin-bottom: 0;
+    }
+    .gallery-feature {
+        transform: scale(1.5);
+    }
+    .gallery-checkbox {
+        transform: scale(1.5);
+    }
+    .gallery-editor {
+        width: 190px;
+        margin-bottom: 0 !important;
+    }
+    .text-muted {
+        color: #999;
+    }
+</style>
 
-<h4>Upload images</h4>
-<form style="margin-bottom:5px" action="#" id="upload_form" method="post" enctype="multipart/form-data" >
-    <input type="file" multiple id="files_to_upload">
-    <input type="submit" value="Upload" />
-</form>
-<p>Max. size: 1MB</p>
+<div class="gallery">
+    <h3>Image gallery</h3>
 
-<div id="upload_result" style="margin: 0 0 25px 25px">
+    <h4>Upload images</h4>
+    <input type="file" multiple accept="image/*" class="gallery-files">
+    <button class="btn gallery-upload">Upload</button>
+    <p>Max. size: 1MB</p>
+    <div id="upload_result" style="margin: 0 0 25px 25px"></div>
 
+    <div class="gallery-list"></div>
 </div>
-
-<div id="gallery">
-    <h4 style="margin: 15px 0 0 0">Gallery</h4>
-    <button class="btn" id="delete-images" disabled>Delete selected images</button>
-    <div id="delete_result" style="margin: 0 0 25px 25px"></div>
-</div>
-
-<div id="modal-delete-image" class="modal modal-sm hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3>Delete image</h3>
-    </div>
-    <div class="modal-body">
-        <p>Are you sure you want to delete <span id="file-to-delete"/></p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button id="delete-file-confirm" index="" class="btn btn-primary">Yes</button>
-    </div>
-</div>
-
-<div id="modal-delete-images" class="modal modal-sm hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3>Delete images</h3>
-    </div>
-    <div class="modal-body">
-        <p>Are you sure you want to delete <span id="files-to-delete"/></p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button id="delete-files-confirm" index="" class="btn btn-primary">Yes</button>
-    </div>
-</div>
-
-
