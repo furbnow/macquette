@@ -1,15 +1,19 @@
 console.log('debug elements.js');
+
 if (typeof library_helper != "undefined")
     library_helper.type = 'elements';
 else
     var library_helper = new libraryHelper('elements', $("#openbem"));
+
+// Capitalise first letter
+const capitalise = str => str.charAt(0).toUpperCase() + str.slice(1)
 
 // button defined in: libraryHelper:elements_library_to_html
 $("#openbem").on("click", '.add-element', function () {
 
     var lib = $(this).attr("lib");
     var type = $(this).attr("type");
-    type = type.charAt(0).toUpperCase() + type.slice(1); // Ensure first letter is capital
+    type = capitalise(type);
     var item_id = 1 + get_elements_max_id();
     var library = library_helper.get_library_by_id($(this).attr('library')).data;
     // Create default element
@@ -51,7 +55,7 @@ $("#openbem").on("click", '.change-element', function () {
     var row = $(this).attr("row");
     var lib = $(this).attr("lib");
     var type = $(this).attr("type");
-    type = type.charAt(0).toUpperCase() + type.slice(1); // Ensure first letter is capital
+    type = capitalise(type);
 
     console.log("change element row=" + row + " lib=" + lib);
 
@@ -515,7 +519,6 @@ function elements_initUI()
     // Initial addition of floors
     for (z in data.fabric.elements) {
         var type = data.fabric.elements[z].type;
-        //type = type.charAt(0).toUpperCase() + type.slice(1); // Ensure first letter is capital
         if (type == 'Wall' || type == 'wall') {
             add_element("#elements", z);
         }
