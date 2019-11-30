@@ -238,49 +238,154 @@
     </div>
 </section>
 
+<section>
+    <div class="line-top mb-15">
+        <h3 class="ma-0 mb-7">Floors</h3>
+        <p class="mb-0 text-italic">
+            Floor U-values are to be calculated conforming to the standards:
+            BS EN ISO 6946, 13370, 13789, BRE 443, 497.
+        </p>
+    </div>
 
+    <template id="floor-template">
+        <tr>
+            <td style="width: 0">
+            <!--
+                XXX Disabled because it using it can cause data loss.
 
-    <h3>Floors</h3>
-    <hr>
+                <i data-action class="icon-arrow-up if-not-locked move-up clickable"></i><br>
+                <i data-action class="icon-arrow-down if-not-locked move-down clickable"></i>
+            -->
+            </td>
+            <td colspan="5">
+                <b>
+                    <span data-key="lib"></span> - <span data-key="name"></span>
+                </b>
+                <br>
+                k-value:
+                <span data-key="kvalue"></span> <span class="text-units">kJ/K.m²</span>
+
+                <span data-section="cost">
+                    <br>
+                    £<span data-key="cost_total"></span>
+                </span>
+            </td>
+            <td rowspan="2" style="width:0">
+                <button data-action class="apply-measure d-b mb-7 btn btn--icon text-nowrap">
+                    Apply Measure
+                </button>
+
+                <button data-action class="edit-item d-b mb-7 btn btn--icon">
+                    <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-edit" /></svg>
+                    Edit
+                </button>
+
+                <button data-action class="revert-to-original d-b mb-7 btn btn--icon text-nowrap">
+                    <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-undo" /></svg>
+                    Revert
+                </button>
+
+                <button data-action class="delete-element d-b mb-7 btn btn--icon text-nowrap">
+                    <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-trash" /></svg>
+                    Delete
+                </button>
+            </td>
+        </tr>
+        <tr class="tr-no-top-border">
+            <td></td>
+            <td>
+                <input type="text" data-key="location" style="width: 15rem">
+            </td>
+            <td class="d-flex">
+                <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="floor-uvalue"
+                    dp="2"
+                    data-key="uvalue"
+                    style="flex-grow: 1; max-width: 60px">
+
+                <button
+                    class="calculate-floor-uvalue d-flex align-items-center"
+                    style="border: none; margin-bottom: 10px; margin-left: 0.25rem;">
+                    <svg width="1.2rem" viewBox="0 0 1792 1792">
+                        <use xlink:href="#iconset-calculator" />
+                    </svg>
+                </button>
+            </td>
+            <td class="text-right">
+                <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    data-key="perimeter"
+                    dp="2"
+                    style="width:50px"> m
+            </td>
+            <td class="text-right text-nowrap">
+                <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    data-key="area"
+                    dp="2"
+                    style="width:50px"> m²
+            </td>
+            <td class="text-right text-nowrap">
+                <span data-key="wk" dp="2">0.00</span> W/K
+            </td>
+        </tr>
+    </template>
 
     <table class="table">
-        <tr>
-            <th></th>
-            <th style="text-align:left">Element</th>
-            <th>Label/Location</th>
-            <th>U-value <i class="icon-question-sign" title="Floor U-values to be calculated conforming to the standards: BS EN ISO 6946, 13370, 13789, BRE 443, 497"></i></th>
-            <th>Exposed perimeter<br>(m)</th>
-            <th>Area<br>(m<sup>2</sup>)</th>
-            <th>W/K</th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tbody id="floor-template" style="display:none">
-            <tr>
-                <td style="width:20px"><i class="icon-arrow-up if-not-locked move-up" style="cursor:pointer" row="template" /><i class="icon-arrow-down if-not-locked move-down" style="cursor:pointer" row="template" /></td>
-                <td style="text-align:left;max-width: 200px"><b><span key="data.fabric.elements.template.lib" style="width:60px"></span> - <span key="data.fabric.elements.template.name" style="width:60px"></span></b><br><!--U-value: <span key="data.fabric.elements.template.uvalue"></span><span style="font-size:0.8em">W/K.m<sup>2</sup></span>, --> k-value: <span key="data.fabric.elements.template.kvalue"></span> <span style="font-size:0.8em">kJ/K.m<sup>2</sup></span><span key="data.fabric.elements.template.cost_total" style="display:none"></span></td>
-                <td><input type="text" class="label-location" key="data.fabric.elements.template.location" /></td>
-                <td><i class="icon-list-alt calculate-floor-uvalue" z="template" style="margin-right:5px; cursor:pointer"></i><input type="number" min="0" dp="2" step="0.01" class="floor-uvalue" value="0" key="data.fabric.elements.template.uvalue"  dp=2 style="width:40px"/></td>
-                <td><input type="number" min="0" dp="2" step="0.01" value="0" key="data.fabric.elements.template.perimeter" dp=2 style="width:50px"/></td>
-                <td><input type="number" min="0" dp="2" step="0.01" value="0" key="data.fabric.elements.template.area" dp=2 style="width:50px"/></td>
-                <td><span key="data.fabric.elements.template.wk" dp=2>0</span> W/K</td>   
-                <td>
-                    <button class="apply-measure if-not-master" tag="template" row="template" item="template" item_id="template">Apply Measure</button>
-                    <br /><p style="margin-top:5px; display:none; cursor: pointer" class="revert-to-original if-not-master" row="template" item_id="template"><img src="" class="revert-to-original-icon" title="Revert to master" style="width:14px" /> Revert to master</p>
-                </td>
-                <td><span class="edit-item if-master" row="template" style="cursor:pointer" item="template" item_id="template" type-of-item="not used for element" tag="template"  title="Editing an element this way is not considered a Measure"><a><i class="icon-edit"></i></a></span></td>
-                <td><span class="delete-element" row="template" style="cursor:pointer" item_id="template"  title="Deleting an element this way is not considered a Measure"><a><i class="icon-trash"></i></a></span></td>
+        <thead>
+            <tr class="bg-lighter">
+                <th></th>
+                <th>Label/Location</th>
+                <th>U-value</th>
+                <th>Exposed perimeter</th>
+                <th>Area</th>
+                <th>Loss</th>
+                <th></th>
             </tr>
-        </tbody>
+        </thead>
+
         <tbody id="floors"></tbody>
 
+        <tfoot>
+            <tr class="bg-lighter">
+                <td></td>
+                <td colspan="3" class="font-bold">Totals</td>
+                <td class="text-right">
+                    <span key="data.fabric.total_floor_area" dp="1">0.0</span>m²
+                </td>
+                <td class="text-right">
+                    <span key="data.fabric.total_floor_WK" dp="2">0.00</span> W/K
+                </td>
+                <td colspan="1"></td>
+            </tr>
+        </tfoot>
     </table>
-    <div style="float:right;">
-        <p> Total loss: <span key="data.fabric.total_floor_WK" dp="2"></span> W/K</p>
-        <p>Total floor area: <span key="data.fabric.total_floor_area" dp=1></span> m<sup>2</sup></p>
-    </div>
-    <p style="margin-bottom: 50px"> <button class="btn add-from-lib" tags="Floor">Add floor from library</button></p>
+
+    <p class="mb-45">
+        <button class="btn add-from-lib" tags="Floor">
+            Add floor from library
+        </button>
+    </p>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

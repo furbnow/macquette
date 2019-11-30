@@ -379,43 +379,49 @@ $("[key='data.fabric.global_TMP']").change(function () {
         $("[key='data.fabric.global_TMP_value']").prop('disabled', true);
 });
 
+// --------------------------------------------------------
+// View/redraw code
+// --------------------------------------------------------
+
 const selectFabricTemplate = (id, str) =>
     $(`${id} [key='data.fabric.elements.template.${str}']`)
 
 const setFabricTemplateKey = (id, z, str) =>
     selectFabricTemplate(id, str).attr("key", `data.fabric.elements.${z}.${str}`)
 
-function add_element(id, z)
+function cloneTemplate(id) {
+    const template = document.querySelector(id)
+    return document.importNode(template.content, true);
+}
+
+function setupFabricKeys(root, z)
 {
-    const element = data.fabric.elements[z];
-
-    const template = document.querySelector("#element-template")
-    const cloned = document.importNode(template.content, true)
-
-    for (let e of cloned.querySelectorAll("[data-key]")) {
+    for (let e of root.querySelectorAll("[data-key]")) {
         const key = e.dataset.key;
         e.setAttribute("key", `data.fabric.elements.${z}.${key}`);
     }
+}
 
-    if (element.EWI !== true) {
-        cloned.querySelector("[data-section='EWI']").remove()
-    }
-
+function setupFabricCostTotal(root, element) {
     if (element.cost_total === undefined) {
-        cloned.querySelector("[data-section='cost']").remove()
+        root.querySelector("[data-section='cost']").remove()
     }
+}
 
+function setupFabricButtons(root, z, element)
+{
+    // We don't allow editing or deleting items except on the master scenario.
     if (scenario === 'master') {
-        cloned.querySelector(".apply-measure").remove()
-        cloned.querySelector(".revert-to-original").remove()
+        root.querySelector(".apply-measure").remove()
+        root.querySelector(".revert-to-original").remove()
     } else {
-        cloned.querySelector(".edit-item").remove()
-        cloned.querySelector(".delete-element").remove()
+        root.querySelector(".edit-item").remove()
+        root.querySelector(".delete-element").remove()
     }
 
     // These are set for the library manager to do its thing
     // see library-helper.js
-    for (let e of cloned.querySelectorAll("[data-action]")) {
+    for (let e of root.querySelectorAll("[data-action]")) {
         e.setAttribute('row', z);
         e.setAttribute('item_id', element.id);
         e.setAttribute('item', JSON.stringify(element));
@@ -425,9 +431,22 @@ function add_element(id, z)
         else
             e.setAttribute('tags', 'Roof,Loft');
     }
+}
 
-    $(id).append(cloned);
+function add_element(id, z)
+{
+    const element = data.fabric.elements[z];
+    const root = cloneTemplate("#element-template");
 
+    setupFabricKeys(root, z)
+    setupFabricCostTotal(root, element)
+    setupFabricButtons(root, z, element)
+
+    if (element.EWI !== true && element.cost_total !== undefined) {
+        root.querySelector("[data-section='EWI']").remove()
+    }
+
+    $(id).append(root);
     init_revert_to_original(id, z);
 }
 
@@ -435,36 +454,19 @@ function add_floor(z)
 {
     const id = "#floors";
     const element = data.fabric.elements[z];
-    $(id).append($("#floor-template").html());
+    const root = cloneTemplate("#floor-template");
 
-    setFabricTemplateKey(id, z, 'type');
-    setFabricTemplateKey(id, z, 'name');
-    setFabricTemplateKey(id, z, 'location');
-    setFabricTemplateKey(id, z, 'lib');
-    setFabricTemplateKey(id, z, 'perimeter');
-    setFabricTemplateKey(id, z, 'area');
-    setFabricTemplateKey(id, z, 'uvalue');
-    setFabricTemplateKey(id, z, 'kvalue');
-    setFabricTemplateKey(id, z, 'wk');
+    setupFabricKeys(root, z)
+    setupFabricCostTotal(root, element)
+    setupFabricButtons(root, z, element)
 
-    selectFabricTemplate(id, 'EWI').html(element.EWI == true ? 'EWI' : '');
-    selectFabricTemplate(id, 'EWI').removeAttr('key');
-    $(id + " .calculate-floor-uvalue[z='template'").attr('z', z);
+    root.querySelector(".calculate-floor-uvalue").setAttribute("z", z)
 
-    if (element.cost_total != undefined)
-        selectFabricTemplate(id, "cost_total").attr('key', '').html('<br />£' + element.cost_total).show();
-    else
-        selectFabricTemplate(id, "cost_total").attr('key', '');
+    if (element.uvalue == 0) {
+        root.querySelector("input.floor-uvalue").classList.add("text-warning");
+    }
 
-    const row = $(id + " [row='template']");
-    row.attr('row', z);
-    row.attr('item_id', element.id);
-    row.attr('item', JSON.stringify(element));
-    row.attr('tags', element.type);
-
-    if (element.uvalue == 0)
-        $(id + " [key='data.fabric.elements." + z + ".uvalue']").css('color', 'red');
-
+    $(id).append(root);
     init_revert_to_original(id, z);
 }
 
@@ -547,28 +549,27 @@ function elements_initUI()
     // Put the tables in place.
     // Only executes once because of the replaceChild call.  It's really just to avoid
     // duplicating the same markup in the HTML file.
-    const tableTemplate = document.querySelector("#element-table-template")
     for (let e of document.querySelectorAll("[data-fabric-table]")) {
         const tbodyId = e.dataset.fabricTable
         const areaKey = e.dataset.areaKey
         const lossKey = e.dataset.lossKey
 
-        const cloned = document.importNode(tableTemplate.content, true);
+        const root = cloneTemplate("#element-table-template")
 
         // Various things need the tbody id to hook off, so we set it here.
-        cloned.querySelector("tbody").setAttribute("id", tbodyId)
+        root.querySelector("tbody").setAttribute("id", tbodyId)
 
         // All element types get a total area set
-        cloned.querySelector("[data-template-area]").setAttribute("key", areaKey)
+        root.querySelector("[data-template-area]").setAttribute("key", areaKey)
 
         // Party walls don't have a total loss for some reason
         if (lossKey) {
-            cloned.querySelector("[data-template-loss]").setAttribute("key", lossKey)
+            root.querySelector("[data-template-loss]").setAttribute("key", lossKey)
         } else {
-            cloned.querySelector("[data-template-loss]").parentNode.innerHTML = ""
+            root.querySelector("[data-template-loss]").parentNode.innerHTML = ""
         }
 
-        e.parentNode.replaceChild(cloned, e)
+        e.parentNode.replaceChild(root, e)
     }
 
     $("#walls").html("");

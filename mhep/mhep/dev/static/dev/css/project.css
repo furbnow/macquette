@@ -209,6 +209,8 @@ body .modal {
 .text-bold { font-weight: bold; }
 .text-italic { font-style: italic; }
 
+.text-warning { color: red; }
+
 .bg-lighter { background-color: #ac9d9344; }
 
 
