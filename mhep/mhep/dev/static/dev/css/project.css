@@ -193,6 +193,13 @@ body .modal {
 
 
 
+
+.table-unstyled, .table-unstyled tr, .table-unstyled td, .table-unstyled th {
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
 .tr-no-top-border td {
     border-top: none;
 }
@@ -220,6 +227,8 @@ body .modal {
 
 .align-items-start { align-items: start; }
 .align-items-center { align-items: center; }
+
+.justify-content-between { justify-content: space-between; }
 
 .mt-0 { margin-top: 0px !important; }
 .ml-0 { margin-left: 0px !important; }
@@ -291,6 +300,13 @@ body .modal {
     width: 1.2rem !important;
     height: 1.2rem !important;
 }
+
+.bg-red { background-color: #ff2712; }
+.bg-pale-green { background-color: #beeebe; }
+.bg-pale-blue { background-color: #ddeeff; }
+.bg-golden { background-color: #e6c577; }
+
+.fg-white { color: #fff; }
 
 .btn--icon {
     display: inline-flex;

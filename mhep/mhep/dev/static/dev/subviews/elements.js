@@ -474,69 +474,55 @@ function add_window(z)
 {
     const id = "#windows";
     const element = data.fabric.elements[z];
-    $("#windows").append($("#window-template").html());
+    const root = cloneTemplate("#window-template");
 
-    setFabricTemplateKey(id, z, 'name');
-    setFabricTemplateKey(id, z, 'location');
-    setFabricTemplateKey(id, z, 'lib');
-    setFabricTemplateKey(id, z, 'description');
-    setFabricTemplateKey(id, z, 'subtractfrom');
-    setFabricTemplateKey(id, z, 'l');
-    setFabricTemplateKey(id, z, 'h');
-    setFabricTemplateKey(id, z, 'area');
-    setFabricTemplateKey(id, z, 'uvalue');
-    setFabricTemplateKey(id, z, 'kvalue');
-    setFabricTemplateKey(id, z, 'wk');
+    setupFabricKeys(root, z)
+    setupFabricCostTotal(root, element)
+    setupFabricButtons(root, z, element)
 
-    if (!isHatch(element.type)) {
-        setFabricTemplateKey(id, z, 'orientation');
-        setFabricTemplateKey(id, z, 'overshading');
-        setFabricTemplateKey(id, z, 'g');
-        setFabricTemplateKey(id, z, 'gL');
-        setFabricTemplateKey(id, z, 'ff');
-        setFabricTemplateKey(id, z, 'gain');
-    }
-    else {
-        selectFabricTemplate(id, "orientation").parent().html('');
-        selectFabricTemplate(id, "overshading").parent().html('');
-        selectFabricTemplate(id, "gain").parent().html('');
-        $('#windows .window_fields_template').html('');
+    if (isHatch(element.type)) {
+        for (let e of root.querySelectorAll("[data-section='not-hatch']")) {
+            e.remove()
+        }
     }
 
-    if (element.cost_total != undefined)
-        selectFabricTemplate(id, "cost_total").attr('key', '').html('<br />£' + element.cost_total).show();
-    else
-        selectFabricTemplate(id, "cost_total").attr('key', '');
-
-    $('#windows .window_fields_template').removeClass('window_fields_template');
-    element.name = String(element.name);
-    var name = element.name;
-    name = name.toLowerCase();
+    let text, classes
     if (isDoor(element.type)) {
-        $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', '#ffeeee');
+        text = "Door"
+        classes = [ "bg-pale-blue" ]
+    } else if (isRoofLight(element.type)) {
+        text = "Roof light"
+        classes = [ "bg-pale-green" ]
+    } else if (isHatch(element.type)) {
+        text = "Hatch"
+        classes = [ "bg-red", "fg-white" ]
+    } else {
+        text = "Window"
+        classes = [ "bg-golden" ]
     }
-    else if (isRoofLight(element.type)) {
-        $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', '#eeffee');
-    }
-    else if (isHatch(element.type)) {
-        $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', '#ddeeff');
+    root.querySelector("[data-type]").classList.add(...classes);
+    root.querySelector("[data-type]").textContent = text;
+
+    // We must tend to our radio buttons, which require special care and attention
+    for (let e of root.querySelectorAll("input[name*=NN]")) {
+        e.name = e.name.replace("NN", z)
+        e.id = e.id.replace("NN", z)
     }
 
-    const row = $("#windows [row='template']");
-    row.attr('row', z);
-    row.attr('item_id', element.id);
-    row.attr('item', JSON.stringify(element));
-    row.attr('tags', element.type);
+    // ... and their corresponding labels
+    for (let e of root.querySelectorAll("label[for*=NN]")) {
+        e.setAttribute("for", e.getAttribute("for").replace("NN", z))
+    }
 
-    var subtractfromhtml = "<option value='no' ></option>";
+    let subtractFromOptionList = "<option value='no'></option>";
     for (i in data.fabric.elements) {
-        // here
-        if (!isOpening(data.fabric.elements[i].type) && data.fabric.elements[i].type != 'Floor')
-            subtractfromhtml += "<option value='" + data.fabric.elements[i].id + "'>" + data.fabric.elements[i].location + "</option>";
-        //subtractfromhtml += "<option value='" + i + "'>" + data.fabric.elements[i].name + "</option>";
+        if (!isOpening(data.fabric.elements[i].type) && element.type != 'Floor') {
+            subtractFromOptionList += `<option value='${element.id}'>${element.location}</option>`;
+        }
     }
-    $("#windows [key='data.fabric.elements." + z + ".subtractfrom']").html(subtractfromhtml);
+    root.querySelector(`[key='data.fabric.elements.${z}.subtractfrom']`).innerHTML = subtractFromOptionList;
 
+    $(id).append(root);
     init_revert_to_original(id, z);
 }
 

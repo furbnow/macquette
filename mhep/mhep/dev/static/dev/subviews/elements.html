@@ -14,7 +14,13 @@
         text-align: left;
     }
 
-
+    .small-caps {
+        color: #555;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: bold;
+        margin-bottom: 0.125rem;
+    }
 </style>
 
 <div id="elements-container" class="page">
@@ -376,125 +382,240 @@
 </section>
 
 
+<section>
+    <h3 class="line-top">Windows, doors, roof-lights and hatches</h3>
 
+    <p class="text-italic">
+        MHEP applies the same solar access factor to roof lights as to other windows.
+        This is a deviation from SAP2012 (p.26 note 2), where solar factors for roof
+        lights are always 1, independent of the overshading.
+    </p>
 
+    <template id="window-template">
+        <tr>
+            <td rowspan="2">
+                <!--
+                Like above, these aren't working...
+                <i class="icon-arrow-up if-not-locked move-up clickable"></i><br>
+                <i class="icon-arrow-down if-not-locked move-down clickable"></i>
+                -->
+            </td>
+            <td colspan="5">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <b>
+                            <span data-key="lib"></span> - <span data-key="name"></span>
+                        </b>
+                        <br>
+                        U-value: <span data-key="uvalue"></span>,
+                        K-value: <span data-key="kvalue"></span><span data-section="not-hatch">,
+                        g:<span data-key="g"></span>,
+                        gL:<span data-key="gL"></span>,
+                        ff:<span data-key="ff"></span>
+                        </span>
+                        <span
+                            data-section="cost"
+                            data-key="cost_total"
+                        ></span>
+                    </div>
+                    <div>
+                        <span class="px-15 py-7" style="border-radius: 5px" data-type></span>
+                    </div>
+                </div>
+            </td>
 
+            <td rowspan="2" style="width: 0">
+                <button data-action class="apply-measure d-b mb-7 btn btn--icon text-nowrap">
+                    Apply Measure
+                </button>
 
+                <button data-action class="edit-item d-b mb-7 btn btn--icon">
+                    <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-edit" /></svg>
+                    Edit
+                </button>
 
+                <button data-action class="revert-to-original d-b mb-7 btn btn--icon text-nowrap">
+                    <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-undo" /></svg>
+                    Revert
+                </button>
 
+                <button data-action class="delete-element d-b mb-7 btn btn--icon text-nowrap">
+                    <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-trash" /></svg>
+                    Delete
+                </button>
+            </td>
+        </tr>
+        <tr class="tr-no-top-border">
+            <td>
+                <label class="small-caps">Label/location</label>
+                <input
+                    type="text"
+                    data-key="location"
+                    style="width: 100%; box-sizing: border-box; height: 30px"
+                    class="mb-15"
+                />
 
+                <label class="small-caps">Subtract from</label>
+                <select
+                    class="subtractfrom"
+                    data-key="subtractfrom"
+                    style="width: 100%; box-sizing: border-box; height: 30px"
+                >
+                </select>
+            </td>
 
+            <td>
+                <div class="d-flex align-items-center mb-15">
+                    <div>
+                        <span class="small-caps">Width</span>
+                        <span class="text-units">m</span>
+                        <br>
+                        <input
+                            type="number"
+                            min="0"
+                            dp="2"
+                            step="0.01"
+                            value="0"
+                            data-key="l"
+                            style="width:50px; margin-bottom: 0">
+                    </div>
+                    <span style="font-size: 1.5rem; margin: 0 0.2rem">
+                        <br>
+                        ⨯
+                    </span>
+                    <div>
+                        <span class="small-caps">Height</span>
+                        <span class="text-units">m</span>
+                        <br>
+                        <input
+                            type="number"
+                            min="0"
+                            dp="2"
+                            step="0.01"
+                            value="0"
+                            data-key="h"
+                            style="width:50px; margin-bottom: 0">
+                    </div>
+                </div>
 
+                <label class="mb-0">
+                    <span class="small-caps">Area</span>
+                    <span class="text-units">m²</span>
+                </label>
+                <input
+                    type="number"
+                    min="0"
+                    dp="2"
+                    step="0.01"
+                    value="0"
+                    data-key="area"
+                    style="width:50px">
+            </td>
 
+            <td>
+                <div data-section="not-hatch">
+                    <span class="small-caps">Orientation</span>
+                    <div class="text-nowrap d-flex">
+                        <input type="radio" class="my-0" name="orientation-NN" data-key="orientation" value="0" id="orientation-NN-0">
+                        <label style="padding-left: 5px" class="mb-0" for="orientation-NN-0">North</label>
+                    </div>
+                    <div class="text-nowrap d-flex">
+                        <input type="radio" class="my-0" name="orientation-NN" data-key="orientation" value="1" id="orientation-NN-1">
+                        <label style="padding-left: 5px" class="mb-0" for="orientation-NN-1">NE/NW</label>
+                    </div>
+                    <div class="text-nowrap d-flex">
+                        <input type="radio" class="my-0" name="orientation-NN" data-key="orientation" value="2" id="orientation-NN-2">
+                        <label style="padding-left: 5px" class="mb-0" for="orientation-NN-2">East/West</label>
+                    </div>
+                    <div class="text-nowrap d-flex">
+                        <input type="radio" class="my-0" name="orientation-NN" data-key="orientation" value="3" id="orientation-NN-3">
+                        <label style="padding-left: 5px" class="mb-0" for="orientation-NN-3">SE/SW</label>
+                    </div>
+                    <div class="text-nowrap d-flex">
+                        <input type="radio" class="my-0" name="orientation-NN" data-key="orientation" value="4" id="orientation-NN-4">
+                        <label style="padding-left: 5px" class="mb-0" for="orientation-NN-4">South</label>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div data-section="not-hatch">
+                    <span class="small-caps">% overshading</span>
+                    <table class="table-unstyled">
+                        <tr>
+                            <td><input type="radio" class="mt-0" name="overshading-NN" data-key="overshading" value="0" id="overshading-NN-0"></td>
+                            <td class="pl-7"><label class="d-i" for="overshading-NN-0">> 80</label></td>
+                            <td class="pl-7"><small>Heavy</small></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" class="mt-0" name="overshading-NN" data-key="overshading" value="1" id="overshading-NN-1"></td>
+                            <td class="pl-7"><label class="d-i" for="overshading-NN-1">60–80</label></td>
+                            <td class="pl-7"><small>Above average</small></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" class="mt-0" name="overshading-NN" data-key="overshading" value="2" id="overshading-NN-2"></td>
+                            <td class="pl-7"><label class="d-i" for="overshading-NN-2">20–60</label></td>
+                            <td class="pl-7"><small>Average/unknown</small></td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" class="mt-0" name="overshading-NN" data-key="overshading" value="3" id="overshading-NN-3"></td>
+                            <td class="pl-7"><label class="d-i" for="overshading-NN-3">< 20</label></td>
+                            <td class="pl-7"><small>Very little</small></td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
 
+            <td class="text-nowrap">
+                <p data-section="not-hatch">
+                    <span class="small-caps">Gains</span><br>
+                    <span data-key="gain" dp="2">0</span> W
+                </p>
+                <p>
+                    <span class="small-caps">Losses</span><br>
+                    <span data-key="wk" dp="2">0</span> W/K
+                </p>
+            </td>
+        </tr>
+    </template>
 
-
-    <hr>
-    <h3>Windows, doors, roof-lights and hatches</h3>
-    <hr>
-
-    <div style="float:left"><b>Key:</b></div>
-    <div style="margin: 4px 5px 0px 8px; border:1px solid #000; width:10px; height:10px; background-color:#fff; float:left"></div>
-    <div style="float:left">Windows</div>
-    <div style="margin: 4px 5px 0px 8px; border:1px solid #000; width:10px; height:10px; background-color:#eeffee; float:left"></div>
-    <div style="float:left">Roof-lights</div>
-    <div style="margin: 4px 5px 0px 8px; border:1px solid #000; width:10px; height:10px; background-color:#ffeeee; float:left"></div>
-    <div style="float:left">Doors</div>
-    <div style="margin: 4px 5px 0px 8px; border:1px solid #000; width:10px; height:10px; background-color:#ddeeff; float:left"></div>
-    <div style="float:left">Hatches</div>
-    <br><br>
 
     <table class="table">
-
-        <tr>
-            <!--<th>Type</th>-->
-            <th></th>
-            <th style="text-align:left; ">Element</th>
-            <th>Label/Location</th>
-            <th>subtract<br>from:</th>
-            <th>Width<br>(m)</th>
-            <th>Height<br>(m)</th>
-            <th>Area<br>(m<sup>2</sup>)</th>
-            <th>Orient<br>-ation</th>
-            <th>Over<br>shading <i class="icon-question-sign" title="MHEP applies same solar access factor to roof lights than any other windows. This is a deviation from SAP2012 (p.26 note 2) where solar factors for roof lights are always 1 independent of the overshading"></i></th>
-            <th>Gain</th>
-            <th>W/K</th>
-            <th style="text-align: center"><button class=" if-not-master apply-bulk-measure" tags="Window" 
-                                                   item='{"type":"Window","name":"--","lib":"--","l":0,"h":0,"area":0,"uvalue":0,"id":0,"location":"","description":"","kvalue":"","orientation":0,"overshading":0,"g":"0","gL":"0","ff":"0","performance":"","benefits":"","cost":"","who_by":"","disruption":"","associated_work":"","notes":"","maintenance":"","netarea":0,"wk":0,"gain":0}'
-                                                   tag="--" item_id="0" row="13">Apply bulk measure
-                </button>
-            </th>
-        </tr>
-
-        <tbody id="window-template" style="display:none">
-            <tr>
-                <!--
-                <td>
-                    <select key="data.fabric.elements.template.openingtype" style="width:50px">
-                        <option>Window</option>
-                        <option>Roof-light</option>
-                        <option>Door</option>
-                    </select>
-                </td>
-                -->
-                <td style="width:150px"><i class="icon-arrow-up if-not-locked move-up" style="cursor:pointer" row="template" /><i class="icon-arrow-down if-not-locked move-down" style="cursor:pointer" row="template" /></td>
-                <td style="text-align:left">
-                    <b><span key="data.fabric.elements.template.lib"></span>: <span key="data.fabric.elements.template.name"></span></b> <br />
-                    U-value: <span key="data.fabric.elements.template.uvalue"></span>, K-value: <span key="data.fabric.elements.template.kvalue"></span><span class="window_fields_template">, g:<span key="data.fabric.elements.template.g"> </span>, gL:<span key="data.fabric.elements.template.gL"></span>, ff:<span key="data.fabric.elements.template.ff"></span></span>
-                        <span key="data.fabric.elements.template.cost_total" style="display:none"></span>
-                </td>
-                <td><input type="text" key="data.fabric.elements.template.location" style="width:150px" /></td>
-                <td>
-                    <select class="subtractfrom" key="data.fabric.elements.template.subtractfrom" style="width:150px">
-
-                    </select>
-                </td>
-
-                <td><input type="number" min="0" dp="2" step="0.01" value="0" key="data.fabric.elements.template.l" style="width:50px"/></td>
-                <td><input type="number" min="0" dp="2" step="0.01" value="0" key="data.fabric.elements.template.h" style="width:50px"/></td>
-
-                <td><input type="number" min="0" dp="2" step="0.01" value="0" key="data.fabric.elements.template.area" style="width:50px"/></td>
-
-                <td>
-                    <select key="data.fabric.elements.template.orientation" style="width:80px">
-                        <option value=0 >North</option>
-                        <option value=1 >NE/NW</option>
-                        <option value=2 >East/West</option>
-                        <option value=3 >SE/SW</option>
-                        <option value=4 >South</option>
-                    </select>
-
-                </td>
-                <td>
-                    <select key="data.fabric.elements.template.overshading" style="width:85px">
-                        <option value=0 >Heavy > 80%</option>
-                        <option value=1 >More than average > 60%-80%</option>
-                        <option value=2 >Average or unknown 20-60%</option>
-                        <option value=3 >Very little < 20% </option>
-                    </select>
-                </td>
-
-                <td><span key="data.fabric.elements.template.gain" dp=2>0</span>W</td>
-                <td><span key="data.fabric.elements.template.wk" dp=2>0</span> W/K</td>
-                <td>
-                    <button class="apply-measure if-not-master" row="template" item="template" tag="template" item_id="template">Apply Measure</button>
-                    <br /><p style="margin-top:5px; display:none; cursor: pointer" class="revert-to-original if-not-master" row="template" item_id="template"><img src="" class="revert-to-original-icon" title="Revert to master" style="width:14px" /> Revert to master</p>
-                </td>
-                <td><span class="edit-item if-master" row="template" style="cursor:pointer" item="template" tag="template" item_id="template"  title="Editing an element this way is not considered a Measure"><a><i class="icon-edit"></i></a></span></td>
-                <td><span class="delete-element" row="template" style="cursor:pointer" title="Deleting an element this way is not considered a Measure" item_id="template"><i class="icon-trash"></i></span></td>
-
-            </tr>
-        </tbody>
-
         <tbody id="windows"></tbody>
+
+        <tfoot>
+            <tr class="bg-lighter">
+                <td></td>
+                <td colspan="1" style="font-weight: bold;">Totals</td>
+                <td>
+                    Area = <span key="data.fabric.total_window_area" dp="2"></span>m²
+                </td>
+                <td colspan="2"></td>
+                <td colspan="2" class="text-nowrap">
+                    Gains = <span key="data.fabric.annual_solar_gain" dp="2"></span> W<br>
+                    Losses = <span key="data.fabric.total_window_WK" dp="2"></span> W/K
+                </td>
+            </tr>
+        </tfoot>
+
     </table>
 
-    <div style="float:right;">
-        <p>Total gains: <span key="data.fabric.annual_solar_gain" dp="2"></span> W</p>
-        <p>Total loss: <span key="data.fabric.total_window_WK" dp="2"></span> W/K</p>
-        <p>Total window, door, roof_light and hatch area: <span key="data.fabric.total_window_area" dp=2></span> m<sup>2</sup></p>
+    <div class="mb-45">
+        <button class="btn add-from-lib" tags="Window,Door,Roof_light,Hatch">
+            Add window, door, roof light or hatch from library
+        </button>
+
+        <button
+            class="if-not-master apply-bulk-measure"
+            tags="Window"
+            item='{"type":"Window","name":"--","lib":"--","l":0,"h":0,"area":0,"uvalue":0,"id":0,"location":"","description":"","kvalue":"","orientation":0,"overshading":0,"g":"0","gL":"0","ff":"0","performance":"","benefits":"","cost":"","who_by":"","disruption":"","associated_work":"","notes":"","maintenance":"","netarea":0,"wk":0,"gain":0}'
+            tag="--"
+            item_id="0"
+            row="13"
+        >
+            Apply bulk measure
+        </button>
     </div>
-    <p style="margin-bottom: 75px"><button class="btn add-from-lib" tags="Window,Door,Roof_light,Hatch">Add window, door, roof light or hatch from library</button></p>
+</section>
 
 
     <hr>

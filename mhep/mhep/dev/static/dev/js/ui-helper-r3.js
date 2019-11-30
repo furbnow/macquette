@@ -226,6 +226,14 @@ function UpdateUI(data)
             else if (target.is('input[type=hidden]')) {
                 target.val(value);
             }
+            else if (target.is('input[type=radio]')) {
+                // Purposeful loose equals, because e.value will always be a string
+                // while 'value' might an integer... but "3" == 3 so who cares
+                let found = target.filter((_, e) => e.value == value)
+                if (found.length) {
+                    found[0].checked = true
+                }
+            }
             else if (target.is('textarea')) {
                 target.html(value);
             }
