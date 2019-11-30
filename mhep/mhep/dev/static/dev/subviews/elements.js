@@ -49,7 +49,7 @@ $("#openbem").on("click", '.add-element', function () {
     var newelementid = data.fabric.elements.length - 1;
 
     if (type == "Wall")
-        add_element("#elements", newelementid);
+        add_element("#walls", newelementid);
     else if (type == "Roof" || type == "Loft")
         add_element("#roofs", newelementid);
     else if (type == "Floor")
@@ -543,7 +543,35 @@ function elements_initUI()
     library_helper.type = 'elements';
     if (data.fabric.measures == undefined) // Normally this is done in model-rX.js. The model is intended for calculations so i prefer to initialize data.fabric.measures here
         data.fabric.measures = {};
-    $("#elements").html("");
+
+    // Put the tables in place.
+    // Only executes once because of the replaceChild call.  It's really just to avoid
+    // duplicating the same markup in the HTML file.
+    const tableTemplate = document.querySelector("#element-table-template")
+    for (let e of document.querySelectorAll("[data-fabric-table]")) {
+        const tbodyId = e.dataset.fabricTable
+        const areaKey = e.dataset.areaKey
+        const lossKey = e.dataset.lossKey
+
+        const cloned = document.importNode(tableTemplate.content, true);
+
+        // Various things need the tbody id to hook off, so we set it here.
+        cloned.querySelector("tbody").setAttribute("id", tbodyId)
+
+        // All element types get a total area set
+        cloned.querySelector("[data-template-area]").setAttribute("key", areaKey)
+
+        // Party walls don't have a total loss for some reason
+        if (lossKey) {
+            cloned.querySelector("[data-template-loss]").setAttribute("key", lossKey)
+        } else {
+            cloned.querySelector("[data-template-loss]").parentNode.innerHTML = ""
+        }
+
+        e.parentNode.replaceChild(cloned, e)
+    }
+
+    $("#walls").html("");
     $("#roofs").html("");
     $("#floors").html("");
     $("#windows").html("");
@@ -553,7 +581,7 @@ function elements_initUI()
         var type = data.fabric.elements[z].type;
 
         if (type == 'Wall' || type == 'wall') {
-            add_element("#elements", z);
+            add_element("#walls", z);
         }
         else if (type == 'Floor' || type == 'floor') {
             add_floor(z);

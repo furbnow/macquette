@@ -42,6 +42,41 @@
     </div>
 </div>
 
+<template id="element-table-template">
+    <table class="table">
+        <thead>
+            <tr class="bg-lighter">
+                <th></th>
+                <th>Label/Location</th>
+                <th>Length<br /><span class="text-normal">m</span></th>
+                <th>Height<br /><span class="text-normal">m</span></th>
+                <th>Area<br /><span class="text-normal">m²</span></th>
+                <th>Window area</th>
+                <th class="text-nowrap">Net area</th>
+                <th>Loss</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody></tbody>
+
+        <tfoot>
+            <tr class="bg-lighter">
+                <td></td>
+                <td colspan="3" class="text-bold">Totals</td>
+                <td colspan="2"></td>
+                <td class="text-right">
+                    <span data-template-area dp="1">0.0</span>m²
+                </td>
+                <td class="text-right">
+                    <span data-template-loss dp="2">0.00</span> W/K
+                </td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</template>
+
 <!-- This template is re-used for everything apart from openings and floors -->
 <template id="element-template">
     <tr>
@@ -136,117 +171,72 @@
     </tr>
 </template>
 
-<div class="line-top mb-15">
-    <h3 class="ma-0 mb-7">Walls</h3>
-    <p class="mb-0 text-italic">
-        Note: If the element length and height is given it will automatically
-        calculate and override the area calculation. Leave length and height blank
-        and enter area for ceilings and floors and other elements where its easier
-        to enter the area directly.
-    </p>
-</div>
-
-<table class="table">
-    <thead>
-        <tr class="bg-lighter">
-            <th></th>
-            <th>Label/Location</th>
-            <th>Length<br /><span class="text-normal">m</span></th>
-            <th>Height<br /><span class="text-normal">m</span></th>
-            <th>Area<br /><span class="text-normal">m²</span></th>
-            <th class="text-right">Window area</th>
-            <th class="text-right text-nowrap">Net area</th>
-            <th class="text-right">Loss</th>
-            <th></th>
-        </tr>
-    </thead>
-
-    <tbody id="elements"></tbody>
-
-    <tfoot>
-        <tr class="bg-lighter">
-            <td></td>
-            <td colspan="3" class="text-bold">Totals</td>
-            <td colspan="2"></td>
-            <td class="text-right">
-                <span key="data.fabric.total_wall_area" dp="1">0.0</span>m²
-            </td>
-            <td class="text-right">
-                <span key="data.fabric.total_wall_WK" dp="2">0.00</span> W/K
-            </td>
-            <td colspan="10"></td>
-        </tr>
-    </tfoot>
-</table>
-
-<div class="mb-45">
-    <button class="add-from-lib btn" tags="Wall">Add wall from library</button>
-
-    <button
-        class="if-not-master apply-bulk-measure btn btn-secondary"
-        tags="Wall"
-        item='{"type":"Wall","name":"--","lib":"--","l":0,"h":0,"area":0,"uvalue":0,"id":0,"location":"","description":"","kvalue":"","orientation":0,"overshading":0,"g":"0","gL":"0","ff":"0","performance":"","benefits":"","cost":"","who_by":"","disruption":"","associated_work":"","notes":"","maintenance":"","netarea":0,"wk":0,"gain":0}'
-        tag="--"
-        item_id="0"
-        row="13"
-    >
-        Apply bulk measure
-    </button>
-</div>
-
-    <hr>
-
-    <h3>Party walls</h3>
-    <hr>
-    <br>
-
-    <table class="table">
-        <tr>
-            <th></th>
-            <th style="text-align:left">Element</th>
-            <th>Label/Location</th>
-            <th>Length<br>(m)</th>
-            <th>Height<br>(m)</th>
-            <th>Area<br>(m<sup>2</sup>)</th>
-            <th>Window<br>Area<br>(m<sup>2</sup>)</th>
-            <th>Net<br>Area<br>(m<sup>2</sup>)</th>
-            <th>W/K</th>
-        </tr>
-
-        <tbody id="party_walls"></tbody>
-    </table>
-
-    <p style="float:right">Total party wall area: <span key="data.fabric.total_party_wall_area" dp=1></span> m<sup>2</sup></p>
-    <p style="margin-bottom:50px"><button class="btn add-from-lib" tags="Party_wall">Add party wall from library</button></p>
-
-    <hr>
-
-    <hr>
-    <h3>Roofs and lofts</h3>
-    <p><i>Note: When creating a roof or loft element only add that area which forms part of the thermal envelope of the building. Do not add a 'roof' where it sits above a loft which is insulated at ceiling level. Do not add a 'loft' where it sits below a roof which is insulated at rafter level</i></p>
-    <hr>
-
-    <table class="table">
-        <tr>
-            <th></th>
-            <th style="text-align:left">Element</th>
-            <th>Label/Location</th>
-            <th>Length<br>(m)</th>
-            <th>Height<br>(m)</th>
-            <th>Area<br>(m<sup>2</sup>)</th>
-            <th>Window<br>Area<br>(m<sup>2</sup>)</th>
-            <th>Net<br>Area<br>(m<sup>2</sup>)</th>
-            <th>W/K</th>
-        </tr>
-        <tbody id="roofs"></tbody>
-    </table>
-
-    <div style="float:right;">
-        <p> Total loss: <span key="data.fabric.total_roof_WK" dp="2"></span> W/K</p>
-        <p>Total roof area: <span key="data.fabric.total_roof_area" dp=1></span> m<sup>2</sup></p>
+<section>
+    <div class="line-top mb-15">
+        <h3 class="ma-0 mb-7">Walls</h3>
+        <p class="mb-0 text-italic">
+            Note: If the element length and height is given it will automatically
+            calculate and override the area calculation. Leave length and height blank
+            and enter area for ceilings and floors and other elements where its easier
+            to enter the area directly.
+        </p>
     </div>
-    <p style="margin-bottom:50px"><button class="btn add-from-lib" tags="Roof,Loft">Add roof or loft from library</button></p>
-    <hr>
+
+    <div data-fabric-table="walls"
+         data-area-key="data.fabric.total_wall_area"
+         data-loss-key="data.fabric.total_wall_WK"></div>
+
+    <div class="mb-45">
+        <button class="add-from-lib btn" tags="Wall">Add wall from library</button>
+
+        <button
+            class="if-not-master apply-bulk-measure btn btn-secondary"
+            tags="Wall"
+            item='{"type":"Wall","name":"--","lib":"--","l":0,"h":0,"area":0,"uvalue":0,"id":0,"location":"","description":"","kvalue":"","orientation":0,"overshading":0,"g":"0","gL":"0","ff":"0","performance":"","benefits":"","cost":"","who_by":"","disruption":"","associated_work":"","notes":"","maintenance":"","netarea":0,"wk":0,"gain":0}'
+            tag="--"
+            item_id="0"
+            row="13"
+        >
+            Apply bulk measure
+        </button>
+    </div>
+</section>
+
+<section>
+    <h3 class="line-top">Party walls</h3>
+
+    <div data-fabric-table="party_walls"
+         data-area-key="data.fabric.total_party_wall_area"
+         data-loss-key=""></div>
+
+    <p class="mb-45">
+        <button class="btn add-from-lib" tags="Party_wall">
+            Add party wall from library
+        </button>
+    </p>
+</section>
+
+<section>
+    <div class="line-top mb-15">
+        <h3 class="ma-0 mb-7">Roofs and lofts</h3>
+        <p class="mb-0 text-italic">
+            Note: When creating a roof or loft element only add that area which forms
+            part of the thermal envelope of the building. Do not add a 'roof' where it
+            sits above a loft which is insulated at ceiling level. Do not add a 'loft'
+            where it sits below a roof which is insulated at rafter level
+        </p>
+    </div>
+
+    <div data-fabric-table="roofs"
+         data-area-key="data.fabric.total_roof_area"
+         data-loss-key="data.fabric.total_roof_WK"></div>
+
+    <div class="mb-45">
+        <button class="btn add-from-lib" tags="Roof,Loft">
+            Add roof or loft from library
+        </button>
+    </div>
+</section>
 
 
 
