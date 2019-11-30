@@ -617,28 +617,102 @@
     </div>
 </section>
 
+<section class="mb-45">
+    <h3 class="line-top">Thermal Bridging</h3>
 
-    <hr>
-    <h3>Thermal Bridging</h3><hr>
-    <table class="table">
-        <tr><td>Total External Area: </td><td colspan="2"><span key="data.fabric.total_external_area" dp=2></span> m<sup>2</sup></td></tr>
-        <tr><td>Thermal bridging heat loss factor (y)</td><td><input type="number" step="0.01" min="0" value="0.15" key="data.fabric.thermal_bridging_yvalue" style="width:60px" /> W/m<sup>2</sup>.K</td><td><button id="apply-measure-TB" class="if-not-master" style="vertical-align: 25%">Apply measure</button><p id="TB-measured-applied" style="display:none;margin-top:5px">Measure applied</p></td></tr>
-        <tr><td>Thermal bridging heat loss: </td><td colspan="2"><span key="data.fabric.thermal_bridging_heat_loss" dp=2></span> W/K</td></tr>
+    <div class="d-flex align-items-center my-15">
+        <div>
+            Total External Area<br>
+            <span class="text-bigger text-bold">
+                <span key="data.fabric.total_external_area" dp="2"></span> m²
+            </span>
+        </div>
+        <div class="mx-15" style="font-size: 2rem">
+            ×
+        </div>
+        <div>
+            Thermal bridging heat loss factor (y)<br>
+            <input
+                type="number"
+                step="0.01"
+                min="0"
+                value="0.15"
+                key="data.fabric.thermal_bridging_yvalue"
+                style="width:60px"
+                class="text-bigger text-bold">
+            <span class="text-bigger text-bold">W/m².K</span>
+        </div>
+        <div class="mx-15" style="font-size: 2rem">
+            =
+        </div>
+        <div>
+            Thermal bridging heat loss<br>
+            <span class="text-bigger text-bold">
+                <span key="data.fabric.thermal_bridging_heat_loss" dp="2">0</span> W/K<br>
+            </span>
+        </div>
+    </div>
+
+    <button id="apply-measure-TB" class="btn if-not-master">
+        Apply measure
+    </button>
+    <p id="TB-measured-applied" style="display:none;">
+        Measure applied
+    </p>
+</section>
+
+<section>
+    <h3 class="line-top">Totals</h3>
+
+    <div class="d-flex align-items-center my-15">
+        <div>
+            Total fabric heat loss<br>
+            <span class="text-bigger text-bold">
+                <span key="data.fabric.total_heat_loss_WK" dp="2">0</span> W/K<br>
+            </span>
+        </div>
+        <div class="mx-15" style="font-size: 2rem">
+            +
+        </div>
+        <div>
+            Ventilation heat loss<br>
+            <span class="text-bigger text-bold">
+                <span key="data.ventilation.average_WK" dp="2">0</span> W/K<br>
+            </span>
+        </div>
+        <div class="mx-15" style="font-size: 2rem">
+            =
+        </div>
+        <div>
+            Total heat loss<br>
+            <span class="text-bigger text-bold">
+                <span key="data.totalWK" dp="2">0</span> W/K<br>
+            </span>
+        </div>
+    </div>
+
+    <table>
+        <tr>
+            <td class="pr-15 py-7">Total fabric thermal capacity:</td>
+            <td>
+                <span class="text-bigger text-bold">
+                    <span key="data.fabric.total_thermal_capacity" dp="2">0</span> kJ/K.m3
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="pr-15 py-7">Annual solar gains:</td>
+            <td>
+                <span class="text-bigger text-bold">
+                    <span key="data.fabric.annual_solar_gain" dp="2">0</span>W
+                    (<span key="data.fabric.annual_solar_gain_kwh" dp="0">0</span>kWh)
+                </span>
+            </td>
+        </tr>
     </table>
+    </div>
+</section>
 
-    <hr><h3>Totals</h3><hr>
-    <table class="table">
-        <tr><td>Total fabric heat loss:</td><td><span key="data.fabric.total_heat_loss_WK" dp=2>0</span> W/K</td></tr>
-        <tr><td>Ventilation heat loss:</td><td><span key="data.ventilation.average_WK" dp=2>0</span> W/K</td></tr>
-        <tr><td>Total W/K heat loss:</td><td><span key="data.totalWK" dp=2>0</span> W/K</td></tr>
-
-
-        <tr><td>Total fabric thermal capacity:</td><td><span key="data.fabric.total_thermal_capacity" dp=2>0</span> kJ/K.m3</td></tr>
-        <tr><td>Annual solar gains:</td><td><span key="data.fabric.annual_solar_gain" dp=2>0</span> W (<span key="data.fabric.annual_solar_gain_kwh" dp=0>0</span> kWh)</td></tr>
-
-
-    </table>    
-</div>
 
 <div id="apply-measure-TB-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="true">
     <div class="modal-header">
