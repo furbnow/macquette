@@ -388,38 +388,45 @@ const setFabricTemplateKey = (id, z, str) =>
 function add_element(id, z)
 {
     const element = data.fabric.elements[z];
-    $(id).append($("#element-template").html());
 
-    setFabricTemplateKey(id, z, 'type');
-    setFabricTemplateKey(id, z, 'name');
-    setFabricTemplateKey(id, z, 'location');
-    setFabricTemplateKey(id, z, 'lib');
-    setFabricTemplateKey(id, z, 'l');
-    setFabricTemplateKey(id, z, 'h');
-    setFabricTemplateKey(id, z, 'area');
-    setFabricTemplateKey(id, z, 'windowarea');
-    setFabricTemplateKey(id, z, 'netarea');
-    setFabricTemplateKey(id, z, 'uvalue');
-    setFabricTemplateKey(id, z, 'kvalue');
-    setFabricTemplateKey(id, z, 'wk');
+    const template = document.querySelector("#element-template")
+    const cloned = document.importNode(template.content, true)
 
-    selectFabricTemplate(id, 'EWI').html(element.EWI == true ? 'EWI' : '');
-    selectFabricTemplate(id, 'EWI').removeAttr('key');
+    for (let e of cloned.querySelectorAll("[data-key]")) {
+        const key = e.dataset.key;
+        e.setAttribute("key", `data.fabric.elements.${z}.${key}`);
+    }
 
-    if (element.cost_total != undefined)
-        selectFabricTemplate(id, "cost_total").attr('key', '').html('<br />£' + element.cost_total).show();
-    else
-        selectFabricTemplate(id, "cost_total").attr('key', '')
+    if (element.EWI !== true) {
+        cloned.querySelector("[data-section='EWI']").remove()
+    }
 
-    const row = $(id + " [row='template']");
-    row.attr('row', z);
-    row.attr('item_id', element.id);
-    row.attr('item', JSON.stringify(element));
+    if (element.cost_total === undefined) {
+        cloned.querySelector("[data-section='cost']").remove()
+    }
 
-    if (element.type != "Loft" && element.type != "Roof")
-        row.attr('tags', element.type);
-    else
-        row.attr('tags', 'Roof,Loft');
+    if (scenario === 'master') {
+        cloned.querySelector(".apply-measure").remove()
+        cloned.querySelector(".revert-to-original").remove()
+    } else {
+        cloned.querySelector(".edit-item").remove()
+        cloned.querySelector(".delete-element").remove()
+    }
+
+    // These are set for the library manager to do its thing
+    // see library-helper.js
+    for (let e of cloned.querySelectorAll("[data-action]")) {
+        e.setAttribute('row', z);
+        e.setAttribute('item_id', element.id);
+        e.setAttribute('item', JSON.stringify(element));
+
+        if (element.type != "Loft" && element.type != "Roof")
+            e.setAttribute('tags', element.type);
+        else
+            e.setAttribute('tags', 'Roof,Loft');
+    }
+
+    $(id).append(cloned);
 
     init_revert_to_original(id, z);
 }

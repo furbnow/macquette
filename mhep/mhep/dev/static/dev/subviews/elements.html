@@ -40,65 +40,159 @@
             <option value="450">High TMP</option>
         </select>
     </div>
-    <hr>
+</div>
 
+<!-- This template is re-used for everything apart from openings and floors -->
+<template id="element-template">
+    <tr>
+        <td style="width: 0">
+            <!--
+                XXX Disabled because it using it can cause data loss.
 
-    <h3>Walls</h3>
-    <p><i>Note: If the element length and height is given it will automatically calculate and override the area calculation. Leave length and height blank and enter area for ceilings and floors and other elements where its easier to enter the area directly.</i></p>
-    <hr>
-    <br>
+            <i data-action class="icon-arrow-up if-not-locked move-up clickable"></i><br>
+            <i data-action class="icon-arrow-down if-not-locked move-down clickable"></i>
+            -->
+        </td>
+        <td colspan="7">
+            <b>
+                <span data-key="lib"></span> - <span data-key="name"></span>
+            </b>
+            <br>
 
+            U-value:
+            <span data-key="uvalue"></span> <span class="text-units">W/K.m²</span>,
 
-    <table class="table">
+            k-value:
+            <span data-key="kvalue"></span> <span class="text-units">kJ/K.m²</span>
 
-        <tr>
+            <span data-section="cost">
+                <br>
+                £<span data-key="cost_total"></span>
+
+                <span
+                    class="ml-7"
+                    data-section="EWI"
+                    title="When EWI is applied, the area used to calculate of the cost of the measure is the area of the wall increased by 1.15"
+                >
+                    <b>EWI</b>
+                    <i class="icon-question-sign"></i>
+                </span>
+            </span>
+        </td>
+
+        <td rowspan="2" style="width: 0">
+            <button data-action class="apply-measure d-b mb-7 btn btn--icon text-nowrap">
+                Apply Measure
+            </button>
+
+            <button data-action class="edit-item d-b mb-7 btn btn--icon">
+                <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-edit" /></svg>
+                Edit
+            </button>
+
+            <button data-action class="revert-to-original d-b mb-7 btn btn--icon text-nowrap">
+                <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-undo" /></svg>
+                Revert
+            </button>
+
+            <button data-action class="delete-element d-b mb-7 btn btn--icon text-nowrap">
+                <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-trash" /></svg>
+                Delete
+            </button>
+        </td>
+    </tr>
+    <tr class="tr-no-top-border">
+        <td colspan="1"></td>
+        <td>
+            <input type="text" data-key="location">
+        </td>
+        <td>
+            <input
+                data-key="l" dp="2"
+                type="number" min="0" step="0.01"
+                style="width:50px">
+        </td>
+        <td>
+            <input
+                data-key="h" dp="2"
+                type="number" min="0" step="0.01"
+                style="width:50px">
+        </td>
+        <td>
+            <input
+                data-key="area" dp="2"
+                type="number" min="0" step="0.01"
+                style="width:50px">
+        </td>
+        <td class="text-right">
+            <span data-key="windowarea" dp="2">0.00</span>m²
+        </td>
+        <td class="text-right">
+            <span data-key="netarea" dp="2">0.00</span>m²
+        </td>
+        <td class="text-right text-nowrap">
+            <span data-key="wk" dp="2">0.00</span> W/K
+        </td>
+    </tr>
+</template>
+
+<div class="line-top mb-15">
+    <h3 class="ma-0 mb-7">Walls</h3>
+    <p class="mb-0 text-italic">
+        Note: If the element length and height is given it will automatically
+        calculate and override the area calculation. Leave length and height blank
+        and enter area for ceilings and floors and other elements where its easier
+        to enter the area directly.
+    </p>
+</div>
+
+<table class="table">
+    <thead>
+        <tr class="bg-lighter">
             <th></th>
-            <th style="text-align:left">Element</th>
             <th>Label/Location</th>
-            <th>Length<br>(m)</th>
-            <th>Height<br>(m)</th>
-            <th>Area<br>(m<sup>2</sup>)</th>
-            <th>Window<br>Area<br>(m<sup>2</sup>)</th>
-            <th>Net<br>Area<br>(m<sup>2</sup>)</th>
-            <th>W/K</th>
-            <th class="only-for-walls">EWI<i class="icon-question-sign" title="When EWI has been applied the area taken into account for the calculation of the cost of the measure is the original area of the wall increased by 1.15"></i></th>
-            <th style="text-align: center"><button class=" if-not-master apply-bulk-measure" tags="Wall" style="max-width:109px"
-                                                   item='{"type":"Wall","name":"--","lib":"--","l":0,"h":0,"area":0,"uvalue":0,"id":0,"location":"","description":"","kvalue":"","orientation":0,"overshading":0,"g":"0","gL":"0","ff":"0","performance":"","benefits":"","cost":"","who_by":"","disruption":"","associated_work":"","notes":"","maintenance":"","netarea":0,"wk":0,"gain":0}'
-                                                   tag="--" item_id="0" row="13">Apply bulk measure
-                </button>
-            </th>
-
+            <th>Length<br /><span class="text-normal">m</span></th>
+            <th>Height<br /><span class="text-normal">m</span></th>
+            <th>Area<br /><span class="text-normal">m²</span></th>
+            <th class="text-right">Window area</th>
+            <th class="text-right text-nowrap">Net area</th>
+            <th class="text-right">Loss</th>
+            <th></th>
         </tr>
+    </thead>
 
-        <tbody id="element-template" style="display:none">
-            <tr>
-                <td style="width:20px"><i class="icon-arrow-up if-not-locked move-up" style="cursor:pointer" row="template" /><i class="icon-arrow-down if-not-locked move-down" style="cursor:pointer" row="template" /></td>
-                <td style="text-align:left;max-width: 200px"><b><span key="data.fabric.elements.template.lib" style="width:60px"></span> - <span key="data.fabric.elements.template.name" style="width:60px"></span></b><br>U-value: <span key="data.fabric.elements.template.uvalue"></span> <span style="font-size:0.8em">W/K.m<sup>2</sup></span>, k-value: <span key="data.fabric.elements.template.kvalue"></span> <span style="font-size:0.8em">kJ/K.m<sup>2</sup></span><span key="data.fabric.elements.template.cost_total" style="display:none"></span></td>
-                <td><input type="text" class="label-location" key="data.fabric.elements.template.location" /></td>
-                <td><input type="number" min="0" dp="2" step="0.01" value="0" key="data.fabric.elements.template.l" style="width:50px"/></td>
-                <td><input type="number" min="0" dp="2" step="0.01" value="0" key="data.fabric.elements.template.h" style="width:50px"/></td>
-                <td><input type="number" min="0" dp="2" step="0.01" key="data.fabric.elements.template.area" style="width:50px"/></td>
-                <td><span key="data.fabric.elements.template.windowarea" dp=2>0.0</span>m<sup>2</sup></td>
-                <td><span key="data.fabric.elements.template.netarea" dp=2>0.0</span>m<sup>2</sup></td>
-                <td><span key="data.fabric.elements.template.wk" dp=2>0</span> W/K</td>                
-                <td class="only-for-walls"><span key="data.fabric.elements.template.EWI">0</span> </td>
-                <td style="text-align:center">
-                    <button class="apply-measure if-not-master" tag="template" row="template" item="template" item_id="template">Apply Measure</button>
-                    <br /><p style="margin-top:5px; display:none; cursor: pointer" class="revert-to-original if-not-master" row="template" item_id="template"><img src="" class="revert-to-original-icon" title="Revert to master" style="width:14px" /> Revert to master</p>
-                </td>
-                <td><span class="edit-item if-master" row="template" style="cursor:pointer" item="template" item_id="template" type-of-item="not used for element" tags="template"  title="Editing an element this way is not considered a Measure"><a><i class="icon-edit"></i></a></span></td>
-                <td><span class="delete-element" row="template" style="cursor:pointer" item_id="template"  title="Deleting an element this way is not considered a Measure"><a><i class="icon-trash"></i></a></span></td>
-            </tr>
-        </tbody>
+    <tbody id="elements"></tbody>
 
-        <tbody id="elements"></tbody>
-    </table>
+    <tfoot>
+        <tr class="bg-lighter">
+            <td></td>
+            <td colspan="3" class="text-bold">Totals</td>
+            <td colspan="2"></td>
+            <td class="text-right">
+                <span key="data.fabric.total_wall_area" dp="1">0.0</span>m²
+            </td>
+            <td class="text-right">
+                <span key="data.fabric.total_wall_WK" dp="2">0.00</span> W/K
+            </td>
+            <td colspan="10"></td>
+        </tr>
+    </tfoot>
+</table>
 
-    <div style="float:right">
-        <p> Total loss: <span key="data.fabric.total_wall_WK" dp="2"></span> W/K</p>
-        <p>Total wall area: <span key="data.fabric.total_wall_area" dp=1></span> m<sup>2</sup></p>
-    </div>
-    <p style="margin-bottom:50px"><button class="btn add-from-lib" tags="Wall">Add wall from library</button></p>
+<div class="mb-45">
+    <button class="add-from-lib btn" tags="Wall">Add wall from library</button>
+
+    <button
+        class="if-not-master apply-bulk-measure btn btn-secondary"
+        tags="Wall"
+        item='{"type":"Wall","name":"--","lib":"--","l":0,"h":0,"area":0,"uvalue":0,"id":0,"location":"","description":"","kvalue":"","orientation":0,"overshading":0,"g":"0","gL":"0","ff":"0","performance":"","benefits":"","cost":"","who_by":"","disruption":"","associated_work":"","notes":"","maintenance":"","netarea":0,"wk":0,"gain":0}'
+        tag="--"
+        item_id="0"
+        row="13"
+    >
+        Apply bulk measure
+    </button>
+</div>
 
     <hr>
 

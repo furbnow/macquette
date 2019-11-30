@@ -191,7 +191,26 @@ body .modal {
 @media (min-width: 960px) { }
 
 
+
+
+.tr-no-top-border td {
+    border-top: none;
+}
+
+.clickable { cursor: pointer; }
+
+
+.text-units { font-size: 0.8rem }
+
+.text-nowrap { white-space: nowrap; }
+.text-right { text-align: right !important; }
+
+.text-normal { font-weight: normal; font-style: normal; }
 .text-bold { font-weight: bold; }
+.text-italic { font-style: italic; }
+
+.bg-lighter { background-color: #ac9d9344; }
+
 
 .d-i { display: inline; }
 .d-flex { display: flex; }
@@ -270,6 +289,19 @@ body .modal {
     width: 1.2rem !important;
     height: 1.2rem !important;
 }
+
+.btn--icon {
+    display: inline-flex;
+}
+
+.btn--icon svg {
+    align-self: center;
+    margin-right: 0.25rem;
+    height: 0.9rem;
+}
+
+
+
 .house { width: 100%; max-width: 500px; font-size: 36px; }
 .house--light { fill: #ac9d93 }
 .house--dark { fill: rgba(99, 86, 71, 0.6); }
