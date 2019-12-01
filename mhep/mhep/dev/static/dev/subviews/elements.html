@@ -23,27 +23,29 @@
     }
 </style>
 
-<h3 class="line-top">Thermal Mass Parameter (TMP)</h3>
+<section class="line-top mb-45">
+    <h3 class="ma-0 mb-15">Thermal Mass Parameter (TMP)</h3>
 
-<div class="d-flex align-items-start mb-45">
-    <input
-        type="checkbox"
-        id="global_TMP"
-        key="data.fabric.global_TMP"
-        class="ma-0 big-checkbox">
+    <div class="d-flex align-items-start">
+        <input
+            type="checkbox"
+            id="global_TMP"
+            key="data.fabric.global_TMP"
+            class="ma-0 big-checkbox">
 
-    <div class="ml-7">
-        <label for="global_TMP">
-            Ignore the <i>k</i> value of individual elements and use a global TMP value instead:
-        </label>
+        <div class="ml-7">
+            <label for="global_TMP">
+                Ignore the <i>k</i> value of individual elements and use a global TMP value instead:
+            </label>
 
-        <select key="data.fabric.global_TMP_value">
-            <option value="100">Low TMP</option>
-            <option value="250">Medium TMP</option>
-            <option value="450">High TMP</option>
-        </select>
+            <select key="data.fabric.global_TMP_value">
+                <option value="100">Low TMP</option>
+                <option value="250">Medium TMP</option>
+                <option value="450">High TMP</option>
+            </select>
+        </div>
     </div>
-</div>
+</section>
 
 <template id="element-table-template">
     <table class="table">
@@ -174,87 +176,75 @@
     </tr>
 </template>
 
-<section>
-    <div class="line-top mb-15">
-        <h3 class="ma-0 mb-7">Walls</h3>
-        <p class="mb-0 text-italic">
-            Note: If the element length and height is given it will automatically
-            calculate and override the area calculation. Leave length and height blank
-            and enter area for ceilings and floors and other elements where its easier
-            to enter the area directly.
-        </p>
-    </div>
+<section class="line-top mb-45">
+    <h3 class="ma-0 mb-7">Walls</h3>
+    <p class="mb-15 text-italic">
+        Note: If the element length and height is given it will automatically
+        calculate and override the area calculation. Leave length and height blank
+        and enter area for ceilings and floors and other elements where its easier
+        to enter the area directly.
+    </p>
 
     <div data-fabric-table="walls"
          data-area-key="data.fabric.total_wall_area"
          data-loss-key="data.fabric.total_wall_WK"></div>
 
-    <div class="mb-45">
-        <button class="add-from-lib btn" tags="Wall">
-            <i class="icon-plus"></i>
-            Add wall from library
-        </button>
+    <button class="add-from-lib btn" tags="Wall">
+        <i class="icon-plus"></i>
+        Add wall from library
+    </button>
 
-        <button
-            class="if-not-master apply-bulk-measure btn btn-secondary"
-            tags="Wall"
-            item='{"type":"Wall","name":"--","lib":"--","l":0,"h":0,"area":0,"uvalue":0,"id":0,"location":"","description":"","kvalue":"","orientation":0,"overshading":0,"g":"0","gL":"0","ff":"0","performance":"","benefits":"","cost":"","who_by":"","disruption":"","associated_work":"","notes":"","maintenance":"","netarea":0,"wk":0,"gain":0}'
-            tag="--"
-            item_id="0"
-            row="13"
-        >
-            <i class="icon-wrench"></i>
-            Apply bulk measure
-        </button>
-    </div>
+    <button
+        class="if-not-master apply-bulk-measure btn btn-secondary"
+        tags="Wall"
+        item='{"type":"Wall","name":"--","lib":"--","l":0,"h":0,"area":0,"uvalue":0,"id":0,"location":"","description":"","kvalue":"","orientation":0,"overshading":0,"g":"0","gL":"0","ff":"0","performance":"","benefits":"","cost":"","who_by":"","disruption":"","associated_work":"","notes":"","maintenance":"","netarea":0,"wk":0,"gain":0}'
+        tag="--"
+        item_id="0"
+        row="13"
+    >
+        <i class="icon-wrench"></i>
+        Apply bulk measure
+    </button>
 </section>
 
-<section>
-    <h3 class="line-top">Party walls</h3>
+<section class="line-top mb-45">
+    <h3 class="ma-0 mb-15">Party walls</h3>
 
     <div data-fabric-table="party_walls"
          data-area-key="data.fabric.total_party_wall_area"
          data-loss-key=""></div>
 
-    <p class="mb-45">
-        <button class="btn add-from-lib" tags="Party_wall">
-            <i class="icon-plus"></i>
-            Add party wall from library
-        </button>
-    </p>
+    <button class="btn add-from-lib" tags="Party_wall">
+        <i class="icon-plus"></i>
+        Add party wall from library
+    </button>
 </section>
 
-<section>
-    <div class="line-top mb-15">
-        <h3 class="ma-0 mb-7">Roofs and lofts</h3>
-        <p class="mb-0 text-italic">
-            Note: When creating a roof or loft element only add that area which forms
-            part of the thermal envelope of the building. Do not add a 'roof' where it
-            sits above a loft which is insulated at ceiling level. Do not add a 'loft'
-            where it sits below a roof which is insulated at rafter level
-        </p>
-    </div>
+<section class="line-top mb-45">
+    <h3 class="ma-0 mb-7">Roofs and lofts</h3>
+    <p class="mb-15 text-italic">
+        Note: When creating a roof or loft element only add that area which forms
+        part of the thermal envelope of the building. Do not add a 'roof' where it
+        sits above a loft which is insulated at ceiling level. Do not add a 'loft'
+        where it sits below a roof which is insulated at rafter level
+    </p>
 
     <div data-fabric-table="roofs"
          data-area-key="data.fabric.total_roof_area"
          data-loss-key="data.fabric.total_roof_WK"></div>
 
-    <div class="mb-45">
-        <button class="btn add-from-lib" tags="Roof,Loft">
-            <i class="icon-plus"></i>
-            Add roof or loft from library
-        </button>
-    </div>
+    <button class="btn add-from-lib" tags="Roof,Loft">
+        <i class="icon-plus"></i>
+        Add roof or loft from library
+    </button>
 </section>
 
-<section>
-    <div class="line-top mb-15">
-        <h3 class="ma-0 mb-7">Floors</h3>
-        <p class="mb-0 text-italic">
-            Floor U-values are to be calculated conforming to the standards:
-            BS EN ISO 6946, 13370, 13789, BRE 443, 497.
-        </p>
-    </div>
+<section class="line-top mb-45">
+    <h3 class="ma-0 mb-7">Floors</h3>
+    <p class="mb-15 text-italic">
+        Floor U-values are to be calculated conforming to the standards:
+        BS EN ISO 6946, 13370, 13789, BRE 443, 497.
+    </p>
 
     <template id="floor-template">
         <tr>
@@ -377,19 +367,15 @@
         </tfoot>
     </table>
 
-    <p class="mb-45">
-        <button class="btn add-from-lib" tags="Floor">
-            <i class="icon-plus"></i>
-            Add floor from library
-        </button>
-    </p>
+    <button class="btn add-from-lib" tags="Floor">
+        <i class="icon-plus"></i>
+        Add floor from library
+    </button>
 </section>
 
-
-<section>
-    <h3 class="line-top">Windows, doors, roof-lights and hatches</h3>
-
-    <p class="text-italic">
+<section class="line-top mb-45">
+    <h3 class="ma-0 mb-7">Windows, doors, roof-lights and hatches</h3>
+    <p class="text-italic mb-15">
         MHEP applies the same solar access factor to roof lights as to other windows.
         This is a deviation from SAP2012 (p.26 note 2), where solar factors for roof
         lights are always 1, independent of the overshading.
@@ -623,8 +609,8 @@
     </div>
 </section>
 
-<section class="mb-45">
-    <h3 class="line-top">Thermal Bridging</h3>
+<section class="line-top mb-45">
+    <h3 class="ma-0 mb-15">Thermal Bridging</h3>
 
     <div class="d-flex align-items-center my-15">
         <div>
@@ -667,8 +653,8 @@
     </p>
 </section>
 
-<section>
-    <h3 class="line-top">Totals</h3>
+<section class="line-top mb-45">
+    <h3 class="ma-0 mb-15">Totals</h3>
 
     <div class="d-flex align-items-center my-15">
         <div>
