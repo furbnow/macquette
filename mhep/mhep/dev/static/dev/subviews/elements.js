@@ -605,22 +605,6 @@ function elements_initUI()
 
 function elements_UpdateUI()
 {
-    for (z in data.fabric.elements) {
-        let color
-
-        if (isDoor(data.fabric.elements[z].type)) {
-            color = '#ffeeee';
-        } else if (isRoofLight(data.fabric.elements[z].type)) {
-            color = '#ddffdd';
-        } else if (isHatch(data.fabric.elements[z].type)) {
-            color = '#ddeeff';
-        } else {
-            color = "#ffffff";
-        }
-
-        $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', color);
-    }
-
     // populate the subtractfrom selects in windows, doors (etc). We do it everytime we update just in case the key that has changed is one of Label/Location
     // Get all the locations (walls, party walls, roofs and lofts
     var options = '';
