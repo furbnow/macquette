@@ -413,7 +413,6 @@ function setupFabricButtons(root, z, element)
     // We don't allow editing or deleting items except on the master scenario.
     if (scenario === 'master') {
         root.querySelector(".apply-measure").remove()
-        root.querySelector(".revert-to-original").remove()
     } else {
         root.querySelector(".edit-item").remove()
         root.querySelector(".delete-element").remove()
@@ -431,6 +430,20 @@ function setupFabricButtons(root, z, element)
         else
             e.setAttribute('tags', 'Roof,Loft');
     }
+
+    const revertButton = root.querySelector(".revert-to-original")
+
+    if (!scenario_can_revert() || !measure_applied_to_element(element.id)) {
+        revertButton.remove();
+    } else if (data.created_from != undefined) {
+        if (element_exists_in_original(data.created_from, element.id) == false) {
+            revertButton.disabled = true
+            revertButton.innerHTML =  "Original element doesn't<br>exist, can't revert"
+        } else if (data.created_from != 'master') {
+            revertButton.textContent =
+                `Revert to Scenario ${data.created_from.split('scenario')[1]}`
+        }
+    }
 }
 
 function add_element(id, z)
@@ -447,7 +460,6 @@ function add_element(id, z)
     }
 
     $(id).append(root);
-    init_revert_to_original(id, z);
 }
 
 function add_floor(z)
@@ -467,7 +479,6 @@ function add_floor(z)
     }
 
     $(id).append(root);
-    init_revert_to_original(id, z);
 }
 
 function add_window(z)
@@ -523,7 +534,6 @@ function add_window(z)
     root.querySelector(`[key='data.fabric.elements.${z}.subtractfrom']`).innerHTML = subtractFromOptionList;
 
     $(id).append(root);
-    init_revert_to_original(id, z);
 }
 
 function elements_initUI()
@@ -761,21 +771,6 @@ function add_quantity_and_cost_to_bulk_fabric_measure(measure_id) {
     }
 }
 
-function init_revert_to_original(id, z) {
-    const element = data.fabric.elements[z]
-    const $button = $(id + ' .revert-to-original[item_id="' + element.id + '"]');
-
-    if (measure_applied_to_element(element.id) != false) {
-        if (data.created_from != undefined && data.created_from != 'master') {
-            var inner_html = $button.html();
-            inner_html = inner_html.replace(/Revert to master/g, 'Revert to Scenario ' + data.created_from.split('scenario')[1]);
-            $button.html(inner_html);
-        }
-        $button.show();
-        if (data.created_from != undefined && element_exists_in_original(data.created_from, element.id) == false)
-            $button.removeClass('revert-to-original').css('cursor', 'default').html('Original element doesn\'t<br />exist, cannot revert');
-    }
-    else {
-        $button.hide();
-    }
+function scenario_can_revert() {
+    return (data.created_from && project[data.created_from]) ? true : false
 }
