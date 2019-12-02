@@ -516,7 +516,7 @@
     function handleClickDemoteLibrarian(e) {
         e.preventDefault();
         $(this).attr("disabled", true);
-        $(this).text("Revoking...");
+        $(this).text("Demoting...");
         var orgid = $(this).attr('data-org-id');
         var userid = $(this).attr('data-user-id');
         mhep_helper.demote_user_as_librarian(orgid, userid).then(result => {
