@@ -6,6 +6,8 @@ from ..factories import OrganisationFactory
 
 from mhep.users.tests.factories import UserFactory
 
+from .mixins import AssertErrorMixin
+
 
 class SetUpMixin():
     @classmethod
@@ -25,12 +27,6 @@ class SetUpMixin():
         cls.org.admins.add(cls.org_admin)
 
         cls.org.librarians.add(cls.librarian)
-
-
-class AssertErrorMixin():
-    def _assert_error(self, response, expected_status, expected_detail):
-        assert expected_status == response.status_code
-        assert {"detail": expected_detail} == response.json()
 
 
 class TestCreateOrganisationLibrarians(

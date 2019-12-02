@@ -6,19 +6,17 @@ from mhep.users.tests.factories import UserFactory
 from ... import VERSION
 from ..factories import LibraryFactory, OrganisationFactory
 
+from .mixins import AssertErrorMixin
+
 
 class CommonMixin():
-    def _assert_error(self, response, expected_status, expected_detail):
-        assert expected_status == response.status_code
-        assert {"detail": expected_detail} == response.json()
-
     def create_library(self, *args, **kwargs):
         return LibraryFactory.create(
             data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}},
             *args, **kwargs)
 
 
-class TestCreateLibraryItemPermissions(CommonMixin, APITestCase):
+class TestCreateLibraryItemPermissions(CommonMixin, AssertErrorMixin, APITestCase):
     def test_owner_can_create_library_item(self):
         library = self.create_library()
         self.client.force_authenticate(library.owner_user)
@@ -134,7 +132,7 @@ class TestCreateLibraryItemPermissions(CommonMixin, APITestCase):
         )
 
 
-class TestUpdateLibraryItemPermissions(CommonMixin, APITestCase):
+class TestUpdateLibraryItemPermissions(CommonMixin, AssertErrorMixin, APITestCase):
     def test_owner_can_update_library(self):
         library = self.create_library()
         self.client.force_authenticate(library.owner_user)
@@ -247,7 +245,7 @@ class TestUpdateLibraryItemPermissions(CommonMixin, APITestCase):
         )
 
 
-class TestDeleteLibraryItemPermissions(CommonMixin, APITestCase):
+class TestDeleteLibraryItemPermissions(CommonMixin, AssertErrorMixin, APITestCase):
     def test_owner_can_delete_library_item(self):
         library = self.create_library()
         self.client.force_authenticate(library.owner_user)

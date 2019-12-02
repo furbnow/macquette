@@ -6,14 +6,10 @@ from mhep.users.tests.factories import UserFactory
 from ... import VERSION
 from ..factories import OrganisationFactory
 
-
-class CommonMixin():
-    def _assert_error(self, response, expected_status, expected_detail):
-        assert expected_status == response.status_code
-        assert {"detail": expected_detail} == response.json()
+from .mixins import AssertErrorMixin
 
 
-class TestPromoteAsLibrarianPermissions(CommonMixin, APITestCase):
+class TestPromoteAsLibrarianPermissions(AssertErrorMixin, APITestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -57,7 +53,7 @@ class TestPromoteAsLibrarianPermissions(CommonMixin, APITestCase):
         )
 
 
-class TestDemoteAsLibrarianPermissions(CommonMixin, APITestCase):
+class TestDemoteAsLibrarianPermissions(AssertErrorMixin, APITestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

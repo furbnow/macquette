@@ -9,14 +9,10 @@ from ..factories import (
     OrganisationFactory,
 )
 
-
-class CommonMixin():
-    def _assert_error(self, response, expected_status, expected_detail):
-        assert expected_status == response.status_code
-        assert {"detail": expected_detail} == response.json()
+from .mixins import AssertErrorMixin
 
 
-class TestCreateLibraryPermissions(CommonMixin, APITestCase):
+class TestCreateLibraryPermissions(AssertErrorMixin, APITestCase):
     def test_authenticated_user_can_create_a_library(self):
         person = UserFactory.create()
 
@@ -42,7 +38,7 @@ class TestCreateLibraryPermissions(CommonMixin, APITestCase):
         return self.client.post(f"/{VERSION}/api/libraries/", new_library, format="json")
 
 
-class TestCreateOrganisationLibraryPermissions(CommonMixin, APITestCase):
+class TestCreateOrganisationLibraryPermissions(AssertErrorMixin, APITestCase):
     def test_librarian_of_organisation_can_create_a_library_in_organisation(self):
         person = UserFactory.create()
         organisation = OrganisationFactory.create()
@@ -98,7 +94,7 @@ class TestCreateOrganisationLibraryPermissions(CommonMixin, APITestCase):
         )
 
 
-class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
+class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
     def test_owner_user_can_update_library(self):
         library = LibraryFactory.create()
         self.client.force_authenticate(library.owner_user)
@@ -211,7 +207,7 @@ class TestUpdateLibraryPermissions(CommonMixin, APITestCase):
         )
 
 
-class TestDeleteLibraryPermissions(CommonMixin, APITestCase):
+class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
     def test_owner_user_can_delete_library(self):
         library = LibraryFactory.create()
         self.client.force_authenticate(library.owner_user)
