@@ -139,6 +139,35 @@ var mhep_helper = {
             });
         })
     },
+    'list_users': function() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.users(),
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError("listing users")(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                }
+            });
+        })
+    },
+    'add_member': function(orgid, userid) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.members(orgid, userid),
+                type: "POST",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError('adding member')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    },
     'remove_member': function(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({
