@@ -16,9 +16,17 @@ class TestListOrganisations(APITestCase):
     def test_shows_logged_in_users_organisations(self):
         me = UserFactory.create(last_login=datetime.datetime(2019, 6, 3, 16, 35, 0, 0, pytz.UTC))
         my_org = OrganisationFactory.create()
+
+        org_admin = UserFactory.create(
+            last_login=datetime.datetime(2019, 6, 3, 13, 21, 0, 0, pytz.UTC)
+        )
+        my_org.members.add(org_admin)
+        my_org.admins.add(org_admin)
+
         AssessmentFactory.create(owner=me, organisation=my_org)
         AssessmentFactory.create(owner=me, organisation=my_org)
         my_org.members.add(me)
+        my_org.librarians.add(me)
 
         OrganisationFactory.create()  # make another organisation: it shouldn't show up
 
@@ -35,8 +43,17 @@ class TestListOrganisations(APITestCase):
                     {
                         "userid": f"{me.id}",
                         "name": me.username,
+                        "is_admin": False,
+                        "is_librarian": True,
                         "last_login": me.last_login.isoformat(),
-                    }
+                    },
+                    {
+                        "userid": f"{org_admin.id}",
+                        "name": org_admin.username,
+                        "is_admin": True,
+                        "is_librarian": False,
+                        "last_login": org_admin.last_login.isoformat(),
+                    },
                 ]),
             ]),
         ]
