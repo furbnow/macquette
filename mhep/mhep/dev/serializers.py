@@ -180,6 +180,7 @@ class LibraryItemSerializer(serializers.Serializer):
 
 class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
     assessments = serializers.SerializerMethodField()
     members = serializers.SerializerMethodField()
 
@@ -190,6 +191,7 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
             "name",
             "assessments",
             "members",
+            "permissions",
         ]
 
     def get_assessments(self, obj):
@@ -206,6 +208,12 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
             }
 
         return [userinfo(u) for u in org.members.all()]
+
+    def get_permissions(self, org):
+        user = self.context['request'].user
+        return {
+            "can_add_remove_members": user in org.admins.all(),
+        }
 
 
 class OrganisationLibrarianSerializer(serializers.ModelSerializer):

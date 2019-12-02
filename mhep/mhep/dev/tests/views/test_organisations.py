@@ -55,6 +55,9 @@ class TestListOrganisations(APITestCase):
                         "last_login": org_admin.last_login.isoformat(),
                     },
                 ]),
+                ("permissions", {
+                    "can_add_remove_members": False,
+                }),
             ]),
         ]
 
@@ -74,3 +77,70 @@ class TestListOrganisations(APITestCase):
         assert response.status_code == status.HTTP_200_OK
 
         assert "never" == response.data[0]["members"][0]["last_login"]
+
+
+class TestListOrganisationsPermissions(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.org = OrganisationFactory.create()
+
+        cls.member_1 = UserFactory.create(
+            last_login=datetime.datetime(2019, 6, 3, 16, 35, 0, 0, pytz.UTC)
+        )
+        cls.org.members.add(cls.member_1)
+
+        cls.org_admin = UserFactory.create(
+            last_login=datetime.datetime(2019, 6, 3, 13, 21, 0, 0, pytz.UTC)
+        )
+        cls.org.members.add(cls.org_admin)
+        cls.org.admins.add(cls.org_admin)
+
+    def test_shows_permissions_for_logged_in_member(self):
+        self.client.force_authenticate(self.member_1)
+
+        self._assert_permissions(
+            self.client.get(f"/{VERSION}/api/organisations/"),
+            {
+                "can_add_remove_members": False,
+            }
+        )
+
+    def test_shows_permissions_for_logged_in_admin(self):
+        self.client.force_authenticate(self.org_admin)
+
+        self._assert_permissions(
+            self.client.get(f"/{VERSION}/api/organisations/"),
+            {
+                "can_add_remove_members": True,
+            }
+        )
+
+    def _assert_permissions(self, response, expected_permissions):
+        expected = [
+            OrderedDict([
+                ("id", f"{self.org.id}"),
+                ("name", self.org.name),
+                ("assessments", 0),
+                ("members", [
+                    {
+                        "userid": f"{self.member_1.id}",
+                        "name": self.member_1.username,
+                        "is_admin": False,
+                        "is_librarian": False,
+                        "last_login": self.member_1.last_login.isoformat(),
+                    },
+                    {
+                        "userid": f"{self.org_admin.id}",
+                        "name": self.org_admin.username,
+                        "is_admin": True,
+                        "is_librarian": False,
+                        "last_login": self.org_admin.last_login.isoformat(),
+                    },
+                ]),
+                ("permissions", expected_permissions),
+            ]),
+        ]
+
+        assert expected == response.data
