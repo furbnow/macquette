@@ -94,6 +94,8 @@ Once an app is assigned a version number its code should never be modified again
 * [Create a library](#create-a-library)
 * [Create a library for organisation](#create-a-library-for-organisation)
 * [Update a library](#update-a-library)
+* [Share an organisation library with another organisation](#share-an-organisation-library-with-another-organisation)
+* [Unshare an organisation library with another organisation](#unshare-an-organisation-library-with-another-organisation)
 * [Delete a library](#delete-a-library)
 * [Create item in library](#create-item-in-library)
 * [Update item in library](#update-item-in-library)
@@ -675,6 +677,30 @@ Returns:
 
 ```
 HTTP 204 No content
+```
+
+## Share an organisation library with another organisation
+
+```
+POST /organisations/:orgid/libraries/:libraryid/shares/:otherorgid/
+```
+
+### Example
+
+```
+> curl -v -X POST http://localhost:9090/dev/api/organisation/1/libraries/5/shares/2/ \
+```
+
+## Unshare an organisation library with another organisation
+
+```
+DELETE /organisations/:orgid/libraries/:libraryid/shares/:otherorgid/
+```
+
+### Example
+
+```
+> curl -v -X DELETE http://localhost:9090/dev/api/organisation/1/libraries/5/shares/2/ \
 ```
 
 ## Delete a library
