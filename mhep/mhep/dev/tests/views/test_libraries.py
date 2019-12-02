@@ -114,6 +114,25 @@ class TestListLibraries(APITestCase):
 
         assert global_lib.id in retrieved_ids
 
+    def test_includes_libraries_shared_with_my_organisation(self):
+        my_org = OrganisationFactory.create()
+        sharing_org = OrganisationFactory.create()
+
+        my_org.members.add(self.me)
+
+        shared_lib = LibraryFactory.create(owner_organisation=sharing_org, owner_user=None)
+        shared_lib.shared_with.add(my_org)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert 1 == len(response.data)
+
+        retrieved_ids = [int(l["id"]) for l in response.data]
+
+        assert shared_lib.id in retrieved_ids
+
     def test_list_libraries_fails_if_not_logged_in(self):
         LibraryFactory.create(owner_user=self.me)
         LibraryFactory.create(owner_user=self.me)

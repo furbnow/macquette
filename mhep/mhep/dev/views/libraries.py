@@ -37,6 +37,9 @@ class MyLibrariesMixin():
             org_libraries = org.libraries.all()
             all_libraries |= org_libraries
 
+            shared_libraries = org.libraries_shared_with.all()
+            all_libraries |= shared_libraries
+
         global_libraries = Library.objects.filter(owner_user=None, owner_organisation=None)
         all_libraries |= global_libraries
 

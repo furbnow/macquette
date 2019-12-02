@@ -69,6 +69,20 @@ def test_libraries_related_name_on_organisation_model():
     assert org.libraries.all().count() == 1
 
 
+def test__libraries_shared_with__related_name_on_organisation_model():
+    org = OrganisationFactory.create()
+    other_org = OrganisationFactory.create()
+
+    lib = LibraryFactory.create(owner_organisation=org, owner_user=None)
+
+    lib.shared_with.add(other_org)
+
+    # `Library.shared_with` is the forward relationship
+    # `Organisation.libraries_shared_with` is the reverse
+
+    assert other_org.libraries_shared_with.count() == 1
+
+
 class TestOrganisationOwner():
     def test_can_have_user_owner(self):
         Library.objects.create(
