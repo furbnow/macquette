@@ -13,6 +13,7 @@ from .views import (
     ListCreateLibraries,
     ListCreateOrganisationAssessments,
     ListOrganisations,
+    ListUsers,
     RetrieveUpdateDestroyAssessment,
     ShareUnshareOrganisationLibraries,
     UpdateDestroyLibrary,
@@ -65,6 +66,12 @@ urlpatterns = [
         "api/organisations/",
         view=ListOrganisations.as_view(),
         name="list-organisations"
+    ),
+
+    path(
+        "api/users/",
+        view=ListUsers.as_view(),
+        name="list-users"
     ),
 
     path(

@@ -84,6 +84,15 @@ def test_list_organisations():
     )
 
 
+def test_list_users():
+    assert (
+        reverse(f"{VERSION}:list-users") == f"/{VERSION}/api/users/"
+    )
+    assert (
+        resolve(f"/{VERSION}/api/users/").view_name == f"{VERSION}:list-users"
+    )
+
+
 def test_list_create_organisation_assessments():
     assert (
         reverse(f"{VERSION}:list-create-organisation-assessments", kwargs={"pk": 1})
