@@ -14,6 +14,7 @@ from .views import (
     ListCreateOrganisationAssessments,
     ListOrganisations,
     RetrieveUpdateDestroyAssessment,
+    ShareUnshareOrganisationLibraries,
     UpdateDestroyLibrary,
 )
 
@@ -82,6 +83,12 @@ urlpatterns = [
         "api/organisations/<int:pk>/librarians/<int:userid>/",
         view=CreateDeleteOrganisationLibrarians.as_view(),
         name="create-delete-organisation-librarians"
+    ),
+
+    path(
+        "api/organisations/<int:pk>/libraries/<int:libraryid>/shares/<int:otherorgid>/",
+        view=ShareUnshareOrganisationLibraries.as_view(),
+        name="share-unshare-organisation-libraries"
     ),
 
     path(

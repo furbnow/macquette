@@ -4,7 +4,7 @@ from rest_framework import status
 from mhep.users.tests.factories import UserFactory
 
 from ... import VERSION
-from ..factories import OrganisationFactory
+from ..factories import LibraryFactory, OrganisationFactory
 
 from .mixins import AssertErrorMixin
 
@@ -95,4 +95,93 @@ class TestDemoteAsLibrarianPermissions(AssertErrorMixin, APITestCase):
     def _call_endpoint(self, org, user_to_demote):
         return self.client.delete(
             f"/{VERSION}/api/organisations/{org.id}/librarians/{user_to_demote.id}/"
+        )
+
+
+class TestShareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.my_org = OrganisationFactory.create()
+        cls.org_admin = UserFactory.create()
+        cls.my_org.members.add(cls.org_admin)
+        cls.my_org.admins.add(cls.org_admin)
+
+        cls.other_org = OrganisationFactory.create()
+        cls.library = LibraryFactory.create(owner_organisation=cls.my_org, owner_user=None)
+
+    def test_organisation_admin_can_share_organisation_library(self):
+        self.client.force_authenticate(self.org_admin)
+        response = self._call_endpoint(self.my_org, self.library, self.other_org)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_unauthenticated_user_cannot_share_organisation_library(self):
+        response = self._call_endpoint(self.my_org, self.library, self.other_org)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "Authentication credentials were not provided.",
+        )
+
+    def test_org_member_who_is_not_an_org_admin_cannot_share_organisation_library(self):
+        normal_member = UserFactory.create()
+        self.my_org.members.add(normal_member)
+
+        self.client.force_authenticate(normal_member)
+        response = self._call_endpoint(self.my_org, self.library, self.other_org)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You are not an admin of the Organisation.",
+        )
+
+    def _call_endpoint(self, org, lib, share_to_org):
+        return self.client.post(
+            f"/{VERSION}/api/organisations/{org.id}/libraries/{lib.id}/shares/{share_to_org.id}/"
+        )
+
+
+class TestUnshareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.my_org = OrganisationFactory.create()
+        cls.org_admin = UserFactory.create()
+        cls.my_org.members.add(cls.org_admin)
+        cls.my_org.admins.add(cls.org_admin)
+
+        cls.other_org = OrganisationFactory.create()
+        cls.shared_library = LibraryFactory.create(owner_organisation=cls.my_org, owner_user=None)
+        cls.shared_library.shared_with.add(cls.other_org)
+
+    def test_organisation_admin_can_share_organisation_library(self):
+        self.client.force_authenticate(self.org_admin)
+        response = self._call_endpoint(self.my_org, self.shared_library, self.other_org)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_unauthenticated_user_cannot_share_organisation_library(self):
+        response = self._call_endpoint(self.my_org, self.shared_library, self.other_org)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "Authentication credentials were not provided.",
+        )
+
+    def test_org_member_who_is_not_an_org_admin_cannot_share_organisation_library(self):
+        normal_member = UserFactory.create()
+        self.my_org.members.add(normal_member)
+
+        self.client.force_authenticate(normal_member)
+        response = self._call_endpoint(self.my_org, self.shared_library, self.other_org)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You are not an admin of the Organisation.",
+        )
+
+    def _call_endpoint(self, org, lib, share_to_org):
+        return self.client.delete(
+            f"/{VERSION}/api/organisations/{org.id}/libraries/{lib.id}/shares/{share_to_org.id}/"
         )
