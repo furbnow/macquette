@@ -22,6 +22,16 @@ class Library(models.Model):
         related_name="libraries",
     )
 
+    shared_with = models.ManyToManyField(
+        Organisation,
+        blank=True,
+        related_name="libraries_shared_with",
+        help_text=(
+            "Sharing the library with another organisation gives members of that organisation "
+            "read-only access: they can use the library but not update it."
+        ),
+    )
+
     name = models.TextField()
     type = models.TextField()
     data = JSONField(default=dict, validators=[validate_dict])
