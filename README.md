@@ -426,7 +426,9 @@ Content-Type: application/json
             {
                 "userid": "2",
                 "name": "janedoe",
-                "last_active": "2019-06-03T16:35:00+00:00"
+                "last_active": "2019-06-03T16:35:00+00:00",
+                "is_admin": True,
+                "is_librarian": True
             }
         ]
     },
@@ -438,12 +440,16 @@ Content-Type: application/json
             {
                 "userid": "2",
                 "name": "janedoe",
-                "last_login": "2019-06-03T16:35:00+00:00"
+                "last_login": "2019-06-03T16:35:00+00:00",
+                "is_admin": True,
+                "is_librarian": False
             },
             {
                 "userid": "3",
                 "name": "michael2",
                 "last_login": "2019-06-03T16:35:00+00:00"
+                "is_admin": False,
+                "is_librarian": True
             }
         ]
     }
