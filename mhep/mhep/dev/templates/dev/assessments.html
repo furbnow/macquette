@@ -60,7 +60,7 @@
                     <td style="width: 25%;">
                         <span class="member-is-librarian" style="display: none;" data-user-id="" data-org-id="">
                             <b>Librarian</b>
-                            <button class="demote-librarian demote-role" data-user-id="" data-org-id="">Demote</button>
+                            <button class="demote-librarian demote-role" style="display: none;" data-user-id="" data-org-id="">Demote</button>
                         </span>
                     </td>
                     <td style="width: 25%;">
@@ -463,6 +463,7 @@
 
         var rowTemplate = $('#organisation-member-template');
         var members = myorganisations[orgid].members;
+        var permissions = myorganisations[orgid].permissions;
 
         for (var z in members) {
             row = rowTemplate.clone()
@@ -479,7 +480,12 @@
             if (members[z].is_admin) row.find('.member-is-admin').show();
             if (members[z].is_librarian) row.find('.member-is-librarian').show();
 
-            row.find('.demote-librarian').click(handleClickDemoteLibrarian);
+
+            if (permissions.can_promote_demote_librarians) {
+                var demoteLibrarianButton = row.find('.demote-librarian')
+                demoteLibrarianButton.show();
+                demoteLibrarianButton.click(handleClickDemoteLibrarian);
+            }
 
             row.show();
             table.append(row);
@@ -487,22 +493,24 @@
 
         $("#organisation-members-container").html(table);
 
-        var promoteLibrarianFormTemplate = $("#promote-librarian-form-template");
-        var promoteLibrarianForm = promoteLibrarianFormTemplate.clone();
-        promoteLibrarianForm.removeAttr('id');
+        if (permissions.can_promote_demote_librarians) {
+            var promoteLibrarianFormTemplate = $("#promote-librarian-form-template");
+            var promoteLibrarianForm = promoteLibrarianFormTemplate.clone();
+            promoteLibrarianForm.removeAttr('id');
 
-        promoteLibrarianForm.find("#promote-librarian-select-template").removeAttr("id").attr(
-            "id", "promote-librarian-select-" + orgid
-        )
-        promoteLibrarianForm.find("#promote-librarian-label-template").removeAttr("id").attr(
-            "for", "promote-librarian-select-" + orgid
-        )
-        promoteLibrarianForm.on("submit", handleSubmitPromoteLibrarian);
+            promoteLibrarianForm.find("#promote-librarian-select-template").removeAttr("id").attr(
+                "id", "promote-librarian-select-" + orgid
+            )
+            promoteLibrarianForm.find("#promote-librarian-label-template").removeAttr("id").attr(
+                "for", "promote-librarian-select-" + orgid
+            )
+            promoteLibrarianForm.on("submit", handleSubmitPromoteLibrarian);
 
-        populatePromoteLibrarianSelect(promoteLibrarianForm);
-        promoteLibrarianForm.show();
+            populatePromoteLibrarianSelect(promoteLibrarianForm);
+            promoteLibrarianForm.show();
 
-        $("#promote-librarian-form-container").html(promoteLibrarianForm);
+            $("#promote-librarian-form-container").html(promoteLibrarianForm);
+        }
     }
 
     function handleClickDemoteLibrarian(e) {
