@@ -57,6 +57,7 @@ class TestListOrganisations(APITestCase):
                 ]),
                 ("permissions", {
                     "can_add_remove_members": False,
+                    "can_promote_demote_librarians": False,
                 }),
             ]),
         ]
@@ -104,6 +105,7 @@ class TestListOrganisationsPermissions(APITestCase):
             self.client.get(f"/{VERSION}/api/organisations/"),
             {
                 "can_add_remove_members": False,
+                "can_promote_demote_librarians": False,
             }
         )
 
@@ -114,6 +116,7 @@ class TestListOrganisationsPermissions(APITestCase):
             self.client.get(f"/{VERSION}/api/organisations/"),
             {
                 "can_add_remove_members": True,
+                "can_promote_demote_librarians": True,
             }
         )
 

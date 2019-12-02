@@ -213,6 +213,7 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
         user = self.context['request'].user
         return {
             "can_add_remove_members": user in org.admins.all(),
+            "can_promote_demote_librarians": user in org.admins.all(),
         }
 
 
