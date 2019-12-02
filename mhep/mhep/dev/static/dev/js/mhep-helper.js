@@ -164,7 +164,36 @@ var mhep_helper = {
             });
         });
     },
-
+    'promote_user_as_librarian': function(orgid, userid) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.librarians(orgid, userid),
+                type: "POST",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError('promoting user as librarian')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    },
+    'demote_user_as_librarian': function(orgid, userid) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.librarians(orgid, userid),
+                type: "DELETE",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError('demoting user as librarian')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    },
     'upload_images': function (id, form_data, callback)
     {
         var result = false;

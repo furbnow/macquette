@@ -51,8 +51,44 @@
         </div>
 
         <div style="padding:10px">
-            <b>Members:</b><br>
-            <div id="organisationmembers"></div>
+            <table id="organisation-members" class="table">
+                <tr id="organisation-member-template" class="organisation-member" style="display: none;">
+                    <td style="width: 50%;">
+                        <span class="member-name"></span>
+                        <span class="member-last-active">Last active: </span>
+                    </td>
+                    <td style="width: 25%;">
+                        <span class="member-is-librarian" style="display: none;" data-user-id="" data-org-id="">
+                            <b>Librarian</b>
+                            <button class="demote-librarian demote-role" style="display: none;" data-user-id="" data-org-id="">Demote</button>
+                        </span>
+                    </td>
+                    <td style="width: 25%;">
+                        <span class="member-is-admin" style="display: none;" data-user-id="" data-org-id="">
+                            <b>Admin</b>
+                        </span>
+                    </td>
+                </tr>
+            </table>
+
+            <div id="organisation-members-container"></div>
+
+            <hr style="margin-bottom: 1rem;" />
+
+            <form id="promote-librarian-form-template" style="display: none;">
+                <div style="display: flex; align-items: center;">
+                    <label id="promote-librarian-label-template" style="margin-right: 1rem;">
+                        Add a librarian:
+                    </label>
+                    <select name="user-id" id="promote-librarian-select-template" style="margin-right: 1rem;">
+                        <option value="">-- Select a member --</option>
+                    </select>
+                    <input type="submit" value="Add">
+                </div>
+            </form>
+
+            <div id="promote-librarian-form-container"></div>
+
             {% if request.user.is_staff %}
             <br>
             <a id="organisation-add-member" href="">Edit organisation</a>
@@ -366,32 +402,40 @@
 // ----------------------------------------------------------------------------
     var myorganisations = {};
 
-    mhep_helper.list_organisations().then(result => {
-      for (let i = 0; i < result.length; i++) {
-        const org = result[i];
-        org.orgid = org.id;
-        myorganisations[org.id] = org;
-      }
-      draw_organisation_list();
-    })
+    function fetchOrganisations() {
+        return new Promise((resolve, reject) => {
+            mhep_helper.list_organisations().then(result => {
+                for (let i = 0; i < result.length; i++) {
+                    const org = result[i];
+                    org.orgid = org.id;
+                    myorganisations[org.id] = org;
+                }
+                draw_organisation_list();
+                resolve();
+            })
+        });
+    };
 
-    $("body").on("click", ".org-item", function () {
-        orgid = $(this).attr("orgid");
-        draw_organisation(orgid);
-        $("#organisation-add-member").attr("href", urlHelper.admin.organisation(orgid));
-        $("#organisation").show();
-        viewmode = "organisation";
-        $.ajax({
-          url: urlHelper.api.organisationAssessments(orgid),
-          error: handleServerError('listing assessments for organisation'),
-          success: function (result) {
-            projects = result;
-            draw_projects("#projects", projects);
-            $("#assessments-title").html(myorganisations[orgid].name + " Assessments");
-            $("#myview").hide();
-          },
+    fetchOrganisations().then(result => {
+        $("body").on("click", ".org-item", function () {
+            orgid = $(this).attr("orgid");
+            draw_organisation(orgid);
+            $("#organisation-add-member").attr("href", urlHelper.admin.organisation(orgid));
+            $("#organisation").show();
+            viewmode = "organisation";
+            $.ajax({
+            url: urlHelper.api.organisationAssessments(orgid),
+            error: handleServerError('listing assessments for organisation'),
+            success: function (result) {
+                projects = result;
+                draw_projects("#projects", projects);
+                $("#assessments-title").html(myorganisations[orgid].name + " Assessments");
+                $("#myview").hide();
+            },
+            });
         });
     });
+
     function draw_organisation_list() {
         var out = "";
         for (var z in myorganisations) {
@@ -402,20 +446,110 @@
         $("#myorganisations").html(out);
     }
 
-    function draw_organisation(orgid) {
-        var out = "";
-        $("#organisation-name").html(myorganisations[orgid].name);
-        var members = myorganisations[orgid].members;
-        for (var z in members) {
-            const lastLogin = new Date(members[z].last_login);
-
-            out += "<div class='recent-activity-item' style='height:40px'>";
-            out += '<img src="' + urlHelper.static('img/defaultuser.png') + '" style="height:40px; float:left; padding-right:5px"/ >';
-            out += "<b>" + members[z].name + "</b><br>Last active: " + lastLogin;
-            out += "</div>";
-        }
-        $("#organisationmembers").html(out);
+    function fetchAndRedrawOrganisation(orgid) {
+        fetchOrganisations().then(result => {
+            draw_organisation(orgid);
+        });
     }
+
+    function draw_organisation(orgid) {
+
+        var tableTemplate = $("#organisation-members");
+
+        var table = tableTemplate.clone();
+        table.show();
+
+        $("#organisation-name").html(myorganisations[orgid].name);
+
+        var rowTemplate = $('#organisation-member-template');
+        var members = myorganisations[orgid].members;
+        var permissions = myorganisations[orgid].permissions;
+
+        for (var z in members) {
+            row = rowTemplate.clone()
+            row.removeAttr('id');
+
+            row.find('[data-user-id=""]').attr('data-user-id', members[z].userid);
+            row.find('[data-org-id=""]').attr('data-org-id', orgid);
+
+            row.find('.member-name').html(members[z].name);
+            row.find('.member-last-active').html(
+                "Last active: " + new Date(members[z].last_login).toLocaleString()
+            );
+
+            if (members[z].is_admin) row.find('.member-is-admin').show();
+            if (members[z].is_librarian) row.find('.member-is-librarian').show();
+
+
+            if (permissions.can_promote_demote_librarians) {
+                var demoteLibrarianButton = row.find('.demote-librarian')
+                demoteLibrarianButton.show();
+                demoteLibrarianButton.click(handleClickDemoteLibrarian);
+            }
+
+            row.show();
+            table.append(row);
+        }
+
+        $("#organisation-members-container").html(table);
+
+        if (permissions.can_promote_demote_librarians) {
+            var promoteLibrarianFormTemplate = $("#promote-librarian-form-template");
+            var promoteLibrarianForm = promoteLibrarianFormTemplate.clone();
+            promoteLibrarianForm.removeAttr('id');
+
+            promoteLibrarianForm.find("#promote-librarian-select-template").removeAttr("id").attr(
+                "id", "promote-librarian-select-" + orgid
+            )
+            promoteLibrarianForm.find("#promote-librarian-label-template").removeAttr("id").attr(
+                "for", "promote-librarian-select-" + orgid
+            )
+            promoteLibrarianForm.on("submit", handleSubmitPromoteLibrarian);
+
+            populatePromoteLibrarianSelect(promoteLibrarianForm);
+            promoteLibrarianForm.show();
+
+            $("#promote-librarian-form-container").html(promoteLibrarianForm);
+        }
+    }
+
+    function handleClickDemoteLibrarian(e) {
+        e.preventDefault();
+        $(this).attr("disabled", true);
+        $(this).text("Demoting...");
+        var orgid = $(this).attr('data-org-id');
+        var userid = $(this).attr('data-user-id');
+        mhep_helper.demote_user_as_librarian(orgid, userid).then(result => {
+            fetchAndRedrawOrganisation(orgid);
+        });
+    };
+
+    function handleSubmitPromoteLibrarian(e) {
+        e.preventDefault();
+        var submitButton = $(this).find(':submit');
+        submitButton.attr("disabled", true);
+        submitButton.val("Adding...");
+        var userid = $('#promote-librarian-select-' + orgid).val();
+        mhep_helper.promote_user_as_librarian(orgid, userid).then(result => {
+            submitButton.attr("disabled", false);
+            submitButton.val("Add");
+            fetchAndRedrawOrganisation(orgid);
+        });
+    };
+
+    function populatePromoteLibrarianSelect(promoteLibrarianForm) {
+        var members = myorganisations[orgid].members;
+        var select = promoteLibrarianForm.find("select");
+        for (var z in members) {
+            member = members[z];
+            if (!member.is_librarian) {
+                var option = document.createElement("option");
+                option.textContent = member.name;
+                option.value = member.userid;
+                select.append(option);
+            }
+        };
+    };
 
     $("#back-myview").click(function () {
         var viewmode = "personal";

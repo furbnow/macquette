@@ -48,6 +48,11 @@
           const dummyURL = '{% url VERSION|add:":create-update-delete-library-item" "12345" "abcde" %}';
           return dummyURL.replace(/12345/, parseInt(libraryID)).replace(/abcde/, tag);
         },
+
+        librarians: function(userID, organisationID) {
+          const dummyURL = '{% url VERSION|add:":create-delete-organisation-librarians" "12345" "67890" %}';
+          return dummyURL.replace(/12345/, parseInt(userID)).replace(/67890/, parseInt(organisationID));
+        },
       },
 
       html: {
