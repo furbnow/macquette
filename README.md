@@ -402,7 +402,7 @@ HTTP 204 No content
 GET /organisations/
 ```
 
-List all organisations the current user is a member of.
+List all organisations the current user is a member of. Each organisation also returns `permissions`, which shows what the current user can and can not do.
 
 ℹ️ porting notes: replaces previous `assessment/getorganisations` route.
 
@@ -430,7 +430,11 @@ Content-Type: application/json
                 "is_admin": True,
                 "is_librarian": True
             }
-        ]
+        ],
+        "permissions": {
+            "can_add_remove_members": True,
+            "can_promote_demote_librarians": True,
+        }
     },
     {
         "id": "2",
@@ -451,7 +455,11 @@ Content-Type: application/json
                 "is_admin": False,
                 "is_librarian": True
             }
-        ]
+        ],
+        "permissions": {
+            "can_add_remove_members": True,
+            "can_promote_demote_librarians": True,
+        }
     }
 ]
 ```
