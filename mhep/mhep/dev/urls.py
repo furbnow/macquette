@@ -6,6 +6,7 @@ from . import VERSION
 from .views import (
     AssessmentHTMLView,
     CreateDeleteOrganisationLibrarians,
+    CreateDeleteOrganisationMembers,
     CreateUpdateDeleteLibraryItem,
     CreateOrganisationLibraries,
     ListAssessmentsHTMLView,
@@ -96,6 +97,12 @@ urlpatterns = [
         "api/organisations/<int:pk>/libraries/<int:libraryid>/shares/<int:otherorgid>/",
         view=ShareUnshareOrganisationLibraries.as_view(),
         name="share-unshare-organisation-libraries"
+    ),
+
+    path(
+        "api/organisations/<int:pk>/members/<int:userid>/",
+        view=CreateDeleteOrganisationMembers.as_view(),
+        name="create-delete-organisation-members"
     ),
 
     path(
