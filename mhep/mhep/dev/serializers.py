@@ -240,3 +240,9 @@ class OrganisationLibrarianSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
         fields = []
+
+
+class OrganisationMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organisation
+        fields = []
