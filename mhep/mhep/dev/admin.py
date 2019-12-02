@@ -21,6 +21,9 @@ class AssessmentAdmin(admin.ModelAdmin):
 class LibraryAdmin(admin.ModelAdmin):
     list_display = ["name", "type", "owner_user", "owner_organisation", "number_of_items"]
     search_fields = ["name", "type"]
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': CheckboxSelectMultiple},
+    }
 
     def number_of_items(self, obj):
         return len(obj.data)
