@@ -1,8 +1,11 @@
+from django.contrib.auth import get_user_model
+
 import datetime
 
 from rest_framework import serializers
 
 from .models import Assessment, Image, Library, Organisation
+User = get_user_model()
 
 
 class AuthorUserIDMixin():
@@ -215,6 +218,21 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
             "can_add_remove_members": user in org.admins.all(),
             "can_promote_demote_librarians": user in org.admins.all(),
         }
+
+
+class UserSerializer(StringIDMixin, serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "name",
+        ]
+
+    def get_name(self, user):
+        return user.username
 
 
 class OrganisationLibrarianSerializer(serializers.ModelSerializer):
