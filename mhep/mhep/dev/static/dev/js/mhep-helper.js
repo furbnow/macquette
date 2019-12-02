@@ -164,7 +164,7 @@ var mhep_helper = {
             });
         });
     },
-    'promote_librarian_role': function(orgid, userid) {
+    'promote_user_as_librarian': function(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: urlHelper.api.librarians(orgid, userid),
@@ -179,7 +179,7 @@ var mhep_helper = {
             });
         });
     },
-    'demote_librarian_role': function(orgid, userid) {
+    'demote_user_as_librarian': function(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: urlHelper.api.librarians(orgid, userid),

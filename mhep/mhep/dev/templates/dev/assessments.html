@@ -519,7 +519,7 @@
         $(this).text("Revoking...");
         var orgid = $(this).attr('data-org-id');
         var userid = $(this).attr('data-user-id');
-        mhep_helper.demote_librarian_role(orgid, userid).then(result => {
+        mhep_helper.demote_user_as_librarian(orgid, userid).then(result => {
             fetchAndRedrawOrganisation(orgid);
         });
     };
@@ -530,7 +530,7 @@
         submitButton.attr("disabled", true);
         submitButton.val("Adding...");
         var userid = $('#promote-librarian-select-' + orgid).val();
-        mhep_helper.promote_librarian_role(orgid, userid).then(result => {
+        mhep_helper.promote_user_as_librarian(orgid, userid).then(result => {
             submitButton.attr("disabled", false);
             submitButton.val("Add");
             fetchAndRedrawOrganisation(orgid);
