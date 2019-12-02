@@ -142,6 +142,91 @@ class TestShareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase):
         )
 
 
+class TestAddMemberPermissions(AssertErrorMixin, APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.org = OrganisationFactory.create()
+        cls.org_admin = UserFactory.create()
+        cls.member = UserFactory.create()
+        cls.non_member = UserFactory.create()
+
+        cls.org.members.add(cls.org_admin)
+        cls.org.members.add(cls.member)
+
+        cls.org.admins.add(cls.org_admin)
+
+    def test_organisation_admin_can_add_user_as_member(self):
+        self.client.force_authenticate(self.org_admin)
+        response = self._call_endpoint(self.org, self.non_member)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_unauthenticated_user_cannot_add_user_as_member(self):
+        response = self._call_endpoint(self.org, self.non_member)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "Authentication credentials were not provided.",
+        )
+
+    def test_org_member_who_is_not_an_org_admin_cannot_add_user_as_member(self):
+        self.client.force_authenticate(self.member)
+        response = self._call_endpoint(self.org, self.non_member)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You are not an admin of the Organisation.",
+        )
+
+    def _call_endpoint(self, org, user_to_add):
+        return self.client.post(
+            f"/{VERSION}/api/organisations/{org.id}/members/{user_to_add.id}/"
+        )
+
+
+class TestRemoveMemberPermissions(AssertErrorMixin, APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.org = OrganisationFactory.create()
+        cls.org_admin = UserFactory.create()
+        cls.member = UserFactory.create()
+
+        cls.org.members.add(cls.org_admin)
+        cls.org.members.add(cls.member)
+
+        cls.org.admins.add(cls.org_admin)
+
+    def test_organisation_admin_can_remove_user_as_member(self):
+        self.client.force_authenticate(self.org_admin)
+        response = self._call_endpoint(self.org, self.member)
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+
+    def test_unauthenticated_user_cannot_remove_user_as_member(self):
+        response = self._call_endpoint(self.org, self.member)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "Authentication credentials were not provided.",
+        )
+
+    def test_org_member_who_is_not_an_org_admin_cannot_remove_user_as_member(self):
+        self.client.force_authenticate(self.member)
+        response = self._call_endpoint(self.org, self.member)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You are not an admin of the Organisation.",
+        )
+
+    def _call_endpoint(self, org, user_to_demote):
+        return self.client.delete(
+            f"/{VERSION}/api/organisations/{org.id}/members/{user_to_demote.id}/"
+        )
+
+
 class TestUnshareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase):
     @classmethod
     def setUpClass(cls):
