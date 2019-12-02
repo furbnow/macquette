@@ -139,6 +139,21 @@ var mhep_helper = {
             });
         })
     },
+    'remove_member': function(orgid, userid) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.members(orgid, userid),
+                type: "DELETE",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError('removing member')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    },
     'create_library': function(libraryData, organisationID) {
         var apiURL = '';
         if(organisationID == null) {

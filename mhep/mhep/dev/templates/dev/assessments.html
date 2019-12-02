@@ -56,6 +56,7 @@
                     <td style="width: 50%;">
                         <span class="member-name"></span>
                         <span class="member-last-active">Last active: </span>
+                        <button class="remove-user demote-role" style="display: none;" data-user-id="" data-org-id="">Remove member</button>
                     </td>
                     <td style="width: 25%;">
                         <span class="member-is-librarian" style="display: none;" data-user-id="" data-org-id="">
@@ -487,6 +488,12 @@
                 demoteLibrarianButton.click(handleClickDemoteLibrarian);
             }
 
+            if (permissions.can_add_remove_members) {
+                var removeMemberButton = row.find('.remove-user')
+                removeMemberButton.show();
+                removeMemberButton.click(handleClickRemoveUser);
+            }
+
             row.show();
             table.append(row);
         }
@@ -520,6 +527,17 @@
         var orgid = $(this).attr('data-org-id');
         var userid = $(this).attr('data-user-id');
         mhep_helper.demote_user_as_librarian(orgid, userid).then(result => {
+            fetchAndRedrawOrganisation(orgid);
+        });
+    };
+
+    function handleClickRemoveUser(e) {
+        e.preventDefault();
+        $(this).attr("disabled", true);
+        $(this).text("Removing...");
+        var orgid = $(this).attr('data-org-id');
+        var userid = $(this).attr('data-user-id');
+        mhep_helper.remove_member(orgid, userid).then(result => {
             fetchAndRedrawOrganisation(orgid);
         });
     };
