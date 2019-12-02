@@ -87,6 +87,7 @@ Once an app is assigned a version number its code should never be modified again
 * [Create assessment for organisation](#create-assessment-for-organisation)
 * [Update a field on assessment](#update-a-field-on-assessment)
 * [Delete assessment](#delete-assessment)
+* [List users](#list-users)
 * [List organisations](#list-organisations)
 * [Set organisation user as librarian](#set-organisation-user-as-librarian)
 * [Unset organisation user as librarian](#unset-organisation-user-as-librarian)
@@ -396,6 +397,41 @@ Returns:
 
 ```
 HTTP 204 No content
+```
+
+## List users
+
+```
+GET /users/
+```
+
+List all the users.
+
+### Example
+
+```
+GET /users/
+```
+
+Returns:
+
+```
+HTTP 200 OK
+Content-Type: application/json
+[
+     {
+        "id": "1",
+        "name": "admin"
+    },
+    {
+        "id": "2",
+        "name": "janedoe"
+    },
+    {
+        "id": "3",
+        "name": "michael2"
+    }
+]
 ```
 
 ## List organisations
