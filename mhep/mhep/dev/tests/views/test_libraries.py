@@ -200,3 +200,181 @@ class TestCreateLibraries(APITestCase):
         retrieved = Library.objects.get(id=new_id)
         assert self.me == retrieved.owner_user
         assert None is retrieved.owner_organisation
+
+
+class TestUpdateLibrary(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.me = UserFactory.create()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        Library.objects.all().delete()
+
+    def test_update_library(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            lib = LibraryFactory.create(owner_user=self.me)
+
+        with freeze_time("2019-07-13T12:10:12Z"):
+            updateFields = {
+                "data": {"new": "data"},
+            }
+
+            self.client.force_authenticate(self.me)
+
+            response = self.client.patch(
+                f"/{VERSION}/api/libraries/{lib.pk}/",
+                updateFields,
+                format="json",
+            )
+
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert b"" == response.content
+
+        updated_library = Library.objects.get(pk=lib.pk)
+
+        assert {"new": "data"} == updated_library.data
+
+        assert "2019-07-13T12:10:12+00:00" == updated_library.updated_at.isoformat()
+
+    def test_update_library_name(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            lib = LibraryFactory.create(owner_user=self.me)
+
+        with freeze_time("2019-07-13T12:10:12Z"):
+            updateFields = {
+                "name": "updated name",
+            }
+
+            self.client.force_authenticate(self.me)
+            response = self.client.patch(
+                f"/{VERSION}/api/libraries/{lib.pk}/",
+                updateFields,
+                format="json",
+            )
+
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert b"" == response.content
+
+        updated_library = Library.objects.get(pk=lib.pk)
+
+        assert "updated name" == updated_library.name
+
+    def test_destroy_library(self):
+        lib = LibraryFactory.create(owner_user=self.me)
+
+        assessment_count = Library.objects.count()
+
+        self.client.force_authenticate(self.me)
+        response = self.client.delete(f"/{VERSION}/api/libraries/{lib.pk}/")
+
+        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert b"" == response.content
+
+        assert (assessment_count - 1) == Library.objects.count()
+
+
+class TestCreateLibraryItem(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.library = LibraryFactory.create(data={"tag1": {"name": "foo"}})
+
+    def test_create_library_item(self):
+        item_data = {
+            "tag": "tag2",
+            "item": {
+                "name": "bar",
+            }
+        }
+
+        self.client.force_authenticate(self.library.owner_user)
+        response = self.client.post(
+            f"/{VERSION}/api/libraries/{self.library.id}/items/",
+            item_data,
+            format="json"
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_create_library_item_fails_if_tag_already_exists(self):
+        item_data = {
+            "tag": "tag1",
+            "item": {
+                "name": "bar",
+            }
+        }
+
+        self.client.force_authenticate(self.library.owner_user)
+        response = self.client.post(
+            f"/{VERSION}/api/libraries/{self.library.id}/items/",
+            item_data,
+            format="json"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "detail": f"tag `tag1` already exists in library {self.library.id}"
+        }
+
+
+class TestUpdateDestroyLibraryItem(APITestCase):
+    def test_destroy_library_item(self):
+        library = LibraryFactory.create(
+            data={
+                "tag1": {"name": "foo"},
+                "tag2": {"name": "bar"},
+            },
+        )
+
+        self.client.force_authenticate(library.owner_user)
+        response = self.client.delete(f"/{VERSION}/api/libraries/{library.id}/items/tag2/")
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        retrieved = Library.objects.get(id=library.id)
+        assert retrieved.data == {"tag1": {"name": "foo"}}
+
+    def test_update_library_item(self):
+        library = LibraryFactory.create(
+            data={
+                "tag1": {"name": "foo"},
+            },
+        )
+
+        replacement_data = {
+            "name": "bar",
+            "other": "data",
+        }
+
+        with freeze_time("2019-06-01T16:35:34Z"):
+            self.client.force_authenticate(library.owner_user)
+            response = self.client.put(
+                f"/{VERSION}/api/libraries/{library.id}/items/tag1/",
+                replacement_data,
+                format="json"
+            )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        retrieved = Library.objects.get(id=library.id)
+        assert retrieved.data == {"tag1": replacement_data}
+
+    def test_update_library_item_fails_if_tag_doesnt_exist(self):
+        library = LibraryFactory.create()
+
+        replacement_data = {
+            "name": "bar",
+            "other": "data",
+        }
+
+        self.client.force_authenticate(library.owner_user)
+
+        response = self.client.put(
+            f"/{VERSION}/api/libraries/{library.id}/items/tag5/",
+            replacement_data,
+            format="json"
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
