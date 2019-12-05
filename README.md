@@ -513,7 +513,7 @@ POST /organisations/:orgid/members/:userid/
 ### Example
 
 ```
-> curl -X POST http://localhost:9090/dev/api/organisation/1/members/3/
+> curl -X POST http://localhost:9090/dev/api/organisations/1/members/3/
 ```
 
 ## Remove member from organisation
@@ -525,7 +525,7 @@ DELETE /organisations/:orgid/members/:userid/
 ```
 
 ```
-> curl -X DELETE http://localhost:9090/dev/api/organisation/1/members/3/
+> curl -X DELETE http://localhost:9090/dev/api/organisations/1/members/3/
 ```
 
 ## Set organisation user as librarian
