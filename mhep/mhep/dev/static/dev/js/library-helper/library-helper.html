@@ -90,16 +90,25 @@
       <h3 id="myModalLabel">Share library: </h3>
   </div>
   <div class="modal-body">
-      <p>Enter user, or organisation name to share this library with: </p>
-      <input id="sharename" type="text" style="margin:10px;width:120px"/>
-      <input type="checkbox" id="write_permissions">  Grant write persmisions
-      <p id="return-message" style="margin-bottom:25px"></p>
-      <table class="table" id="shared-with-table">
-      </table>
+
+        <form id="share-lib-with-org-form-template" style="display: none;">
+            <div style="display: block;">
+                <label id="share-lib-with-org-label-template">
+                    Select an organisation to share this library with (allow reading):
+                </label>
+                <select name="org-id" id="share-lib-with-org-select-template">
+                    <option value="-1">-- Select an organisation --</option>
+                </select>
+            </div>
+            <input type="submit" value="Share">
+        </form>
+
+        <div id="share-lib-with-org-form-container"></div>
+
+        <p id="return-message" style="margin-bottom:25px"></p>
   </div>
   <div class="modal-footer">
       <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-      <button id="share-library" class="btn btn-primary">Share / Update permissions</button>
   </div>
 </div>
 

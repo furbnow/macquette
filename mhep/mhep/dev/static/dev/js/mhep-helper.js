@@ -208,6 +208,21 @@ var mhep_helper = {
             });
         });
     },
+    'share_library_with_organisation': function(fromOrgID, libraryID, toOrgID) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.shareUnshareOrganisationLibraries(fromOrgID, libraryID, toOrgID),
+                type: "POST",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError('sharing library with organisation')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    },
     'promote_user_as_librarian': function(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({

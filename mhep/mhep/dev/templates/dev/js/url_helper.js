@@ -44,6 +44,14 @@
           return '{% url VERSION|add:":create-organisation-libraries" "12345" %}'.replace(/12345/, parseInt(organisationID));
         },
 
+        shareUnshareOrganisationLibraries: function(fromOrgID, libraryID, toOrgID) {
+          const dummyURL = '{% url VERSION|add:":share-unshare-organisation-libraries" "123" "456" "789" %}';
+          return dummyURL.replace(
+              /123/, parseInt(fromOrgID)).replace(
+              /456/, parseInt(libraryID)).replace(
+              /789/, parseInt(toOrgID));
+        },
+
         library: function(libraryID) {
           return '{% url VERSION|add:":update-destroy-library" "12345" %}'.replace(/12345/, parseInt(libraryID));
         },

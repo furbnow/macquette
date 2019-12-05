@@ -276,31 +276,53 @@ libraryHelper.prototype.onAddItemFromLib = function (origin) {
     this.populate_library_modal(origin);
     $("#show-library-modal").modal('show');
 };
-libraryHelper.prototype.onOpenShareLib = function (selected_library) {
-    //if ($('#library-select').val() != undefined)
-    //selected_library = $('#library-select').val();
-    this.display_library_users(selected_library);
-    $('#modal-share-library #share-library').attr('data-library-id', selected_library);
-    $('.modal').modal('hide');
-    $('#modal-share-library').modal('show');
-};
-libraryHelper.prototype.onShareLib = function (selected_library) {
-    $('#return-message').html('');
-    var username = $("#sharename").val();
-    var write_permissions = $('#write_permissions').is(":checked");
-    //if ($('#library-select').val() != undefined)
-    //selected_library = $('#library-select').val();
+libraryHelper.prototype.onOpenShareLib = function (libraryID, ownerID) {
     var myself = this;
-    if (selected_library != -1) {
-        $.ajax({
-            url: path + "assessment/sharelibrary.json",
-            data: "id=" + selected_library + "&name=" + username + "&write_permissions=" + write_permissions,
-            error: handleServerError('sharing library'),
-            success: function (data) {
-                $('#return-message').html(data);
-                myself.display_library_users(selected_library);
-            }});
+    $("#modal-share-library #share-library").attr("data-library-id", libraryID);
+    $(".modal").modal("hide");
+
+    // Clone the 'share library with org form
+    var shareLibWithOrgForm = $("#share-lib-with-org-form-template").clone();
+    shareLibWithOrgForm.removeAttr("id");
+
+    shareLibWithOrgForm.find("#share-lib-with-org-select-template").removeAttr("id").attr(
+        "id", "share-lib-with-org-select-" + libraryID
+    );
+    shareLibWithOrgForm.find("#share-lib-with-org-label-template").removeAttr("id").attr(
+        "for", "share-lib-with-org-select-" + libraryID
+    );
+    shareLibWithOrgForm.on("submit", function (e) {
+        myself.onShareLib(e, ownerID, libraryID);
+    });
+
+    this.populateShareLibWithOrgSelect(shareLibWithOrgForm, ownerID);
+    shareLibWithOrgForm.show();
+
+    var container = $("#share-lib-with-org-form-container");
+    container.html(shareLibWithOrgForm);
+
+    $("#modal-share-library").modal("show");
+};
+libraryHelper.prototype.onShareLib = function (e, ownerID, libraryID) {
+    e.preventDefault();
+    $("#return-message").html("");
+
+    if (libraryID == -1) {
+        $("#return-message").html("You must select an organisation");
+        return;
     }
+
+    $("#return-message").html("");
+    var submitButton = $(this).find(":submit");
+    submitButton.attr("disabled", true);
+    submitButton.val("Sharing...");
+    var toOrgID = $("#share-lib-with-org-select-" + libraryID).val();
+
+    mhep_helper.share_library_with_organisation(ownerID, libraryID, toOrgID).then(result => {
+        submitButton.attr("disabled", false);
+        $("#return-message").html("Successfully shared library");
+        libraryHelper.prototype.onOpenShareLib(libraryID, ownerID);
+    });
 };
 libraryHelper.prototype.onEditLibraryName = function (original_element) {
     console.log(original_element);
@@ -3541,4 +3563,19 @@ libraryHelper.prototype.hide_modals_temporaly = function () {
 };
 libraryHelper.prototype.show_temporally_hidden_modals = function () {
     $('.modal[temp-hidden=true]').removeAttr('temp-hidden').modal('show');
+};
+
+libraryHelper.prototype.populateShareLibWithOrgSelect = function (form, fromOrgID) {
+    var select = form.find("select");
+    mhep_helper.list_organisations().then(organisations => {
+        organisations.forEach(function (org) {
+            if (fromOrgID == org.id) {
+                return // disable sharing a library from one org to itself
+            }
+            var option = document.createElement("option");
+            option.textContent = org.name;
+            option.value = org.id;
+            select.append(option);
+        });
+    });
 };
