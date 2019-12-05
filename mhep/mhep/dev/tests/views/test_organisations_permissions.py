@@ -270,3 +270,48 @@ class TestUnshareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase)
         return self.client.delete(
             f"/{VERSION}/api/organisations/{org.id}/libraries/{lib.id}/shares/{share_to_org.id}/"
         )
+
+
+class TestListOrganisationLibrarySharesPermissions(AssertErrorMixin, APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.my_org = OrganisationFactory.create()
+        cls.org_admin = UserFactory.create()
+        cls.my_org.members.add(cls.org_admin)
+        cls.my_org.admins.add(cls.org_admin)
+
+        cls.other_org = OrganisationFactory.create()
+        cls.shared_library = LibraryFactory.create(owner_organisation=cls.my_org, owner_user=None)
+        cls.shared_library.shared_with.add(cls.other_org)
+
+    def test_organisation_admin_can_list_library_shares(self):
+        self.client.force_authenticate(self.org_admin)
+        response = self._call_endpoint(self.my_org, self.shared_library)
+        assert status.HTTP_200_OK == response.status_code
+
+    def test_unauthenticated_user_cannot_list_library_shares(self):
+        response = self._call_endpoint(self.my_org, self.shared_library)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "Authentication credentials were not provided.",
+        )
+
+    def test_org_member_who_is_not_an_org_admin_cannot_list_library_shares(self):
+        normal_member = UserFactory.create()
+        self.my_org.members.add(normal_member)
+
+        self.client.force_authenticate(normal_member)
+        response = self._call_endpoint(self.my_org, self.shared_library)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You are not an admin of the Organisation.",
+        )
+
+    def _call_endpoint(self, org, lib):
+        return self.client.get(
+            f"/{VERSION}/api/organisations/{org.id}/libraries/{lib.id}/shares/"
+        )

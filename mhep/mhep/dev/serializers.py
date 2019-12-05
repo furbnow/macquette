@@ -221,6 +221,18 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
         }
 
 
+class OrganisationMetadataSerializer(OrganisationSerializer):
+    """
+    OrganisationMetadataSerializer serializes the id and name of an organisation.
+    """
+    class Meta:
+        model = Organisation
+        fields = [
+            "id",
+            "name",
+        ]
+
+
 class UserSerializer(StringIDMixin, serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
