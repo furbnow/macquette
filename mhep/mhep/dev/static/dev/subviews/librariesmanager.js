@@ -37,7 +37,7 @@ function librariesmanager_UpdateUI()
             row.find('[data-library-name=""]').attr('data-library-name', library.name);
 
             var access = 'Write';
-            if (!library.writeable) {
+            if (!library.permissions.can_write) {
                 access = 'Read';
                 row.find('.if-write-access[data-library-id="' + library.id + '"]').hide();
             }

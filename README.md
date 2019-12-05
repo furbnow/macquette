@@ -612,7 +612,10 @@ Content-Type: application/json
         },
         "created_at": "2019-11-25T17:34:05.766267Z",
         "updated_at": "2019-11-25T17:34:05.766267Z",
-        "writeable": true,
+        "permissions": {
+            "can_write": true,
+            "can_share": false
+        },
         "owner": {
             "type": "personal",
             "id": "1",
@@ -640,7 +643,10 @@ Content-Type: application/json
         },
         "created_at": "2019-11-25T17:34:05.766267Z",
         "updated_at": "2019-11-25T17:34:05.766267Z",
-        "writeable": true,
+        "permissions": {
+            "can_write": true,
+            "can_share": false
+        },
         "owner": {
             "type": "personal",
             "id": "1",

@@ -84,3 +84,36 @@ def check_library_write_permissions(library, original_request):
 
     original_request.method = original_method
     return allowed
+
+
+def check_library_share_permissions(library, original_request):
+    """
+    manually check the permissions for the ShareUnshareOrganisationLibraries view to work out
+    if the current user (based on original_request) is allowed to share / unshare this library.
+    """
+
+    from ..views import ShareUnshareOrganisationLibraries  # avoid circular import
+
+    owner_organisation = library.owner_organisation
+    if owner_organisation is None:
+        return False
+
+    view = ShareUnshareOrganisationLibraries(
+        kwargs={
+            "pk": owner_organisation.id,
+            "libraryid": library.id,
+            # "otherorgid" not set as it's shouldn't be relevant: we're only checking permission
+        }
+    )
+
+    # check view-level permissions
+    for permission in view.get_permissions():
+        if not permission.has_permission(original_request, view):
+            return False
+
+    # check object-level permissions
+    for permission in view.get_permissions():
+        if not permission.has_object_permission(original_request, view, owner_organisation):
+            return False
+
+    return True

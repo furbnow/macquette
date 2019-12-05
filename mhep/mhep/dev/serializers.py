@@ -126,7 +126,7 @@ class AssessmentFullSerializer(ImagesMixin, AssessmentMetadataSerializer):
 
 class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
-    writeable = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
 
     class Meta:
@@ -138,13 +138,17 @@ class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
             "data",
             "created_at",
             "updated_at",
-            "writeable",
+            "permissions",
             "owner",
         ]
 
-    def get_writeable(self, library):
-        from .views.helpers import check_library_write_permissions
-        return check_library_write_permissions(library, self.context["request"])
+    def get_permissions(self, library):
+        from .views.helpers import check_library_write_permissions, check_library_share_permissions
+
+        return {
+            "can_write": check_library_write_permissions(library, self.context["request"]),
+            "can_share": check_library_share_permissions(library, self.context["request"]),
+        }
 
     def get_owner(self, obj):
         owner_organisation = obj.owner_organisation
