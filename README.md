@@ -517,16 +517,28 @@ POST /organisations/:orgid/members/:userid/
 > curl -X POST http://localhost:9090/dev/api/organisations/1/members/3/
 ```
 
-## Remove member from organisation
+Returns:
 
-### Example
+```
+HTTP 204 No content
+```
+
+## Remove member from organisation
 
 ```
 DELETE /organisations/:orgid/members/:userid/
 ```
 
+### Example
+
 ```
 > curl -X DELETE http://localhost:9090/dev/api/organisations/1/members/3/
+```
+
+Returns:
+
+```
+HTTP 204 No content
 ```
 
 ## Set organisation user as librarian
@@ -541,16 +553,28 @@ POST /organisations/:orgid/librarians/:userid/
 > curl -X POST http://localhost:9090/dev/api/organisation/1/librarians/5/
 ```
 
-## Unset organisation user as librarian
+Returns:
 
-### Example
+```
+HTTP 204 No content
+```
+
+## Unset organisation user as librarian
 
 ```
 DELETE /organisations/:orgid/librarians/:userid/
 ```
 
+### Example
+
 ```
 > curl -X DELETE http://localhost:9090/dev/api/organisation/1/librarians/5/
+```
+
+Returns:
+
+```
+HTTP 204 No content
 ```
 
 ## List libraries
@@ -564,6 +588,7 @@ List a collection of libraries (and their library items) that is either:
 a) a global library
 b) a library that belongs to me,
 c) a library belonging to an organisation I'm a member of
+d) a library that has been shared with an organisation I'm a member of
 
 ℹ️ porting notes: replaces previous route `assessment/loaduserlibraries`
 
@@ -778,6 +803,12 @@ POST /organisations/:orgid/libraries/:libraryid/shares/:otherorgid/
 DELETE /organisations/:orgid/libraries/:libraryid/shares/:otherorgid/
 ```
 
+Returns:
+
+```
+HTTP 204 No content
+```
+
 ### Example
 
 ```
@@ -836,7 +867,7 @@ DELETE /librarys/:id/
 Returns:
 
 ```
-HTTP 204 HTTP 204 No content
+HTTP 204 No content
 ```
 
 ## Create item in library
@@ -924,139 +955,4 @@ Returns:
 
 ```
 HTTP 204 No content
-```
-
-# Dummy API endpoints
-
-In this first release, where we have no concept of an organisation, the following endpoints have been hardcoded to return
-certain values.
-
-* [List my organisations](#list-my-organisations)
-* [Create organisation](#create-organisations)
-* [List organisation assessments](#list-organisation-assessments)
-
-## List my organisations
-
-```
-GET /organisations/
-```
-
-List all organisations the logged in user is part of
-
-ℹ️ porting notes: replaces previous `assessment/getorganisations` route.
-
-### Example
-
-```
-> curl http://localhost:9090/v1/api/organisations/
-```
-
-Returns:
-
-```
-HTTP 200 OK
-Content-Type: application/json
-
-[
-    {
-        "id": "1",
-        "name": "Carbon Coop",
-        "assessments": 0,
-        "members": [
-            {
-                "userid": "1",
-                "name": "localadmin",
-                "last_login": "2019-06-03T16:35:00+00:00",
-                "is_admin": true,
-                "is_librarian": true
-            }
-        ]
-    }
-]
-```
-
-## Create organisation
-
-```
-POST /organisations/
-```
-
-ℹ️ porting notes: replaces previous `assessment/neworganisation` route.
-
-### Example
-
-```
-> curl -v \
-    -H "Content-Type: application/json" \
-    http://localhost:9090/v1/api/organisations/ \
-    --data @- << EOF
-{
-    "name": "Example organisation"
-}
-EOF
-```
-
-Returns:
-
-```
-HTTP 400 Bad Request
-Content-Type: application/json
-
-{
-    "detail": "function not implemented"
-}
-```
-
-## List organisation assessments
-
-```
-GET /organisations/:id/assessments/
-```
-
-List all assessments belonging to the organisation.
-
-ℹ️ porting notes: replaces previous `assessment/list` route, passing `orgid`.
-
-### Example
-
-```
-> curl http://localhost:9090/v1/api/organisations/1/assessments/
-```
-
-Returns:
-
-```
-HTTP 200 OK
-Content-Type: application/json
-
-[]
-```
-
-## Create assessment in organisation
-
-```
-POST /organisations/:id/assessments/
-```
-
-ℹ️ porting notes: replaces previous `assessment/create` route, passing `orgid`.
-
-### Example
-
-```
-> curl -v \
-    -H "Content-Type: application/json" \
-    http://localhost:9090/v1/api/organisations/1/assessments/ \
-    --data @- << EOF
-{
-    "name": "Example assessment",
-    "description": "Example description",
-    "openbem_version": "10.1.1"
-}
-EOF
-```
-
-Returns:
-
-```
-HTTP 400 Bad Request
 ```
