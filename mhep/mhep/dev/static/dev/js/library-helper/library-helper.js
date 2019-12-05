@@ -301,6 +301,32 @@ libraryHelper.prototype.onOpenShareLib = function (libraryID, ownerID) {
     var container = $("#share-lib-with-org-form-container");
     container.html(shareLibWithOrgForm);
 
+    // Clone the table of who the library is shared with
+    var tableTemplate = $("#organisations-library-is-shared-with");
+    var table = tableTemplate.clone();
+    table.show();
+
+    table.find("#organisation-library_shared_with-header-template").show();
+
+    var rowTemplate = $('#organisation-library_shared_with-row-template');
+
+    mhep_helper.list_organisations_library_shares(ownerID, libraryID).then(organisations => {
+        for (let i = 0; i < organisations.length; i++) {
+            org = organisations[i];
+
+            row = rowTemplate.clone();
+            row.removeAttr("id");
+
+            row.find(".organisation-name").html(org.name);
+
+            row.show();
+            table.append(row);
+        }
+    });
+
+    $("#organisations-library-is-shared-with-container").html(table);
+
+
     $("#modal-share-library").modal("show");
 };
 libraryHelper.prototype.onShareLib = function (e, ownerID, libraryID) {

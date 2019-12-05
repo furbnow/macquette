@@ -223,6 +223,20 @@ var mhep_helper = {
             });
         });
     },
+    'list_organisations_library_shares': function(orgID, libraryID) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.libraryOrganisationLibraryShares(orgID, libraryID),
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError("listing organisations library is shared with")(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                }
+            });
+        })
+    },
     'promote_user_as_librarian': function(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({

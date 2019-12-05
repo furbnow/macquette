@@ -52,6 +52,13 @@
               /789/, parseInt(toOrgID));
         },
 
+        libraryOrganisationLibraryShares: function(organisationID, libraryID) {
+            const dummyURL = '{% url VERSION|add:":list-organisation-library-shares" "12345" "67890" %}';
+            return dummyURL.replace(
+                /12345/, parseInt(organisationID)).replace(
+                /67890/, parseInt(libraryID));
+        },
+
         library: function(libraryID) {
           return '{% url VERSION|add:":update-destroy-library" "12345" %}'.replace(/12345/, parseInt(libraryID));
         },
