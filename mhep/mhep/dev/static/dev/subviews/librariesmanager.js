@@ -42,6 +42,11 @@ function librariesmanager_UpdateUI()
                 access = 'Read';
                 row.find('.if-write-access[data-library-id="' + library.id + '"]').hide();
             }
+
+            if (!library.permissions.can_share) {
+                row.find('.if-share-access[data-library-id="' + library.id + '"]').hide();
+            }
+
             row.find('.library-access').html(access);
             row.find('.library-owner').html(library.owner.name);
 
