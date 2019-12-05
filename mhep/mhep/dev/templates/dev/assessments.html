@@ -519,7 +519,7 @@
                 demoteLibrarianButton.click(handleClickDemoteLibrarian);
             }
 
-            if (permissions.can_add_remove_members) {
+            if (permissions.can_add_remove_members && members[z].name != myusername) {
                 var removeMemberButton = row.find('.remove-user')
                 removeMemberButton.show();
                 removeMemberButton.click(handleClickRemoveUser);
