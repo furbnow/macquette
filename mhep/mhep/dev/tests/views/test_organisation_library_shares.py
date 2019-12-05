@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from rest_framework.test import APITestCase
 from rest_framework import status
 
@@ -162,3 +164,51 @@ class TestUnshareOrganisationLibrary(
             f"organisation doesn't have a library with id=9999",
         )
         assert self.library in self.other_org.libraries_shared_with.all()
+
+
+class TestListOrganisationLibraryShares(
+    SetUpMixin,
+    AssertErrorMixin,
+    APITestCase,
+):
+    def test_returns_organisations_a_library_is_shared_with(self):
+        self.library.shared_with.add(self.other_org)
+
+        self.client.force_authenticate(self.org_admin)
+        response = self.client.get(
+            f"/{VERSION}/api/organisations/{self.my_org.id}/libraries/{self.library.id}/shares/",
+        )
+
+        assert status.HTTP_200_OK == response.status_code
+        expected = [
+            OrderedDict([
+                ("id", f"{self.other_org.id}"),
+                ("name", self.other_org.name),
+            ]),
+        ]
+
+        assert expected == response.data
+
+    def test_returns_404_if_organisation_id_doesnt_exist(self):
+        self.client.force_authenticate(self.org_admin)
+        response = self.client.get(
+            f"/{VERSION}/api/organisations/999/libraries/{self.library.id}/shares/",
+        )
+
+        self._assert_error(
+            response,
+            status.HTTP_404_NOT_FOUND,
+            f"Organisation not found",
+        )
+
+    def test_returns_404_if_library_id_doesnt_exist(self):
+        self.client.force_authenticate(self.org_admin)
+        response = self.client.get(
+            f"/{VERSION}/api/organisations/{self.my_org.id}/libraries/999/shares/",
+        )
+
+        self._assert_error(
+            response,
+            status.HTTP_404_NOT_FOUND,
+            f"organisation doesn't have a library with id=999",
+        )

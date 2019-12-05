@@ -99,6 +99,7 @@ Once an app is assigned a version number its code should never be modified again
 * [Update a library](#update-a-library)
 * [Share an organisation library with another organisation](#share-an-organisation-library-with-another-organisation)
 * [Unshare an organisation library with another organisation](#unshare-an-organisation-library-with-another-organisation)
+* [List organisations a library is shared with](#list-organisations-a-library-is-shared-with)
 * [Delete a library](#delete-a-library)
 * [Create item in library](#create-item-in-library)
 * [Update item in library](#update-item-in-library)
@@ -782,6 +783,39 @@ DELETE /organisations/:orgid/libraries/:libraryid/shares/:otherorgid/
 ```
 > curl -v -X DELETE http://localhost:9090/dev/api/organisation/1/libraries/5/shares/2/ \
 ```
+
+## List organisations a library is shared with
+
+For a given library that belongs to an organisation, list any organisations the library is shared
+with.
+
+```
+GET /organisations/:orgid/libraries/:libraryid/shares/
+```
+
+### Example
+
+```
+> curl http://localhost:9090/dev/api/organisation/1/libraries/5/shares/ \
+```
+
+Returns:
+
+```
+HTTP 200 OK
+Content-Type: application/json
+[
+    {
+        "id": "1",
+        "name": "Chigley Community Energy"
+    },
+    {
+        "id": "2",
+        "name": "Sandford Assessment CIC"
+    }
+]
+```
+
 
 ## Delete a library
 

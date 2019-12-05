@@ -14,6 +14,7 @@ from .organisations import CreateDeleteOrganisationLibrarians
 from .organisations import CreateDeleteOrganisationMembers
 from .organisations import CreateOrganisationLibraries
 from .organisations import ListOrganisations
+from .organisations import ListOrganisationLibraryShares
 from .organisations import ListCreateOrganisationAssessments
 from .organisations import ShareUnshareOrganisationLibraries
 

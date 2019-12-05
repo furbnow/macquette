@@ -15,6 +15,7 @@ from ..serializers import (
     AssessmentMetadataSerializer,
     LibrarySerializer,
     OrganisationSerializer,
+    OrganisationMetadataSerializer,
     OrganisationLibrarianSerializer,
     OrganisationMemberSerializer,
 )
@@ -153,7 +154,21 @@ class CreateDeleteOrganisationMembers(
         return Response("", status=status.HTTP_204_NO_CONTENT)
 
 
+class GetOrganisationLibraryMixin():
+    def _get_organisation_library(self, organisation, library_id):
+        """
+        returns a library matching `library_id` that is also owned by `organisation`
+        """
+        try:
+            return organisation.libraries.get(id=library_id)
+        except Library.DoesNotExist:
+            raise exceptions.NotFound(
+                detail=f"organisation doesn't have a library with id={library_id}"
+            )
+
+
 class ShareUnshareOrganisationLibraries(
+    GetOrganisationLibraryMixin,
     generics.UpdateAPIView,  # UpdateAPIView acts on the Organisation model
 ):
     serializer_class = OrganisationLibrarianSerializer
@@ -164,14 +179,6 @@ class ShareUnshareOrganisationLibraries(
 
     def get_queryset(self, *args, **kwargs):
         return getattr(self.request.user, f"{VERSION}_organisations")
-
-    def _get_library(self, organisation, library_id):
-        try:
-            return organisation.libraries.get(id=library_id)
-        except Library.DoesNotExist:
-            raise exceptions.NotFound(
-                detail=f"organisation doesn't have a library with id={library_id}"
-            )
 
     def _get_other_organisation(self, other_org_id):
         try:
@@ -184,7 +191,7 @@ class ShareUnshareOrganisationLibraries(
     def post(self, request, pk, otherorgid, libraryid):
         share_from_org = self.get_object()  # performs permission checks for organisation
         share_to_org = self._get_other_organisation(otherorgid)
-        library = self._get_library(share_from_org, libraryid)
+        library = self._get_organisation_library(share_from_org, libraryid)
 
         library.shared_with.add(share_to_org)
         return Response("", status=status.HTTP_204_NO_CONTENT)
@@ -192,7 +199,37 @@ class ShareUnshareOrganisationLibraries(
     def delete(self, request, pk, otherorgid, libraryid):
         share_from_org = self.get_object()  # performs permission checks for organisation
         share_to_org = self._get_other_organisation(otherorgid)
-        library = self._get_library(share_from_org, libraryid)
+        library = self._get_organisation_library(share_from_org, libraryid)
 
         library.shared_with.remove(share_to_org)
         return Response("", status=status.HTTP_204_NO_CONTENT)
+
+
+class ListOrganisationLibraryShares(
+    GetOrganisationLibraryMixin,
+    generics.ListAPIView,
+):
+    """
+    for a given organisation library, this list the other organisations that this library is
+    shared with
+    """
+
+    serializer_class = OrganisationMetadataSerializer
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminOfOrganisation,
+    ]
+
+    def get_queryset(self, *args, **kwargs):
+        """
+        look up the organisation library, and return the organisations that it's shared with
+        """
+        try:
+            shared_from_org = Organisation.objects.get(id=self.kwargs["pk"])
+        except Organisation.DoesNotExist:
+            raise exceptions.NotFound(
+                detail=f"can't list shares for non-existent organisation: id=9999"
+            )
+
+        library = self._get_organisation_library(shared_from_org, self.kwargs["libraryid"])
+        return library.shared_with.all()
