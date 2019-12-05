@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from ... import VERSION
+from ..factories import OrganisationFactory
 
 from mhep.users.tests.factories import UserFactory
 
@@ -15,6 +16,10 @@ class TestListUsers(APITestCase):
         me = UserFactory.create()
         user_1 = UserFactory.create()
         user_2 = UserFactory.create()
+
+        org = OrganisationFactory.create()
+        org.members.add(me)
+        org.admins.add(me)
 
         self.client.force_authenticate(me)
         response = self.client.get(f"/{VERSION}/api/users/")
@@ -36,7 +41,3 @@ class TestListUsers(APITestCase):
         ]
 
         assert expected == response.json()
-
-    def test_returns_forbidden_if_not_logged_in(self):
-        response = self.client.get(f"/{VERSION}/api/organisations/")
-        assert response.status_code == status.HTTP_403_FORBIDDEN
