@@ -8,6 +8,10 @@ from mhep.v1.tests.factories import (
 )
 from mhep.v1.models import Assessment, Library, Organisation
 
+from . import VERSION
+
+pytest.register_assert_rewrite(f"mhep.{VERSION}.tests.views.mixins.assert_error")
+
 
 @pytest.fixture
 def assessment() -> Assessment:
