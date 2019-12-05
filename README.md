@@ -496,11 +496,13 @@ DELETE /organisations/:orgid/librarians/:userid/
 GET /libraries/
 ```
 
-List all libraries and their library items that belong to me.
+List a collection of libraries (and their library items) that is either:
+
+a) a global library
+b) a library that belongs to me,
+c) a library belonging to an organisation I'm a member of
 
 ℹ️ porting notes: replaces previous route `assessment/loaduserlibraries`
-
-⚠️ currently each library has `"writeable": True` hardcoded
 
 ### Example
 
@@ -517,9 +519,9 @@ Content-Type: application/json
 [
     {
         "id": 1,
-        "name": "StandardLibrary - localadmin",
+        "name": "Jane's fabric elements",
         "type": "elements",
-        "items": {
+        "data": {
             "SWU_01": {
                 "tags": ["Wall"],
                 "name": "225mm uninsulated brick wall",
@@ -544,10 +546,18 @@ Content-Type: application/json
                 "gL": 0,
                 "ff": 0
             }
+        },
+        "created_at": "2019-11-25T17:34:05.766267Z",
+        "updated_at": "2019-11-25T17:34:05.766267Z",
+        "writeable": true,
+        "owner": {
+            "type": "personal",
+            "id": "1",
+            "name": "janedoe"
         }
     },
     {
-        "name": "StandardLibrary - localadmin",
+        "name": "Jane's fabric element measures",
         "type": "draught_proofing_measures",
         "items": {
             "DP_01": {
@@ -564,6 +574,14 @@ Content-Type: application/json
                 "performance": "Dependent on existing. 8-12 ...",
                 "maintenance": "Minimal. Ensure any draught-proofing strips are replaced..."
             }
+        },
+        "created_at": "2019-11-25T17:34:05.766267Z",
+        "updated_at": "2019-11-25T17:34:05.766267Z",
+        "writeable": true,
+        "owner": {
+            "type": "personal",
+            "id": "1",
+            "name": "janedoe"
         }
     }
 ]
