@@ -90,16 +90,46 @@
       <h3 id="myModalLabel">Share library: </h3>
   </div>
   <div class="modal-body">
-      <p>Enter user, or organisation name to share this library with: </p>
-      <input id="sharename" type="text" style="margin:10px;width:120px"/>
-      <input type="checkbox" id="write_permissions">  Grant write persmisions
-      <p id="return-message" style="margin-bottom:25px"></p>
-      <table class="table" id="shared-with-table">
-      </table>
+
+        <form id="share-lib-with-org-form-template" style="display: none;">
+            <div style="display: block;">
+                <label id="share-lib-with-org-label-template">
+                    Select an organisation to share this library with (allow reading):
+                </label>
+                <select name="org-id" id="share-lib-with-org-select-template">
+                    <option value="-1">-- Select an organisation --</option>
+                </select>
+            </div>
+            <input type="submit" value="Share">
+        </form>
+
+        <div id="share-lib-with-org-form-container"></div>
+
+        <p id="return-message" style="margin-bottom:25px"></p>
+
+        <table id="organisations-library-is-shared-with" class="table">
+            <tr id="organisation-library_shared_with-header-template" style="display: none;">
+                <th>
+                    Shared with
+                </th>
+                <th>
+                    Actions
+                </th>
+            <tr>
+            <tr id="organisation-library_shared_with-row-template" class="organisation-member" style="display: none;">
+                <td style="width: 50%;">
+                    <span class="organisation-name"></span>
+                </td>
+                <td>
+                    <button class="stop-sharing" data-owner-org-id="" data-library-id="" data-shared-org-id="">Stop sharing</button>
+                </td>
+            </tr>
+        </table>
+
+        <div id="organisations-library-is-shared-with-container"></div>
   </div>
   <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-      <button id="share-library" class="btn btn-primary">Share / Update permissions</button>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Done</button>
   </div>
 </div>
 

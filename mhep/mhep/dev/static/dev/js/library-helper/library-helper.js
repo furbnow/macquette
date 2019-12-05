@@ -55,12 +55,6 @@ libraryHelper.prototype.add_events = function () {
         myself.init(); // Reload the lobrary before we display it
         myself.onAddItemFromLib($(this));
     });
-    this.container.on('click', "#share-library", function () {
-        var library = null;
-        if ($(this).attr('data-library-id') != '')
-            library_id = $(this).attr('data-library-id');
-        myself.onShareLib(library_id);
-    });
     this.container.on('click', '.remove-user', function () {
         myself.onRemoveUserFromSharedLib($(this).attr('username'), $(this).attr('data-library-id'));
     });
@@ -173,6 +167,9 @@ libraryHelper.prototype.add_events = function () {
         myself.type = $(this).attr('data-library-type');
         myself.onNewLibraryOption();
     });
+    this.container.on('click', '.share-library', function () {
+        myself.onOpenShareLib($(this).attr('data-library-id'), $(this).attr('data-owner-id'));
+    });
     this.container.on('click', '.delete-library', function () {
         myself.onDeleteLibrary($(this).attr('data-library-id'));
     });
@@ -279,31 +276,103 @@ libraryHelper.prototype.onAddItemFromLib = function (origin) {
     this.populate_library_modal(origin);
     $("#show-library-modal").modal('show');
 };
-libraryHelper.prototype.onOpenShareLib = function (selected_library) {
-    //if ($('#library-select').val() != undefined)
-    //selected_library = $('#library-select').val();
-    this.display_library_users(selected_library);
-    $('#modal-share-library #share-library').attr('data-library-id', selected_library);
-    $('.modal').modal('hide');
-    $('#modal-share-library').modal('show');
-};
-libraryHelper.prototype.onShareLib = function (selected_library) {
-    $('#return-message').html('');
-    var username = $("#sharename").val();
-    var write_permissions = $('#write_permissions').is(":checked");
-    //if ($('#library-select').val() != undefined)
-    //selected_library = $('#library-select').val();
+libraryHelper.prototype.onOpenShareLib = function (libraryID, ownerID) {
     var myself = this;
-    if (selected_library != -1) {
-        $.ajax({
-            url: path + "assessment/sharelibrary.json",
-            data: "id=" + selected_library + "&name=" + username + "&write_permissions=" + write_permissions,
-            error: handleServerError('sharing library'),
-            success: function (data) {
-                $('#return-message').html(data);
-                myself.display_library_users(selected_library);
-            }});
+    $("#modal-share-library #share-library").attr("data-library-id", libraryID);
+    $(".modal").modal("hide");
+
+    // Clone the 'share library with org form
+    var shareLibWithOrgForm = $("#share-lib-with-org-form-template").clone();
+    shareLibWithOrgForm.removeAttr("id");
+
+    shareLibWithOrgForm.find("#share-lib-with-org-select-template").removeAttr("id").attr(
+        "id", "share-lib-with-org-select-" + libraryID
+    );
+    shareLibWithOrgForm.find("#share-lib-with-org-label-template").removeAttr("id").attr(
+        "for", "share-lib-with-org-select-" + libraryID
+    );
+    shareLibWithOrgForm.on("submit", function (e) {
+        myself.onShareLib(e, ownerID, libraryID);
+    });
+
+    this.populateShareLibWithOrgSelect(shareLibWithOrgForm, ownerID);
+    shareLibWithOrgForm.show();
+
+    var container = $("#share-lib-with-org-form-container");
+    container.html(shareLibWithOrgForm);
+
+    // Clone the table of who the library is shared with
+    var tableTemplate = $("#organisations-library-is-shared-with");
+    var table = tableTemplate.clone();
+    table.show();
+
+    table.find("#organisation-library_shared_with-header-template").show();
+
+    var rowTemplate = $('#organisation-library_shared_with-row-template');
+
+    mhep_helper.list_organisations_library_shares(ownerID, libraryID).then(organisations => {
+        for (let i = 0; i < organisations.length; i++) {
+            org = organisations[i];
+
+            row = rowTemplate.clone();
+            row.removeAttr("id");
+
+            row.find(".organisation-name").html(org.name);
+
+            row.find('[data-owner-org-id=""]').attr('data-owner-org-id', ownerID);
+            row.find('[data-library-id=""]').attr('data-library-id', libraryID);
+            row.find('[data-shared-org-id=""]').attr('data-shared-org-id', org.id);
+
+            var stopSharingButton = row.find('.stop-sharing')
+            stopSharingButton.on("click", myself.onStopSharingLib);
+
+            row.show();
+            table.append(row);
+        }
+    });
+
+    $("#organisations-library-is-shared-with-container").html(table);
+
+
+    $("#modal-share-library").modal("show");
+};
+libraryHelper.prototype.onShareLib = function (e, ownerID, libraryID) {
+    e.preventDefault();
+    $("#return-message").html("");
+
+    if (libraryID == -1) {
+        $("#return-message").html("You must select an organisation");
+        return;
     }
+
+    $("#return-message").html("");
+    var submitButton = $(this).find(":submit");
+    submitButton.attr("disabled", true);
+    submitButton.val("Sharing...");
+    var toOrgID = $("#share-lib-with-org-select-" + libraryID).val();
+
+    mhep_helper.share_library_with_organisation(ownerID, libraryID, toOrgID).then(result => {
+        submitButton.attr("disabled", false);
+        $("#return-message").html("Successfully shared library");
+        libraryHelper.prototype.onOpenShareLib(libraryID, ownerID);
+    });
+};
+libraryHelper.prototype.onStopSharingLib = function (e) {
+    e.preventDefault();
+    $("#return-message").html("");
+
+    var myself = this;
+
+    $(this).attr("disabled", true);
+    $(this).text("Stopping...");
+
+    var ownerOrgID = $(this).attr('data-owner-org-id');
+    var libraryID = $(this).attr('data-library-id');
+    var sharedOrgID = $(this).attr('data-shared-org-id');
+    mhep_helper.stop_sharing_library_with_organisation(ownerOrgID, libraryID, sharedOrgID).then(result => {
+        $("#return-message").html("Stopped sharing library");
+        libraryHelper.prototype.onOpenShareLib(libraryID, ownerOrgID);
+    });
 };
 libraryHelper.prototype.onEditLibraryName = function (original_element) {
     console.log(original_element);
@@ -3544,4 +3613,19 @@ libraryHelper.prototype.hide_modals_temporaly = function () {
 };
 libraryHelper.prototype.show_temporally_hidden_modals = function () {
     $('.modal[temp-hidden=true]').removeAttr('temp-hidden').modal('show');
+};
+
+libraryHelper.prototype.populateShareLibWithOrgSelect = function (form, fromOrgID) {
+    var select = form.find("select");
+    mhep_helper.list_organisations().then(organisations => {
+        organisations.forEach(function (org) {
+            if (fromOrgID == org.id) {
+                return // disable sharing a library from one org to itself
+            }
+            var option = document.createElement("option");
+            option.textContent = org.name;
+            option.value = org.id;
+            select.append(option);
+        });
+    });
 };

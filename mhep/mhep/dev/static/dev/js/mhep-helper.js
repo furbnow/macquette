@@ -208,6 +208,50 @@ var mhep_helper = {
             });
         });
     },
+    'share_library_with_organisation': function(fromOrgID, libraryID, toOrgID) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.shareUnshareOrganisationLibraries(fromOrgID, libraryID, toOrgID),
+                type: "POST",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError('sharing library with organisation')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    },
+    'stop_sharing_library_with_organisation': function(fromOrgID, libraryID, toOrgID) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.shareUnshareOrganisationLibraries(fromOrgID, libraryID, toOrgID),
+                type: "DELETE",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError('stopping sharing library with organisation')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    },
+    'list_organisations_library_shares': function(orgID, libraryID) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.libraryOrganisationLibraryShares(orgID, libraryID),
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError("listing organisations library is shared with")(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                }
+            });
+        })
+    },
     'promote_user_as_librarian': function(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({
