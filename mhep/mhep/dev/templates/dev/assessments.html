@@ -498,7 +498,7 @@
         var permissions = myorganisations[orgid].permissions;
 
         for (var z in members) {
-            row = rowTemplate.clone()
+            var row = rowTemplate.clone()
             row.removeAttr('id');
 
             row.find('[data-user-id=""]').attr('data-user-id', members[z].userid);
