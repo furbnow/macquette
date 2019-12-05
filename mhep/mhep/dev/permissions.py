@@ -1,5 +1,6 @@
 from rest_framework import exceptions, permissions
 
+from . import VERSION
 from .models import Organisation
 
 
@@ -52,6 +53,15 @@ class IsLibrarianOfOrganisation(permissions.BasePermission):
         except Organisation.DoesNotExist:
             raise exceptions.NotFound("Organisation not found")
         return request.user in organisation.librarians.all()
+
+
+class IsAdminOfAnyOrganisation(permissions.BasePermission):
+    message = "You are not an admin of an organisation."
+
+    def has_permission(self, request, view):
+        orgs_where_admin = getattr(request.user, f"{VERSION}_organisations_where_admin")
+
+        return orgs_where_admin.count() > 0
 
 
 class IsReadRequest(permissions.BasePermission):

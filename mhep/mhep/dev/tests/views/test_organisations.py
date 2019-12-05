@@ -1,5 +1,6 @@
 import datetime
 import pytz
+import pytest
 
 from collections import OrderedDict
 
@@ -10,6 +11,8 @@ from ... import VERSION
 from ..factories import AssessmentFactory, OrganisationFactory
 
 from mhep.users.tests.factories import UserFactory
+
+pytestmark = pytest.mark.django_db  # enable DB and run each test in transaction
 
 
 class TestListOrganisations(APITestCase):
