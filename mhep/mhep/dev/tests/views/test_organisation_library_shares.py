@@ -133,6 +133,19 @@ class TestUnshareOrganisationLibrary(
         assert status.HTTP_204_NO_CONTENT == response.status_code
         assert self.library not in self.other_org.libraries_shared_with.all()
 
+    def test_returns_404_is_sharing_organisation_id_does_not_exist(self):
+        self.client.force_authenticate(self.org_admin)
+        response = self.client.delete(
+            f"/{VERSION}/api/organisations/999/libraries/{self.library.id}"
+            f"/shares/{self.other_org.id}/",
+        )
+
+        self._assert_error(
+            response,
+            status.HTTP_404_NOT_FOUND,
+            f"Organisation not found",
+        )
+
     def test_returns_404_if_other_organisation_id_doesnt_exist(self):
         self.library.shared_with.add(self.other_org)
 
