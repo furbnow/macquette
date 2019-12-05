@@ -214,7 +214,6 @@ class TestListLibraries(APITestCase):
 
     def test_list_libraries_fails_if_not_logged_in(self):
         LibraryFactory.create(owner_user=self.me)
-        LibraryFactory.create(owner_user=self.me)
 
         response = self.client.get(f"/{VERSION}/api/libraries/")
         assert status.HTTP_403_FORBIDDEN == response.status_code
