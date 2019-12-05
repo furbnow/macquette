@@ -468,13 +468,13 @@ Content-Type: application/json
                 "userid": "2",
                 "name": "janedoe",
                 "last_active": "2019-06-03T16:35:00+00:00",
-                "is_admin": True,
-                "is_librarian": True
+                "is_admin": true,
+                "is_librarian": true
             }
         ],
         "permissions": {
-            "can_add_remove_members": True,
-            "can_promote_demote_librarians": True,
+            "can_add_remove_members": true,
+            "can_promote_demote_librarians": true,
         }
     },
     {
@@ -486,20 +486,20 @@ Content-Type: application/json
                 "userid": "2",
                 "name": "janedoe",
                 "last_login": "2019-06-03T16:35:00+00:00",
-                "is_admin": True,
-                "is_librarian": False
+                "is_admin": true,
+                "is_librarian": false
             },
             {
                 "userid": "3",
                 "name": "michael2",
                 "last_login": "2019-06-03T16:35:00+00:00"
-                "is_admin": False,
-                "is_librarian": True
+                "is_admin": false,
+                "is_librarian": true
             }
         ],
         "permissions": {
-            "can_add_remove_members": True,
-            "can_promote_demote_librarians": True,
+            "can_add_remove_members": true,
+            "can_promote_demote_librarians": true,
         }
     }
 ]
