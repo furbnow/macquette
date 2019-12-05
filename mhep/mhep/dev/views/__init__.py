@@ -11,6 +11,7 @@ from .libraries import UpdateDestroyLibrary
 from .libraries import CreateUpdateDeleteLibraryItem
 
 from .organisations import CreateDeleteOrganisationLibrarians
+from .organisations import CreateDeleteOrganisationMembers
 from .organisations import CreateOrganisationLibraries
 from .organisations import ListOrganisations
 from .organisations import ListCreateOrganisationAssessments

@@ -16,6 +16,7 @@ from ..serializers import (
     LibrarySerializer,
     OrganisationSerializer,
     OrganisationLibrarianSerializer,
+    OrganisationMemberSerializer,
 )
 
 from .. import VERSION
@@ -113,6 +114,42 @@ class CreateDeleteOrganisationLibrarians(
         user = self._get_user(userid)
 
         org.librarians.remove(user)
+        return Response("", status=status.HTTP_204_NO_CONTENT)
+
+
+class CreateDeleteOrganisationMembers(
+    generics.UpdateAPIView,
+):
+    serializer_class = OrganisationMemberSerializer
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminOfOrganisation,
+    ]
+
+    def get_queryset(self, *args, **kwargs):
+        return getattr(self.request.user, f"{VERSION}_organisations")
+
+    def _get_user(self, userid):
+        try:
+            return User.objects.get(id=userid)
+        except User.DoesNotExist:
+            raise exceptions.NotFound(detail=f"No such user: id={userid}")
+
+    def post(self, request, pk, userid):
+        org = self.get_object()
+        user = self._get_user(userid)
+
+        org.members.add(user)
+        return Response("", status=status.HTTP_204_NO_CONTENT)
+
+    def delete(self, request, pk, userid):
+        org = self.get_object()
+        user = self._get_user(userid)
+
+        org.admins.remove(user)
+        org.librarians.remove(user)
+
+        org.members.remove(user)
         return Response("", status=status.HTTP_204_NO_CONTENT)
 
 

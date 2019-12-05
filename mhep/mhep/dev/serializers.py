@@ -38,6 +38,7 @@ class ImagesMixin():
         s = ImageSerializer(obj.images, context={"featured_id": featured_id}, many=True)
         return s.data
 
+
 class IsFeaturedMixin():
     def get_is_featured(self, obj):
         if "featured_id" in self.context:
@@ -236,6 +237,12 @@ class UserSerializer(StringIDMixin, serializers.ModelSerializer):
 
 
 class OrganisationLibrarianSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organisation
+        fields = []
+
+
+class OrganisationMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
         fields = []
