@@ -762,7 +762,7 @@ libraryHelper.prototype.onShowLibraryItems = function (library_id) {
     // Hide the Use buttons
     $("#show-library-items-modal .use-from-lib").hide('fast');
     // Hide Write options if no write access
-    if (!library.writeable)
+    if (!library.permissions.can_write)
         $("#show-library-items-modal .if-write").hide('fast');
     // Show the select to choose the type of fabric elements when library is "elements"
     if (this.type == 'elements' || this.type == 'elements_measures')
@@ -787,7 +787,7 @@ libraryHelper.prototype.onChangeTypeOfElementsToShow = function (origin) {
     $("#show-library-items-modal .use-from-lib").hide('fast');
     // Hide Write options if no write access
     const library = this.get_library_by_id(library_id)
-    if (!library.writeable)
+    if (!library.permissions.can_write)
         $("#show-library-items-modal .if-write").hide('fast');
     // Show the select to choose the type of fabric elements when library is "elements"
     $('#show-library-items-modal .element-type').show('fast');
@@ -825,7 +825,7 @@ libraryHelper.prototype.onShowLibraryItemsEditMode = function (library_id) {
     var out = this[function_name](null, library_id);
     $("#show-library-modal-edit-mode .modal-body").html(out);
     // Hide Write options if no write access
-    if (!library.writeable)
+    if (!library.permissions.can_write)
         $("#show-library-modal-edit-mode .if-write").hide('fast');
     // Add library id to "Create new item" and "Save" buttons
     $('#show-library-modal-edit-mode #create-in-library').attr('data-library-id', library_id);
