@@ -146,6 +146,9 @@ class CreateDeleteOrganisationMembers(
         org = self.get_object()
         user = self._get_user(userid)
 
+        org.admins.remove(user)
+        org.librarians.remove(user)
+
         org.members.remove(user)
         return Response("", status=status.HTTP_204_NO_CONTENT)
 

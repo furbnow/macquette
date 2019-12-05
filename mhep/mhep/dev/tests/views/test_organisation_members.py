@@ -67,6 +67,30 @@ class TestDeleteOrganisationMembers(
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert self.member not in self.org.members.all()
 
+    def test_removing_member_demotes_admin_role(self):
+        self.org.admins.add(self.member)
+
+        self.client.force_authenticate(self.org_admin)
+
+        response = self.client.delete(
+            f"/{VERSION}/api/organisations/{self.org.id}/members/{self.member.id}/",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert self.member not in self.org.admins.all()
+
+    def test_removing_member_demotes_librarian_role(self):
+        self.org.librarians.add(self.member)
+
+        self.client.force_authenticate(self.org_admin)
+
+        response = self.client.delete(
+            f"/{VERSION}/api/organisations/{self.org.id}/members/{self.member.id}/",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert self.member not in self.org.librarians.all()
+
     def test_returns_204_if_removing_user_who_is_already_not_a_member(self):
         self.client.force_authenticate(self.org_admin)
 
