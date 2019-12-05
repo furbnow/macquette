@@ -27,6 +27,15 @@
           return '{% url VERSION|add:":list-organisations" %}';
         },
 
+        users: function() {
+          return '{% url VERSION|add:":list-users" %}';
+        },
+
+        members: function(userID, organisationID) {
+          const dummyURL = '{% url VERSION|add:":create-delete-organisation-members" "12345" "67890" %}';
+          return dummyURL.replace(/12345/, parseInt(userID)).replace(/67890/, parseInt(organisationID));
+        },
+
         libraries: function() {
           return '{% url VERSION|add:":list-create-libraries" %}';
         },

@@ -56,6 +56,7 @@
                     <td style="width: 50%;">
                         <span class="member-name"></span>
                         <span class="member-last-active">Last active: </span>
+                        <button class="remove-user demote-role" style="display: none;" data-user-id="" data-org-id="">Remove</button>
                     </td>
                     <td style="width: 25%;">
                         <span class="member-is-librarian" style="display: none;" data-user-id="" data-org-id="">
@@ -88,6 +89,20 @@
             </form>
 
             <div id="promote-librarian-form-container"></div>
+
+            <form id="add-member-form-template" style="display: none;">
+                <div style="display: flex; align-items: center;">
+                    <label id="add-member-label-template" style="margin-right: 1rem;">
+                        Add a member:
+                    </label>
+                    <select name="user-id" id="add-member-select-template" style="margin-right: 1rem;">
+                        <option value="">-- Select a user --</option>
+                    </select>
+                    <input type="submit" value="Add">
+                </div>
+            </form>
+
+            <div id="add-member-form-container"></div>
 
             {% if request.user.is_staff %}
             <br>
@@ -401,6 +416,7 @@
 // ORGANISATIONS
 // ----------------------------------------------------------------------------
     var myorganisations = {};
+    var allusers = {};
 
     function fetchOrganisations() {
         return new Promise((resolve, reject) => {
@@ -409,6 +425,22 @@
                     const org = result[i];
                     org.orgid = org.id;
                     myorganisations[org.id] = org;
+                }
+                fetchAllUsers().then(result => {
+                    draw_organisation_list();
+                    resolve();
+                });
+            })
+        });
+    };
+
+    function fetchAllUsers() {
+        return new Promise((resolve, reject) => {
+            mhep_helper.list_users().then(result => {
+                for (let i = 0; i < result.length; i++) {
+                    var user = result[i];
+                    user.userid = user.id;
+                    allusers[user.id] = user;
                 }
                 draw_organisation_list();
                 resolve();
@@ -466,7 +498,7 @@
         var permissions = myorganisations[orgid].permissions;
 
         for (var z in members) {
-            row = rowTemplate.clone()
+            var row = rowTemplate.clone()
             row.removeAttr('id');
 
             row.find('[data-user-id=""]').attr('data-user-id', members[z].userid);
@@ -485,6 +517,12 @@
                 var demoteLibrarianButton = row.find('.demote-librarian')
                 demoteLibrarianButton.show();
                 demoteLibrarianButton.click(handleClickDemoteLibrarian);
+            }
+
+            if (permissions.can_add_remove_members && members[z].name != myusername) {
+                var removeMemberButton = row.find('.remove-user')
+                removeMemberButton.show();
+                removeMemberButton.click(handleClickRemoveUser);
             }
 
             row.show();
@@ -510,6 +548,25 @@
             promoteLibrarianForm.show();
 
             $("#promote-librarian-form-container").html(promoteLibrarianForm);
+        }
+
+        if (permissions.can_add_remove_members) {
+            var addMemberFormTemplate = $("#add-member-form-template");
+            var addMemberForm = addMemberFormTemplate.clone();
+            addMemberForm.removeAttr('id');
+
+            addMemberForm.find("#add-member-select-template").removeAttr("id").attr(
+                "id", "add-member-select-" + orgid
+            )
+            addMemberForm.find("#add-member-label-template").removeAttr("id").attr(
+                "for", "add-member-select-" + orgid
+            )
+            addMemberForm.on("submit", handleSubmitAddMember);
+
+            populateAddMemberSelect(addMemberForm);
+            addMemberForm.show();
+
+            $("#add-member-form-container").html(addMemberForm);
         }
     }
 
@@ -537,6 +594,30 @@
         });
     };
 
+    function handleClickRemoveUser(e) {
+        e.preventDefault();
+        $(this).attr("disabled", true);
+        $(this).text("Removing...");
+        var orgid = $(this).attr('data-org-id');
+        var userid = $(this).attr('data-user-id');
+        mhep_helper.remove_member(orgid, userid).then(result => {
+            fetchAndRedrawOrganisation(orgid);
+        });
+    };
+
+    function handleSubmitAddMember(e) {
+        e.preventDefault();
+        var submitButton = $(this).find(':submit');
+        submitButton.attr("disabled", true);
+        submitButton.val("Adding...");
+        var userid = $('#add-member-select-' + orgid).val();
+        mhep_helper.add_member(orgid, userid).then(result => {
+            submitButton.attr("disabled", false);
+            submitButton.val("Add");
+            fetchAndRedrawOrganisation(orgid);
+        });
+    };
+
     function populatePromoteLibrarianSelect(promoteLibrarianForm) {
         var members = myorganisations[orgid].members;
         var select = promoteLibrarianForm.find("select");
@@ -546,6 +627,20 @@
                 var option = document.createElement("option");
                 option.textContent = member.name;
                 option.value = member.userid;
+                select.append(option);
+            }
+        };
+    };
+
+    function populateAddMemberSelect(addMemberForm) {
+        var users = allusers;
+        var select = addMemberForm.find("select");
+        for (var z in users) {
+            user = users[z];
+            if (!user.is_librarian) {
+                var option = document.createElement("option");
+                option.textContent = user.name;
+                option.value = user.userid;
                 select.append(option);
             }
         };
