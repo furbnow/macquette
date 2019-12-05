@@ -34,6 +34,7 @@ function librariesmanager_UpdateUI()
 
             row.find('.library-name').html(library.name);
             row.find('[data-library-id=""]').attr('data-library-id', library.id);
+            row.find('[data-owner-id=""]').attr('data-owner-id', library.owner.id);
             row.find('[data-library-name=""]').attr('data-library-name', library.name);
 
             var access = 'Write';
@@ -43,6 +44,10 @@ function librariesmanager_UpdateUI()
             }
             row.find('.library-access').html(access);
             row.find('.library-owner').html(library.owner.name);
+
+            if (library.owner.type != "organisation") {
+                row.find('.share-library').hide();
+            }
 
             row.show();
             table.find('tbody').append(row);

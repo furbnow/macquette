@@ -55,12 +55,6 @@ libraryHelper.prototype.add_events = function () {
         myself.init(); // Reload the lobrary before we display it
         myself.onAddItemFromLib($(this));
     });
-    this.container.on('click', "#share-library", function () {
-        var library = null;
-        if ($(this).attr('data-library-id') != '')
-            library_id = $(this).attr('data-library-id');
-        myself.onShareLib(library_id);
-    });
     this.container.on('click', '.remove-user', function () {
         myself.onRemoveUserFromSharedLib($(this).attr('username'), $(this).attr('data-library-id'));
     });
@@ -172,6 +166,9 @@ libraryHelper.prototype.add_events = function () {
     this.container.on('click', '.create-new-library', function () {
         myself.type = $(this).attr('data-library-type');
         myself.onNewLibraryOption();
+    });
+    this.container.on('click', '.share-library', function () {
+        myself.onOpenShareLib($(this).attr('data-library-id'), $(this).attr('data-owner-id'));
     });
     this.container.on('click', '.delete-library', function () {
         myself.onDeleteLibrary($(this).attr('data-library-id'));
