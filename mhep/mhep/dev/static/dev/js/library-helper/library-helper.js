@@ -319,6 +319,13 @@ libraryHelper.prototype.onOpenShareLib = function (libraryID, ownerID) {
 
             row.find(".organisation-name").html(org.name);
 
+            row.find('[data-owner-org-id=""]').attr('data-owner-org-id', ownerID);
+            row.find('[data-library-id=""]').attr('data-library-id', libraryID);
+            row.find('[data-shared-org-id=""]').attr('data-shared-org-id', org.id);
+
+            var stopSharingButton = row.find('.stop-sharing')
+            stopSharingButton.on("click", myself.onStopSharingLib);
+
             row.show();
             table.append(row);
         }
@@ -348,6 +355,23 @@ libraryHelper.prototype.onShareLib = function (e, ownerID, libraryID) {
         submitButton.attr("disabled", false);
         $("#return-message").html("Successfully shared library");
         libraryHelper.prototype.onOpenShareLib(libraryID, ownerID);
+    });
+};
+libraryHelper.prototype.onStopSharingLib = function (e) {
+    e.preventDefault();
+    $("#return-message").html("");
+
+    var myself = this;
+
+    $(this).attr("disabled", true);
+    $(this).text("Stopping...");
+
+    var ownerOrgID = $(this).attr('data-owner-org-id');
+    var libraryID = $(this).attr('data-library-id');
+    var sharedOrgID = $(this).attr('data-shared-org-id');
+    mhep_helper.stop_sharing_library_with_organisation(ownerOrgID, libraryID, sharedOrgID).then(result => {
+        $("#return-message").html("Stopped sharing library");
+        libraryHelper.prototype.onOpenShareLib(libraryID, ownerOrgID);
     });
 };
 libraryHelper.prototype.onEditLibraryName = function (original_element) {

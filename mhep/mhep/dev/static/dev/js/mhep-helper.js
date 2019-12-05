@@ -223,6 +223,21 @@ var mhep_helper = {
             });
         });
     },
+    'stop_sharing_library_with_organisation': function(fromOrgID, libraryID, toOrgID) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: urlHelper.api.shareUnshareOrganisationLibraries(fromOrgID, libraryID, toOrgID),
+                type: "DELETE",
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError('stopping sharing library with organisation')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    },
     'list_organisations_library_shares': function(orgID, libraryID) {
         return new Promise((resolve, reject) => {
             $.ajax({
