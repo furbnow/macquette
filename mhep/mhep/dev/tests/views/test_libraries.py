@@ -35,7 +35,10 @@ class TestListLibraries(APITestCase):
             "updated_at": "2019-06-01T16:35:34Z",
             "name": l1.name,
             "type": l1.type,
-            "writeable": True,
+            "permissions": {
+                "can_write": True,
+                "can_share": False,
+            },
             "data": l1.data,
             "owner": {
                 "id": f"{self.me.id}",
@@ -50,7 +53,10 @@ class TestListLibraries(APITestCase):
             "updated_at": "2019-06-01T16:35:34Z",
             "name": l2.name,
             "type": l2.type,
-            "writeable": True,
+            "permissions": {
+                "can_write": True,
+                "can_share": False,
+            },
             "data": l2.data,
             "owner": {
                 "id": f"{self.me.id}",
@@ -65,7 +71,10 @@ class TestListLibraries(APITestCase):
             "updated_at": "2019-06-01T16:35:34Z",
             "name": global_lib.name,
             "type": global_lib.type,
-            "writeable": False,
+            "permissions": {
+                "can_write": False,
+                "can_share": False,
+            },
             "data": global_lib.data,
             "owner": {
                 "id": None,
@@ -133,6 +142,76 @@ class TestListLibraries(APITestCase):
 
         assert shared_lib.id in retrieved_ids
 
+    def test_can_write_is_false_for_org_librarian(self):
+        my_org = OrganisationFactory.create()
+        my_org.members.add(self.me)
+        my_org.librarians.add(self.me)
+        LibraryFactory.create(owner_organisation=my_org, owner_user=None)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert True is response.data[0]["permissions"]["can_write"]
+
+    def test_can_write_is_false_for_org_admin_not_librarian(self):
+        my_org = OrganisationFactory.create()
+        my_org.members.add(self.me)
+        my_org.admins.add(self.me)
+        LibraryFactory.create(owner_organisation=my_org, owner_user=None)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert False is response.data[0]["permissions"]["can_write"]
+
+    def test_can_write_is_false_for_org_member(self):
+        my_org = OrganisationFactory.create()
+        my_org.members.add(self.me)
+        LibraryFactory.create(owner_organisation=my_org, owner_user=None)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert False is response.data[0]["permissions"]["can_write"]
+
+    def test_can_share_is_true_for_org_admin(self):
+        my_org = OrganisationFactory.create()
+        my_org.members.add(self.me)
+        my_org.admins.add(self.me)
+        LibraryFactory.create(owner_organisation=my_org, owner_user=None)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert True is response.data[0]["permissions"]["can_share"]
+
+    def test_can_share_is_false_for_org_member(self):
+        my_org = OrganisationFactory.create()
+        my_org.members.add(self.me)
+        LibraryFactory.create(owner_organisation=my_org, owner_user=None)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert False is response.data[0]["permissions"]["can_share"]
+
+    def test_can_share_is_false_for_org_librarian(self):
+        my_org = OrganisationFactory.create()
+        my_org.members.add(self.me)
+        my_org.librarians.add(self.me)
+        LibraryFactory.create(owner_organisation=my_org, owner_user=None)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert False is response.data[0]["permissions"]["can_share"]
+
     def test_list_libraries_fails_if_not_logged_in(self):
         LibraryFactory.create(owner_user=self.me)
         LibraryFactory.create(owner_user=self.me)
@@ -167,7 +246,10 @@ class TestCreateLibraries(APITestCase):
                 "updated_at": "2019-06-01T16:35:34Z",
                 "name": "test library 1",
                 "type": "test type 1",
-                "writeable": True,
+                "permissions": {
+                    "can_write": True,
+                    "can_share": False,
+                },
                 "data": {"foo": "bar"},
                 "owner": {
                     "id": f"{self.me.id}",
