@@ -136,6 +136,23 @@ def test_create_delete_organisation_members():
     )
 
 
+def test_share_unshare_organisation_library():
+    assert (
+        reverse(
+            f"{VERSION}:share-unshare-organisation-libraries",
+            kwargs={
+                "pk": 1,
+                "libraryid": 2,
+                "otherorgid": 3,
+                }
+        ) == f"/{VERSION}/api/organisations/1/libraries/2/shares/3/"
+    )
+    assert (
+        resolve(f"/{VERSION}/api/organisations/1/libraries/2/shares/3/").view_name
+        == f"{VERSION}:share-unshare-organisation-libraries"
+    )
+
+
 def test_list_organisation_library_shares():
     assert (
         reverse(
