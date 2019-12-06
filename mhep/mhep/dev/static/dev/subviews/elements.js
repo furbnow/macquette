@@ -383,13 +383,8 @@ $("[key='data.fabric.global_TMP']").change(function () {
 // View/redraw code
 // --------------------------------------------------------
 
-const selectFabricTemplate = (id, str) =>
-    $(`${id} [key='data.fabric.elements.template.${str}']`)
-
-const setFabricTemplateKey = (id, z, str) =>
-    selectFabricTemplate(id, str).attr("key", `data.fabric.elements.${z}.${str}`)
-
-function cloneTemplate(id) {
+function cloneTemplate(id)
+{
     const template = document.querySelector(id)
     return document.importNode(template.content, true);
 }
@@ -402,7 +397,8 @@ function setupFabricKeys(root, z)
     }
 }
 
-function setupFabricCostTotal(root, element) {
+function setupFabricCostTotal(root, element)
+{
     if (element.cost_total === undefined) {
         root.querySelector("[data-section='cost']").remove()
     }
@@ -622,8 +618,6 @@ function elements_UpdateUI()
         if (!isOpening(data.fabric.elements[z].type) && data.fabric.elements[z].type != "Floor")
             options += "<option value='" + data.fabric.elements[z].id + "'>" + data.fabric.elements[z].location + "</option>";
     }
-
-    $('.revert-to-original-icon').attr('src', urlHelper.static('img/undo.gif'));
 
     // Fill up the subtractfrom selects
     $('.subtractfrom').each(function (i, obj) {
