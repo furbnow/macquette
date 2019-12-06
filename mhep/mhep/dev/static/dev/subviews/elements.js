@@ -539,9 +539,9 @@ function elements_initUI()
     if (data.fabric.measures == undefined) // Normally this is done in model-rX.js. The model is intended for calculations so i prefer to initialize data.fabric.measures here
         data.fabric.measures = {};
 
-    // Put the tables in place.
-    // Only executes once because of the replaceChild call.  It's really just to avoid
-    // duplicating the same markup in the HTML file.
+    // Fill in the fabric tables.
+    // For the three fabric tables which share the same markup, we place them in the
+    // document using templates, to avoid repeating the same HTML.
     for (let e of document.querySelectorAll("[data-fabric-table]")) {
         const tbodyId = e.dataset.fabricTable
         const areaKey = e.dataset.areaKey
