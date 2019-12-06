@@ -192,7 +192,17 @@ body .modal {
 
 
 
+.librow:hover {
+    background-color: #eee;
+}
 
+.small-caps {
+    color: #555;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-bottom: 0.125rem;
+}
 
 .table-unstyled, .table-unstyled tr, .table-unstyled td, .table-unstyled th {
   padding: 0;
