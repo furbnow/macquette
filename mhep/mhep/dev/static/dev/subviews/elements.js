@@ -1,15 +1,35 @@
 console.log('debug elements.js');
+
 if (typeof library_helper != "undefined")
     library_helper.type = 'elements';
 else
     var library_helper = new libraryHelper('elements', $("#openbem"));
+
+// Deep-clone an object of simple values
+const cloneObj = obj => JSON.parse(JSON.stringify(obj))
+
+// Capitalise first letter
+const capitalise = str => str.charAt(0).toUpperCase() + str.slice(1)
+
+const isWindow    = type => type.toLowerCase() == 'window'
+const isDoor      = type => type.toLowerCase() == 'door'
+const isRoofLight = type => type.toLowerCase() == 'roof_light'
+const isHatch     = type => type.toLowerCase() == 'hatch'
+const isPartyWall = type => type.toLowerCase() == 'party_wall'
+const isFloor     = type => type.toLowerCase() == 'floor'
+const isRoof      = type => type.toLowerCase() == 'roof'
+const isLoft      = type => type.toLowerCase() == 'loft'
+
+const isRoofOrLoft      = type => isRoof(type) || isLoft(type)
+const isExternalOpening = type => isWindow(type) || isDoor(type) || isRoofLight(type)
+const isOpening         = type => isExternalOpening(type) || isHatch(type)
 
 // button defined in: libraryHelper:elements_library_to_html
 $("#openbem").on("click", '.add-element', function () {
 
     var lib = $(this).attr("lib");
     var type = $(this).attr("type");
-    type = type.charAt(0).toUpperCase() + type.slice(1); // Ensure first letter is capital
+    type = capitalise(type);
     var item_id = 1 + get_elements_max_id();
     var library = library_helper.get_library_by_id($(this).attr('library')).data;
     // Create default element
@@ -20,27 +40,29 @@ $("#openbem").on("click", '.add-element', function () {
             element[z] = library[lib][z];
     }
 
-// Set a default value for orientation and overshading
-    if (type == "Window" || type == "Door" || type == "Roof_light") {
+    if (isExternalOpening(type)) {
+        // Set a default value for orientation and overshading
         element.orientation = 3;
         element.overshading = 2;
+
+        // Set a default value for subtractfrom
+        element.subtractfrom = $('.subtractfrom')[0][0].value;
     }
 
-// Set a default value for subtractfrom
-    if (type == "Window" || type == "Door" || type == "Roof_light")
-        element.subtractfrom = $('.subtractfrom')[0][0].value;
     data.fabric.elements.push(element);
     var newelementid = data.fabric.elements.length - 1;
+
     if (type == "Wall")
-        add_element("#elements", newelementid);
-    if (type == "Roof" || type == "Loft")
+        add_element("#walls", newelementid);
+    else if (isRoofOrLoft(type))
         add_element("#roofs", newelementid);
-    if (type == "Floor")
+    else if (isFloor(type))
         add_floor(newelementid);
-    if (type == "Window" || type == "Door" || type == "Roof_light" || type == "Hatch")
+    else if (isOpening(type))
         add_window(newelementid);
-    if (type == "Party_wall" || type == "party_wall")
+    else if (isPartyWall(type))
         add_element("#party_walls", newelementid);
+
     update();
     $('#myModal').modal('hide');
 });
@@ -51,7 +73,7 @@ $("#openbem").on("click", '.change-element', function () {
     var row = $(this).attr("row");
     var lib = $(this).attr("lib");
     var type = $(this).attr("type");
-    type = type.charAt(0).toUpperCase() + type.slice(1); // Ensure first letter is capital
+    type = capitalise(type);
 
     console.log("change element row=" + row + " lib=" + lib);
 
@@ -84,15 +106,19 @@ $("#openbem").on("click", '#apply-measure-TB', function () {
 $("#openbem").on("click", '#apply-measure-TB-modal-ok', function () {
 //We only record the original value if this is the first time we apply the measure in this scenario
     if (data.measures.thermal_bridging == undefined) {
-        data.measures.thermal_bridging = {original_element: {}, measure: {}};
-        data.measures.thermal_bridging.original_element.value = data.fabric.thermal_bridging_yvalue;
+        data.measures.thermal_bridging = {
+            original_element: {
+                value: data.fabric.thermal_bridging_yvalue
+            },
+            measure: {}
+        };
     }
 
 //Apply measure
     data.fabric.thermal_bridging_yvalue = $('#TB-measure-value').val();
     data.measures.thermal_bridging.measure.value = $('#TB-measure-value').val();
     data.measures.thermal_bridging.measure.description = $('#TB-measure-description').val();
-    ;
+
     $('#apply-measure-TB-modal').modal('hide');
     elements_initUI();
     update();
@@ -122,14 +148,14 @@ $("#openbem").on("click", '#bulk-measure-next', function () {
     var out = '<div id="modal-bulk-measure-body" style="padding: 15px" >';
     out += '<p>Choose elements to appply measures to.</p>';
     out += '<table class="table" style="margin-left:15px">';
-    var label = $(this).attr('tags') == 'Window' ? 'Substract from' : '';
+    var label = $(this).attr('tags') == 'Window' ? 'Subtract from' : '';
     out += '<tr><th><input type="checkbox" id="bulk-measure-check-all" /></th>\n\
         <th>Name</th><th>Label</th><th>' + label + '</th></tr>';
     if ($(this).attr('tags') == 'Window') { // We sort them by the wall the windows are substrated from
         var window_by_wall = {};
         for (var row in data.fabric.elements) {
             var element = data.fabric.elements[row];
-            if (element.type == "Window") {
+            if (isWindow(element.type)) {
                 if (window_by_wall[element.subtractfrom] == undefined)
                     window_by_wall[element.subtractfrom] = [];
                 window_by_wall[element.subtractfrom].push({element: element, row: row});
@@ -204,7 +230,7 @@ $("#openbem").on("click", '#bulk-measure-finish', function () {
             measure[lib].location += data.fabric.elements[row].location + ',<br>';
             for (var attr in measure[lib]) {
                 var element_id = data.fabric.elements[row].id;
-                data.fabric.measures[measure[lib].id].original_elements[element_id] = JSON.parse(JSON.stringify(data.fabric.elements[row]));
+                data.fabric.measures[measure[lib].id].original_elements[element_id] = cloneObj(data.fabric.elements[row]);
             }
         }
     });
@@ -234,19 +260,14 @@ $("#openbem").on("click", '#bulk-measure-finish', function () {
 });
 $("#openbem").on("change", '#bulk-measure-check-all', function () {
     $('.bulk-element').prop('checked', $('#bulk-measure-check-all')[0].checked);
-    /*if ($('#bulk-measure-check-all')[0].checked === true)
-     $('.bulk-element').attr('checked', 'checked');
-     else
-     $('.bulk-element').attr('checked', false);
-     */
 });
 $("#openbem").on("click", '.revert-to-original', function () {
     var element_id = $(this).attr('item_id');
     if (element_exists_in_original(data.created_from, element_id) == true) {
-        // copy the original element 
+        // copy the original element
         for (var e in project[data.created_from].fabric.elements) {
             if (project[data.created_from].fabric.elements[e].id == element_id) {
-                data.fabric.elements[get_element_index_by_id(element_id)] = JSON.parse(JSON.stringify(project[data.created_from].fabric.elements[e]));
+                data.fabric.elements[get_element_index_by_id(element_id)] = cloneObj(project[data.created_from].fabric.elements[e]);
                 break;
             }
         }
@@ -287,26 +308,26 @@ $("#openbem").on("click", '.move-up', function () {
     var move = false;
     // Find next item  of the same type up
     for (var i = 1.0 * index_original_element - 1; i >= 0; i--) {
-        if (original_element.type == "Wall" || original_element.type == "Party_wall" || original_element.type == "Floor") {
+        if (original_element.type == "Wall" || isPartyWall(original_element.type) || isFloor(original_element.type)) {
             if (original_element.type == data.fabric.elements[i].type) {
                 move = true;
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
         }
-        else if (original_element.type == "Roof" || original_element.type == "Loft") {
+        else if (isRoofOrLoft(original_element.type)) {
             move = true;
-            if (data.fabric.elements[i].type == "Roof" || data.fabric.elements[i].type == "Loft") {
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+            if (isRoofOrLoft(data.fabric.elements[i].type)) {
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
         }
         else {
-            if (data.fabric.elements[i].type == "Window" || data.fabric.elements[i].type == "Door" || data.fabric.elements[i].type == "Roof_light" || data.fabric.elements[i].type == "Hatch") {
+            if (isOpening(data.fabric.elements[i].type)) {
                 move = true;
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
@@ -323,26 +344,26 @@ $("#openbem").on("click", '.move-down', function () {
     var move = false;
     // Find next item  of the same type up
     for (var i = 1.0 * index_original_element + 1; i < data.fabric.elements.length; i++) {
-        if (original_element.type == "Wall" || original_element.type == "Party_wall" || original_element.type == "Floor") {
+        if (original_element.type == "Wall" || isPartyWall(original_element.type) || isFloor(original_element.type)) {
             if (original_element.type == data.fabric.elements[i].type) {
                 move = true;
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
         }
-        else if (original_element.type == "Roof" || original_element.type == "Loft") {
+        else if (isRoofOrLoft(original_element.type)) {
             move = true;
-            if (data.fabric.elements[i].type == "Roof" || data.fabric.elements[i].type == "Loft") {
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+            if (isRoofOrLoft(data.fabric.elements[i].type)) {
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
         }
         else {
-            if (data.fabric.elements[i].type == "Window" || data.fabric.elements[i].type == "Door" || data.fabric.elements[i].type == "Roof_light" || data.fabric.elements[i].type == "Hatch") {
+            if (isOpening(data.fabric.elements[i].type)) {
                 move = true;
-                data.fabric.elements[index_original_element] = JSON.parse(JSON.stringify(data.fabric.elements[i]));
+                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
             }
@@ -362,144 +383,149 @@ $("[key='data.fabric.global_TMP']").change(function () {
         $("[key='data.fabric.global_TMP_value']").prop('disabled', true);
 });
 
+// --------------------------------------------------------
+// View/redraw code
+// --------------------------------------------------------
+
+function cloneTemplate(id)
+{
+    const template = document.querySelector(id)
+    return document.importNode(template.content, true);
+}
+
+function setupFabricKeys(root, z)
+{
+    for (let e of root.querySelectorAll("[data-key]")) {
+        const key = e.dataset.key;
+        e.setAttribute("key", `data.fabric.elements.${z}.${key}`);
+    }
+}
+
+function setupFabricCostTotal(root, element)
+{
+    if (element.cost_total === undefined) {
+        root.querySelector("[data-section='cost']").remove()
+    }
+}
+
+function setupFabricButtons(root, z, element)
+{
+    // We don't allow editing or deleting items except on the master scenario.
+    if (scenario === 'master') {
+        root.querySelector(".apply-measure").remove()
+    } else {
+        root.querySelector(".edit-item").remove()
+        root.querySelector(".delete-element").remove()
+    }
+
+    // These are set for the library manager to do its thing
+    // see library-helper.js
+    for (let e of root.querySelectorAll("[data-action]")) {
+        e.setAttribute('row', z);
+        e.setAttribute('item_id', element.id);
+        e.setAttribute('item', JSON.stringify(element));
+
+        if (isRoofOrLoft(element.type))
+            e.setAttribute('tags', 'Roof,Loft');
+        else
+            e.setAttribute('tags', element.type);
+    }
+
+    const revertButton = root.querySelector(".revert-to-original")
+
+    if (!scenario_can_revert() || !measure_applied_to_element(element.id)) {
+        revertButton.remove();
+    } else if (data.created_from != undefined) {
+        if (element_exists_in_original(data.created_from, element.id) == false) {
+            revertButton.disabled = true
+            revertButton.innerHTML =  "Original element doesn't<br>exist, can't revert"
+        } else if (data.created_from != 'master') {
+            revertButton.textContent =
+                `Revert to Scenario ${data.created_from.split('scenario')[1]}`
+        }
+    }
+}
+
 function add_element(id, z)
 {
-    var element = data.fabric.elements[z];
-    $(id).append($("#element-template").html());
-    var row = $(id + " [row='template']");
-    $(id + " [key='data.fabric.elements.template.type']").attr('key', 'data.fabric.elements.' + z + '.type');
-    $(id + " [key='data.fabric.elements.template.name']").attr('key', 'data.fabric.elements.' + z + '.name');
-    $(id + " [key='data.fabric.elements.template.location']").attr('key', 'data.fabric.elements.' + z + '.location');
-    $(id + " [key='data.fabric.elements.template.lib']").attr('key', 'data.fabric.elements.' + z + '.lib');
-    $(id + " [key='data.fabric.elements.template.l']").attr('key', 'data.fabric.elements.' + z + '.l');
-    $(id + " [key='data.fabric.elements.template.h']").attr('key', 'data.fabric.elements.' + z + '.h');
-    $(id + " [key='data.fabric.elements.template.area']").attr('key', 'data.fabric.elements.' + z + '.area');
-    $(id + " [key='data.fabric.elements.template.windowarea']").attr('key', 'data.fabric.elements.' + z + '.windowarea');
-    $(id + " [key='data.fabric.elements.template.netarea']").attr('key', 'data.fabric.elements.' + z + '.netarea');
-    $(id + " [key='data.fabric.elements.template.uvalue']").attr('key', 'data.fabric.elements.' + z + '.uvalue');
-    $(id + " [key='data.fabric.elements.template.kvalue']").attr('key', 'data.fabric.elements.' + z + '.kvalue');
-    $(id + " [key='data.fabric.elements.template.wk']").attr('key', 'data.fabric.elements.' + z + '.wk');
-    $(id + " [key='data.fabric.elements.template.EWI']").html(data.fabric.elements[z].EWI == true ? 'EWI' : '');
-    $(id + " [key='data.fabric.elements.template.EWI']").removeAttr('key');
-    row.attr('row', z);
-    row.attr('item_id', data.fabric.elements[z].id);
-    row.attr('item', JSON.stringify(data.fabric.elements[z]));
-    if (data.fabric.elements[z].cost_total != undefined)
-        $(id + " [key='data.fabric.elements.template.cost_total']").attr('key', '').html('<br />£' + data.fabric.elements[z].cost_total).show();
-    else
-        $(id + " [key='data.fabric.elements.template.cost_total']").attr('key', '')
+    const element = data.fabric.elements[z];
+    const root = cloneTemplate("#element-template");
 
-    if (data.fabric.elements[z].type != "Loft" && data.fabric.elements[z].type != "Roof")
-        row.attr('tags', data.fabric.elements[z].type);
-    else
-        row.attr('tags', 'Roof,Loft');
+    setupFabricKeys(root, z)
+    setupFabricCostTotal(root, element)
+    setupFabricButtons(root, z, element)
 
-    // Revert to original
-    init_revert_to_original(id, z);
+    if (element.EWI !== true && element.cost_total !== undefined) {
+        root.querySelector("[data-section='EWI']").remove()
+    }
 
+    $(id).append(root);
 }
 
 function add_floor(z)
 {
-    var id = "#floors";
-    var element = data.fabric.elements[z];
-    $(id).append($("#floor-template").html());
-    var row = $(id + " [row='template']");
-    $(id + " [key='data.fabric.elements.template.type']").attr('key', 'data.fabric.elements.' + z + '.type');
-    $(id + " [key='data.fabric.elements.template.name']").attr('key', 'data.fabric.elements.' + z + '.name');
-    $(id + " [key='data.fabric.elements.template.location']").attr('key', 'data.fabric.elements.' + z + '.location');
-    $(id + " [key='data.fabric.elements.template.lib']").attr('key', 'data.fabric.elements.' + z + '.lib');
-    $(id + " [key='data.fabric.elements.template.perimeter']").attr('key', 'data.fabric.elements.' + z + '.perimeter');
-    $(id + " [key='data.fabric.elements.template.area']").attr('key', 'data.fabric.elements.' + z + '.area');
-    $(id + " .calculate-floor-uvalue[z='template'").attr('z', z);
-    $(id + " [key='data.fabric.elements.template.uvalue']").attr('key', 'data.fabric.elements.' + z + '.uvalue');
-    $(id + " [key='data.fabric.elements.template.kvalue']").attr('key', 'data.fabric.elements.' + z + '.kvalue');
-    $(id + " [key='data.fabric.elements.template.wk']").attr('key', 'data.fabric.elements.' + z + '.wk');
-    $(id + " [key='data.fabric.elements.template.EWI']").html(data.fabric.elements[z].EWI == true ? 'EWI' : '');
-    $(id + " [key='data.fabric.elements.template.EWI']").removeAttr('key');
-    row.attr('row', z);
-    row.attr('item_id', data.fabric.elements[z].id);
-    row.attr('item', JSON.stringify(data.fabric.elements[z]));
-    row.attr('tags', data.fabric.elements[z].type);
-    if (data.fabric.elements[z].cost_total != undefined)
-        $(id + " [key='data.fabric.elements.template.cost_total']").attr('key', '').html('<br />£' + data.fabric.elements[z].cost_total).show();
-    else
-        $(id + " [key='data.fabric.elements.template.cost_total']").attr('key', '');
+    const id = "#floors";
+    const element = data.fabric.elements[z];
+    const root = cloneTemplate("#floor-template");
 
-    if (data.fabric.elements[z].uvalue == 0)
-        $(id + " [key='data.fabric.elements." + z + ".uvalue']").css('color', 'red');
+    setupFabricKeys(root, z)
+    setupFabricCostTotal(root, element)
+    setupFabricButtons(root, z, element)
 
-    // Revert to original 
-    init_revert_to_original(id, z);
+    root.querySelector(".calculate-floor-uvalue").setAttribute("z", z)
+
+    if (element.uvalue == 0) {
+        root.querySelector("input.floor-uvalue").classList.add("text-warning");
+    }
+
+    $(id).append(root);
 }
 
 function add_window(z)
 {
-    var element = data.fabric.elements[z];
-    $("#windows").append($("#window-template").html());
-    var row = $("#windows [row='template']");
-    $("#windows [key='data.fabric.elements.template.lib']").attr('key', 'data.fabric.elements.' + z + '.lib');
-    $("#windows [key='data.fabric.elements.template.name']").attr('key', 'data.fabric.elements.' + z + '.name');
-    $("#windows [key='data.fabric.elements.template.location']").attr('key', 'data.fabric.elements.' + z + '.location');
-    $("#windows [key='data.fabric.elements.template.description']").attr('key', 'data.fabric.elements.' + z + '.description');
-    $("#windows [key='data.fabric.elements.template.subtractfrom']").attr('key', 'data.fabric.elements.' + z + '.subtractfrom');
-    $("#windows [key='data.fabric.elements.template.l']").attr('key', 'data.fabric.elements.' + z + '.l');
-    $("#windows [key='data.fabric.elements.template.h']").attr('key', 'data.fabric.elements.' + z + '.h');
-    $("#windows [key='data.fabric.elements.template.area']").attr('key', 'data.fabric.elements.' + z + '.area');
-    $("#windows [key='data.fabric.elements.template.uvalue']").attr('key', 'data.fabric.elements.' + z + '.uvalue');
-    $("#windows [key='data.fabric.elements.template.kvalue']").attr('key', 'data.fabric.elements.' + z + '.kvalue');
-    if (data.fabric.elements[z].type != 'Hatch') {
-        $("#windows [key='data.fabric.elements.template.orientation']").attr('key', 'data.fabric.elements.' + z + '.orientation');
-        $("#windows [key='data.fabric.elements.template.overshading']").attr('key', 'data.fabric.elements.' + z + '.overshading');
-        $("#windows [key='data.fabric.elements.template.g']").attr('key', 'data.fabric.elements.' + z + '.g');
-        $("#windows [key='data.fabric.elements.template.gL']").attr('key', 'data.fabric.elements.' + z + '.gL');
-        $("#windows [key='data.fabric.elements.template.ff']").attr('key', 'data.fabric.elements.' + z + '.ff');
-        $("#windows [key='data.fabric.elements.template.gain']").attr('key', 'data.fabric.elements.' + z + '.gain');
-    }
-    else {
-        $("#windows [key='data.fabric.elements.template.orientation']").parent().html('');
-        $("#windows [key='data.fabric.elements.template.overshading']").parent().html('');
-        $("#windows [key='data.fabric.elements.template.gain']").parent().html('');
-        $('#windows .window_fields_template').html('');
-    }
-    $("#windows [key='data.fabric.elements.template.wk']").attr('key', 'data.fabric.elements.' + z + '.wk');
-    if (data.fabric.elements[z].cost_total != undefined)
-        $("#windows [key='data.fabric.elements.template.cost_total']").attr('key', '').html('<br />£' + data.fabric.elements[z].cost_total).show();
-    else
-        $("#windows [key='data.fabric.elements.template.cost_total']").attr('key', '');
+    const id = "#windows";
+    const element = data.fabric.elements[z];
+    const root = cloneTemplate("#window-template");
 
-    $('#windows .window_fields_template').removeClass('window_fields_template');
-    data.fabric.elements[z].name = String(data.fabric.elements[z].name);
-    var name = data.fabric.elements[z].name;
-    name = name.toLowerCase();
-    if (data.fabric.elements[z].type == 'Door') {
-        $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', '#ffeeee');
+    setupFabricKeys(root, z)
+    setupFabricCostTotal(root, element)
+    setupFabricButtons(root, z, element)
+
+    if (isHatch(element.type)) {
+        for (let e of root.querySelectorAll("[data-section='not-hatch']")) {
+            e.remove()
+        }
     }
 
-    if (data.fabric.elements[z].type == 'Roof_light') {
-        $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', '#eeffee');
+    let text, classes
+    if (isDoor(element.type)) {
+        text = "Door"
+        classes = [ "bg-pale-blue" ]
+    } else if (isRoofLight(element.type)) {
+        text = "Roof light"
+        classes = [ "bg-pale-green" ]
+    } else if (isHatch(element.type)) {
+        text = "Hatch"
+        classes = [ "bg-red", "fg-white" ]
+    } else {
+        text = "Window"
+        classes = [ "bg-golden" ]
+    }
+    root.querySelector("[data-type]").classList.add(...classes);
+    root.querySelector("[data-type]").textContent = text;
+
+    // We must tend to our radio buttons, which require special care and attention
+    for (let e of root.querySelectorAll("input[name*=NN]")) {
+        e.name = e.name.replace("NN", z)
+        e.id = e.id.replace("NN", z)
     }
 
-    if (data.fabric.elements[z].type == 'Hatch') {
-        $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', '#ddeeff');
+    // ... and their corresponding labels
+    for (let e of root.querySelectorAll("label[for*=NN]")) {
+        e.setAttribute("for", e.getAttribute("for").replace("NN", z))
     }
 
-    row.attr('row', z);
-    row.attr('item_id', data.fabric.elements[z].id);
-    row.attr('item', JSON.stringify(data.fabric.elements[z]));
-    row.attr('tags', data.fabric.elements[z].type);
-
-    var subtractfromhtml = "<option value='no' ></option>";
-    for (i in data.fabric.elements) {
-        // here
-        if (data.fabric.elements[i].type != 'Window' && data.fabric.elements[i].type != 'Door' && data.fabric.elements[i].type != 'Roof_light' && data.fabric.elements[i].type != 'Floor' && data.fabric.elements[i].type != 'Hatch')
-            subtractfromhtml += "<option value='" + data.fabric.elements[i].id + "'>" + data.fabric.elements[i].location + "</option>";
-        //subtractfromhtml += "<option value='" + i + "'>" + data.fabric.elements[i].name + "</option>";
-    }
-    $("#windows [key='data.fabric.elements." + z + ".subtractfrom']").html(subtractfromhtml);
-
-    // Revert to original
-    init_revert_to_original('#windows', z);
+    $(id).append(root);
 }
 
 function elements_initUI()
@@ -507,7 +533,34 @@ function elements_initUI()
     library_helper.type = 'elements';
     if (data.fabric.measures == undefined) // Normally this is done in model-rX.js. The model is intended for calculations so i prefer to initialize data.fabric.measures here
         data.fabric.measures = {};
-    $("#elements").html("");
+
+    // Fill in the fabric tables.
+    // For the three fabric tables which share the same markup, we place them in the
+    // document using templates, to avoid repeating the same HTML.
+    for (let e of document.querySelectorAll("[data-fabric-table]")) {
+        const tbodyId = e.dataset.fabricTable
+        const areaKey = e.dataset.areaKey
+        const lossKey = e.dataset.lossKey
+
+        const root = cloneTemplate("#element-table-template")
+
+        // Various things need the tbody id to hook off, so we set it here.
+        root.querySelector("tbody").setAttribute("id", tbodyId)
+
+        // All element types get a total area set
+        root.querySelector("[data-template-area]").setAttribute("key", areaKey)
+
+        // Party walls don't have a total loss for some reason
+        if (lossKey) {
+            root.querySelector("[data-template-loss]").setAttribute("key", lossKey)
+        } else {
+            root.querySelector("[data-template-loss]").parentNode.innerHTML = ""
+        }
+
+        e.parentNode.replaceChild(root, e)
+    }
+
+    $("#walls").html("");
     $("#roofs").html("");
     $("#floors").html("");
     $("#windows").html("");
@@ -515,20 +568,20 @@ function elements_initUI()
     // Initial addition of floors
     for (z in data.fabric.elements) {
         var type = data.fabric.elements[z].type;
-        //type = type.charAt(0).toUpperCase() + type.slice(1); // Ensure first letter is capital
+
         if (type == 'Wall' || type == 'wall') {
-            add_element("#elements", z);
+            add_element("#walls", z);
         }
         else if (type == 'Floor' || type == 'floor') {
             add_floor(z);
         }
-        else if (type == 'Roof' || type == 'roof' || type == 'Loft') {
+        else if (isRoofOrLoft(type)) {
             add_element("#roofs", z);
         }
-        else if (type == 'Window' || type == 'window' || type == 'Door' || type == 'Roof_light' || type == 'Hatch') {
+        else if (isOpening(type)) {
             add_window(z);
         }
-        else if (type == 'Party_wall' || type == 'party_wall') {
+        else if (isPartyWall(type)) {
             add_element("#party_walls", z);
         }
     }
@@ -538,12 +591,12 @@ function elements_initUI()
         $("[key='data.fabric.global_TMP_value']").prop('disabled', false);
     else
         $("[key='data.fabric.global_TMP_value']").prop('disabled', true);
-    // Check all the windows, doors, etc are substracted from somewhere and if not attach them to the first wall, floor, etc from the list. This is a bug fix with backwards compatibility, that's why it's done here
+    // Check all the windows, doors, etc are subtracted from somewhere and if not attach them to the first wall, floor, etc from the list. This is a bug fix with backwards compatibility, that's why it's done here
     elements_UpdateUI()
     for (z in data.fabric.elements) {
-        if (data.fabric.elements[z].type == "Window" || data.fabric.elements[z].type == "Door" || data.fabric.elements[z].type == "Roof_light" || data.fabric.elements[z].type == "Hatch") {
-            if (data.fabric.elements[z].subtractfrom == undefined)
-                data.fabric.elements[z].subtractfrom = $('.subtractfrom')[0][0].value;
+        if (isOpening(data.fabric.elements[z].type) &&
+                data.fabric.elements[z].subtractfrom == undefined) {
+            data.fabric.elements[z].subtractfrom = $('.subtractfrom')[0][0].value;
         }
     }
 
@@ -552,54 +605,23 @@ function elements_initUI()
         $('#TB-measured-applied').show();
 }
 
+function getSubtractOptions(data) {
+    let list = data.fabric.elements
+        .filter(elem => !isOpening(elem.type) && !isFloor(elem.type))
+        .map(elem => `<option value='${elem.id}'>${elem.location}</option>`)
+        .join("")
+
+    return "<option value='no'>--</option>" + list
+}
+
 function elements_UpdateUI()
 {
-    for (z in data.fabric.elements) {
-        var color = "#fff";
-        /*var name = data.fabric.elements[z].name;
-         name = name.toLowerCase();*/
-        if (data.fabric.elements[z].type == 'Door') {
-            color = '#ffeeee';
-        }
-
-        if (data.fabric.elements[z].type == 'Roof_light') {
-            color = '#ddffdd';
-        }
-
-        if (data.fabric.elements[z].type == 'Hatch') {
-            color = '#ddeeff';
-        }
-
-        $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', color);
-        /*if (data.fabric.elements[z].type == 'Window') {
-         var name = data.fabric.elements[z].name;
-         name = name.toLowerCase();
-         
-         var color = "#fff";
-         if (name.indexOf("door") != -1)
-         color = '#ffeeee';
-         if (name.indexOf("roof") != -1)
-         color = '#ddffdd';
-         
-         // $("#windows [key='data.fabric.elements." + z + ".name']").parent().parent().css('background-color', color);
-         }*/
-
+    // populate the subtractfrom selects
+    // We do it everytime we update just in case the key that has changed is one of Label/Location
+    let subtractOptions = getSubtractOptions(data);
+    for (let option of document.querySelectorAll(".subtractfrom")) {
+        option.innerHTML = subtractOptions;
     }
-
-    // populate the subtractfrom selects in windows, doors (etc). We do it everytime we update just in case the key that has changed is one of Label/Location
-    // Get all the locations (walls, party walls, roofs and lofts
-    var options = '';
-    for (z in data.fabric.elements) {
-        if (data.fabric.elements[z].type != "Window" && data.fabric.elements[z].type != "Door" && data.fabric.elements[z].type != "Roof_light" && data.fabric.elements[z].type != "Hatch" && data.fabric.elements[z].type != "Floor")
-            options += "<option value='" + data.fabric.elements[z].id + "'>" + data.fabric.elements[z].location + "</option>";
-    }
-
-    $('.revert-to-original-icon').attr('src', urlHelper.static('img/undo.gif'));
-
-    // Fill up the substractfrom selects
-    $('.subtractfrom').each(function (i, obj) {
-        $(this).html(options);
-    });
 }
 
 function get_elements_max_id() {
@@ -626,7 +648,7 @@ function apply_measure(measure) {
     // The first time we apply a measure to an element we record its original stage
     if (data.fabric.measures[measure.item_id] == undefined) { // If it is the first time we apply a measure to this element iin this scenario
         data.fabric.measures[measure.item_id] = {};
-        data.fabric.measures[measure.item_id].original_element = JSON.parse(JSON.stringify(data.fabric.elements[measure.row]));
+        data.fabric.measures[measure.item_id].original_element = cloneObj(data.fabric.elements[measure.row]);
     }
 
     for (z in measure.item) // measure.item only has one element, we do it this way to the "property", in this case somemthing like "CV1" oof "ROOF1"
@@ -656,44 +678,6 @@ function apply_measure(measure) {
 
     elements_initUI();
     update();
-}
-
-function get_element_value(element) {
-    return element;
-}
-
-function check_and_add_measure_fields(element) {
-    console.log(element);
-    if (element.description == undefined || element.description == '')
-        element.description = '--';
-    if (element.performance == undefined || element.performance == '')
-        element.performance = '--';
-    if (element.performance_units == undefined || element.performance_units == '')
-        element.performance_units = '--';
-    if (element.benefits == undefined || element.benefits == '')
-        element.benefits = '--';
-    if (element.cost == undefined || element.cost == '')
-        element.cost = '--';
-    if (element.cost_units == undefined || element.cost_units == '')
-        element.cost_units = '--';
-    if (element.who_by == undefined || element.who_by == '')
-        element.who_by = '--';
-    if (element.who_by_units == undefined || element.who_by_units == '')
-        element.who_by_units = '--';
-    if (element.who_by_quantity == undefined || element.who_by_quantity == '')
-        element.who_by_quantity = '--';
-    if (element.who_by_total == undefined || element.who_by_total == '')
-        element.who_by_total = '--';
-    if (element.disruption == undefined || element.disruption == '')
-        element.disruption = '--';
-    if (element.associated_work == undefined || element.associated_work == '')
-        element.associated_work = '--';
-    if (element.key_risks == undefined || element.key_risks == '')
-        element.key_risks = '--';
-    if (element.notes == undefined || element.notes == '')
-        element.notes = '--';
-    if (element.maintenance == undefined || element.maintenance == '')
-        element.maintenance = '--';
 }
 
 function edit_item(element, row) {
@@ -780,19 +764,6 @@ function add_quantity_and_cost_to_bulk_fabric_measure(measure_id) {
     }
 }
 
-function init_revert_to_original(id, z) {
-    if (measure_applied_to_element(data.fabric.elements[z].id) != false) {
-        if (data.created_from != undefined && data.created_from != 'master') {
-            var inner_html = $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').html();
-            inner_html = inner_html.replace(/Revert to master/g, 'Revert to Scenario ' + data.created_from.split('scenario')[1]);
-            $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').html(inner_html);
-        }
-        $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').show();
-        if (data.created_from != undefined && element_exists_in_original(data.created_from, data.fabric.elements[z].id) == false)
-            $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').removeClass('revert-to-original').css('cursor', 'default').html('Original element doesn\'t<br />exist, cannot revert');
-    }
-    else {
-        $(id + ' .revert-to-original[item_id="' + data.fabric.elements[z].id + '"]').hide();
-    }
+function scenario_can_revert() {
+    return (data.created_from && project[data.created_from]) ? true : false
 }
-
