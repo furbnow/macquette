@@ -522,14 +522,6 @@ function add_window(z)
         e.setAttribute("for", e.getAttribute("for").replace("NN", z))
     }
 
-    let subtractFromOptionList = data.fabric.elements
-        .filter(elem => !isOpening(elem.type) && !isFloor(elem.type))
-        .map(elem => `<option value='${elem.id}'>${elem.location}</option>`)
-        .join("")
-
-    root.querySelector(`[key='data.fabric.elements.${z}.subtractfrom']`).innerHTML =
-        "<option value='no'></option>" + subtractFromOptionList;
-
     $(id).append(root);
 }
 
@@ -610,20 +602,23 @@ function elements_initUI()
         $('#TB-measured-applied').show();
 }
 
+function getSubtractOptions(data) {
+    let list = data.fabric.elements
+        .filter(elem => !isOpening(elem.type) && !isFloor(elem.type))
+        .map(elem => `<option value='${elem.id}'>${elem.location}</option>`)
+        .join("")
+
+    return "<option value='no'>--</option>" + list
+}
+
 function elements_UpdateUI()
 {
-    // populate the subtractfrom selects in windows, doors (etc). We do it everytime we update just in case the key that has changed is one of Label/Location
-    // Get all the locations (walls, party walls, roofs and lofts
-    var options = '';
-    for (z in data.fabric.elements) {
-        if (!isOpening(data.fabric.elements[z].type) && !isFloor(data.fabric.elements[z].type))
-            options += "<option value='" + data.fabric.elements[z].id + "'>" + data.fabric.elements[z].location + "</option>";
+    // populate the subtractfrom selects
+    // We do it everytime we update just in case the key that has changed is one of Label/Location
+    let subtractOptions = getSubtractOptions(data);
+    for (let option of document.querySelectorAll(".subtractfrom")) {
+        option.innerHTML = subtractOptions;
     }
-
-    // Fill up the subtractfrom selects
-    $('.subtractfrom').each(function (i, obj) {
-        $(this).html(options);
-    });
 }
 
 function get_elements_max_id() {
