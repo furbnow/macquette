@@ -17,7 +17,10 @@ const isRoofLight = type => type.toLowerCase() == 'roof_light'
 const isHatch     = type => type.toLowerCase() == 'hatch'
 const isPartyWall = type => type.toLowerCase() == 'party_wall'
 const isFloor     = type => type.toLowerCase() == 'floor'
+const isRoof      = type => type.toLowerCase() == 'roof'
+const isLoft      = type => type.toLowerCase() == 'loft'
 
+const isRoofOrLoft      = type => isRoof(type) || isLoft(type)
 const isExternalOpening = type => isWindow(type) || isDoor(type) || isRoofLight(type)
 const isOpening         = type => isExternalOpening(type) || isHatch(type)
 
@@ -51,7 +54,7 @@ $("#openbem").on("click", '.add-element', function () {
 
     if (type == "Wall")
         add_element("#walls", newelementid);
-    else if (type == "Roof" || type == "Loft")
+    else if (isRoofOrLoft(type))
         add_element("#roofs", newelementid);
     else if (isFloor(type))
         add_floor(newelementid);
@@ -313,9 +316,9 @@ $("#openbem").on("click", '.move-up', function () {
                 break;
             }
         }
-        else if (original_element.type == "Roof" || original_element.type == "Loft") {
+        else if (isRoofOrLoft(original_element.type)) {
             move = true;
-            if (data.fabric.elements[i].type == "Roof" || data.fabric.elements[i].type == "Loft") {
+            if (isRoofOrLoft(data.fabric.elements[i].type)) {
                 data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
@@ -349,9 +352,9 @@ $("#openbem").on("click", '.move-down', function () {
                 break;
             }
         }
-        else if (original_element.type == "Roof" || original_element.type == "Loft") {
+        else if (isRoofOrLoft(original_element.type)) {
             move = true;
-            if (data.fabric.elements[i].type == "Roof" || data.fabric.elements[i].type == "Loft") {
+            if (isRoofOrLoft(data.fabric.elements[i].type)) {
                 data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
                 data.fabric.elements[i] = original_element;
                 break;
@@ -422,10 +425,10 @@ function setupFabricButtons(root, z, element)
         e.setAttribute('item_id', element.id);
         e.setAttribute('item', JSON.stringify(element));
 
-        if (element.type != "Loft" && element.type != "Roof")
-            e.setAttribute('tags', element.type);
-        else
+        if (isRoofOrLoft(element.type))
             e.setAttribute('tags', 'Roof,Loft');
+        else
+            e.setAttribute('tags', element.type);
     }
 
     const revertButton = root.querySelector(".revert-to-original")
@@ -572,7 +575,7 @@ function elements_initUI()
         else if (type == 'Floor' || type == 'floor') {
             add_floor(z);
         }
-        else if (type == 'Roof' || type == 'roof' || type == 'Loft') {
+        else if (isRoofOrLoft(type)) {
             add_element("#roofs", z);
         }
         else if (isOpening(type)) {
