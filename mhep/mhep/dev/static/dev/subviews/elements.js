@@ -16,6 +16,7 @@ const isDoor      = type => type.toLowerCase() == 'door'
 const isRoofLight = type => type.toLowerCase() == 'roof_light'
 const isHatch     = type => type.toLowerCase() == 'hatch'
 const isPartyWall = type => type.toLowerCase() == 'party_wall'
+const isFloor     = type => type.toLowerCase() == 'floor'
 
 const isExternalOpening = type => isWindow(type) || isDoor(type) || isRoofLight(type)
 const isOpening         = type => isExternalOpening(type) || isHatch(type)
@@ -521,13 +522,13 @@ function add_window(z)
         e.setAttribute("for", e.getAttribute("for").replace("NN", z))
     }
 
-    let subtractFromOptionList = "<option value='no'></option>";
-    for (i in data.fabric.elements) {
-        if (!isOpening(data.fabric.elements[i].type) && element.type != 'Floor') {
-            subtractFromOptionList += `<option value='${element.id}'>${element.location}</option>`;
-        }
-    }
-    root.querySelector(`[key='data.fabric.elements.${z}.subtractfrom']`).innerHTML = subtractFromOptionList;
+    let subtractFromOptionList = data.fabric.elements
+        .filter(elem => !isOpening(elem.type) && !isFloor(elem.type))
+        .map(elem => `<option value='${elem.id}'>${elem.location}</option>`)
+        .join("")
+
+    root.querySelector(`[key='data.fabric.elements.${z}.subtractfrom']`).innerHTML =
+        "<option value='no'></option>" + subtractFromOptionList;
 
     $(id).append(root);
 }
