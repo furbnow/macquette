@@ -89,6 +89,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
     # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
+    "import_export",
 ]
 THIRD_PARTY_APPS = [
     "corsheaders",
