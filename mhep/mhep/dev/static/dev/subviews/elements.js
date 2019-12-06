@@ -53,7 +53,7 @@ $("#openbem").on("click", '.add-element', function () {
         add_element("#walls", newelementid);
     else if (type == "Roof" || type == "Loft")
         add_element("#roofs", newelementid);
-    else if (type == "Floor")
+    else if (isFloor(type))
         add_floor(newelementid);
     else if (isOpening(type))
         add_window(newelementid);
@@ -305,7 +305,7 @@ $("#openbem").on("click", '.move-up', function () {
     var move = false;
     // Find next item  of the same type up
     for (var i = 1.0 * index_original_element - 1; i >= 0; i--) {
-        if (original_element.type == "Wall" || isPartyWall(original_element.type) || original_element.type == "Floor") {
+        if (original_element.type == "Wall" || isPartyWall(original_element.type) || isFloor(original_element.type)) {
             if (original_element.type == data.fabric.elements[i].type) {
                 move = true;
                 data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
@@ -341,7 +341,7 @@ $("#openbem").on("click", '.move-down', function () {
     var move = false;
     // Find next item  of the same type up
     for (var i = 1.0 * index_original_element + 1; i < data.fabric.elements.length; i++) {
-        if (original_element.type == "Wall" || isPartyWall(original_element.type) || original_element.type == "Floor") {
+        if (original_element.type == "Wall" || isPartyWall(original_element.type) || isFloor(original_element.type)) {
             if (original_element.type == data.fabric.elements[i].type) {
                 move = true;
                 data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
@@ -616,7 +616,7 @@ function elements_UpdateUI()
     // Get all the locations (walls, party walls, roofs and lofts
     var options = '';
     for (z in data.fabric.elements) {
-        if (!isOpening(data.fabric.elements[z].type) && data.fabric.elements[z].type != "Floor")
+        if (!isOpening(data.fabric.elements[z].type) && !isFloor(data.fabric.elements[z].type))
             options += "<option value='" + data.fabric.elements[z].id + "'>" + data.fabric.elements[z].location + "</option>";
     }
 
