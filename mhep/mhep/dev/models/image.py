@@ -31,12 +31,7 @@ class Image(models.Model):
         extension = pathlib.PurePath(filename).suffix
         return f"images/{self.uuid}_thumb{extension}"
 
-    image = models.ImageField(
-        upload_to=_image_path,
-        height_field="height",
-        width_field="width",
-        max_length=200,
-    )
+    image = models.ImageField(upload_to=_image_path, max_length=200)
     height = models.IntegerField()
     width = models.IntegerField()
 

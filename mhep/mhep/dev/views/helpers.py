@@ -5,10 +5,14 @@ from os.path import abspath, dirname, join
 
 from django.urls import reverse
 from django.templatetags.static import static
+from django.contrib.auth import get_user_model
 
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 
 from .. import VERSION
+from .. import models
+
+User = get_user_model()
 
 
 def build_static_dictionary():
@@ -117,3 +121,13 @@ def check_library_share_permissions(library, original_request):
             return False
 
     return True
+
+
+def get_assessments_for_user(user: User):
+    """Return a list of all assessments a user can access."""
+
+    my_assessments = models.Assessment.objects.filter(owner=user)
+    assessments_in_my_organisations = models.Assessment.objects.filter(
+        organisation__in=getattr(user, f"{VERSION}_organisations").all()
+    )
+    return my_assessments | assessments_in_my_organisations

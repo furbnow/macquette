@@ -282,37 +282,81 @@ var mhep_helper = {
             });
         });
     },
-    'upload_images': function (id, form_data, callback)
+    'upload_image': function (assessment_id, file)
     {
-        var result = false;
-        form_data.append("id", id);
-        $.ajax({
-            type: 'POST',
-            url: path + "assessment/uploadimages.json",
-            data: form_data,
-            processData: false,
-            contentType: false,
-            async: false,
-            error: handleServerError('uploading images'),
-            success: function (data) {
-                callback(data)
-            },
-        });
+        return new Promise((resolve, reject) => {
+            const form = new FormData()
+            form.append("file", file)
+
+            $.ajax({
+                type: 'POST',
+                url: urlHelper.api.uploadImage(assessment_id),
+                data: form,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError("uploading image")(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                }
+            });
+        })
     },
-    'delete_image': function (id, filename, callback)
+    'set_featured_image': function(assessment_id, image_id)
     {
-        var result = false;
-        $.ajax({
-            type: 'POST',
-            url: path + "assessment/deleteimage.json",
-            data: "id=" + id + "&filename=" + filename,
-            async: false,
-            error: handleServerError('deleting image'),
-            success: function (data) {
-                if (callback != undefined)
-                    callback(data);
-            },
-        });
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: 'POST',
+                url: urlHelper.api.setFeaturedImage(assessment_id),
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                data: JSON.stringify({ "id": image_id }),
+                success: function (data) {
+                    resolve();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError("setting featured image")(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                }
+            });
+        })
+    },
+    'set_image_note': function (id, note)
+    {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: 'PATCH',
+                url: urlHelper.api.image(id),
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                data: JSON.stringify({ "note": note }),
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError("setting image note")(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                }
+            });
+        })
+    },
+    'delete_image': function (id)
+    {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: 'DELETE',
+                url: urlHelper.api.image(id),
+                success: function (data) {
+                    resolve();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    handleServerError("deleting image")(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                }
+            });
+        })
     },
     'set_openBEM_version': function (id, version, callback)
     {

@@ -35,7 +35,6 @@ class AssessmentHTMLView(CommonContextMixin, AssessmentQuerySetMixin, LoginRequi
 
         context["locked_javascript"] = json.dumps(locked)
         context["reports_javascript"] = json.dumps([])
-        context["use_image_gallery"] = False
         return context
 
 

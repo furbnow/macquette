@@ -494,6 +494,116 @@ Returns:
 HTTP 204 No content
 ```
 
+## Upload an image to the image gallery
+
+```
+POST /assessments/:id/images/
+```
+
+### Example
+
+```
+curl -v \
+    -F 'file=@image.png' \
+    http://localhost:9090/dev/api/assessments/1/images/
+```
+
+Returns:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+    "id": 3,
+    "url": "/media/images/342e8902-b709-4fff-b6da-73acc0c9488d.png",
+    "width": 800,
+    "height": 127,
+    "thumbnail_url": "/media/images/342e8902-b709-4fff-b6da-73acc0c9488d_thumb.jpg",
+    "thumbnail_width": 600,
+    "thumbnail_height": 95,
+    "note": "image",
+    "is_featured": false
+}
+```
+
+## Changing the featured image
+
+```
+POST /assessments/:id/images/featured/
+```
+
+### Example
+
+```
+> curl -v \
+    -X POST \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/dev/api/assessments/1/images/featured/ \
+    --data @- << EOF
+{
+    "id": 6
+}
+EOF
+```
+
+Returns:
+
+```
+HTTP/1.1 204 No Content
+```
+
+## Edit an image's note
+
+```
+PATCH /images/:id/
+```
+
+### Example
+
+```
+> curl -v \
+    -X PATCH \
+    -H "Content-Type: application/json" \
+    http://localhost:9090/dev/api/images/10/ \
+    --data @- << EOF
+{
+    "note": "Corbyn's greenhouse"
+}
+EOF
+```
+
+Returns:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+    "id": 10,
+    "note": "Corbyn's greenhouse",
+    ...                     # All other fields the same
+}
+```
+
+## Delete an image
+
+```
+DELETE /images/:id/
+```
+
+### Example
+
+```
+curl -v \
+    -X DELETE \
+    http://localhost:9090/dev/api/images/6/
+```
+
+Returns:
+
+```
+HTTP/1.1 204 No Content
+```
+
 ## List users
 
 ```

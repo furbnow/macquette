@@ -1,178 +1,253 @@
-console.log('Debug imagegallery.js');
+class ImageGallery {
+    constructor({ root, id, data }) {
+        this.root = root;
+        this.element = {
+            list: this.root.querySelector(".gallery-list"),
+            fileControl: this.root.querySelector(".gallery-files"),
+        };
+        this.projectId = id;
+        this.list = data;
+        this.featured = this.list.find(image => image.is_featured === true);
+
+        this.selected = [];
+        this.currentlyEditing = null;
+
+        this.setupHandlers();
+        this.view();
+    }
+
+    // ----------------------------------------------------------------- //
+    // Actions
+    //
+    // When mutating `this.list`, be careful not to assign to it.  This is
+    // to maintain the invariant `this.list === project.images` (i.e. both
+    // are references to the same object).
+    //
+    // If you assign to this.list rather than mutating then the equivalence
+    // will not longer hold, and the state will be mismanaged - when you
+    // navigate away from and then back to the gallery, whatever changes
+    // were made (and which are made on the server) will be lost to the UI
+    // and things will get very confusing for the user.
+    // ----------------------------------------------------------------- //
+
+    select(id) {
+        if (!this.selected.includes(id)) {
+            this.selected.push(id);
+        }
+    }
+
+    deselect(id) {
+        this.selected = this.selected.filter(selectedId => selectedId !== id);
+    }
+
+    startEditing(id) {
+        this.currentlyEditing = id;
+    }
+
+    stopEditing() {
+        this.currentlyEditing = null;
+    }
+
+    setNote(id, note) {
+        mhep_helper
+            .set_image_note(id, note)
+            .then(newData => {
+                const imageIndex = this.list.findIndex(elem => elem.id === id);
+                this.list[imageIndex] = newData;
+                this.view();
+            })
+    }
+
+    addImage(new_image) {
+        this.list.push(new_image);
+        this.view();
+    }
+
+    removeImage(id) {
+        const idxToRemove = this.list.findIndex(image => image.id === id);
+        this.list.splice(idxToRemove, 1);
+
+        this.selected = this.selected.filter(selectedID => selectedID != id);
+        this.view();
+    }
+
+    setFeatured(id) {
+        mhep_helper
+            .set_featured_image(this.projectId, id)
+            .then(_ => {
+                this.featured = id;
+                this.view();
+            });
+    }
+
+    delete(ids) {
+        for (let id of ids) {
+            mhep_helper.delete_image(id).then(_ => this.removeImage(id));
+        }
+    }
+
+    upload(fileList) {
+        for (let file of fileList) {
+            mhep_helper
+                .upload_image(this.projectId, file)
+                .then(newData => this.addImage(newData));
+        }
+    }
+
+    // ----------------------------------------------------------------- //
+    // Predicates
+    // ----------------------------------------------------------------- //
+
+    isFeatured(id) {
+        return this.featured === id;
+    }
+
+    isSelected(id) {
+        return this.selected.includes(id);
+    }
+
+    isEditing(id) {
+        return this.currentlyEditing === id;
+    }
+
+    // ----------------------------------------------------------------- //
+    // Views & event handlers
+    // ----------------------------------------------------------------- //
+
+    view() {
+        const galleryItems = this.list.map(item => this.imageToHTML(item)).join("");
+        const deleteDisabled = this.selected.length === 0 ? "disabled" : "";
+
+        this.element.list.innerHTML = `
+            <h4>Gallery</h4>
+            <button class="btn gallery-delete-many" ${deleteDisabled}>
+                Delete selected images
+            </button>
+
+            <div id="delete_result" style="margin: 0 0 25px 25px"></div>
+            <div class="gallery-grid">
+                ${galleryItems}
+            </div>
+        `;
+    }
+
+    imageToHTML({ id, url, thumbnail_url, thumbnail_width, thumbnail_height, name, note }) {
+        const cardClasses = this.isSelected(id) ? "gallery-card--selected" : "";
+        const starClasses = this.isFeatured(id) ? "icon-star" : "icon-star-empty";
+        const isSelected = this.isSelected(id) ? "checked" : "";
+
+        const noteHTML = this.isEditing(id)
+            ? `<input class="gallery-editor" type="text" name='${id}' value="${note}">`
+            : (note
+                ? `<span>${note}</span>`
+                : "<span class='text-muted'>no note</span>");
+
+        const buttonHTML = this.isEditing(id)
+            ? "<button class='btn gallery-save-note'>Save note</button>"
+            : `<button class="btn gallery-edit" data-id="${id}">Edit note</button>`;
+
+        return `
+            <div class="gallery-card ${cardClasses}">
+                <a class="gallery-head" href='${url}' target="_blank" rel="noopener">
+                   <img src="${thumbnail_url}" width="${thumbnail_width}" height="${thumbnail_height}">
+                </a>
+                <div class="gallery-content">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem">
+                        ${noteHTML}
+                        <i style='cursor:pointer' class='gallery-feature ${starClasses}' data-id='${id} title='Feature this image'></i>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between">
+                        <span>
+                            ${buttonHTML}
+                            <button class="btn gallery-delete" data-id="${id}">Delete</button>
+                        </span>
+                        <input type='checkbox' class="gallery-checkbox" name="${id}" ${isSelected}>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    setupHandlers() {
+        const idFromEvent = evt => parseInt(evt.target.dataset.id, 10);
+
+        $(this.root).on("change", ".gallery-checkbox", evt => {
+            const checkbox = evt.target;
+            const id = parseInt(checkbox.name, 10);
+            if (checkbox.checked) {
+                this.select(id);
+            } else {
+                this.deselect(id);
+            }
+
+            this.view();
+        });
+
+        $(this.root).on("click", ".gallery-feature", evt => {
+            this.setFeatured(idFromEvent(evt));
+            this.view();
+        });
+
+        $(this.root).on("click", ".gallery-edit", evt => {
+            this.startEditing(idFromEvent(evt));
+            this.view();
+            $(this.root).find(".gallery-editor").focus();
+        });
+
+        const saveNote = () => {
+            const input = this.root.querySelector(".gallery-editor");
+
+            const id = parseInt(input.name, 10);
+            const note = input.value;
+
+            this.setNote(id, note);
+            this.stopEditing();
+            this.view();
+        };
+
+        $(this.root).on("click", ".gallery-save-note", saveNote);
+        $(this.root).on("keydown", ".gallery-editor", evt => {
+            if (evt.key === "Enter") {
+                saveNote();
+            } else if (evt.key === "Esc" || evt.key === "Escape") {
+                this.stopEditing();
+                this.view();
+            }
+        });
+
+        $(this.root).on("click", ".gallery-delete", evt => {
+            if (window.confirm("Are you sure you want to delete this image?")) {
+                this.delete([ idFromEvent(evt) ]);
+                this.view();
+            }
+        });
+
+        $(this.root).on("click", ".gallery-delete-many", evt => {
+            const n = this.selected.length;
+            if (window.confirm(`Are you sure you want to delete these ${n} images?`)) {
+                this.delete(this.selected);
+                this.view();
+            }
+        });
+
+        $(this.root).on("click", ".gallery-upload", evt => {
+            this.upload(this.element.fileControl.files);
+        });
+    }
+}
+
+let __imagegallery = null;
 
 function imagegallery_initUI() {
-    if (data.imagegallery == undefined)
-        data.imagegallery = [];
+    data = project["master"];
 
-    if (data.imagegallery_notes == undefined)
-        data.imagegallery_notes = [];
-
-    if (data.featuredimage == undefined)
-        data.featuredimage = '';
-
-    data = project['master'];
-
-    for (z in data.imagegallery) {
-        if (data.imagegallery_notes[z] == undefined)
-            data.imagegallery_notes[z] = "Add a note";
-        add_image(z);
-    }
+    __imagegallery = new ImageGallery({
+        root: document.querySelector(".gallery"),
+        id: p.id,
+        data: p.images,
+    });
 }
 
 function imagegallery_updateUI() {
-
-}
-
-
-$('#openbem #upload_form').submit(function (e) {
-    e.preventDefault();
-
-    $('#upload_result').html("Loading...");
-    $('#delete_result').html("");
-
-    var form_data = new FormData();
-    for (file_index in $('#files_to_upload')[0].files) {
-        form_data.append($('#files_to_upload')[0].files[file_index].name, $('#files_to_upload')[0].files[file_index]);
-    }
-
-    mhep_helper.upload_images(projectid, form_data, upload_images_callback);
-});
-
-function upload_images_callback(result) {
-    // Result can be a string with an error message or an object with a message for each file to upload
-    if (typeof result === 'string')
-        $('#upload_result').html("<p>" + result + "</p>");
-    else {
-        $('#upload_result').html('');
-        for (image in result) {
-            $('#upload_result').append("<p>" + image + " - " + result[image] + "</p>"); // Display the result message of the upload
-            console.log(result[image]);
-            if (result[image].indexOf("Uploaded") > -1) {
-                data.imagegallery.push(image);
-                add_image(data.imagegallery.length - 1); // Add the image to the view       
-            }
-        }
-        update();
-    }
-
-}
-
-function add_image(z) {
-    var url = path + "Modules/assessment/images/" + projectid + "/" + data.imagegallery[z];
-    var html = "<div style='display:inline-block; padding:15px; vertical-align:top'><a class='image-in-gallery' key='data.imagegallery.";
-    html += z;
-    html += "' href='";
-    html += url;
-    html += "' name='" + data.imagegallery[z] + "'><img src='";
-    html += url;
-    html += "' width='200' /></a><input type='checkbox' index='" + z + "' name='" + data.imagegallery[z] + "' /><i style='cursor:pointer' class='icon-trash' index='";
-    html += z;
-    html += "' name='" + data.imagegallery[z] + "'></i><i style='cursor:pointer' class='icon-star";
-    if (data.imagegallery[z] != data.featuredimage) {
-        html += "-empty";
-    }
-    html += "' index='"
-    html += z;
-    html += "' title='Feature this image' name='" + data.imagegallery[z] + "'></i>";
-    html += "<p style='margin:10px' class='note' index=" + z + " name='" + data.imagegallery[z] + "'>" + (data.imagegallery_notes[z] == undefined ? "Add a note" : data.imagegallery_notes[z]) + " <i class='icon-edit edit-note' style='cursor:pointer' index=" + z + "></p>"
-    html += "</div>";
-    $('#gallery').append(html);
-    //$('#gallery').append("<img class='image-in-gallery' key='data.imagegallery." + z + "' src='" + url + "' width='200' />");
-}
-
-
-$('#gallery').on('click', '.icon-trash', function () {
-    $('#upload_result').html("");
-    $('#delete_result').html("");
-    $("#file-to-delete").html(data.imagegallery[$(this).attr('index')]);
-    $('#delete-file-confirm').attr('index', $(this).attr('index'));
-    $("#modal-delete-image").modal("show");
-});
-$('#gallery').on('click', 'input[type=checkbox]', function () {
-    $('#delete-files').prop('disabled', true);
-    var any_checked = false;
-    $('#gallery input[type=checkbox]').each(function () {
-        if ($(this).is(':checked'))
-            any_checked = true;
-    });
-    if (any_checked == true)
-        $('#delete-images').prop('disabled', false);
-});
-$('#gallery').on('click', '#delete-images', function () {
-    $('#upload_result').html("");
-    $('#delete_result').html("");
-    var files = '';
-    var indexes = '[';
-    $('#gallery input[type=checkbox]:checked').each(function (index) {
-        if (index == 0) {
-            files += data.imagegallery[$(this).attr('index')];
-            indexes += $(this).attr('index');
-        }
-        else {
-            files += ', ' + data.imagegallery[$(this).attr('index')];
-            indexes += ', ' + $(this).attr('index');
-        }
-    });
-    indexes += ']';
-    $("#files-to-delete").html(files);
-    $('#delete-files-confirm').attr('indexes', indexes);
-    $("#modal-delete-images").modal('show');
-});
-$('#gallery').on('click', '.icon-star-empty', function () {
-    data.featuredimage = data.imagegallery[$(this).attr('index')];
-    $('#gallery .icon-star').removeClass(".icon-star").addClass("icon-star-empty");
-    $(this).removeClass("icon-star-empty").addClass("icon-star");
-    update();
-});
-
-$('#modal-delete-image').on('click', '#delete-file-confirm', function () {
-    mhep_helper.delete_image(projectid, data.imagegallery[$(this).attr('index')], delete_image_callback);
-    $("#modal-delete-image").modal("hide");
-});
-$('#modal-delete-images').on('click', '#delete-files-confirm', function () {
-    var indexes = JSON.parse($(this).attr('indexes'));
-    var deleted_files = 0;
-    indexes.forEach(function (index) {
-        mhep_helper.delete_image(projectid, data.imagegallery[index - deleted_files], delete_image_callback);
-        deleted_files++;
-    });
-    //$('#delete_result').html("<p>Images deleted</p>");
-    $("#modal-delete-images").modal("hide");
-});
-
-$('#gallery').on('click', '.edit-note', function () {
-    var index = $(this).attr('index');
-    $('.note[index=' + index + ']').html('<input type="text" index=' + index + ' style="width: 185px; margin-left: -10px" value="' + data.imagegallery_notes[index] + '" /><br /><button class="btn save-note" index=' + index + '>Save</button>');
-});
-$('#gallery').on('click', '.save-note', function () {
-    var index = $(this).attr('index');
-    data.imagegallery_notes[index] = $('input[index=' + index + ']').val();
-    $('.note[index=' + index + ']').html(data.imagegallery_notes[index] + " <i class='icon-edit edit-note' style='cursor:pointer' index=" + index + ">");
-    update();
-});
-
-function delete_image_callback(result) {
-    if (typeof result === 'string')
-        $('#upload_result').html("<p>" + result + "</p>");
-    else {
-        for (var image_name in result) {
-            $('#delete_result').append("<p>" + image_name + " - " + result[image_name] + "</p>"); // Display the result message of the deletion
-            if (result[image_name] === "File deleted" || result[image_name] === "File could not be found in the server. Image gallery list updated") {
-                // Find the image in the data object and remove it
-                for (var z in data.imagegallery) {
-                    if (image_name === data.imagegallery[z]) {
-                        data.imagegallery.splice(z, 1);
-                        data.imagegallery_notes.splice(z, 1);
-                        break;
-                    }
-                }
-                // Remove from view
-                $('a[name = "' + image_name + '"]').remove(); // Image
-                $('i[name = "' + image_name + '"]').remove();
-                $('input[name = "' + image_name + '"]').remove();
-                $('p[name = "' + image_name + '"]').remove();
-            }
-        }
-        update();
-    }
+    __imagegallery.view();
 }
