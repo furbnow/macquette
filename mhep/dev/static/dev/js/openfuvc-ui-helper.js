@@ -48,7 +48,7 @@ $(document).ready(function () {
 
 openFUVC.prototype.add_modal_to_DOM = function () {
     $.ajax({
-        url: urlHelper.static('js/openFUVC/openFUVC.html'),
+        url: urlHelper.static('subviews/_openfuvc.html'),
         async: false,
         success: function(data) {
             $('body').append(data);
