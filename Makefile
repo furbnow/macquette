@@ -8,7 +8,18 @@ help:
 
 # ----------------------------------------------------------------------------
 
-dev: docker-up ## Bring docker up and run the local server
+js:
+	time npx esbuild \
+		mhep/dev/static/dev/js_src/exports.js \
+		--outdir=mhep/dev/static/dev/js_generated/ \
+		--loader:.js=jsx \
+		--define:process.env.NODE_ENV=\"dev\" \
+		--sourcemap --bundle
+
+js-watch:
+	npx chokidar "mhep/dev/static/dev/js_src/**/*" -c "make js"
+
+server: docker-up ## Bring docker up and run the local server
 	python manage.py runserver
 
 pip-compile:  ## Recompile requirements file after a change

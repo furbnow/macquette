@@ -268,10 +268,9 @@ tags
 ### Project template
 
 mhep/media/
-
 .pytest_cache/
-
-
 .ipython/
 .env
 .envs/*
+js_generated
+*.sublime-*

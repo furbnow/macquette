@@ -1,5 +1,18 @@
 function draw_openbem_graphics(parent) {
-    $(`${parent} .house-container`).html(houseSVG(data));
+    const root = document.querySelector(`${parent} .house-container`);
+    Macquette.render(
+        Macquette.components.House,
+        {
+            floor: data.fabric.total_floor_WK,
+            ventilation: data.ventilation.average_ventilation_WK,
+            infiltration: data.ventilation.average_infiltration_WK,
+            windows: data.fabric.total_window_WK,
+            walls: data.fabric.total_wall_WK,
+            roof: data.fabric.total_roof_WK,
+            thermalbridge: data.fabric.thermal_bridging_heat_loss,
+        },
+        root,
+    );
 
     draw_space_heating_targetbar(parent, data);
     draw_primary_energy_targetbar(parent, data);
@@ -13,105 +26,6 @@ function draw_openbem_graphics(parent) {
             $('#measures-costs').html('');
         }
     }
-}
-
-function houseSVG(data) {
-    const SCALE = 30;
-
-    const floorwk = data.fabric.total_floor_WK;
-    const ventilationwk = data.ventilation.average_ventilation_WK;
-    const infiltrationwk = data.ventilation.average_infiltration_WK;
-    const windowswk = data.fabric.total_window_WK;
-    const wallswk = data.fabric.total_wall_WK;
-    const roofwk = data.fabric.total_roof_WK;
-    const thermalbridgewk = data.fabric.thermal_bridging_heat_loss;
-
-    const scaled_floor = Math.sqrt(floorwk / SCALE);
-    const scaled_ventilation = Math.sqrt(ventilationwk / SCALE);
-    const scaled_windows = Math.sqrt(windowswk / SCALE);
-    const scaled_walls = Math.sqrt(wallswk / SCALE);
-    const scaled_roof = Math.sqrt(roofwk / SCALE);
-    const scaled_thermalbridge = Math.sqrt(thermalbridgewk / SCALE);
-    const scaled_infiltration = Math.sqrt(infiltrationwk / SCALE);
-
-    const totalwk = floorwk + ventilationwk + infiltrationwk + windowswk + wallswk + roofwk + thermalbridgewk;
-
-    return `
-        <svg class="house" viewBox="0 0 1040 800" preserveAspectRatio="xMinYMin">
-            <defs>
-                <g id="house-arrow">
-                    <path d="M0 25h65V0l35 50-35 50V75H0z" />
-                </g>
-
-                <g id="house-house">
-                    <path fill="rgba(99,86,71,.8)" d="M220 100h10v110h-10zM10 140h10v30H10z" />
-                    <path fill="rgba(99,86,71,0.8)" d="M120 235h100v-25h10v35H10v-35h10v25zM20 90v10H10V90H0v-5L120 0l120 85v5h-10v10h-10V90L120 20z" />
-                    <path fill="rgba(99,86,71,.3)" d="M11 100h8v40h-8zM11 170h8v40h-8z" />
-                </g>
-            </defs>
-
-            <use xlink:href="#house-house" x="128" y="55" transform="scale(2)" />
-            <text x="500" y="400" class="text-bold house--dark" text-anchor="middle">TOTAL</text>
-            <text class="house--dark" x="500" y="435" text-anchor="middle">
-                ${Math.round(totalwk)} W/K
-            </text>
-
-            <use transform="translate(460,615) rotate(90) scale(${scaled_floor}) translate(0,-50)"
-                 xlink:href="#house-arrow"
-                 class="house--darker" />
-            <text x="540" y="650" class="text-bold house--darker">Floor</text>
-            <text class="house--dark" x="540" y="685">
-                ${Math.round(floorwk)} W/K
-            </text>
-
-            <use transform="translate(645,200) rotate(-55) scale(${scaled_roof}) translate(0,-50)"
-                 xlink:href="#house-arrow"
-                 class="house--darker" />
-            <text x="530" y="50" class="text-bold house--darker">Roof</text>
-            <text class="house--dark" x="530" y="85">
-                ${Math.round(roofwk)} W/K
-            </text>
-
-            <use transform="translate(730,535) rotate(0) scale(${scaled_walls}) translate(0,-50)"
-                 xlink:href="#house-arrow"
-                 class="house--light" />
-            <text x="730" y="650" class="text-bold house--dark">Walls</text>
-            <text class="house--dark" x="730" y="685">
-                ${Math.round(wallswk)} W/K
-            </text>
-
-            <use transform="translate(260,535) rotate(180) scale(${scaled_ventilation}) translate(0,-50)"
-                 xlink:href="#house-arrow"
-                 class="house--light" />
-            <text x="260" y="650" class="text-bold house--dark" text-anchor="end">Ventilation</text>
-            <text class="house--dark" x="260" y="685" text-anchor="end">
-                ${Math.round(ventilationwk)} W/K
-            </text>
-
-            <use transform="translate(260,350) rotate(180) scale(${scaled_windows}) translate(0,-50)"
-                 xlink:href="#house-arrow"
-                 class="house--light" />
-            <text x="260" y="215" class="text-bold house--dark" text-anchor="end">Windows</text>
-            <text class="house--dark" x="260" y="250" text-anchor="end">
-                ${Math.round(windowswk)} W/K
-            </text>
-
-            <use transform="translate(730,350) rotate(0) scale(${scaled_thermalbridge}) translate(0,-50)"
-                 xlink:href="#house-arrow"
-                 class="house--light" />
-            <text x="730" y="210" class="text-bold house--dark">Thermal bridging</text>
-            <text class="house--dark" x="730" y="245">
-                ${Math.round(thermalbridgewk)} W/K
-            </text>
-
-            <use transform="translate(340,205) rotate(235) scale(${scaled_infiltration}) translate(0,-50)"
-                 xlink:href="#house-arrow"
-                 class="house--darker" />
-            <text x="315" y="50" class="text-bold house--darker">Infiltration</text>
-            <text class="house--dark" x="315" y="85">
-                ${Math.round(infiltrationwk)} W/K
-            </text>
-        </svg>`;
 }
 
 /*
