@@ -21,14 +21,14 @@
     <script>Sentry.init({ dsn: "{{ settings.sentry_url }}" });</script>
     {% endif %}
 
-    <script src="{% static VERSION|add:'/js/jquery-1.11.3.min.js' %}"></script>
+    <script src="{% static VERSION|add:'/js/vendor/jquery-1.11.3.min.js' %}"></script>
     <script>
         'use strict';
         {% include VERSION|add:"/js/handle_server_error.js" %}
         {% include VERSION|add:"/js/add_csrf_token_to_ajax.js" %}
         {% include VERSION|add:"/js/url_helper.js" %}
     </script>
-    <script src="{% static VERSION|add:'/js/bootstrap.min.js' %}"></script>
+    <script src="{% static VERSION|add:'/js/vendor/bootstrap-2.3.2.min.js' %}"></script>
 
     {% block extra_head %}{% endblock %}
 </head>
