@@ -120,18 +120,21 @@ inside ``mhep``.  The JS + HTML bits look like:
     img/               # Low-res icons we want to replace with SVG
 
     js/
-      ... various out of date libraries ...
-      library-helper/   # Library management JS + HTML (gnarly)
-      openbem/          # Building physics model/calculator
-      openFUVC/         # Floor :ref:`term-u-value` calculator; used to separate repo
-      extended-library-items.js   # A single extended library item; a hack
+      vendor/           # Contains vendored (imported) JS libraries
       api.js            # API communication module
-      misc.js           # Some of the JS framework
+      extended-library-items.js   # A single "extended library item"; a hack
       graphics.js       # Draws the house and some bar graphs
+      library-helper.js # UI functions related to using or editing libraries
+      misc.js           # Some of the JS framework; other bits in templates/VERSION/view.html
+      model-datasets.js # Various sets of data used in the model and elsewhere
+      model.js          # The building model
+      openfuvc-ui-helper.js  # UI functions related to the floor u-value calculator
+      openfuvc.js       # Floor u-value calculation model
 
-    subviews/        # Pairs of files containing HTML + JS for each view
+    subviews/           # Pairs of files containing HTML + JS for each view
       [name].{js,html}
       [name].{js,html}
+      _[name].html      # Partials that are reused in other views are prefixed with _
 
 
 For info on why the HTML + JS is split between the static and templates

@@ -6,22 +6,22 @@
 <script src="{% static VERSION|add:'/js/misc.js' %}"></script>
 <script src="{% static VERSION|add:'/js/graphics.js' %}"></script>
 <script src="{% static VERSION|add:'/js/extended-library-items.js' %}"></script>
-<script src="{% static VERSION|add:'/js/openbem/datasets.js' %}"></script>
-<script src="{% static VERSION|add:'/js/openbem/openBEM.js' %}"></script>
-<script src="{% static VERSION|add:'/js/library-helper/library-helper.js' %}"></script>
+<script src="{% static VERSION|add:'/js/model-datasets.js' %}"></script>
+<script src="{% static VERSION|add:'/js/model.js' %}"></script>
+<script src="{% static VERSION|add:'/js/library-helper.js' %}"></script>
 
-<link rel="stylesheet" href="{% static VERSION|add:'/js/jquery-ui-1.12.1/jquery-ui.min.css' %}">
-<script src="{% static VERSION|add:'/js/jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
-<script src="{% static VERSION|add:'/js/nunjucks-3.2.0.min.js' %}"></script>
-<script src="{% static VERSION|add:'/js/papaparse-5.0.2.min.js' %}"></script>
+<link rel="stylesheet" href="{% static VERSION|add:'/css/vendor/jquery-ui-1.12.1.min.css' %}">
+<script src="{% static VERSION|add:'/js/vendor/jquery-ui-1.12.1.min.js' %}"></script>
+<script src="{% static VERSION|add:'/js/vendor/nunjucks-3.2.0.min.js' %}"></script>
+<script src="{% static VERSION|add:'/js/vendor/papaparse-5.0.2.min.js' %}"></script>
 <script>
     const VERSION = "{{ VERSION }}";
 </script>
 
 <!-- open floor uvalue calculator -->
-<script src="{% static VERSION|add:'/js/openFUVC/openFUVC.js' %}"></script>
-<script src="{% static VERSION|add:'/js/openFUVC/openFUVC-ui-helper.js' %}"></script>
-<link rel="stylesheet" href="{% static VERSION|add:'/js/openFUVC/openFUVC.css' %}">
+<script src="{% static VERSION|add:'/js/openfuvc.js' %}"></script>
+<script src="{% static VERSION|add:'/js/openfuvc-ui-helper.js' %}"></script>
+<link rel="stylesheet" href="{% static VERSION|add:'/css/openfuvc.css' %}">
 
 <style>
     .cc {
@@ -243,7 +243,6 @@
     //************
     // Variables
     //************
-    var changelog = "";
     var selected_library = -1;
     var selected_library_tag = "Wall";
     var page;
@@ -380,7 +379,6 @@
             $("#openbem").trigger("onKeyChange", {key: key, value: val});
 
             console.log(key + " changed from " + lastval + " to " + val);
-            changelog += key + " changed from " + lastval + " to " + val + "<br>";
 
             if (key.endsWith('.scenario_name')) {
               redraw_scenario_menu();
