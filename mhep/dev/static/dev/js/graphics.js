@@ -36,43 +36,39 @@ function _cost_param(scenario) {
     }
 }
 
+let pageheader_state = null;
+
 function pageheader_init() {
+    if (!pageheader_state) {
+        pageheader_state = {
+            title: '',
+            showGraphics: true,
+            houseData: _house_params(data),
+            targetData: _targetbars_params(data),
+            cost: _cost_param(scenario),
+        };
+    }
+
     Macquette.render(
         Macquette.views.PageHeader,
-        {
-            house: _house_params(data),
-            targets: _targetbars_params(data),
-            cost: _cost_param(scenario),
-            callback: (setters) => {
-                pageheader_setters = setters;
-            },
-        },
+        pageheader_state,
         document.getElementById('page-header')
     );
 }
 
 function pageheader_set_title(title) {
-    if (pageheader_setters.setTitle) {
-        pageheader_setters.setTitle(title);
-    }
+    pageheader_state.title = title;
+    pageheader_init();
 }
 
-function pageheader_show_house(show = true) {
-    if (pageheader_setters.setShowHouse) {
-        pageheader_setters.setShowHouse(show || false);
-    }
+function pageheader_show_graphics(show) {
+    pageheader_state.showGraphics = show || false;
+    pageheader_init();
 }
 
 function pageheader_redraw() {
-    if (pageheader_setters.setHouseState) {
-        pageheader_setters.setHouseState(_house_params(data));
-    }
-
-    if (pageheader_setters.setTargetState) {
-        pageheader_setters.setTargetState(_targetbars_params(data));
-    }
-
-    if (pageheader_setters.setCost) {
-        pageheader_setters.setCost(_cost_param());
-    }
+    pageheader_state.houseData = _house_params(data);
+    pageheader_state.targetData = _targetbars_params(data);
+    pageheader_state.cost = _cost_param();
+    pageheader_init();
 }
