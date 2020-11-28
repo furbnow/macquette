@@ -5,6 +5,7 @@ import Commentary from "./views/Commentary";
 import PageHeader from "./views/PageHeader";
 
 import TargetBar from "./components/TargetBar";
+import Graphics from "./components/Graphics";
 
 window.Macquette = {
     views: {
@@ -13,6 +14,7 @@ window.Macquette = {
     },
     components: {
         TargetBar,
+        Graphics,
     },
     render: (view, props, root) =>
         render(

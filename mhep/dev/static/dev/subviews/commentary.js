@@ -1,5 +1,17 @@
 console.log('debug commentary.js');
 
+function draw_overview(scenarioName, scenarioData, selector) {
+    Macquette.render(
+        Macquette.components.Graphics,
+        {
+            houseData: _house_params(scenarioData),
+            targetData: _targetbars_params(scenarioData),
+            cost: _cost_param(scenarioName),
+        },
+        document.querySelector(selector)
+    );
+}
+
 function commentary_initUI() {
     let scenarios = [];
     for (let scenario_name in project) {
@@ -11,11 +23,13 @@ function commentary_initUI() {
     scenarios.sort();
 
     for (let s of scenarios) {
-        let scenario = project[s];
-        $('#overviews').append('<div id="overview-' + s + '" class="overview"></div>');
-        load_view('#overview-' + s, 'topgraphic');
-        $('#overviews #overview-' + s + ' #scenario-name').html(s.charAt(0).toUpperCase() + s.slice(1) + ' - ' + scenario.scenario_name);
-        draw_openbem_graphics('#overview-' + s);
+        let scenarioData = project[s];
+        let title = s.charAt(0).toUpperCase() + s.slice(1) + ': ' + scenarioData.scenario_name;
+        $('#overviews').append(`
+            <h3>${title}</h3>
+            <div id="overview-${s}"></div>
+        `);
+        draw_overview(s, project[s], '#overview-' + s);
     }
 
     for (let scenario_name of scenarios) {

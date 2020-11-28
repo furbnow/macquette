@@ -53,7 +53,7 @@ export default function TargetBar({ width, name, value, units, targets }) {
                 </span>
             </div>
 
-            <svg viewBox={`0 0 ${width} ${HEIGHT}`} height={HEIGHT}>
+            <svg viewBox={`0 0 ${width} ${HEIGHT}`} height={HEIGHT} style={{maxWidth:"100%"}}>
                 <rect
                     x="1"
                     y="1"
