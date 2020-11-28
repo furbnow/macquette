@@ -150,13 +150,15 @@ function InitUI() {
     });
 
     if (page == 'householdquestionnaire') {
-        $('.scenario-name').html('Household Questionnaire');
+        pageheader_set_title('Household Questionnaire');
     } else if (page == 'commentary') {
-        $('.scenario-name').html('Commentary');
+        pageheader_set_title('Commentary');
     } else if (page == 'report') {
-        $('.scenario-name').html('Generate Report');
+        pageheader_set_title('Generate Report');
     } else {
-        $('.scenario-name').html(scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name);
+        pageheader_set_title(
+            scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name
+        );
     }
 }
 

@@ -137,11 +137,7 @@
     </div>
 
     <div id="wrapper" class="pa-30">
-        <div class="d-flex justify-content-between align-items-center pb-30">
-            <h2 class="scenario-name ma-0">Scenario X</h2>
-            <button class="btn house_graphic">Show house graphic</button>
-        </div>
-        <div id="topgraphic" class="overview pb-30"></div>
+        <div id="page-header"></div>
         <div id="bound">
             <div id="content">
             </div>
@@ -240,7 +236,6 @@
 
 
 <script>
-
     //************
     // Variables
     //************
@@ -252,10 +247,8 @@
     var data = {};
     var keys = {};
 
-    //*******************
-    // Load top graphic
-    //*******************
-    load_view("#topgraphic", 'topgraphic');
+    // Init UI
+    pageheader_init();
 
     //*********************
     // Initialize project
@@ -390,22 +383,6 @@
     $(window).on('hashchange', function () {
         load_page_from_hash();
     });
-    function hide_house_graphic() {
-        $("#topgraphic").hide();
-        $(".house_graphic").html("Show house graphic");
-    }
-    function show_house_graphic() {
-        $("#topgraphic").show();
-        $(".house_graphic").html("Hide house graphic");
-    }
-    $(".house_graphic").click(function () {
-        if ($(".house_graphic").html() == "Show house graphic") {
-            show_house_graphic();
-        }
-        else {
-            hide_house_graphic();
-        }
-    });
     // Scenarios interactions
     $("#openbem").on('click', ".scenario-nav", function () {
         $(window).scrollTop(650);
@@ -538,7 +515,7 @@
     });
     // Side menu
     $(window).resize(function () {
-        draw_openbem_graphics('#topgraphic');
+        pageheader_redraw();
         sidebar_resize();
     });
 
@@ -566,7 +543,7 @@
         }
 
         UpdateUI(data);
-        draw_openbem_graphics('#topgraphic');
+        pageheader_redraw();
 
         redraw_emissions();
 
@@ -729,10 +706,10 @@
         load_view("#content", page);
 
         if (page == 'report' || page == 'householdquestionnaire' || page == 'commentary') {
-            hide_house_graphic();
+            pageheader_show_house(false);
         } else {
-            show_house_graphic();
-            draw_openbem_graphics('#topgraphic');
+            pageheader_show_house(true);
+            pageheader_redraw();
         }
 
         InitUI();

@@ -2,16 +2,14 @@ import React from "react";
 import { render } from "react-dom";
 
 import Commentary from "./views/Commentary";
-import House from "./components/House";
-import TargetBars from "./components/TargetBars";
+import PageHeader from "./views/PageHeader";
 
 window.Macquette = {
     views: {
         Commentary,
+        PageHeader,
     },
     components: {
-        House,
-        TargetBars,
     },
     render: (view, props, root) =>
         render(
