@@ -4,12 +4,11 @@ import React from "react";
  * Draw a 'target bar'.
  *
  * name - string to label the graph with
- * unknown - is this value unknown?
  * value - numeric value
  * units - units for value
  * targets - [ {label: "...", value: x}, {label: "...", value: x} ]
  */
-export default function TargetBar({ width, name, unknown, value, units, targets }) {
+export default function TargetBar({ width, name, value, units, targets }) {
     const height = 40;
 
     // Always 25% larger than max target or value
@@ -17,11 +16,15 @@ export default function TargetBar({ width, name, unknown, value, units, targets 
     const maxval = Math.max(value, ...targetValues) * 1.25;
     const xscale = width / maxval;
 
-    const header = unknown === true ? "Not enough data" : `${value} ${units}`;
+    const unknown = isNaN(value) || value == Infinity;
+    let header;
 
-    /* Don't draw targets if we don't have data */
     if (unknown) {
         targets = [];
+        header = "Not enough data";
+    } else {
+        header = `${value} ${units}`;
+        value = Math.round(value);
     }
 
     const drawLine = (target) => {
