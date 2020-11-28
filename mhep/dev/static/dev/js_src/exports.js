@@ -3,6 +3,7 @@ import { render } from "react-dom";
 
 import Commentary from "./views/Commentary";
 import House from "./components/House";
+import TargetBar from "./components/TargetBar";
 
 window.Macquette = {
     views: {
@@ -10,6 +11,7 @@ window.Macquette = {
     },
     components: {
         House,
+        TargetBar,
     },
     render: (view, props, root) =>
         render(
