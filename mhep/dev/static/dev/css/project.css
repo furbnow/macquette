@@ -1,11 +1,46 @@
+/*
+ * Colours
+ */
+
 :root {
-    --app-color: #ff2712;;
+    --app-color: #ff2712;
 
     --brown-1: #897A67;
     --brown-2: rgba(215, 210, 201, 0.9);
     --brown-3: #EEECE5;
     --brown-4: rgb(242, 242, 242);
+
+    /*
+    $beige-000: rgb(99, 86, 71);
+    $beige-200: mix($beige-000, #fff, 80%);
+    $beige-400: mix($beige-000, #fff, 60%);
+    $beige-500: mix($beige-000, #fff, 50%);
+    $beige-700: mix($beige-000, #fff, 30%);
+    $beige-800: mix($beige-000, #fff, 20%);
+    */
+
+    --beige-000: #635647;
+    --beige-200: #82786c; /* rgba(99,86,71,0.8) */
+    --beige-400: #a19a91;
+    --beige-500: #b1aba3;
+    --beige-700: #d0ccc8;
+    --beige-800: #e0ddda; /* rgba(99,86,71,0.2) */
 }
+
+.fill-beige-000 { fill: var(--beige-000); }
+.fill-beige-200 { fill: var(--beige-200); }
+.fill-beige-400 { fill: var(--beige-400); }
+.fill-beige-500 { fill: var(--beige-500); }
+.fill-beige-700 { fill: var(--beige-700); }
+.fill-beige-800 { fill: var(--beige-800); }
+.stroke-beige-000 { stroke: var(--beige-000); }
+.stroke-beige-200 { stroke: var(--beige-200); }
+.stroke-beige-400 { stroke: var(--beige-400); }
+.stroke-beige-500 { stroke: var(--beige-500); }
+.stroke-beige-700 { stroke: var(--beige-700); }
+.stroke-beige-800 { stroke: var(--beige-800); }
+
+/* The rest ... */
 
 html, body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Ubuntu", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -307,16 +342,16 @@ body .modal {
 
 
 .line-top {
-    border-top: 1px solid #ff2712;
+    border-top: 1px solid var(--app-color);
     padding-top: 0.5rem;
 }
 .line-bottom {
-    border-bottom: 1px solid #ff2712;
+    border-bottom: 1px solid var(--app-color);
     padding-bottom: 0.5rem;
 }
 .line-both {
-    border-top: 1px solid #ff2712;
-    border-bottom: 1px solid #ff2712;
+    border-top: 1px solid var(--app-color);
+    border-bottom: 1px solid var(--app-color);
     padding: 0.5rem 0;
 }
 .big-checkbox {
@@ -326,7 +361,7 @@ body .modal {
 
 .bg-white { background-color: white; }
 .bg-lighter { background-color: #ac9d9344; }
-.bg-red { background-color: #ff2712; }
+.bg-red { background-color: var(--app-color); }
 .bg-pale-green { background-color: #beeebe; }
 .bg-pale-blue { background-color: #ddeeff; }
 .bg-golden { background-color: #e6c577; }
