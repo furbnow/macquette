@@ -10,6 +10,7 @@ Macquette developer documentation
    javascript-framework
    testing
    design-decisions
+   style-guide
    versions
    reports
    terms
