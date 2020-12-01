@@ -32,48 +32,55 @@ function currentenergy_initUI() {
 function currentenergy_UpdateUI() {
     const width = $('#currentenergy-primaryenergy').width();
 
-    document.getElementById('currentenergy-primaryenergy').innerHTML =
-        targetbarSVG({
-            name: 'Primary energy demand',
-            width: width,
-            unknown: typeof(data.currentenergy.primaryenergy_annual_kwhm2) === undefined ||
-                isNaN(data.currentenergy.primaryenergy_annual_kwhm2) ||
-                data.currentenergy.primaryenergy_annual_kwhm2 === Infinity,
-            value: Math.round(data.currentenergy.primaryenergy_annual_kwhm2),
+    /*
+     * The space at the end of the 'name' is intentional, to stop React complaining
+     * about different elements having the same key. XXX
+     */
+
+    Macquette.render(
+        Macquette.components.TargetBar,
+        {
+            width,
+            name: 'Primary energy demand ',
+            value: data.currentenergy.primaryenergy_annual_kwhm2,
             units: 'kWh/m²',
             targets: [
                 { label: 'Passivhaus', value: 120 },
                 { label: 'UK Average', value: 360 },
             ]
-        });
+        },
+        document.getElementById('currentenergy-primaryenergy')
+    );
 
-    document.getElementById('currentenergy-co2').innerHTML =
-        targetbarSVG({
-            name: 'CO2 Emission rate',
-            width: width,
-            unknown: typeof(data.currentenergy.total_co2m2) === undefined ||
-                isNaN(data.currentenergy.total_co2m2) ||
-                data.currentenergy.total_co2m2 === Infinity,
-            value: Math.round(data.currentenergy.total_co2m2),
+    Macquette.render(
+        Macquette.components.TargetBar,
+        {
+            width,
+            name: 'CO2 Emission rate ',
+            value: data.currentenergy.total_co2m2,
             units: 'kgCO₂/m²',
             targets: [
                 { label: '80% by 2050', value: 17 },
                 { label: 'UK Average', value: 50.3 },
             ]
-        });
+        },
+        document.getElementById('currentenergy-co2')
+    );
 
-    document.getElementById('currentenergy-perperson').innerHTML =
-        targetbarSVG({
-            name: 'Per person energy use',
-            width: width,
-            unknown: false,
-            value: data.currentenergy.energyuseperperson.toFixed(1),
+    Macquette.render(
+        Macquette.components.TargetBar,
+        {
+            width,
+            name: 'Per person energy use ',
+            value: data.currentenergy.energyuseperperson,
             units: 'kWh/day',
             targets: [
                 { label: '70% heating saving', value: 8.6 },
                 { label: 'UK Average', value: 19.6 },
             ]
-        });
+        },
+        document.getElementById('currentenergy-perperson')
+    );
 }
 
 

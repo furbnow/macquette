@@ -379,11 +379,10 @@ body .modal {
     width: 0.9rem;
 }
 
-
-
 .house { width: 100%; max-width: 500px; font-size: 36px; }
-.house--light { fill: #ac9d93 }
-.house--dark { fill: rgba(99, 86, 71, 0.6); }
+.house--light { fill: rgba(172, 157, 147, 1) }
+.house--med { fill: rgba(99, 86, 71, 0.3) }
+.house--dark { fill: rgba(99, 86, 71, 0.6) }
 .house--darker { fill: rgba(99, 86, 71, 0.8) }
 
 .targetbar {
