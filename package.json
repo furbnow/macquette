@@ -6,12 +6,12 @@
   "author": "Carbon Co-op",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
+    "esbuild": "^0.8.14",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
     "chokidar-cli": "^2.1.0",
-    "esbuild": "^0.8.14",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-config-standard": "^16.0.2",

@@ -9,11 +9,19 @@ help:
 # ----------------------------------------------------------------------------
 
 js:
-	time npx esbuild \
+	npx esbuild \
 		mhep/dev/static/dev/js_src/exports.js \
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
+		--sourcemap --bundle
+
+js-prod:
+	npx esbuild \
+		mhep/dev/static/dev/js_src/exports.js \
+		--outdir=mhep/dev/static/dev/js_generated/ \
+		--loader:.js=jsx \
+		--define:process.env.NODE_ENV=\"production\" \
 		--sourcemap --bundle
 
 js-watch:
