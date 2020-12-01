@@ -3,6 +3,7 @@ import os
 from os.path import abspath
 from os.path import dirname
 from os.path import join
+from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.templatetags.static import static
@@ -42,15 +43,23 @@ def find_app_static_files():
     note that the version static subdirectory is stripped
     """
 
-    static_dir = join(abspath(dirname(__file__)), "..", "static", VERSION)
+    def ignore(filename):
+        for path in Path(filename).parents:
+            if path.name == "js_src":
+                return True
+        else:
+            return False
+
+    static_dir = Path(abspath(dirname(__file__))).joinpath("..", "static", VERSION)
+    static_dir = str(static_dir.resolve())
 
     for root, dirs, files in os.walk(static_dir):
         for fn in files:
             full_filename = join(root, fn)
-            start = len(static_dir) + 1
-            relative_filename = full_filename[start:]
-            # print("relative: {}".format(relative_filename))
-            yield relative_filename
+            if not ignore(full_filename):
+                start = len(static_dir) + 1
+                relative_filename = full_filename[start:]
+                yield relative_filename
 
 
 def check_library_write_permissions(library, original_request):
