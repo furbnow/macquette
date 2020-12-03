@@ -15,12 +15,29 @@ class AssessmentPermissionTestsMixin:
         response = self._call_endpoint(assessment)
         self._assert_success(response)
 
-    def test_organisation_member_who_isnt_owner_can_access(self):
+    def test_organisation_member_who_isnt_owner_cannot_access(self):
         organisation = OrganisationFactory.create()
         assessment = AssessmentFactory.create(organisation=organisation)
 
         org_member = UserFactory.create()
         organisation.members.add(org_member)
+
+        self.client.force_authenticate(org_member)
+
+        response = self._call_endpoint(assessment)
+        self._assert_error(
+            response,
+            status.HTTP_403_FORBIDDEN,
+            "You do not have permission to perform this action.",
+        )
+
+    def test_organisation_admin_who_isnt_owner_can_access(self):
+        organisation = OrganisationFactory.create()
+        assessment = AssessmentFactory.create(organisation=organisation)
+
+        org_member = UserFactory.create()
+        organisation.members.add(org_member)
+        organisation.admins.add(org_member)
 
         self.client.force_authenticate(org_member)
 
