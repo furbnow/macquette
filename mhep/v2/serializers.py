@@ -227,8 +227,12 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
             "report_template",
         ]
 
-    def get_assessments(self, obj):
-        return obj.assessments.count()
+    def get_assessments(self, org):
+        user = self.context["request"].user
+        if user in org.admins.all():
+            return org.assessments.count()
+        else:
+            return org.assessments.filter(owner=user).count()
 
     def get_members(self, org):
         def userinfo(user):

@@ -23,6 +23,16 @@ class IsMemberOfConnectedOrganisation(permissions.BasePermission):
         return request.user in assessment.organisation.members.all()
 
 
+class IsAdminOfConnectedOrganissation(permissions.BasePermission):
+    message = "You are not an administrator of the assessment's organisation."
+
+    def has_object_permission(self, request, view, assessment):
+        if assessment.organisation is None:
+            return False
+
+        return request.user in assessment.organisation.admins.all()
+
+
 class IsMemberOfOrganisation(permissions.BasePermission):
     message = "You are not a member of the Organisation."
 
