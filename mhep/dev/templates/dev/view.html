@@ -247,9 +247,6 @@
     var data = {};
     var keys = {};
 
-    // Init UI
-    pageheader_init();
-
     //*********************
     // Initialize project
     //********************
@@ -515,7 +512,7 @@
     });
     // Side menu
     $(window).resize(function () {
-        pageheader_redraw();
+        pageheader_resize();
         sidebar_resize();
     });
 
@@ -543,7 +540,7 @@
         }
 
         UpdateUI(data);
-        pageheader_redraw();
+        pageheader_new_values();
 
         redraw_emissions();
 
@@ -680,6 +677,47 @@
             }
         }
     }
+    function show_graphics_for_page(page) {
+        switch (page) {
+            case 'householdquestionnaire':
+            case 'commentary':
+            case 'report':
+            case 'imagegallery':
+            case 'compare':
+            case 'export':
+            case 'librariesmanager':
+            case 'fuelsmanager':
+                return false;
+            default:
+                return true;
+        }
+    }
+    function title_for_page(page, scenario) {
+        switch (page) {
+            case 'householdquestionnaire':
+                return 'Household Questionnaire';
+            case 'commentary':
+                return 'Commentary';
+            case 'report':
+                return 'Generate Report';
+            case 'currentenergy':
+                return 'Current Energy';
+            case 'imagegallery':
+                return 'Image Gallery';
+            case 'compare':
+                return 'Compare Scenarios';
+            case 'export':
+                return 'Import/Export';
+            case 'librariesmanager':
+                return 'Libraries manager';
+            case 'fuelsmanager':
+                return 'Fuels manager';
+            default:
+                return (
+                    scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name
+                );
+        }
+    }
     function load_page_from_hash() {
         let oldPage = page;
         let oldScenario = scenario;
@@ -703,14 +741,11 @@
         data = project[scenario];
 
         // Render page
+        pageheader_new_page({
+            title: title_for_page(page, scenario),
+            showGraphics: show_graphics_for_page(page)
+        });
         load_view("#content", page);
-
-        if (page == 'report' || page == 'householdquestionnaire' || page == 'commentary') {
-            pageheader_show_graphics(false);
-        } else {
-            pageheader_show_graphics(true);
-            pageheader_redraw();
-        }
 
         InitUI();
         UpdateUI(data);

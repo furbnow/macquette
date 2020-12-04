@@ -148,18 +148,6 @@ function InitUI() {
 
         $(this).html('<tr><td>' + title + '</td><td>sum:' + sum.toFixed(dp) + '<br>mean:' + mean.toFixed(dp) + '</td>' + out + '</tr>');
     });
-
-    if (page == 'householdquestionnaire') {
-        pageheader_set_title('Household Questionnaire');
-    } else if (page == 'commentary') {
-        pageheader_set_title('Commentary');
-    } else if (page == 'report') {
-        pageheader_set_title('Generate Report');
-    } else {
-        pageheader_set_title(
-            scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name
-        );
-    }
 }
 
 function UnloadUI() {
