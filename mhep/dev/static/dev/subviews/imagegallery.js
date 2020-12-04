@@ -121,7 +121,6 @@ class ImageGallery {
         const deleteDisabled = this.selected.length === 0 ? 'disabled' : '';
 
         this.element.list.innerHTML = `
-            <h4>Gallery</h4>
             <button class="btn gallery-delete-many" ${deleteDisabled}>
                 Delete selected images
             </button>
