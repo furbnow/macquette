@@ -162,9 +162,8 @@ function InitUI() {
     });
 }
 
-function UnloadUI() {
-    // Call page specific updateui function
-    var functionname = page + '_UnloadUI';
+function UnloadUI(prev) {
+    var functionname = prev + '_UnloadUI';
     if (window[functionname] != undefined) {
         window[functionname]();
     }
