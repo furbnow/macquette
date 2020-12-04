@@ -22,14 +22,14 @@ function commentary_initUI() {
     }
     scenarios.sort();
 
-    for (let s of scenarios) {
-        let scenarioData = project[s];
-        let title = s.charAt(0).toUpperCase() + s.slice(1) + ': ' + scenarioData.scenario_name;
+    for (let scenarioId of get_scenario_ids(project)) {
+        let scenarioData = project[scenarioId];
+        let title = scenarioId.charAt(0).toUpperCase() + scenarioId.slice(1) + ': ' + scenarioData.scenario_name;
         $('#overviews').append(`
             <h3>${title}</h3>
-            <div id="overview-${s}"></div>
+            <div id="overview-${scenarioId}"></div>
         `);
-        draw_overview(s, '#overview-' + s);
+        draw_overview(scenarioId, '#overview-' + scenarioId);
     }
 
     for (let scenario_name of scenarios) {

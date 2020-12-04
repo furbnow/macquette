@@ -42,6 +42,18 @@ function load_view(eid, view) {
 
     return result_html;
 }
+
+// Get a list of all scenario IDs.  This should be used instead of iterating over keys
+// in project data because it skips non-scenario-specific data.
+function get_scenario_ids(project, { excludeBase = false } = {}) {
+    let result = Object.keys(project).filter(key => !key.startsWith('_'));
+    if (excludeBase) {
+        return result.filter(key => key !== 'master');
+    } else {
+        return result;
+    }
+}
+
 function varset(key, value) {
     var lastval = '';
     var p = key.split('.');
@@ -621,9 +633,13 @@ function get_item_index_by_id(id, array) {
  * in it.
  */
 function extract_assessment_inputs(project) {
-    var result = {};
-    for (let z in project) {
-        result[z] = _extract_scenario_inputs(project[z]);
+    let result = {};
+    for (let key of Object.keys(project)) {
+        if (key.startsWith('_')) {
+            result[key] = project[key];
+        } else {
+            result[key] = _extract_scenario_inputs(project[key]);
+        }
     }
     return result;
 }

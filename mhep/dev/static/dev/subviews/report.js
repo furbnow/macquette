@@ -75,29 +75,29 @@ class Report {
     }
 
     draw_scenarios() {
-        let scenarioOpts = '<li><input type="checkbox" checked disabled class="big-checkbox" value="master"> Master</li>';
+        let scenarioOpts = '';
 
-        for (let scenario_id in project) {
-            if (scenario_id == 'master') {
-                continue;
-            }
-
-            const idx = scenario_id.split('scenario')[1];
-            const name = project[scenario_id].scenario_name;
+        for (let scenarioId of get_scenario_ids(project)) {
             const is_checked = (
-                scenario_id == 'scenario1'
-                || scenario_id == 'scenario2'
-                || scenario_id == 'scenario3'
+                scenarioId === 'master'
+                || scenarioId === 'scenario1'
+                || scenarioId === 'scenario2'
+                || scenarioId === 'scenario3'
             );
+            const is_disabled = (scenarioId === 'master');
+            const name = (scenarioId === 'master'
+                ? project[scenarioId].scenario_name
+                : `Scenario ${scenarioId.split('scenario')[1]}: ${project[scenarioId].scenario_name}`);
 
             scenarioOpts += `
                 <li>
                     <input type="checkbox"
                            ${is_checked ? 'checked' : ''}
-                           value="${scenario_id}"
+                           ${is_disabled ? 'disabled' : ''}
+                           value="${scenarioId}"
                            class="big-checkbox"
-                           id="check-${scenario_id}">
-                    <label class="d-i" for="check-${scenario_id}">Scenario ${idx}: ${name}</label>
+                           id="check-${scenarioId}">
+                    <label class="d-i" for="check-${scenarioId}">${name}</label>
                 </li>`;
         }
 
