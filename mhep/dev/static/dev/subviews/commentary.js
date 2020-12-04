@@ -1,12 +1,12 @@
 console.log('debug commentary.js');
 
-function draw_overview(scenarioName, scenarioData, selector) {
+function draw_overview(scenarioId, selector) {
     Macquette.render(
         Macquette.components.Graphics,
         {
-            houseData: _house_params(scenarioData),
-            targetData: _targetbars_params(scenarioData),
-            cost: _cost_param(scenarioName),
+            houseData: _house_params(scenarioId),
+            targetData: _targetbars_params(scenarioId),
+            cost: _cost_param(scenarioId),
         },
         document.querySelector(selector)
     );
@@ -29,7 +29,7 @@ function commentary_initUI() {
             <h3>${title}</h3>
             <div id="overview-${s}"></div>
         `);
-        draw_overview(s, project[s], '#overview-' + s);
+        draw_overview(s, '#overview-' + s);
     }
 
     for (let scenario_name of scenarios) {
