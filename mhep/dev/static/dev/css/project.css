@@ -414,6 +414,17 @@ label input[type=radio] {
     margin-top: 0;
 }
 
+.textarea {
+    --line-height: 20px;
+    --textarea-rows: 6;
+    width: 38rem;
+    height: calc(var(--line-height) * var(--textarea-rows));
+}
+
+.textarea--note {
+    width: 38rem;
+}
+
 
 /**** NAVIGATION ****/
 

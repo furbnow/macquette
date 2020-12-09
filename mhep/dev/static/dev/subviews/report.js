@@ -305,6 +305,11 @@ function get_used_fuels(scenarios) {
     }));
 }
 
+// This is a duplicate of Commentary.getText(). XXX
+function get_scenario_commentary(scenarioId) {
+    let row = project._commentary.scenarios[scenarioId] || '';
+}
+
 function get_scenario_list(scenarios) {
     return scenarios
         .filter(id => id !== 'master')
@@ -312,7 +317,7 @@ function get_scenario_list(scenarios) {
             id: scenario_id,
             num: parseInt(scenario_id.match(/(\d+)/g)[0], 10),
             name: project[scenario_id].scenario_name,
-            description: project[scenario_id].scenario_description,
+            description: get_scenario_commentary(scenario_id),
         }));
 }
 
@@ -322,6 +327,7 @@ function get_lookup(table, key) {
 
 function get_context_data(scenarios) {
     const hh = project.master.household;
+    const commentary = project._commentary;
 
     return {
         front: {
@@ -362,7 +368,7 @@ function get_context_data(scenarios) {
                 disruption_comment: hh['logistics_disruption_note'],
                 has_budget: hh['logistics_budget'] === 'YES',
                 budget_comment: hh['logistics_budget_note'],
-                brief: hh['commentary_brief'],
+                brief: commentary.brief,
             }
         },
         now: {
@@ -457,8 +463,8 @@ function get_context_data(scenarios) {
         },
         used_fuels: get_used_fuels(scenarios),
         commentary: {
-            context: hh['commentary_context'],
-            decisions: hh['commentary_decisions'],
+            context: commentary.context,
+            decisions: commentary.decisions,
         },
         scenarios: {
             list: get_scenario_list(scenarios),

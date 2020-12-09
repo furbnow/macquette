@@ -45,6 +45,8 @@ function load_view(eid, view) {
 
 // Get a list of all scenario IDs.  This should be used instead of iterating over keys
 // in project data because it skips non-scenario-specific data.
+//
+// This is a simplier duplicate of Assessment.getScenarioList.  XXX
 function get_scenario_ids(project, { excludeBase = false } = {}) {
     let result = Object.keys(project).filter(key => !key.startsWith('_'));
     if (excludeBase) {
