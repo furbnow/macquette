@@ -3,39 +3,34 @@ function compare_initUI() {
     // Summary
     $('#summary').append(generateSummary());
 
+    let scenarioIds = get_scenario_ids(project, { excludeBase: true });
+
     // Comparison tables
-    for (var scenario in project) {
-        if (scenario != 'master') {
-            $('#compare').append('<h3 style="margin-top:25px">Master/' + scenario + ' Comparison table</h4>');
-            $('#compare').append('<hr />');
-            $('#compare').append('<div id="comparison-' + scenario + '" style="margin-left:25px">');
-            $('#comparison-' + scenario).html(compareCarbonCoop(scenario));
-        }
+    for (let scenarioId of scenarioIds) {
+        $('#compare').append('<h3 style="margin-top:25px">Master/' + scenarioId + ' Comparison table</h4>');
+        $('#compare').append('<hr />');
+        $('#compare').append('<div id="comparison-' + scenarioId + '" style="margin-left:25px">');
+        $('#comparison-' + scenarioId).html(compareCarbonCoop(scenarioId));
     }
 
     // Summary of measures
-    for (var scenario in project) {
-        if (scenario != 'master') {
-            $('#summary-measures').append('<h3 style="margin-top:25px">' + scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - summary of measures</h4>');
-            $('#summary-measures').append('<hr />');
-            $('#summary-measures').append('<div id="summary-measures-' + scenario + '" style="margin-left:25px">');
-            $('#summary-measures-' + scenario).append(getMeasuresSummaryTable(scenario));
-        }
+    for (let scenarioId of scenarioIds) {
+        $('#summary-measures').append('<h3 style="margin-top:25px">' + scenarioId.charAt(0).toUpperCase() + scenarioId.slice(1) + ' - summary of measures</h4>');
+        $('#summary-measures').append('<hr />');
+        $('#summary-measures').append('<div id="summary-measures-' + scenarioId + '" style="margin-left:25px">');
+        $('#summary-measures-' + scenarioId).append(getMeasuresSummaryTable(scenarioId));
     }
     $('.measures-summary-table').addClass('table');
 
     // Complete measures tables
-    for (var scenario in project) {
-        if (scenario != 'master') {
-            $('#complete-measures').append('<h3 style="margin-top:25px">' + scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - comple list of measures</h4>');
-            $('#complete-measures').append('<hr />');
-            $('#complete-measures').append('<div id="complete-measures-' + scenario + '" style="margin-left:25px">');
-            $('#complete-measures-' + scenario).append(getMeasuresCompleteTables(scenario));
-        }
+    for (let scenarioId of scenarioIds) {
+        $('#complete-measures').append('<h3 style="margin-top:25px">' + scenarioId.charAt(0).toUpperCase() + scenarioId.slice(1) + ' - comple list of measures</h4>');
+        $('#complete-measures').append('<hr />');
+        $('#complete-measures').append('<div id="complete-measures-' + scenarioId + '" style="margin-left:25px">');
+        $('#complete-measures-' + scenarioId).append(getMeasuresCompleteTables(scenarioId));
     }
     $('.complete-measures-table').addClass('table');
     $('#complete-measures').hide(); // We don't want to show this one for now
-
 }
 
 //******************************
@@ -43,8 +38,10 @@ function compare_initUI() {
 //******************************
 function generateSummary() {
     var out = '<tr><th />';
-    for (var scenario in project) {
-        out += '<th>' + scenario + '<br />' + project[scenario].scenario_name + '</th>';
+    let scenarioIds = get_scenario_ids(project);
+
+    for (let scenarioId of scenarioIds) {
+        out += '<th>' + scenarioId + '<br />' + project[scenarioId].scenario_name + '</th>';
     }
     out += '</tr>';
     var rows = [
@@ -81,7 +78,7 @@ function generateSummary() {
         ['', '']
     ];
     var fuel_totals = {};
-    for (var scenario in project) {
+    for (let scenario of scenarioIds) {
         for (var fuel in project[scenario].fuel_totals) {
             if (fuel_totals[fuel] == undefined) {
                 fuel_totals[fuel] = {};
@@ -130,13 +127,14 @@ function generateSummary() {
 function getValuesForScenarios(value) {
     var out = '<tr><td>' + value[0] + '</td>';
     var val_out = '';
-    for (var scenario in project) {
+
+    for (let scenarioId of get_scenario_ids(project)) {
         if (value[2] == undefined) {
-            val_out = project[scenario][value[1]] != undefined ? project[scenario][value[1]] : undefined;
+            val_out = project[scenarioId][value[1]] != undefined ? project[scenarioId][value[1]] : undefined;
         } else if (value[3] == undefined) {
-            val_out = project[scenario][value[1]] != undefined ? project[scenario][value[1]][value[2]] : undefined;
+            val_out = project[scenarioId][value[1]] != undefined ? project[scenarioId][value[1]][value[2]] : undefined;
         } else {
-            val_out = project[scenario][value[1]][value[2]] != undefined ? project[scenario][value[1]][value[2]][value[3]] : undefined;
+            val_out = project[scenarioId][value[1]][value[2]] != undefined ? project[scenarioId][value[1]][value[2]][value[3]] : undefined;
         }
         if (isNaN(val_out) === false) {
             val_out = val_out.toFixed(2);

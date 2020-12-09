@@ -58,15 +58,15 @@ function fuelsmanager_UpdateUI() {
 }
 
 $('#openbem').on('click', '.delete-fuel', function () {
-    var fuel_to_delete = $(this).attr('fuel');
+    let fuel_to_delete = $(this).attr('fuel');
+    let deletable = true;
+    let scenarios_that_use_this_fuel = [];
 
-    var deletable = true;
-    var scenarios_that_use_this_fuel = [];
-    for (scenario in project) {
-        for (var fuel in project[scenario].fuel_totals) {
+    for (let scenarioId of get_scenario_ids(project)) {
+        for (var fuel in project[scenarioId].fuel_totals) {
             if (fuel_to_delete == fuel) {
                 deletable = false;
-                scenarios_that_use_this_fuel.push(scenario);
+                scenarios_that_use_this_fuel.push(scenarioId);
             }
         }
     }
@@ -76,13 +76,10 @@ $('#openbem').on('click', '.delete-fuel', function () {
         $('#delete-fuel-ok').attr('fuel', fuel_to_delete);
         $('#delete_fuel-modal #delete-fuel-ok').show();
     } else {
-        var html = '<p>' + fuel + ' cannot be deleted.</p><p>It is used in: ' + scenarios_that_use_this_fuel[0];
-        scenarios_that_use_this_fuel.forEach(function (scenario, index) {
-            if (index > 0) {
-                html += ', ' + scenario;
-            }
-        });
-        html += '</p>';
+        const html = `
+            <p>${fuel} cannot be deleted.</p>
+            <p>It is used in: ${scenarios_that_use_this_fuel.join(', ')}.</p>
+        `;
         $('#delete_fuel-modal .modal-body').html(html);
         $('#delete_fuel-modal #delete-fuel-ok').hide();
     }

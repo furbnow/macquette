@@ -75,29 +75,29 @@ class Report {
     }
 
     draw_scenarios() {
-        let scenarioOpts = '<li><input type="checkbox" checked disabled class="big-checkbox" value="master"> Master</li>';
+        let scenarioOpts = '';
 
-        for (let scenario_id in project) {
-            if (scenario_id == 'master') {
-                continue;
-            }
-
-            const idx = scenario_id.split('scenario')[1];
-            const name = project[scenario_id].scenario_name;
+        for (let scenarioId of get_scenario_ids(project)) {
             const is_checked = (
-                scenario_id == 'scenario1'
-                || scenario_id == 'scenario2'
-                || scenario_id == 'scenario3'
+                scenarioId === 'master'
+                || scenarioId === 'scenario1'
+                || scenarioId === 'scenario2'
+                || scenarioId === 'scenario3'
             );
+            const is_disabled = (scenarioId === 'master');
+            const name = (scenarioId === 'master'
+                ? project[scenarioId].scenario_name
+                : `Scenario ${scenarioId.split('scenario')[1]}: ${project[scenarioId].scenario_name}`);
 
             scenarioOpts += `
                 <li>
                     <input type="checkbox"
                            ${is_checked ? 'checked' : ''}
-                           value="${scenario_id}"
+                           ${is_disabled ? 'disabled' : ''}
+                           value="${scenarioId}"
                            class="big-checkbox"
-                           id="check-${scenario_id}">
-                    <label class="d-i" for="check-${scenario_id}">Scenario ${idx}: ${name}</label>
+                           id="check-${scenarioId}">
+                    <label class="d-i" for="check-${scenarioId}">${name}</label>
                 </li>`;
         }
 
@@ -305,6 +305,11 @@ function get_used_fuels(scenarios) {
     }));
 }
 
+// This is a duplicate of Commentary.getText(). XXX
+function get_scenario_commentary(scenarioId) {
+    let row = project._commentary.scenarios[scenarioId] || '';
+}
+
 function get_scenario_list(scenarios) {
     return scenarios
         .filter(id => id !== 'master')
@@ -312,7 +317,7 @@ function get_scenario_list(scenarios) {
             id: scenario_id,
             num: parseInt(scenario_id.match(/(\d+)/g)[0], 10),
             name: project[scenario_id].scenario_name,
-            description: project[scenario_id].scenario_description,
+            description: get_scenario_commentary(scenario_id),
         }));
 }
 
@@ -322,6 +327,7 @@ function get_lookup(table, key) {
 
 function get_context_data(scenarios) {
     const hh = project.master.household;
+    const commentary = project._commentary;
 
     return {
         front: {
@@ -362,7 +368,7 @@ function get_context_data(scenarios) {
                 disruption_comment: hh['logistics_disruption_note'],
                 has_budget: hh['logistics_budget'] === 'YES',
                 budget_comment: hh['logistics_budget_note'],
-                brief: hh['commentary_brief'],
+                brief: commentary.brief,
             }
         },
         now: {
@@ -457,8 +463,8 @@ function get_context_data(scenarios) {
         },
         used_fuels: get_used_fuels(scenarios),
         commentary: {
-            context: hh['commentary_context'],
-            decisions: hh['commentary_decisions'],
+            context: commentary.context,
+            decisions: commentary.decisions,
         },
         scenarios: {
             list: get_scenario_list(scenarios),

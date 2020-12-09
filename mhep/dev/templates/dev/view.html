@@ -273,17 +273,19 @@
     //*******************************************************************
     // Initialize fuels: ensure all the scenarios have the same fuels
     //*******************************************************************
+
     if (project.master.fuels == undefined)
         project.master.fuels = JSON.parse(JSON.stringify(datasets.fuels));
 
-    for (s in project)
-        project[s].fuels = project.master.fuels;
+    for (let scenarioId of get_scenario_ids(project)) {
+        project[scenarioId].fuels = project.master.fuels;
+    }
 
     //******************************
     // Calculate scenarios
     //******************************
-    for (s in project) {
-        project[s] = calc.run(project[s]);
+    for (let scenarioId of get_scenario_ids(project)) {
+        project[scenarioId] = calc.run(project[scenarioId]);
     }
 
     //**********************************************
@@ -405,18 +407,18 @@
         $('#select-scenario').html("");
 
         // Fill up the select
-        for (z in project) {
-            const name = project[z].scenario_name || z;
-            $('#select-scenario').append(`<option value='${z}'>${name}</option>`);
+        for (let scenarioId of get_scenario_ids(project)) {
+            const name = project[scenarioId].scenario_name || scenarioId;
+            $('#select-scenario').append(`<option value='${scenarioId}'>${name}</option>`);
         }
 
         $('#modal-create-scenario').modal('show');
     });
     $("#modal-create-scenario").on('click', '#modal-create-scenario-done', function () {
         var n = 0;
-        for (z in project) {
-            var scenario_number = z.slice(8);
-            if (z != 'master' && n != scenario_number) // if for a reason a scenario was deleted, when we create a new one it takes its position. Example: we have master, scenario1 and scenario2. We delete scenario1. We create a new one that becomes scenario1
+        for (let scenarioId of get_scenario_ids(project)) {
+            var scenario_number = scenarioId.slice(8);
+            if (scenarioId != 'master' && n != scenario_number) // if for a reason a scenario was deleted, when we create a new one it takes its position. Example: we have master, scenario1 and scenario2. We delete scenario1. We create a new one that becomes scenario1
                 break;
             n++;
         }
@@ -523,10 +525,11 @@
     function update(undo_redo = false) {
         // We need to calculate the periods of heating off here because if we try to do it in household.js it happens after the update
         if (project.master.household != undefined) {
-            for (var s in project) { // we ensure all the scenarios have the same household data and heating off periods
-                project[s].household = project.master.household;
-                project[s].temperature.hours_off.weekday = get_hours_off_weekday(project[s]);
-                project[s].temperature.hours_off.weekend = get_hours_off_weekend(project[s]);
+            // we ensure all the scenarios have the same household data and heating off periods
+            for (let scenarioId of get_scenario_ids(project)) {
+                project[scenarioId].household = project.master.household;
+                project[scenarioId].temperature.hours_off.weekday = get_hours_off_weekday(project[scenarioId]);
+                project[scenarioId].temperature.hours_off.weekend = get_hours_off_weekend(project[scenarioId]);
             }
         }
 
@@ -659,7 +662,7 @@
         const currently_open = $("[scenario] .menu-content").filter(".active").closest("[scenario]").attr("scenario")
 
         $("#scenario-list").html(
-            Object.keys(project).map(id => scenario_block(id, currently_open)).join("")
+            get_scenario_ids(project).map(id => scenario_block(id, currently_open)).join("")
         )
 
         toggle_scenario_menu(currently_open);
@@ -667,9 +670,9 @@
         redraw_emissions();
     }
     function redraw_emissions() {
-        for (let s in project) {
-            const $emissions = $(`[scenario="${s}"] .shd`)
-            const space_heating_demand_m2 = project[s].space_heating_demand_m2
+        for (let scenarioId of get_scenario_ids(project)) {
+            const $emissions = $(`[scenario="${scenarioId}"] .shd`)
+            const space_heating_demand_m2 = project[scenarioId].space_heating_demand_m2
             if (typeof(space_heating_demand_m2) == "number" && !isNaN(space_heating_demand_m2)) {
               $emissions.html(space_heating_demand_m2.toFixed(0));
             } else {
@@ -733,9 +736,8 @@
             return;
         }
 
-        // Unload previous view
         if (oldPage && oldScenario) {
-            UnloadUI();
+            UnloadUI(oldPage);
         }
 
         data = project[scenario];
