@@ -4,16 +4,18 @@ function commentary_initUI() {
         Macquette.views.Commentary,
         {
             assessment,
-            overviewData: assessment
-                .getScenarioList({ excludeBase: true })
-                .map(({ id, num, title }) => ({
-                    id,
-                    num,
-                    title,
-                    houseData: _house_params(id),
-                    targetData: _targetbars_params(id),
-                    cost: _cost_param(id),
-                })),
+            overviewData: Object.fromEntries(
+                assessment
+                    .getScenarioList({ excludeBase: true })
+                    .map(({ id, num, title }) => [
+                        id,
+                        {
+                            houseData: _house_params(id),
+                            targetData: _targetbars_params(id),
+                            cost: _cost_param(id),
+                        },
+                    ])
+            ),
         },
         document.querySelector('#content')
     );

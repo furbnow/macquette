@@ -31,21 +31,48 @@ export default function Commentary({ assessment, overviewData }) {
                 <b>Current context + logic of scenarios</b>
             </LongTextField>
 
+            <LongTextField
+                id="decisions"
+                className="mb-30"
+                value={assessment.commentary.decisions}
+                setValue={(val) => (assessment.commentary.decisions = val)}
+            >
+                <b>
+                    Key decisions to be made / risks and constraints / areas for further
+                    investigation and development
+                </b>
+            </LongTextField>
+
+            <h2 className="mb-0">Scenarios</h2>
+
             {assessment
                 .getScenarioList({ excludeBase: true })
-                .map(({ id, title, num }) => (
-                    <LongTextField
-                        key={`commentary_for_${id}`}
-                        id={`commentary_for_${id}`}
-                        className="mb-30"
-                        value={assessment.commentary.getText(id)}
-                        setValue={(val) => assessment.commentary.setText(id, val)}
-                    >
-                        <b>
-                            Description for scenario {num} ({title})
-                        </b>
-                    </LongTextField>
-                ))}
+                .map(({ id, title, num }) => {
+                    let { houseData, targetData, cost } = overviewData[id];
+
+                    return (
+                        <section key={`commentary_${id}`}>
+                            <h3>
+                                Scenario {num}: {title}
+                            </h3>
+
+                            <Graphics
+                                houseData={houseData}
+                                targetData={targetData}
+                                cost={cost}
+                            />
+
+                            <LongTextField
+                                id={`commentary_for_${id}`}
+                                className="mb-30"
+                                value={assessment.commentary.getText(id)}
+                                setValue={(val) => assessment.commentary.setText(id, val)}
+                            >
+                                <b>Description</b>
+                            </LongTextField>
+                        </section>
+                    );
+                })}
 
             {orphans
                 ? orphans.map((id) => (
@@ -73,34 +100,6 @@ export default function Commentary({ assessment, overviewData }) {
                       </div>
                   ))
                 : null}
-
-            <LongTextField
-                id="decisions"
-                className="mb-30"
-                value={assessment.commentary.decisions}
-                setValue={(val) => (assessment.commentary.decisions = val)}
-            >
-                <b>
-                    Key decisions to be made / risks and constraints / areas for further
-                    investigation and development
-                </b>
-            </LongTextField>
-
-            {
-                // I very much doubt that having the scenario graphics at the bottom of the page
-                // is the most useful arrangement.  XXX
-            }
-
-            <h2 className="mb-0">Overview of scenarios</h2>
-
-            {overviewData.map(({ id, title, num, houseData, targetData, cost }) => (
-                <div key={`graphics_${id}`}>
-                    <h3>
-                        Scenario {num}: {title}
-                    </h3>
-                    <Graphics houseData={houseData} targetData={targetData} cost={cost} />
-                </div>
-            ))}
         </div>
     );
 }
