@@ -109,8 +109,8 @@ class Commentary {
 // * Call commentary.update() to save the change to the server
 function properties(cls, root, props) {
     for (let [key, data] of Object.entries(props)) {
-        if (cls[key] === undefined) {
-            cls[key] = data.default;
+        if (root[key] === undefined) {
+            root[key] = data.default;
         }
 
         Object.defineProperty(cls, key, {
