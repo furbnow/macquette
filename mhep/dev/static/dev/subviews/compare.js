@@ -200,7 +200,7 @@ function compareCarbonCoop(scenario) {
         out += '<h4>Heating</h4><table class="table table-striped">' + Heating.html + '</table>';
     }
     // Solar hot water
-    if (project[scenario].use_SHW == true) {
+    if (project[scenario].water_heating.solar_water_heating == true) {
         var SHW = compareSolarHotWater(scenario);
         if (SHW.changed === true) {
             out += '<h4>Solar hot water</h4><table class="table table-striped">' + SHW.html + '</table>';

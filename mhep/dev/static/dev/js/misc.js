@@ -751,7 +751,6 @@ function _extract_scenario_inputs(data) {
         water_usage: data.water_heating.water_usage
     };
     inputdata.fans_and_pumps = data.fans_and_pumps;
-    inputdata.use_SHW = data.use_SHW;
     inputdata.SHW = {
         A: data.SHW.A,
         n0: data.SHW.n0,
