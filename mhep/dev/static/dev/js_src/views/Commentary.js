@@ -74,32 +74,27 @@ export default function Commentary({ assessment, overviewData }) {
                     );
                 })}
 
-            {orphans
-                ? orphans.map((id) => (
-                      <div
-                          key={`commentary_for_${id}`}
-                          className="bg-lighter mb-30 pa-15"
-                      >
-                          <LongTextField
-                              key={`commentary_for_${id}`}
-                              id={`commentary_for_${id}`}
-                              value={assessment.commentary.getText(id)}
-                              setValue={(val) => assessment.commentary.setText(id, val)}
-                          >
-                              <b>Orphaned commentary for &quot;{id}&quot;</b>
-                          </LongTextField>
-                          <button
-                              className="btn btn--icon"
-                              onClick={() => assessment.commentary.deleteText(id)}
-                          >
-                              <svg viewBox="0 0 1792 1792">
-                                  <use xlinkHref="#iconset-trash"></use>
-                              </svg>
-                              Delete
-                          </button>
-                      </div>
-                  ))
-                : null}
+            {orphans.map((id) => (
+                <div key={`commentary_for_${id}`} className="bg-lighter mb-30 pa-15">
+                    <LongTextField
+                        key={`commentary_for_${id}`}
+                        id={`commentary_for_${id}`}
+                        value={assessment.commentary.getText(id)}
+                        setValue={(val) => assessment.commentary.setText(id, val)}
+                    >
+                        <b>Orphaned commentary for &quot;{id}&quot;</b>
+                    </LongTextField>
+                    <button
+                        className="btn btn--icon"
+                        onClick={() => assessment.commentary.deleteText(id)}
+                    >
+                        <svg viewBox="0 0 1792 1792">
+                            <use xlinkHref="#iconset-trash"></use>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
+            ))}
         </div>
     );
 }
