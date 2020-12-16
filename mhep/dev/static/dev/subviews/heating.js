@@ -460,16 +460,16 @@ function add_heating_systems() {
 
     for (z in data.heating_systems) {
         var item = data.heating_systems[z];
-        out = '<tr><td style="text-align:center">' + item.tag + '<br /><br />';
-        out += '<span class="edit-item-heating-system if-master" row="' + z + '" tag="' + item.tag + '" style="cursor:pointer; margin-right:15px" item=\'' + JSON.stringify(item) + '\' title="Editing this way is not considered a Measure"> <a><i class = "icon-edit"> </i></a></span>';
-        out += '<span class = "delete-heating-system if-master" row="' + z + '" style="cursor:pointer" title="Deleting an element this way is not considered a Measure" ><a> <i class="icon-trash" ></i></a></span>';
-        out += '<span class="apply-water-heating-measure if-not-master" type="heating_systems_measures" item-index="' + z + '" style="cursor:pointer"><button class="btn if-not-locked" style="">Apply measure</button></span><p class="heating_systems-measure-applied" item-id="' + item.id + '" style="margin-top: 10px;display:none">Measure applied</p></td><td>' + item.name + '</td>';
-        out += '<td><select style="width:100px" key="data.heating_systems.' + z + '.provides"><option value="heating">Space heating</option><option value="water">Water heating</option><option value="heating_and_water">Space and water heating</option></select></td>';
-        out += '<td class="if-SH">' + item.winter_efficiency + '</td><td class="if-WH">' + item.summer_efficiency + '</td>';
-        out += '<td><select style="width:150px" key="data.heating_systems.' + z + '.fuel">' + get_fuels_for_select() + '</select></td>';
-        out += '<td><p class="if-SH"><input style="width:55px" type="number" key="data.heating_systems.' + z + '.fraction_space" max="1" step="0.01" min="0" /></p>\n\
-        <p class="if-WH"><input style="width:55px" type="number" key="data.heating_systems.' + z + '.fraction_water_heating" max="1" step="0.01" min="0" /></td>';
-        out += '<td class="if-SH"><select style="width:100px" key="data.heating_systems.' + z + '.main_space_heating_system">';
+        out = `<tr><td style="text-align:center">${item.tag}<br /><br />`;
+        out += `<span class="edit-item-heating-system if-master" row="${z}" tag="${item.tag}" style="cursor:pointer; margin-right:15px" item='${JSON.stringify(item)}' title="Editing this way is not considered a Measure"> <a><i class = "icon-edit"> </i></a></span>`;
+        out += `<span class = "delete-heating-system if-master" row="${z}" style="cursor:pointer" title="Deleting an element this way is not considered a Measure" ><a> <i class="icon-trash" ></i></a></span>`;
+        out += `<span class="apply-water-heating-measure if-not-master" type="heating_systems_measures" item-index="${z}" style="cursor:pointer"><button class="btn if-not-locked" style="">Apply measure</button></span><p class="heating_systems-measure-applied" item-id="${item.id}" style="margin-top: 10px;display:none">Measure applied</p></td><td>${item.name}</td>`;
+        out += `<td><select style="width:100px" key="data.heating_systems.${z}.provides"><option value="heating">Space heating</option><option value="water">Water heating</option><option value="heating_and_water">Space and water heating</option></select></td>`;
+        out += `<td class="if-SH">${item.winter_efficiency}</td><td class="if-WH">${item.summer_efficiency}</td>`;
+        out += `<td><select style="width:150px" key="data.heating_systems.${z}.fuel">${get_fuels_for_select()}</select></td>`;
+        out += `<td><p class="if-SH"><input style="width:55px" type="number" key="data.heating_systems.${z}.fraction_space" max="1" step="0.01" min="0" /></p>`;
+        out += `<p class="if-WH"><input style="width:55px" type="number" key="data.heating_systems.${z}.fraction_water_heating" max="1" step="0.01" min="0" /></td>`;
+        out += `<td class="if-SH"><select style="width:100px" key="data.heating_systems.${z}.main_space_heating_system">`;
         if (mainHSs.mainHS1 === false) {
             out += '<option value = "mainHS1" > Main heating system </option>';
             out += '<option value="mainHS2_whole_house" disabled>2<sup>nd</sup > Main heating system - whole house </option>';
@@ -489,12 +489,12 @@ function add_heating_systems() {
             mainHSs.mainHS2 = true;
         }
         out += '<option value="secondaryHS">Secondary heating system</option > </select></td >';
-        out += '<td class = "if-SH" > <input style = "width:55px" type = "number" key = "data.heating_systems.' + z + '.responsiveness" max = "1" step = "0.01" min = "0" /> </td>';
-        out += '<td class = "if-SH" > <input style = "width:55px" type = "number" key = "data.heating_systems.' + z + '.temperature_adjustment" max = "1" step = "0.01" min = "0" /> </td>';
-        out += '<td class = "if-SH" style = "text-align:center" > <input class="controls-input" style = "width:40px" type = "number" key = "data.heating_systems.' + z + '.heating_controls" max = "3" step = "1" min = "1" /> \n\
-        <br /> <span class = "apply-water-heating-measure if-not-master" type="space_heating_control_type" item-index = "' + z + '" style = "cursor:pointer" > <button class = "btn if-not-locked" > Apply measure </button></span ><p class="space_heating_control_type-measure-applied" item-id="' + item.id + '" style="margin-top: 10px;display:none">Measure applied</p></td>';
-        out += '<td class = "if-WH" > <input type = "checkbox" key = "data.heating_systems.' + z + '.instantaneous_water_heating" /> </td>';
-        out += '<td class = "if-SH" > <input type = "checkbox" key = "data.heating_systems.' + z + '.central_heating_pump_inside" /> </td>';
+        out += `<td class = "if-SH" > <input style = "width:55px" type = "number" key = "data.heating_systems.${z}.responsiveness" max = "1" step = "0.01" min = "0" /> </td>`;
+        out += `<td class = "if-SH" > <input style = "width:55px" type = "number" key = "data.heating_systems.${z}.temperature_adjustment" max = "1" step = "0.01" min = "0" /> </td>`;
+        out += `<td class = "if-SH" style = "text-align:center" > <input class="controls-input" style = "width:40px" type = "number" key = "data.heating_systems.${z}.heating_controls" max = "3" step = "1" min = "1" />`;
+        out += `<br /><span class = "apply-water-heating-measure if-not-master" type="space_heating_control_type" item-index = "${z}" style = "cursor:pointer" > <button class = "btn if-not-locked" > Apply measure </button></span ><p class="space_heating_control_type-measure-applied" item-id="${item.id}" style="margin-top: 10px;display:none">Measure applied</p></td>`;
+        out += `<td class = "if-WH" > <input type = "checkbox" key = "data.heating_systems.${z}.instantaneous_water_heating" /> </td>`;
+        out += `<td class = "if-SH" > <input type = "checkbox" key = "data.heating_systems.${z}.central_heating_pump_inside" /> </td>`;
         out += '</tr>';
 
         $('#heating-systems').append(out);
