@@ -912,29 +912,27 @@ libraryHelper.prototype.onSaveLibraryEditMode = function (selector, library_id) 
         data[tag] = {tags: [$(this).attr('tags')]};
         $(this).children('td').each(function () {
             var key = $(this).attr('index');
-            if (key != undefined) {
-                if ($(this).children('input')[0] != undefined) {
-                    if ($(this).children('input')[0].type == 'text' || $(this).children('input')[0].type == 'number') {
-                        data[tag][key] = $(this).children('input')[0].value;
-                    } else if ($(this).children('input')[0].type == 'checkbox') {
-                        if ($(this).children('input').is(':checked')) {
-                            data[tag][key] = true;
-                        } else {
-                            data[tag][key] = false;
-                        }
-                    } else {
-                        console.error('Type of input not recognized: ' + $(this).children('input')[0].type);
-                    }
-                } else if ($(this).children('select')[0] != undefined) {
-                    data[tag][key] = $(this).children('select')[0].value;
-                } else if ($(this).children('textarea')[0] != undefined) {
-                    data[tag][key] = $(this).children('textarea')[0].value;
+            if (key === undefined) {
+                return;
+            }
+
+            if ($(this).children('input')[0] != undefined) {
+                let input = $(this).children('input')[0];
+                if (input.type === 'text') {
+                    data[tag][key] = input.value;
+                } else if (input.type === 'number') {
+                    data[tag][key] = parseFloat(input.value);
+                } else if (input.type === 'checkbox') {
+                    data[tag][key] = input.checked;
                 } else {
-                    console.error('Type of input not recognized: ');
+                    console.error('Type of input not recognized: ' + input.type);
                 }
-                /*if(element.type)
-                 data[tag][key] = $(this).find('input')[0].value;
-                 */
+            } else if ($(this).children('select')[0] != undefined) {
+                data[tag][key] = $(this).children('select')[0].value;
+            } else if ($(this).children('textarea')[0] != undefined) {
+                data[tag][key] = $(this).children('textarea')[0].value;
+            } else {
+                console.error('Type of input not recognized: ');
             }
         });
     });
