@@ -845,11 +845,15 @@ function diff(left, right) {
         const bothNaN = typeof lval == 'number' && typeof rval == 'number' && isNaN(lval) && isNaN(rval);
 
         if (lval !== rval && !bothNaN) {
-            if (lval !== undefined) {
-                console.log(`- ${e} = ${lval}`);
-            }
-            if (rval !== undefined) {
-                console.log(`+ ${e} = ${rval}`);
+            if (lval !== undefined && rval !== undefined) {
+                console.log(`! ${e} = ${lval} -> ${rval}`);
+            } else {
+                if (lval !== undefined) {
+                    console.log(`- ${e} = ${lval}`);
+                }
+                if (rval !== undefined) {
+                    console.log(`+ ${e} = ${rval}`);
+                }
             }
         }
     }
