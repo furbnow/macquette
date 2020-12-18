@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+
+const util = require('../mhep/dev/static/dev/js/misc.js');
+
+const fs = require('fs');
+
+if (process.argv.length < 4) {
+    console.log(`${process.argv[1]} <leftfile> <rightfile>`);
+    process.exit(1);
+}
+
+const buffer1 = fs.readFileSync(process.argv[2]);
+const assessment1 = JSON.parse(buffer1);
+
+const buffer2 = fs.readFileSync(process.argv[3]);
+const assessment2 = JSON.parse(buffer2);
+
+util.diff(assessment1, assessment2);
