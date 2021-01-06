@@ -589,7 +589,7 @@ function add_heating_systems() {
                                 Fraction of water heating provided
                                 <i class='icon-question-sign' title='This defines what proportion of the space heating or water heating for a home is provided by the system listed. For example, a standard assumption might be that a gas boiler provides 90% (0.9) of the space heating, and an open fire or room stove provides 10% (0.1). However, this can be adjusted using assessors informed judgement as required - and as many systems as are present can be included. If there are two main heating systems identified, the proportion of heat provided by each system should be taken as the relative heated floor area served by each system'></i>
                             </label>
-                            <input style="width: 55px" type="number" key="data.heating_systems.${z}.fraction_water_heating" max="1" step="0.01" min="0">
+                            <input key="data.heating_systems.${z}.fraction_water_heating">
                         </div>
 
                         <div class="form-row">
