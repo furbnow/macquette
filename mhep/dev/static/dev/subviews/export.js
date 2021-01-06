@@ -49,7 +49,7 @@ $('#upload_project').submit(function (e) {
             var project_to_load = JSON.parse(fr.result); // I was worried about code injection here, but it seems that using JSON.parse is safe enough: //https://www.whitehatsec.com/blog/handling-untrusted-json-safely/
             try {
                 for (scenario in project_to_load) {
-                    calc.run(project_to_load[scenario]);
+                    calc.run(project_to_load[scenario], datasets);
                 } // Running all the scenarios we check if the JSON string is a valid MHEP project, if it is not we catch the exception
                 project = project_to_load;
                 project.master.imagegallery = [];

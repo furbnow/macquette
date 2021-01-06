@@ -854,3 +854,11 @@ function diff(left, right) {
         }
     }
 }
+
+if (typeof module !== 'undefined') {
+    module.exports = {
+        diff,
+        extract_assessment_inputs,
+        get_scenario_ids
+    };
+}
