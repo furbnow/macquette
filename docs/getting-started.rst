@@ -14,11 +14,16 @@ You will need:
    <https://docs.docker.com/compose/install/>
 -  Python 3.7 and pip <https://pip.pypa.io/en/stable/installing/>
 -  GNU make
+-  Node (version 14+) with npm
+
+There are many ways to get a functioning version of Node - we recommend
+`checking out the Node website <https://nodejs.org/en/download/package-manager/>`_
+on this topic.
 
 Debian / Ubuntu
 ~~~~~~~~~~~~~~~
 
-``apt install docker.io docker-compose make python3.7``
+``apt install docker.io docker-compose make python3.7 libpq-dev``
 
 Make sure your user is in the ``docker`` group, by running
 ``sudo usermod -a -G docker <username>``.
@@ -65,6 +70,7 @@ Set up and run Macquette
    make pip-sync                     # Install our Python dependencies
    cp .example.env .env              # Set up env vars for local dev
    pre-commit install                # Set up pre-commit code linters
+   npm install                       # Install our various Node-based dependencies
    make docker-up                    # Start postgres docker container
    python manage.py migrate          # Migrate the database
    python manage.py createsuperuser  # Create a user account
