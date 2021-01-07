@@ -183,11 +183,11 @@ function properties(cls, root, props) {
             },
             set: (val) => {
                 if (data.type === String && typeof val !== 'string') {
-                    throw new TypeError(`${cls.name}.${key} must be a string`);
+                    throw new TypeError(`${cls.constructor.name}.${key} must be a string`);
                 } else if (data.type === Number && typeof val !== 'number') {
-                    throw new TypeError(`${cls.name}.${key} must be a number`);
+                    throw new TypeError(`${cls.constructor.name}.${key} must be a number`);
                 } else if (data.type === Array && !(val instanceof Array)) {
-                    throw new TypeError(`${cls.name}.${key} must be an array`);
+                    throw new TypeError(`${cls.constructor.name}.${key} must be an array`);
                 }
 
                 root[key] = val;
