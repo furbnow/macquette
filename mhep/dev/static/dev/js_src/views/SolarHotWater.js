@@ -9,7 +9,7 @@ import Result from '../components/Result'
 
 function SolarHotWater({ scenario }) {
   return (
-    <>
+    <section>
       <h3>Solar Hot Water system</h3>
 
       <div className="row-fluid">
@@ -341,7 +341,7 @@ function SolarHotWater({ scenario }) {
         </div>
       </div>
 
-    </>
+    </section>
   )
 }
 
