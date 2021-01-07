@@ -1,5 +1,5 @@
 import React from 'react'
-import OptionField from '../components/OptionField'
+import SelectField from '../components/SelectField'
 import NumberField from '../components/NumberField'
 import Result from '../components/Result'
 
@@ -18,7 +18,7 @@ function SolarHotWater({ scenario }) {
           {/* Solar water heating pump */}
         </div>
         <div className="span6">
-          <OptionField
+          <SelectField
             id="pump_power_supply"
             options={[
               { value: 'PV', display: 'PV powered' },
@@ -119,7 +119,7 @@ function SolarHotWater({ scenario }) {
           Collector Orientation
       </div>
         <div className="span6">
-          <OptionField
+          <SelectField
             id="orientation"
             options={[
               { value: 0, display: 'North' },
@@ -168,7 +168,7 @@ function SolarHotWater({ scenario }) {
           Overshading factor
       </div>
         <div className="span6">
-          <OptionField
+          <SelectField
             id="overshading_factor"
             options={[
               { value: 'HEAVY', display: 'Heavy > 80%' },

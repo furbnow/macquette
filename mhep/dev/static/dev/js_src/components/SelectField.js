@@ -2,7 +2,7 @@ import React from 'react';
 import useExternalState from '../hooks/useExternalState';
 
 // 'options' is an array of { value: String, display: String }
-function OptionField({ id, options, value, setValue }) {
+function SelectField({ id, options, value, setValue }) {
     const [current, monitor, setCurrent] = useExternalState(value);
     return (
         <select
@@ -25,4 +25,4 @@ function OptionField({ id, options, value, setValue }) {
     );
 }
 
-export default OptionField;
+export default SelectField;
