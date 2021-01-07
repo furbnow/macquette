@@ -1593,6 +1593,14 @@ calc.SHW = function (data) {
     if (data.SHW == undefined) {
         data.SHW = {};
     }
+
+    const OVERSHADING_OPTION_TO_FRACTION = {
+        'HEAVY': 0.5,
+        'SIGNIFICANT': 0.65,
+        'MODEST': 0.8,
+        'NONE': 1
+    };
+
     /*
      if (data.SHW.A==undefined) data.SHW.A = 1.25;
      if (data.SHW.n0==undefined) data.SHW.n0 = 0.599;
@@ -1606,7 +1614,7 @@ calc.SHW = function (data) {
     data.SHW.a = 0.892 * (data.SHW.a1 + 45 * data.SHW.a2);
     data.SHW.collector_performance_ratio = data.SHW.a / data.SHW.n0;
     data.SHW.annual_solar = annual_solar_rad(data.region, data.SHW.orientation, data.SHW.inclination);
-    data.SHW.solar_energy_available = data.SHW.A * data.SHW.n0 * data.SHW.annual_solar * data.SHW.overshading;
+    data.SHW.solar_energy_available = data.SHW.A * data.SHW.n0 * data.SHW.annual_solar * OVERSHADING_OPTION_TO_FRACTION[data.SHW.overshading];
     data.SHW.solar_load_ratio = data.SHW.solar_energy_available / data.water_heating.annual_energy_content;
     data.SHW.utilisation_factor = 0;
     if (data.SHW.solar_load_ratio > 0) {

@@ -47,6 +47,69 @@ export default class Assessment {
             num: id === 'master' ? 0 : parseInt(id.replaceAll(/scenario/g, ''), 10),
         }));
     }
+
+    getScenario(id) {
+        return new Scenario(this, id, this.update);
+    }
+}
+
+class Scenario {
+    constructor(assessment, scenarioId, update) {
+        this.data = assessment.data[scenarioId];
+        this.solarHotWater = new SolarHotWater(this.data, update);
+        this.waterHeating = new WaterHeating(this.data, update);
+    }
+}
+
+class WaterHeating {
+    constructor(scenarioData, update) {
+        if (!scenarioData.water_heating) {
+            scenarioData.water_heating = {};
+        }
+
+        properties(this, scenarioData.water_heating, {
+            annual_energy_content: { type: Number, default: null },
+            Vd_average: { type: Number, default: null },
+        });
+
+        this.scenarioData = scenarioData;
+        this.update = update;
+    }
+}
+
+class SolarHotWater {
+    constructor(scenarioData, update) {
+        if (!scenarioData.SHW) {
+            scenarioData.SHW = {};
+        }
+
+        properties(this, scenarioData.SHW, {
+            pump: { type: String, default: '' },
+            A: { type: Number, default: null },
+            n0: { type: Number, default: null },
+            a1: { type: Number, default: null },
+            a2: { type: Number, default: null },
+            a: { type: Number, default: null },
+            Vs: { type: Number, default: null },
+            collector_performance_ratio: { type: Number, default: null },
+            orientation: { type: String, default: '' },
+            inclination: { type: Number, default: null },
+            annual_solar: { type: Number, default: null },
+            overshading: { type: String, default: '' },
+            solar_energy_available: { type: Number, default: null },
+            solar_load_ratio: { type: Number, default: null },
+            utilisation_factor: { type: Number, default: null },
+            collector_performance_factor: { type: Number, default: null },
+            combined_cylinder_volume: { type: Number, default: null },
+            Veff: { type: Number, default: null },
+            volume_ratio: { type: Number, default: null },
+            f2: { type: Number, default: null },
+            Qs: { type: Number, default: null },
+        });
+
+        this.scenarioData = scenarioData;
+        this.update = update;
+    }
 }
 
 class Commentary {

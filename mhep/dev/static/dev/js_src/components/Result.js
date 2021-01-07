@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function Result({ val, dp = 2 }) {
-    if (isNaN(val)) {
-        return <span>-</span>;
+export default function Result({ val, dp = 2, units = '' }) {
+    if (isNaN(val) || val === null) {
+        return <span>- {units}</span>;
     } else {
-        return <span>{val.toFixed(dp)}</span>;
+        return <span>{val.toFixed(dp)} {units}</span>;
     }
 }
