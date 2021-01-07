@@ -24,6 +24,9 @@ js-prod:
 		--define:process.env.NODE_ENV=\"production\" \
 		--sourcemap --bundle
 
+load-placeholder-library:
+	python manage.py loaddata mhep/dev/fixtures/standard_library.json
+
 js-watch:
 	npx chokidar "mhep/dev/static/dev/js_src/**/*" -c "make js"
 
