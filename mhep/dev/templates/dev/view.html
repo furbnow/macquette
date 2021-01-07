@@ -365,8 +365,6 @@
             if (!isNaN(val) && val != "")
                 val *= 1;
 
-            if (key == 'data.use_SHW')
-                data.water_heating.solar_water_heating = !data.use_SHW; // I don't know why but only works properly coping the negative
             var lastval = varset(key, val);
 
             $("#openbem").trigger("onKeyChange", {key: key, value: val});
@@ -627,12 +625,7 @@
                         <li><a href="#${id}/heating">Heating</a></li>
                         <li><a href="#${id}/fuel_requirements">Fuel requirements</a></li>
                         <li><a href="#${id}/generation">Generation</a></li>
-                        <li>
-                            <a href="#${id}/solarhotwater">
-                                <input type="checkbox" key="data.use_SHW">
-                                Solar Hot Water heating
-                            </a>
-                        </li>
+                        <li><a href="#${id}/solarhotwater">Solar Hot Water heating</a></li>
                     </ul>
                 </div>
 

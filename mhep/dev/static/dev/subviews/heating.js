@@ -77,10 +77,6 @@ function heating_initUI() {
     heating_UpdateUI();
 }
 
-
-$('#openbem').on('click', '[key="data.water_heating.solar_water_heating"]', function () {
-    data.use_SHW = !data.water_heating.solar_water_heating; // I don't know why but only works properly coping the negative
-});
 $('#openbem').on('click', '.add-water-efficiency-from-lib', function () {
     library_helper.init();
     library_helper.type = 'water_usage';

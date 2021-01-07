@@ -2429,7 +2429,7 @@ calc.currentenergy = function (data) {
  //      - data.heating_systems
  //	- data.ventilation.ventilation_type
  //	- data.ventilation.EVP
- //	- data.use_SHW
+ // - data.water_heating.solar_water_heating
  //	- data.SHW.pump
  //
  // Global Outputs:
@@ -2507,7 +2507,7 @@ calc.fans_and_pumps_and_combi_keep_hot = function (data) {
     }
 
     // From Solar Hot Water
-    if (data.use_SHW == 1) {
+    if (data.water_heating.solar_water_heating) {
         if (data.SHW.pump != undefined && data.SHW.pump == 'electric') {
             annual_energy += 50;
         }
