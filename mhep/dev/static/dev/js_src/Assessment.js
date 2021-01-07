@@ -68,6 +68,7 @@ class WaterHeating {
         }
 
         properties(this, scenarioData.water_heating, {
+            solar_water_heating: { type: Boolean, default: false },
             annual_energy_content: { type: Number, default: null },
             Vd_average: { type: Number, default: null },
         });
@@ -188,6 +189,8 @@ function properties(cls, root, props) {
                     throw new TypeError(`${cls.constructor.name}.${key} must be a number`);
                 } else if (data.type === Array && !(val instanceof Array)) {
                     throw new TypeError(`${cls.constructor.name}.${key} must be an array`);
+                } else if (data.type == Boolean && typeof val !== 'boolean') {
+                    throw new TypeError(`${cls.constructor.name}.${key} must be a boolean`);
                 }
 
                 root[key] = val;

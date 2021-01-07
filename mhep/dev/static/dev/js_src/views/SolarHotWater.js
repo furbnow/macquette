@@ -1,6 +1,7 @@
 import React from 'react';
 import SelectField from '../components/SelectField';
 import NumberField from '../components/NumberField';
+import CheckboxField from '../components/CheckboxField';
 import FormRow from '../components/FormRow';
 import Result from '../components/Result';
 
@@ -12,6 +13,15 @@ function SolarHotWater({ scenario }) {
     return (
         <section>
             <h3>Solar Hot Water system</h3>
+
+            <FormRow>
+                <label htmlFor="field_use_shw">Use solar hot water</label>
+                <CheckboxField
+                    id="use_shw"
+                    value={scenario.waterHeating.solar_water_heating}
+                    setValue={(val) => (scenario.waterHeating.solar_water_heating = val)}
+                />
+            </FormRow>
 
             <FormRow>
                 <label htmlFor="field_pump_power_supply">Pump power supply</label>
