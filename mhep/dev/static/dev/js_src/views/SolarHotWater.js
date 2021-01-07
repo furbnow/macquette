@@ -15,21 +15,6 @@ function SolarHotWater({ scenario }) {
 
             <FormRow>
                 <label htmlFor="field_pump_power_supply">Pump power supply</label>
-
-                <SelectField
-                    id="pump_power_supply"
-                    options={[
-                        { value: 'PV', display: 'PV powered' },
-                        { value: 'electric', display: 'Mains powered' },
-                        // { value: 'electric', display: 'Electrically powered' },
-                    ]}
-                    value={scenario.solarHotWater.pump}
-                    setValue={(val) => (scenario.solarHotWater.pump = val)}
-                />
-            </FormRow>
-
-            <FormRow>
-                <label htmlFor="field_pump_power_supply">Pump power supply</label>
                 {/* Solar water heating pump */}
 
                 <SelectField
