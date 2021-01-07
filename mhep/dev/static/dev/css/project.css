@@ -425,6 +425,19 @@ label input[type=radio] {
     width: 38rem;
 }
 
+.form-row {
+    display: flex;
+    align-items: center;
+    height: 40px;
+}
+
+.form-row > :first-child {
+    width: 38ch;
+}
+
+.form-row select, .form-row input, .form-row label {
+    margin-bottom: 0;
+}
 
 /**** NAVIGATION ****/
 

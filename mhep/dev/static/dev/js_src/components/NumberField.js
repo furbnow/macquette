@@ -7,22 +7,23 @@ function decimalise(s) {
     return s.replaceAll(notAllowed, '');
 }
 
-export default function NumberField({ id, children, units, value, setValue }) {
+export default function NumberField({ id, units, value, setValue, className = '' }) {
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
-        <div className="row">
-            <label htmlFor={`field_${id}`}>{children}</label>
+        <div>
             <input
+                type="text"
+                className={className}
                 id={`field_${id}`}
                 onChange={(evt) => setCurrent(decimalise(evt.target.value))}
                 onBlur={() => {
                     if (current !== monitor) {
-                        setValue(current);
+                        setValue(parseFloat(current));
                     }
                 }}
-                value={current}
-            />
+                value={current || undefined}
+            />{' '}
             {units}
         </div>
     );
