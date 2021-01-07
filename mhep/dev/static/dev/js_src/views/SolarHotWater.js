@@ -14,7 +14,9 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
+          <label htmlFor="field_pump_power_supply">
           Pump power supply
+          </label>
           {/* Solar water heating pump */}
         </div>
         <div className="span6">
@@ -33,7 +35,9 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
-          Aperture area of solar collector, <var>A</var>
+            <label htmlFor="field_aperture_area">
+              Aperture area of solar collector, <var>A</var>
+            </label>
         </div>
         <div className="span6">
           <NumberField
@@ -49,7 +53,9 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
-          Zero-loss collector efficiency, <var>η0</var> <i className='icon-question-sign' title='from test certificate or Table H1'></i>
+          <label htmlFor="field_zeroloss_collector_efficiency">
+            Zero-loss collector efficiency, <var>η0</var> <i className='icon-question-sign' title='from test certificate or Table H1'></i>
+          </label>
         </div>
         <div className="span6">
           <NumberField
@@ -64,7 +70,9 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
-          Collector linear heat loss coefficient, <var>a1</var> <i className='icon-question-sign' title='from test certificate'></i>
+          <label htmlFor="field_linear_heat_loss_coefficient">
+            Collector linear heat loss coefficient, <var>a1</var> <i className='icon-question-sign' title='from test certificate'></i>
+          </label>
         </div>
         <div className="span6">
           <NumberField
@@ -79,7 +87,9 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
-          Collector 2nd order heat loss coefficient, <var>a2</var> <i className='icon-question-sign' title='from test certificate'></i>
+          <label htmlFor="field_second_order_heat_loss_coefficient">
+            Collector 2nd order heat loss coefficient, <var>a2</var> <i className='icon-question-sign' title='from test certificate'></i>
+          </label>
         </div>
         <div className="span6">
           <NumberField
@@ -116,8 +126,10 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
+          <label htmlFor="field_orientation">
           Collector Orientation
-      </div>
+          </label>
+        </div>
         <div className="span6">
           <SelectField
             id="orientation"
@@ -136,8 +148,10 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
+          <label htmlFor="field_inclination">
           Collector Inclination (i.e. 35 degrees)
-      </div>
+          </label>
+        </div>
         <div className="span6">
           <NumberField
             id="inclination"
@@ -165,8 +179,10 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
-          Overshading factor
-      </div>
+          <label htmlFor="field_overshading_factor">
+            Overshading factor
+          </label>
+        </div>
         <div className="span6">
           <SelectField
             id="overshading_factor"
@@ -185,7 +201,7 @@ function SolarHotWater({ scenario }) {
       <div className="row-fluid">
         <div className="span6">
           Solar energy available
-      </div>
+        </div>
         <div className="span6">
           <Result
             val={scenario.solarHotWater.solar_energy_available}
@@ -251,7 +267,9 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
+          <label htmlFor="field_dedicated_solar_storage_volume">
           Dedicated solar storage volume, <var>Vs</var>
+          </label>
         </div>
         <div className="span6">
           <NumberField
@@ -267,7 +285,9 @@ function SolarHotWater({ scenario }) {
 
       <div className="row-fluid">
         <div className="span6">
+          <label htmlFor="field_total_cylinder_volume">
           Total volume of cylinder (if combined cylinder)
+          </label>
         </div>
         <div className="span6">
           <NumberField
