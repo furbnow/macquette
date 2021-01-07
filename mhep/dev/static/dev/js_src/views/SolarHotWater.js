@@ -1,6 +1,7 @@
 import React from 'react'
 import SelectField from '../components/SelectField'
 import NumberField from '../components/NumberField'
+import FormRow from '../components/FormRow'
 import Result from '../components/Result'
 
 // ??? - dedicated Volume vs total Volume - what's the calculation there?
@@ -12,14 +13,29 @@ function SolarHotWater({ scenario }) {
     <section>
       <h3>Solar Hot Water system</h3>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
+        <label htmlFor="field_pump_power_supply">
+          Pump power supply
+        </label>
+
+        <SelectField
+          id="pump_power_supply"
+          options={[
+            { value: 'PV', display: 'PV powered' },
+            { value: 'electric', display: 'Mains powered' },
+            // { value: 'electric', display: 'Electrically powered' },
+          ]}
+          value={scenario.solarHotWater.pump}
+          setValue={(val) => (scenario.solarHotWater.pump = val)}
+        />
+      </FormRow>
+
+      <FormRow>
           <label htmlFor="field_pump_power_supply">
           Pump power supply
           </label>
           {/* Solar water heating pump */}
-        </div>
-        <div className="span6">
+
           <SelectField
             id="pump_power_supply"
             options={[
@@ -30,16 +46,13 @@ function SolarHotWater({ scenario }) {
             value={scenario.solarHotWater.pump}
             setValue={(val) => (scenario.solarHotWater.pump = val)}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
             <label htmlFor="field_aperture_area">
               Aperture area of solar collector, <var>A</var>
             </label>
-        </div>
-        <div className="span6">
+
           <NumberField
             id="aperture_area"
             units="m²"
@@ -48,16 +61,13 @@ function SolarHotWater({ scenario }) {
             type="text"
             className="input-mini"
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
           <label htmlFor="field_zeroloss_collector_efficiency">
             Zero-loss collector efficiency, <var>η0</var> <i className='icon-question-sign' title='from test certificate or Table H1'></i>
           </label>
-        </div>
-        <div className="span6">
+
           <NumberField
             id="zeroloss_collector_efficiency"
             value={scenario.solarHotWater.n0}
@@ -65,16 +75,13 @@ function SolarHotWater({ scenario }) {
             type="text"
             className="input-mini"
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
           <label htmlFor="field_linear_heat_loss_coefficient">
             Collector linear heat loss coefficient, <var>a1</var> <i className='icon-question-sign' title='from test certificate'></i>
           </label>
-        </div>
-        <div className="span6">
+
           <NumberField
             id="linear_heat_loss_coefficient"
             value={scenario.solarHotWater.a1}
@@ -82,16 +89,13 @@ function SolarHotWater({ scenario }) {
             type="text"
             className="input-mini"
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
           <label htmlFor="field_second_order_heat_loss_coefficient">
             Collector 2nd order heat loss coefficient, <var>a2</var> <i className='icon-question-sign' title='from test certificate'></i>
           </label>
-        </div>
-        <div className="span6">
+
           <NumberField
             id="second_order_heat_loss_coefficient"
             value={scenario.solarHotWater.a2}
@@ -99,38 +103,29 @@ function SolarHotWater({ scenario }) {
             type="text"
             className="input-mini"
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
           <var>a* = 0.892 × (a1 + 45 × a2)</var>
-        </div>
-        <div className="span6">
+
           <Result
             val={scenario.solarHotWater.a}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Collector performance ratio, <var>a*/η0</var>
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Collector performance ratio, <var>a*/η0</var></span>
+
           <Result
             val={scenario.solarHotWater.collector_performance_ratio}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
           <label htmlFor="field_orientation">
           Collector Orientation
           </label>
-        </div>
-        <div className="span6">
+
           <SelectField
             id="orientation"
             options={[
@@ -143,16 +138,13 @@ function SolarHotWater({ scenario }) {
             value={scenario.solarHotWater.orientation}
             setValue={(val) => (scenario.solarHotWater.orientation = val)}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
           <label htmlFor="field_inclination">
           Collector Inclination (i.e. 35 degrees)
           </label>
-        </div>
-        <div className="span6">
+
           <NumberField
             id="inclination"
             units="degrees"
@@ -161,29 +153,23 @@ function SolarHotWater({ scenario }) {
             type="text"
             className="input-mini"
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Annual solar radiation per m² <i className='icon-question-sign' title='(from U3.3 in Appendix U for the orientation and tilt of the collector)'></i>
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Annual solar radiation per m² <i className='icon-question-sign' title='(from U3.3 in Appendix U for the orientation and tilt of the collector)'></i></span>
+
           <Result
             val={scenario.solarHotWater.annual_solar}
             dp={0}
             units='kWh'
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
           <label htmlFor="field_overshading_factor">
             Overshading factor
           </label>
-        </div>
-        <div className="span6">
+
           <SelectField
             id="overshading_factor"
             options={[
@@ -195,21 +181,17 @@ function SolarHotWater({ scenario }) {
             value={scenario.solarHotWater.overshading}
             setValue={(val) => (scenario.solarHotWater.overshading = val)}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Solar energy available
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Solar energy available</span>
+
           <Result
             val={scenario.solarHotWater.solar_energy_available}
             dp={0}
             units='kWh'
           />
-        </div>
-      </div>
+      </FormRow>
 
       <h4>Utilisation</h4>
       <p>
@@ -219,59 +201,45 @@ function SolarHotWater({ scenario }) {
         It is intended to give a representative value of the solar contribution to domestic water heating over a range of users.
       </p>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Load
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Load</span>
+
           <Result
             val={scenario.waterHeating.annual_energy_content}
             dp={0}
             units='kWh'
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Solar-to-load ratio
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Solar-to-load ratio</span>
+
           <Result
             val={scenario.solarHotWater.solar_load_ratio}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Utilisation factor
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Utilisation factor</span>
+
           <Result
             val={scenario.solarHotWater.utilisation_factor}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Collector performance factor
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Collector performance factor</span>
+
           <Result
             val={scenario.solarHotWater.collector_performance_factor}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
           <label htmlFor="field_dedicated_solar_storage_volume">
           Dedicated solar storage volume, <var>Vs</var>
           </label>
-        </div>
-        <div className="span6">
+
           <NumberField
             id="dedicated_solar_storage_volume"
             units="litres"
@@ -280,16 +248,13 @@ function SolarHotWater({ scenario }) {
             type="text"
             className="input-mini"
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
+      <FormRow>
           <label htmlFor="field_total_cylinder_volume">
           Total volume of cylinder (if combined cylinder)
           </label>
-        </div>
-        <div className="span6">
+
           <NumberField
             id="total_cylinder_volume"
             units="litres"
@@ -298,68 +263,52 @@ function SolarHotWater({ scenario }) {
             type="text"
             className="input-mini"
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Effective solar volume, <var>Veff</var>
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Effective solar volume, <var>Veff</var></span>
+
           <Result
             val={scenario.solarHotWater.Veff}
             dp={0}
             units='litres'
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Daily hot water demand, <var>Vd</var>, average (from water heating)
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Daily hot water demand, <var>Vd</var>, average (from water heating)</span>
+
           <Result
             val={scenario.waterHeating.Vd_average}
             dp={0}
             units='litres'
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Volume ratio, <var>Veff/Vd</var>, (average)
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Volume ratio, <var>Veff/Vd</var>, (average)</span>
+
           <Result
             val={scenario.solarHotWater.volume_ratio}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Solar storage volume factor, <var>f2 = 1 + 0.2 × ln(Volume Ratio)</var>
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Solar storage volume factor, <var>f2 = 1 + 0.2 × ln(Volume Ratio)</var></span>
+
           <Result
             val={scenario.solarHotWater.f2}
           />
-        </div>
-      </div>
+      </FormRow>
 
-      <div className="row-fluid">
-        <div className="span6">
-          Annual solar input, <var>Qs</var>
-        </div>
-        <div className="span6">
+      <FormRow>
+          <span>Annual solar input, <var>Qs</var></span>
+
           <Result
             val={scenario.solarHotWater.Qs}
             units='kWh'
           />
-        </div>
-      </div>
+      </FormRow>
 
     </section>
   )
