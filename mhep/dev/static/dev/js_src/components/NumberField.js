@@ -11,7 +11,7 @@ export default function NumberField({ id, units, value, setValue, className = ''
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
-        <>
+        <div>
             <input
                 type="text"
                 className={className}
@@ -25,6 +25,6 @@ export default function NumberField({ id, units, value, setValue, className = ''
                 value={current || undefined}
             />{' '}
             {units}
-        </>
+        </div>
     );
 }
