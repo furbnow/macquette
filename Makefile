@@ -8,7 +8,10 @@ help:
 
 # ----------------------------------------------------------------------------
 
-js:
+dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for changes)
+	npx concurrently -n "django,js    " -c green "make server" "make js-watch" "make js"
+
+js:  ## Compile JS (one off, for development)
 	npx esbuild \
 		mhep/dev/static/dev/js_src/exports.js \
 		--outdir=mhep/dev/static/dev/js_generated/ \
@@ -16,7 +19,7 @@ js:
 		--define:process.env.NODE_ENV=\"dev\" \
 		--sourcemap --bundle
 
-js-prod:
+js-prod:  ## Compile JS (one off, for production)
 	npx esbuild \
 		mhep/dev/static/dev/js_src/exports.js \
 		--outdir=mhep/dev/static/dev/js_generated/ \
@@ -24,11 +27,11 @@ js-prod:
 		--define:process.env.NODE_ENV=\"production\" \
 		--sourcemap --bundle
 
+js-watch:  ## Compile JS (watching for changes, for development)
+	npx chokidar "mhep/dev/static/dev/js_src/**/*" -c "make js"
+
 load-placeholder-library:
 	python manage.py loaddata mhep/dev/fixtures/standard_library.json
-
-js-watch:
-	npx chokidar "mhep/dev/static/dev/js_src/**/*" -c "make js"
 
 server: docker-up ## Bring docker up and run the local server
 	python manage.py runserver
