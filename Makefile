@@ -30,6 +30,9 @@ js-prod:  ## Compile JS (one off, for production)
 js-watch:  ## Compile JS (watching for changes, for development)
 	npx chokidar "mhep/dev/static/dev/js_src/**/*" -c "make js"
 
+load-placeholder-library:
+	python manage.py loaddata mhep/dev/fixtures/standard_library.json
+
 server: docker-up ## Bring docker up and run the local server
 	python manage.py runserver
 
