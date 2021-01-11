@@ -285,7 +285,7 @@
     // Calculate scenarios
     //******************************
     for (let scenarioId of get_scenario_ids(project)) {
-        project[scenarioId] = calc.run(project[scenarioId]);
+        project[scenarioId] = calc.run(project[scenarioId], datasets);
     }
 
     //**********************************************
@@ -531,7 +531,7 @@
             }
         }
 
-        project[scenario] = calc.run(project[scenario]);
+        project[scenario] = calc.run(project[scenario], datasets);
         data = project[scenario];
         if (undo_redo === false) {
             historical.splice(0, historical_index); // reset the historical removing all the elements that were still there because of undoing

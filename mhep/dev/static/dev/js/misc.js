@@ -831,6 +831,22 @@ function lines(obj, prefix = '.') {
     });
 }
 
+function nearlyEqual(left, right) {
+    if (left === right) {
+        return true;
+    } else if (typeof left === 'number' && typeof right === 'number') {
+        if (isNaN(left) && isNaN(right)) {
+            // NaNs are otherwise not equal
+            return true;
+        } else {
+            // Tolerate some floating point discrepancy
+            return Math.abs(left - right) <= 0.000000000001;
+        }
+    } else {
+        return false;
+    }
+}
+
 function diff(left, right) {
     const lleft = lines(left);
     const lright = lines(right);
@@ -841,15 +857,26 @@ function diff(left, right) {
     for (let e of allKeys) {
         const lval = mleft.get(e);
         const rval = mright.get(e);
-        const bothNaN = typeof lval == 'number' && typeof rval == 'number' && isNaN(lval) && isNaN(rval);
 
-        if (lval !== rval && !bothNaN) {
-            if (lval !== undefined) {
-                console.log(`- ${e} = ${lval}`);
-            }
-            if (rval !== undefined) {
-                console.log(`+ ${e} = ${rval}`);
+        if (!nearlyEqual(lval, rval)) {
+            if (lval !== undefined && rval !== undefined) {
+                console.log(`! ${e} = ${lval} -> ${rval}`);
+            } else {
+                if (lval !== undefined) {
+                    console.log(`- ${e} = ${lval}`);
+                }
+                if (rval !== undefined) {
+                    console.log(`+ ${e} = ${rval}`);
+                }
             }
         }
     }
+}
+
+if (typeof module !== 'undefined') {
+    module.exports = {
+        diff,
+        extract_assessment_inputs,
+        get_scenario_ids
+    };
 }
