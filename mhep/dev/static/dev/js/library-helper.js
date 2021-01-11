@@ -586,16 +586,14 @@ libraryHelper.prototype.onEditLibraryItem = function (origin) {
 };
 libraryHelper.prototype.onEditLibraryItemOk = function (library_id) {
     $('#edit-item-message').html('');
-    //if ($('#library-select').val() != undefined)
-    //library_id = $('#library-select').val();
+
     var selected_library = this.get_library_by_id(library_id);
     var item = {};
     // Call to specific function for the type
     var function_name = this.type + '_get_item_to_save';
     item = this[function_name]();
     for (tag in item) {
-        var item_string = JSON.stringify(item[tag]).replace('+', '/plus'); // For a reason i have not been able to find why the character + becomes a carrier return when it is accesed in $_POST in the controller, because of this we escape + with \plus
-        item_string = item_string.replace(/&/g, 'and');
+        var item_string = JSON.stringify(item[tag]);
         //item[tag].number_of_intermittentfans="\\+2";
         $.ajax({type: 'PUT',
             url: urlHelper.api.libraryItem(selected_library.id, tag),
@@ -914,29 +912,27 @@ libraryHelper.prototype.onSaveLibraryEditMode = function (selector, library_id) 
         data[tag] = {tags: [$(this).attr('tags')]};
         $(this).children('td').each(function () {
             var key = $(this).attr('index');
-            if (key != undefined) {
-                if ($(this).children('input')[0] != undefined) {
-                    if ($(this).children('input')[0].type == 'text' || $(this).children('input')[0].type == 'number') {
-                        data[tag][key] = $(this).children('input')[0].value;
-                    } else if ($(this).children('input')[0].type == 'checkbox') {
-                        if ($(this).children('input').is(':checked')) {
-                            data[tag][key] = true;
-                        } else {
-                            data[tag][key] = false;
-                        }
-                    } else {
-                        console.error('Type of input not recognized: ' + $(this).children('input')[0].type);
-                    }
-                } else if ($(this).children('select')[0] != undefined) {
-                    data[tag][key] = $(this).children('select')[0].value;
-                } else if ($(this).children('textarea')[0] != undefined) {
-                    data[tag][key] = $(this).children('textarea')[0].value;
+            if (key === undefined) {
+                return;
+            }
+
+            if ($(this).children('input')[0] != undefined) {
+                let input = $(this).children('input')[0];
+                if (input.type === 'text') {
+                    data[tag][key] = input.value;
+                } else if (input.type === 'number') {
+                    data[tag][key] = parseFloat(input.value);
+                } else if (input.type === 'checkbox') {
+                    data[tag][key] = input.checked;
                 } else {
-                    console.error('Type of input not recognized: ');
+                    console.error('Type of input not recognized: ' + input.type);
                 }
-                /*if(element.type)
-                 data[tag][key] = $(this).find('input')[0].value;
-                 */
+            } else if ($(this).children('select')[0] != undefined) {
+                data[tag][key] = $(this).children('select')[0].value;
+            } else if ($(this).children('textarea')[0] != undefined) {
+                data[tag][key] = $(this).children('textarea')[0].value;
+            } else {
+                console.error('Type of input not recognized: ');
             }
         });
     });
@@ -1334,7 +1330,7 @@ libraryHelper.prototype.elements_library_to_html_edit_mode = function (origin, l
                         out += '<td index="gL"><input class="w50" type="number" min="0" step="0.01" value="' + item.gL + '" /></td>';
                         out += '<td index="ff"><input class="w50" type="number" min="0" step="0.01" value="' + item.ff + '" /></td>';
                     }
-                    out += '<td index="description" title="' + item.description + '"><textarea rows="8" class="w350">' + item.description + '"</textarea></td>';
+                    out += '<td index="description" title="' + item.description + '"><textarea rows="8" class="w350">' + (item.description || '') + '</textarea></td>';
                     out += '<td><i class="icon-trash if-write delete-library-item" tag="' + z + '" library="' + library_id + '" style="cursor:pointer;margin-left:10px;margin-right:20px"></i></td>';
                     out += '</tr>';
                 }
