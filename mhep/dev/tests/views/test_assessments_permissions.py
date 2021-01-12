@@ -56,6 +56,17 @@ class AssessmentPermissionTestsMixin:
         response = self._call_endpoint(assessment)
         self._assert_error(response, status.HTTP_404_NOT_FOUND)
 
+    def test_user_who_is_not_admin_can_access_if_assessment_shared(self):
+        """Users should be able to access assessments that are shared with them."""
+
+        unrelated_user = UserFactory.create()
+        assessment = AssessmentFactory.create(shared_with=[unrelated_user])
+
+        self.client.force_authenticate(unrelated_user)
+
+        response = self._call_endpoint(assessment)
+        self._assert_success(response)
+
 
 class TestGetAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
     def _call_endpoint(self, assessment):

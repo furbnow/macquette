@@ -141,10 +141,11 @@ def get_assessments_for_user(user: User):
     """Return a list of all assessments a user can access."""
 
     my_assessments = Q(owner=user)
+    assessments_shared_with_me = Q(shared_with=user)
     in_organisations_i_administrate = Q(
         organisation__in=getattr(user, f"{VERSION}_organisations_where_admin").all()
     )
 
     return models.Assessment.objects.filter(
-        my_assessments | in_organisations_i_administrate
+        my_assessments | in_organisations_i_administrate | assessments_shared_with_me
     )

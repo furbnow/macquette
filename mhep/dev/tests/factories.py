@@ -30,6 +30,12 @@ class AssessmentFactory(factory.DjangoModelFactory):
     data = factory.Faker("dict")
     owner = factory.SubFactory(UserFactory)
 
+    @factory.post_generation
+    def shared_with(self, create, extracted, **kwargs):
+        if extracted:
+            for user in extracted:
+                self.shared_with.add(user)
+
     class Meta:
         model = Assessment
 
