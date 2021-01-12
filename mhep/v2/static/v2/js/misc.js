@@ -180,7 +180,7 @@ function UpdateUI(data) {
     let elems = document.querySelectorAll('[key]');
     for (let elem of elems) {
         let key = elem.getAttribute('key');
-        if (keys[key]) {
+        if (keys[key] !== undefined) {
             let value = keys[key];
             let target = $(elem);
             let dp = 1 * target.attr('dp');
@@ -221,6 +221,8 @@ function UpdateUI(data) {
                 target.html(value);
             } else if (target.is('div')) {
                 target.html(value);
+            } else {
+                console.error('Unhandled type for keys');
             }
         }
     }
