@@ -13,8 +13,8 @@ from rest_framework.response import Response
 from .. import VERSION
 from ..models import Assessment
 from ..models import Image
+from ..permissions import IsAdminOfConnectedOrganissation
 from ..permissions import IsAssessmentOwner
-from ..permissions import IsMemberOfConnectedOrganisation
 from ..serializers import AssessmentFullSerializer
 from ..serializers import AssessmentMetadataSerializer
 from ..serializers import FeaturedImageSerializer
@@ -27,9 +27,11 @@ class ListCreateAssessments(generics.ListCreateAPIView):
     serializer_class = AssessmentMetadataSerializer
 
     def get_queryset(self, *args, **kwargs):
-        user_orgs = getattr(self.request.user, f"{VERSION}_organisations").all()
+        user_admin_orgs = getattr(
+            self.request.user, f"{VERSION}_organisations_where_admin"
+        ).all()
         return Assessment.objects.all().filter(
-            Q(owner=self.request.user) | Q(organisation__in=user_orgs)
+            Q(owner=self.request.user) | Q(organisation__in=user_admin_orgs)
         )
 
 
@@ -39,7 +41,7 @@ class RetrieveUpdateDestroyAssessment(
     serializer_class = AssessmentFullSerializer
     permission_classes = [
         IsAuthenticated,
-        IsAssessmentOwner | IsMemberOfConnectedOrganisation,
+        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
     ]
 
     def update(self, request, *args, **kwargs):
@@ -61,7 +63,7 @@ class RetrieveUpdateDestroyAssessment(
 class DuplicateAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):
     permission_classes = [
         IsAuthenticated,
-        IsAssessmentOwner | IsMemberOfConnectedOrganisation,
+        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
     ]
 
     def post(self, request, pk):
@@ -79,7 +81,7 @@ class DuplicateAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):
 class SetFeaturedImage(AssessmentQuerySetMixin, generics.GenericAPIView):
     permission_classes = [
         IsAuthenticated,
-        IsAssessmentOwner | IsMemberOfConnectedOrganisation,
+        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
     ]
 
     def post(self, request, pk):
@@ -112,7 +114,7 @@ class UploadAssessmentImage(AssessmentQuerySetMixin, generics.GenericAPIView):
     parser_class = [parsers.FileUploadParser]
     permission_classes = [
         IsAuthenticated,
-        IsAssessmentOwner | IsMemberOfConnectedOrganisation,
+        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
     ]
 
     @staticmethod

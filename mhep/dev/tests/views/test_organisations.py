@@ -92,6 +92,37 @@ class TestListOrganisations(APITestCase):
 
         assert "never" == response.data[0]["members"][0]["last_login"]
 
+    def test_number_of_assessments_only_includes_own_assessments_if_not_admin(self):
+        me = UserFactory.create(last_login=None)
+        my_org = OrganisationFactory.create()
+        my_org.members.add(me)
+
+        AssessmentFactory.create(owner=me, organisation=my_org)
+        AssessmentFactory.create(owner=me, organisation=my_org)
+        AssessmentFactory.create(organisation=my_org)
+
+        self.client.force_authenticate(me)
+        response = self.client.get(f"/{VERSION}/api/organisations/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert response.data[0]["assessments"] == 2
+
+    def test_number_of_assessments_includes_all_assessments_if_admin(self):
+        me = UserFactory.create(last_login=None)
+        my_org = OrganisationFactory.create()
+        my_org.members.add(me)
+        my_org.admins.add(me)
+
+        AssessmentFactory.create(owner=me, organisation=my_org)
+        AssessmentFactory.create(owner=me, organisation=my_org)
+        AssessmentFactory.create(organisation=my_org)
+
+        self.client.force_authenticate(me)
+        response = self.client.get(f"/{VERSION}/api/organisations/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert response.data[0]["assessments"] == 3
+
 
 class TestListOrganisationsPermissions(APITestCase):
     @classmethod

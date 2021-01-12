@@ -51,11 +51,16 @@ class ListCreateOrganisationAssessments(
 
     def get_queryset(self, **kwargs):
         try:
-            return Assessment.objects.all().filter(
-                organisation=Organisation.objects.get(id=self.kwargs["pk"])
-            )
+            organisation = Organisation.objects.get(id=self.kwargs["pk"])
         except Organisation.DoesNotExist:
             raise exceptions.NotFound("Organisation not found")
+
+        all_for_org = Assessment.objects.filter(organisation=organisation)
+
+        if self.request.user in organisation.admins.all():
+            return all_for_org
+        else:
+            return all_for_org.filter(owner=self.request.user)
 
 
 class CreateOrganisationLibraries(

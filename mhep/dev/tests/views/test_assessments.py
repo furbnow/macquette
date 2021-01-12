@@ -89,7 +89,25 @@ class TestListAssessments(APITestCase):
         }
         assert expected_structure == response.data.pop()
 
-    def test_returns_assessments_in_connected_organisation(self):
+    def test_returns_all_assessments_in_connected_organisation_if_admin(self):
+        user = UserFactory.create()
+        organisation = OrganisationFactory.create()
+        organisation.members.add(user)
+        organisation.admins.add(user)
+
+        self.client.force_authenticate(user)
+
+        AssessmentFactory.create(owner=user)
+        AssessmentFactory.create(owner=user)
+
+        AssessmentFactory.create(organisation=organisation)
+
+        response = self.client.get(f"/{VERSION}/api/assessments/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert 3 == len(response.data)
+
+    def test_returns_own_assessments_in_connected_organisation_if_not_admin(self):
         user = UserFactory.create()
         organisation = OrganisationFactory.create()
         organisation.members.add(user)
@@ -104,9 +122,9 @@ class TestListAssessments(APITestCase):
         response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 3 == len(response.data)
+        assert 2 == len(response.data)
 
-    def test_only_returns_assessments_for_logged_in_user(self):
+    def test_only_returns_non_organisation_assessments_for_logged_in_user(self):
         me = UserFactory.create()
         someone_else = UserFactory.create()
         self.client.force_authenticate(me)

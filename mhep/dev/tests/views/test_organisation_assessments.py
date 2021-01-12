@@ -18,25 +18,40 @@ class TestListAssessmentsForOrganisation(APITestCase):
         cls.organisation.members.add(cls.org_member)
         super().setUpClass()
 
-    def test_returns_all_assessments_connected_to_organisation(self):
-        AssessmentFactory.create(organisation=self.organisation)
-        AssessmentFactory.create(organisation=self.organisation)
+    def test_returns_all_assessments_connected_to_organisation_if_admin(self):
+        self.organisation.admins.add(self.org_member)
+
+        a1 = AssessmentFactory.create(organisation=self.organisation)
+        a2 = AssessmentFactory.create(organisation=self.organisation)
 
         AssessmentFactory.create()
         AssessmentFactory.create(organisation=OrganisationFactory.create())
 
-        self.call_and_assert_number_of_returns_assessments(2)
+        assert self.fetch_organisation_assessment_ids() == [str(a1.id), str(a2.id)]
+
+    def test_returns_only_own_assessments_connected_to_organisation(self):
+        AssessmentFactory.create(organisation=self.organisation)
+        a = AssessmentFactory.create(
+            organisation=self.organisation, owner=self.org_member
+        )
+
+        AssessmentFactory.create(owner=self.org_member)
+        AssessmentFactory.create(organisation=OrganisationFactory.create())
+
+        assert self.fetch_organisation_assessment_ids() == [str(a.id)]
 
     def test_returns_only_assessments_connected_to_the_organisation(self):
         second_org = OrganisationFactory.create()
         second_org.members.add(self.org_member)
+        second_org.admins.add(self.org_member)
+        self.organisation.admins.add(self.org_member)
 
-        AssessmentFactory.create(organisation=self.organisation)
-        AssessmentFactory.create(organisation=self.organisation)
+        a1 = AssessmentFactory.create(organisation=self.organisation)
+        a2 = AssessmentFactory.create(organisation=self.organisation)
 
         AssessmentFactory.create(organisation=second_org)
 
-        self.call_and_assert_number_of_returns_assessments(2)
+        assert self.fetch_organisation_assessment_ids() == [str(a1.id), str(a2.id)]
 
     def test_returns_structure_as_expected(self):
         with freeze_time("2019-06-01T16:35:34Z"):
@@ -81,12 +96,12 @@ class TestListAssessmentsForOrganisation(APITestCase):
     def test_doesnt_return_assessments_that_arent_connected_to_organisation(self):
         AssessmentFactory.create()
 
-        self.call_and_assert_number_of_returns_assessments(0)
+        assert len(self.fetch_organisation_assessment_ids()) == 0
 
     def test_doesnt_return_own_assessments_that_arent_connected_to_organisation(self):
         AssessmentFactory.create(owner=self.org_member)
 
-        self.call_and_assert_number_of_returns_assessments(0)
+        assert len(self.fetch_organisation_assessment_ids()) == 0
 
     def test_returns_forbidden_if_not_logged_in(self):
         AssessmentFactory.create(organisation=self.organisation)
@@ -112,14 +127,14 @@ class TestListAssessmentsForOrganisation(APITestCase):
             "detail": "You are not a member of the Organisation."
         } == response.json()
 
-    def call_and_assert_number_of_returns_assessments(self, expectedAssessmentCount):
+    def fetch_organisation_assessment_ids(self):
         self.client.force_authenticate(self.org_member)
         response = self.client.get(
             f"/{VERSION}/api/organisations/{self.organisation.pk}/assessments/"
         )
 
         assert response.status_code == status.HTTP_200_OK
-        assert expectedAssessmentCount == len(response.data)
+        return [assessment["id"] for assessment in response.data]
 
 
 class TestCreateAssessmentForOrganisation(CreateAssessmentTestsMixin, APITestCase):
