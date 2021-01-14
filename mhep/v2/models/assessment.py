@@ -1,8 +1,11 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from ..validators import validate_dict
+
+User = get_user_model()
 
 STATUS_CHOICES = [
     ("Complete", "Complete"),
@@ -19,7 +22,6 @@ class Assessment(models.Model):
         on_delete=models.PROTECT,
         related_name="%(app_label)s_assessments",
     )
-
     organisation = models.ForeignKey(
         "Organisation",
         null=True,
@@ -27,6 +29,9 @@ class Assessment(models.Model):
         default=None,
         on_delete=models.SET_NULL,
         related_name="assessments",
+    )
+    shared_with = models.ManyToManyField(
+        User, blank=True, related_name="%(app_label)s_shared_assessments"
     )
 
     name = models.TextField()

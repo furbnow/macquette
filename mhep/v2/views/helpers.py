@@ -5,6 +5,7 @@ from os.path import dirname
 from os.path import join
 
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.templatetags.static import static
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework.exceptions import PermissionDenied
@@ -130,8 +131,12 @@ def check_library_share_permissions(library, original_request):
 def get_assessments_for_user(user: User):
     """Return a list of all assessments a user can access."""
 
-    my_assessments = models.Assessment.objects.filter(owner=user)
-    assessments_in_my_organisations = models.Assessment.objects.filter(
-        organisation__in=getattr(user, f"{VERSION}_organisations").all()
+    my_assessments = Q(owner=user)
+    assessments_shared_with_me = Q(shared_with=user)
+    in_organisations_i_administrate = Q(
+        organisation__in=getattr(user, f"{VERSION}_organisations_where_admin").all()
     )
-    return my_assessments | assessments_in_my_organisations
+
+    return models.Assessment.objects.filter(
+        my_assessments | in_organisations_i_administrate | assessments_shared_with_me
+    )

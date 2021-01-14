@@ -138,6 +138,18 @@ class TestListAssessments(APITestCase):
 
         assert 2 == len(response.data)
 
+    def test_returns_assessments_shared_with(self):
+        user = UserFactory.create()
+        unrelated_user = UserFactory.create()
+
+        self.client.force_authenticate(user)
+
+        AssessmentFactory.create(owner=user, shared_with=[unrelated_user])
+        response = self.client.get(f"/{VERSION}/api/assessments/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1
+
     def test_returns_forbidden_if_not_logged_in(self):
         response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_403_FORBIDDEN
