@@ -51,7 +51,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
 
         AssessmentFactory.create(organisation=second_org)
 
-        assert self.fetch_organisation_assessment_ids() == [str(a1.id), str(a2.id)]
+        assert {*self.fetch_organisation_assessment_ids()} == {str(a1.id), str(a2.id)}
 
     def test_returns_structure_as_expected(self):
         with freeze_time("2019-06-01T16:35:34Z"):
