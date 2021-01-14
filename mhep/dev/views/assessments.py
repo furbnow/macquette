@@ -3,18 +3,13 @@ import os
 
 import PIL
 from django.core.files.base import ContentFile
-from django.db.models import Q
 from rest_framework import generics
 from rest_framework import parsers
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .. import VERSION
-from ..models import Assessment
 from ..models import Image
-from ..permissions import IsAdminOfConnectedOrganissation
-from ..permissions import IsAssessmentOwner
 from ..serializers import AssessmentFullSerializer
 from ..serializers import AssessmentMetadataSerializer
 from ..serializers import FeaturedImageSerializer
@@ -22,27 +17,16 @@ from ..serializers import ImageSerializer
 from .mixins import AssessmentQuerySetMixin
 
 
-class ListCreateAssessments(generics.ListCreateAPIView):
+class ListCreateAssessments(AssessmentQuerySetMixin, generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = AssessmentMetadataSerializer
-
-    def get_queryset(self, *args, **kwargs):
-        user_admin_orgs = getattr(
-            self.request.user, f"{VERSION}_organisations_where_admin"
-        ).all()
-        return Assessment.objects.all().filter(
-            Q(owner=self.request.user) | Q(organisation__in=user_admin_orgs)
-        )
 
 
 class RetrieveUpdateDestroyAssessment(
     AssessmentQuerySetMixin, generics.RetrieveUpdateDestroyAPIView
 ):
     serializer_class = AssessmentFullSerializer
-    permission_classes = [
-        IsAuthenticated,
-        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
-    ]
+    permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -61,10 +45,7 @@ class RetrieveUpdateDestroyAssessment(
 
 
 class DuplicateAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):
-    permission_classes = [
-        IsAuthenticated,
-        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
-    ]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         assessment = self.get_object()
@@ -79,10 +60,7 @@ class DuplicateAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):
 
 
 class SetFeaturedImage(AssessmentQuerySetMixin, generics.GenericAPIView):
-    permission_classes = [
-        IsAuthenticated,
-        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
-    ]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         assessment = self.get_object()
@@ -112,10 +90,7 @@ class SetFeaturedImage(AssessmentQuerySetMixin, generics.GenericAPIView):
 
 class UploadAssessmentImage(AssessmentQuerySetMixin, generics.GenericAPIView):
     parser_class = [parsers.FileUploadParser]
-    permission_classes = [
-        IsAuthenticated,
-        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
-    ]
+    permission_classes = [IsAuthenticated]
 
     @staticmethod
     def _make_thumbnail(record: Image):

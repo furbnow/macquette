@@ -59,9 +59,7 @@ class TestAssessmentHTMLView(TestCase):
         response = self.client.get(my_assessment_url)
         assert status.HTTP_200_OK == response.status_code
 
-    def test_returns_200_for_organisation_member_viewing_assessment_in_organisation(
-        self,
-    ):
+    def test_returns_not_found_if_not_organisation_admin(self):
         organisation = OrganisationFactory.create()
         organisation_assessment = AssessmentFactory.create(organisation=organisation)
         organisation.members.add(self.me)
@@ -69,7 +67,7 @@ class TestAssessmentHTMLView(TestCase):
         self.client.login(username=self.me.username, password="foo")
         not_my_assessment_url = f"/{VERSION}/assessments/{organisation_assessment.pk}/"
         response = self.client.get(not_my_assessment_url)
-        assert status.HTTP_200_OK == response.status_code
+        assert status.HTTP_404_NOT_FOUND == response.status_code
 
     def test_returns_not_found_if_not_owner(self):
         someone_else = UserFactory.create()
