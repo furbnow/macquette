@@ -433,6 +433,7 @@ label input[type=radio] {
 
 .form-row > :first-child {
     width: 38ch;
+    padding-right: 1ch;
 }
 
 .form-row select, .form-row input, .form-row label {
