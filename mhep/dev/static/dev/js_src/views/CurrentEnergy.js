@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import Tooltip from '../components/Tooltip'
 import FormRow from '../components/FormRow'
 import Result from '../components/Result'
 import TargetBar from '../components/TargetBar'
@@ -7,6 +8,7 @@ import NumberField from '../components/NumberField'
 import CheckboxField from '../components/CheckboxField'
 
 import targets from '../data/targets'
+
 
 function CurrentEnergy({ scenario }) {
     const allFuels = scenario.currentEnergy.getAllFuelsList()
@@ -42,7 +44,14 @@ function CurrentEnergy({ scenario }) {
                 <div className="d-flex align-items-center justify-content-between pb-30">
                     <div>
                         <FormRow>
-                            <span>Primary energy consumption <i className="icon-question-sign" title="Takes into account energy from all the different sources (gas, electricity grid, etc. including the fraction used onsite from renewable generation) minus the total savings due to generation" />
+                            <span>
+                                Primary energy consumption
+                                <Tooltip>
+                                    Takes into account energy from all the different sources
+                                    (gas, electricity grid, etc. including the fraction used
+                                    onsite from renewable generation) minus the total
+                                    savings due to generation
+                                </Tooltip>
                             </span>
                             <Result
                                 val={scenario.currentEnergy.primaryenergy_annual_kwh}
