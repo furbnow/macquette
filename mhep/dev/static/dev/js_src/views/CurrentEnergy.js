@@ -52,12 +52,28 @@ function CurrentEnergy({ scenario }) {
                         />
                     </FormRow>
                     <FormRow>
+                        <span>Primary energy consumption per m² floor area:</span>
+                        <Result
+                            val={scenario.currentEnergy.primaryenergy_annual_kwhm2}
+                            dp={0}
+                            units={'kWh/m²'}
+                        />
+                    </FormRow>
+                    <FormRow>
                         <span>CO<sub>2</sub> emissions <i className="icon-question-sign" title="Takes into account CO2 from all the different sources (gas, electricity grid, etc. including the fraction used onsite from renewable generation) minus the total savings due to generation" />
                         </span>
                         <Result
                             val={scenario.currentEnergy.total_co2}
                             dp={0}
                             units={'kg'}
+                        />
+                    </FormRow>
+                    <FormRow>
+                        <span>CO<sub>2</sub> emissions per m² floor area:</span>
+                        <Result
+                            val={scenario.currentEnergy.total_co2m2}
+                            dp={0}
+                            units={<span>kgCO<sub>2</sub>/m²</span>}
                         />
                     </FormRow>
                     <FormRow>
@@ -76,22 +92,6 @@ function CurrentEnergy({ scenario }) {
                             dp={0}
                             units={'£'}
                             unitsBefore
-                        />
-                    </FormRow>
-                    <FormRow>
-                        <span>Primary energy consumption per m² floor area:</span>
-                        <Result
-                            val={scenario.currentEnergy.primaryenergy_annual_kwhm2}
-                            dp={0}
-                            units={'kWh/m²'}
-                        />
-                    </FormRow>
-                    <FormRow>
-                        <span>Total CO<sub>2</sub> emissions per m² floor area:</span>
-                        <Result
-                            val={scenario.currentEnergy.total_co2m2}
-                            dp={0}
-                            units={<span>kgCO<sub>2</sub>/m²</span>}
                         />
                     </FormRow>
                 </div>
