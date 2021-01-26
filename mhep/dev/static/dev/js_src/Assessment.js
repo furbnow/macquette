@@ -95,7 +95,7 @@ class CurrentEnergy {
 
     getAllFuelsList() {
         return Object.entries(this.scenarioData.fuels).map(
-            ([name, data]) => new Fuels(name, data)
+            ([name, data]) => Object.assign({ name }, data)
         );
     }
 
@@ -125,21 +125,6 @@ class CurrentEnergy {
     }
 }
 
-class Fuels {
-    constructor(name, data, update) {
-        properties(this, data, {
-            SAP_code: { type: Number, default: null },
-            category: { type: String, default: '' },
-            fuelcost: { type: Number, default: null },
-            co2factor: { type: Number, default: null },
-            standingcharge: { type: Number, default: null },
-            primaryenergyfactor: { type: Number, default: null },
-        });
-
-        this.name = name;
-        this.update = update;
-    }
-}
 class FuelUse {
     constructor(name, data, update) {
         properties(this, data, {
