@@ -69,24 +69,23 @@ class CurrentEnergy {
         }
 
         properties(this, scenarioData.currentenergy, {
-            primaryenergy_annual_kwh: { type: Number, default: null },
-            total_co2: { type: Number, default: null },
-            total_cost: { type: Number, default: null },
-            annual_net_cost: { type: Number, default: null },
-            primaryenergy_annual_kwhm2: { type: Number, default: null },
-            total_co2m2: { type: Number, default: null },
-            energyuseperperson: { type: Number, default: null },
-            // onsite_generation: { type: Number, default: null },
+            primaryenergy_annual_kwh: { type: Number },
+            total_co2: { type: Number },
+            total_cost: { type: Number },
+            annual_net_cost: { type: Number },
+            primaryenergy_annual_kwhm2: { type: Number },
+            total_co2m2: { type: Number },
+            energyuseperperson: { type: Number },
             onsite_generation: { type: Boolean, default: false },
         });
 
         properties(this, scenarioData.currentenergy.generation, {
-            annual_generation: { type: Number, default: null },
-            annual_CO2: { type: Number, default: null },
-            primaryenergy: { type: Number, default: null },
-            fraction_used_onsite: { type: Number, default: null },
-            annual_savings: { type: Number, default: null },
-            annual_FIT_income: { type: Number, default: null },
+            annual_generation: { type: Number },
+            annual_CO2: { type: Number },
+            primaryenergy: { type: Number },
+            fraction_used_onsite: { type: Number },
+            annual_savings: { type: Number },
+            annual_FIT_income: { type: Number },
         });
 
         this.scenarioData = scenarioData;
@@ -128,10 +127,10 @@ class CurrentEnergy {
 class FuelUse {
     constructor(name, data, update) {
         properties(this, data, {
-            annual_co2: { type: Number, default: null },
-            annual_use: { type: Number, default: null },
-            annualcost: { type: Number, default: null },
-            primaryenergy: { type: Number, default: null },
+            annual_co2: { type: Number },
+            annual_use: { type: Number },
+            annualcost: { type: Number },
+            primaryenergy: { type: Number },
         });
 
         this.name = name;
@@ -147,8 +146,8 @@ class WaterHeating {
 
         properties(this, scenarioData.water_heating, {
             solar_water_heating: { type: Boolean, default: false },
-            annual_energy_content: { type: Number, default: null },
-            Vd_average: { type: Number, default: null },
+            annual_energy_content: { type: Number },
+            Vd_average: { type: Number },
         });
 
         this.scenarioData = scenarioData;
@@ -163,27 +162,27 @@ class SolarHotWater {
         }
 
         properties(this, scenarioData.SHW, {
-            pump: { type: String, default: '' },
-            A: { type: Number, default: null },
-            n0: { type: Number, default: null },
-            a1: { type: Number, default: null },
-            a2: { type: Number, default: null },
-            a: { type: Number, default: null },
-            Vs: { type: Number, default: null },
-            collector_performance_ratio: { type: Number, default: null },
-            orientation: { type: String, default: '' },
-            inclination: { type: Number, default: null },
-            annual_solar: { type: Number, default: null },
-            overshading: { type: String, default: '' },
-            solar_energy_available: { type: Number, default: null },
-            solar_load_ratio: { type: Number, default: null },
-            utilisation_factor: { type: Number, default: null },
-            collector_performance_factor: { type: Number, default: null },
-            combined_cylinder_volume: { type: Number, default: null },
-            Veff: { type: Number, default: null },
-            volume_ratio: { type: Number, default: null },
-            f2: { type: Number, default: null },
-            Qs: { type: Number, default: null },
+            pump: { type: String },
+            A: { type: Number },
+            n0: { type: Number },
+            a1: { type: Number },
+            a2: { type: Number },
+            a: { type: Number },
+            Vs: { type: Number },
+            collector_performance_ratio: { type: Number },
+            orientation: { type: String },
+            inclination: { type: Number },
+            annual_solar: { type: Number },
+            overshading: { type: String },
+            solar_energy_available: { type: Number },
+            solar_load_ratio: { type: Number },
+            utilisation_factor: { type: Number },
+            collector_performance_factor: { type: Number },
+            combined_cylinder_volume: { type: Number },
+            Veff: { type: Number },
+            volume_ratio: { type: Number },
+            f2: { type: Number },
+            Qs: { type: Number },
         });
 
         this.scenarioData = scenarioData;
@@ -198,10 +197,10 @@ class Commentary {
         }
 
         properties(this, assessment.data._commentary, {
-            brief: { type: String, default: '' },
-            context: { type: String, default: '' },
-            decisions: { type: String, default: '' },
-            scenarios: { type: Object, default: {} },
+            brief: { type: String },
+            context: { type: String },
+            decisions: { type: String },
+            scenarios: { type: Object },
         });
 
         this.assessment = assessment;
@@ -240,7 +239,7 @@ class Commentary {
 //
 // This is so we can write, e.g.
 //   properties(commentary, project.data._commentary, {
-//      "brief": { type: String, default: '' }
+//      "brief": { type: String' }
 //   })
 //   commentary.brief = "The best retrofit available"
 //
@@ -250,9 +249,20 @@ class Commentary {
 // * Update project.data._commentary.brief with that string
 // * Call commentary.update() to save the change to the server
 function properties(cls, root, props) {
+    const DEFAULTS_FOR_TYPE = [
+        { type: String, default: () => '' },
+        { type: Number, default: () => null },
+        { type: Array, default: () => [] },
+        { type: Object, default: () => ({}) },
+    ];
+
     for (let [key, data] of Object.entries(props)) {
         if (root[key] === undefined) {
-            root[key] = data.default;
+            let defaultForType = DEFAULTS_FOR_TYPE.find(row => row.type === data.type);
+            if (defaultForType) {
+                defaultForType = defaultForType.default();
+            }
+            root[key] = data.default || defaultForType;
         }
 
         Object.defineProperty(cls, key, {
@@ -273,7 +283,7 @@ function properties(cls, root, props) {
                     throw new TypeError(
                         `${cls.constructor.name}.${key} must be an array`
                     );
-                } else if (data.type == Boolean && typeof val !== 'boolean') {
+                } else if (data.type === Boolean && typeof val !== 'boolean') {
                     throw new TypeError(
                         `${cls.constructor.name}.${key} must be a boolean`
                     );
