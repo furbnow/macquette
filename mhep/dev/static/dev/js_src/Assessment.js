@@ -58,6 +58,99 @@ class Scenario {
         this.data = assessment.data[scenarioId];
         this.solarHotWater = new SolarHotWater(this.data, update);
         this.waterHeating = new WaterHeating(this.data, update);
+        this.currentEnergy = new CurrentEnergy(this.data, update);
+    }
+}
+
+class CurrentEnergy {
+    constructor(scenarioData, update) {
+        if (!scenarioData.currentenergy) {
+            scenarioData.currentenergy = {};
+        }
+
+        properties(this, scenarioData.currentenergy, {
+            primaryenergy_annual_kwh: { type: Number, default: null },
+            total_co2: { type: Number, default: null },
+            total_cost: { type: Number, default: null },
+            annual_net_cost: { type: Number, default: null },
+            primaryenergy_annual_kwhm2: { type: Number, default: null },
+            total_co2m2: { type: Number, default: null },
+            energyuseperperson: { type: Number, default: null },
+            // onsite_generation: { type: Number, default: null },
+            onsite_generation: { type: Boolean, default: false },
+        });
+
+        properties(this, scenarioData.currentenergy.generation, {
+            annual_generation: { type: Number, default: null },
+            annual_CO2: { type: Number, default: null },
+            primaryenergy: { type: Number, default: null },
+            fraction_used_onsite: { type: Number, default: null },
+            annual_savings: { type: Number, default: null },
+            annual_FIT_income: { type: Number, default: null },
+        });
+
+        this.scenarioData = scenarioData;
+        this.update = update;
+    }
+
+    getAllFuelsList() {
+        return Object.entries(this.scenarioData.fuels).map(
+            ([name, data]) => new Fuels(name, data)
+        );
+    }
+
+    getFuelsInUseList() {
+        return Object.entries(this.scenarioData.currentenergy.use_by_fuel).map(
+            ([name, data]) => new FuelUse(name, data, this.update)
+        );
+    }
+
+    addFuelInUse(name) {
+        if (name === '') {
+            return
+        }
+
+        this.scenarioData.currentenergy.use_by_fuel[name] =
+            { annual_co2: 0, annual_use: 0, annualcost: 0, primaryenergy: 0 }
+        this.update()
+    }
+
+    deleteFuelInUse(name) {
+        if (!(name in this.scenarioData.currentenergy.use_by_fuel)) {
+            return
+        }
+
+        delete this.scenarioData.currentenergy.use_by_fuel[name]
+        this.update()
+    }
+}
+
+class Fuels {
+    constructor(name, data, update) {
+        properties(this, data, {
+            SAP_code: { type: Number, default: null },
+            category: { type: String, default: '' },
+            fuelcost: { type: Number, default: null },
+            co2factor: { type: Number, default: null },
+            standingcharge: { type: Number, default: null },
+            primaryenergyfactor: { type: Number, default: null },
+        });
+
+        this.name = name;
+        this.update = update;
+    }
+}
+class FuelUse {
+    constructor(name, data, update) {
+        properties(this, data, {
+            annual_co2: { type: Number, default: null },
+            annual_use: { type: Number, default: null },
+            annualcost: { type: Number, default: null },
+            primaryenergy: { type: Number, default: null },
+        });
+
+        this.name = name;
+        this.update = update;
     }
 }
 
@@ -184,13 +277,21 @@ function properties(cls, root, props) {
             },
             set: (val) => {
                 if (data.type === String && typeof val !== 'string') {
-                    throw new TypeError(`${cls.constructor.name}.${key} must be a string`);
+                    throw new TypeError(
+                        `${cls.constructor.name}.${key} must be a string`
+                    );
                 } else if (data.type === Number && typeof val !== 'number') {
-                    throw new TypeError(`${cls.constructor.name}.${key} must be a number`);
+                    throw new TypeError(
+                        `${cls.constructor.name}.${key} must be a number`
+                    );
                 } else if (data.type === Array && !(val instanceof Array)) {
-                    throw new TypeError(`${cls.constructor.name}.${key} must be an array`);
+                    throw new TypeError(
+                        `${cls.constructor.name}.${key} must be an array`
+                    );
                 } else if (data.type == Boolean && typeof val !== 'boolean') {
-                    throw new TypeError(`${cls.constructor.name}.${key} must be a boolean`);
+                    throw new TypeError(
+                        `${cls.constructor.name}.${key} must be a boolean`
+                    );
                 }
 
                 root[key] = val;
