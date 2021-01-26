@@ -257,39 +257,42 @@ function properties(cls, root, props) {
     ];
 
     for (let [key, data] of Object.entries(props)) {
-        if (root[key] === undefined) {
+        let accessField = key;
+        let destinationField = data.field || key;
+
+        if (root[destinationField] === undefined) {
             let defaultForType = DEFAULTS_FOR_TYPE.find(row => row.type === data.type);
             if (defaultForType) {
                 defaultForType = defaultForType.default();
             }
-            root[key] = data.default || defaultForType;
+            root[destinationField] = data.default || defaultForType;
         }
 
-        Object.defineProperty(cls, key, {
+        Object.defineProperty(cls, accessField, {
             enumerable: true,
             get: () => {
-                return root[key];
+                return root[destinationField];
             },
             set: (val) => {
                 if (data.type === String && typeof val !== 'string') {
                     throw new TypeError(
-                        `${cls.constructor.name}.${key} must be a string`
+                        `${cls.constructor.name}.${accessField} must be a string`
                     );
                 } else if (data.type === Number && typeof val !== 'number') {
                     throw new TypeError(
-                        `${cls.constructor.name}.${key} must be a number`
+                        `${cls.constructor.name}.${accessField} must be a number`
                     );
                 } else if (data.type === Array && !(val instanceof Array)) {
                     throw new TypeError(
-                        `${cls.constructor.name}.${key} must be an array`
+                        `${cls.constructor.name}.${accessField} must be an array`
                     );
                 } else if (data.type === Boolean && typeof val !== 'boolean') {
                     throw new TypeError(
-                        `${cls.constructor.name}.${key} must be a boolean`
+                        `${cls.constructor.name}.${accessField} must be a boolean`
                     );
                 }
 
-                root[key] = val;
+                root[destinationField] = val;
                 cls.update();
             },
         });
