@@ -80,12 +80,12 @@ class CurrentEnergy {
         });
 
         properties(this, scenarioData.currentenergy.generation, {
-            annual_generation: { type: Number },
-            annual_CO2: { type: Number },
-            primaryenergy: { type: Number },
-            fraction_used_onsite: { type: Number },
-            annual_savings: { type: Number },
-            annual_FIT_income: { type: Number },
+            generation_annual_kwh: { type: Number, field: 'annual_generation' },
+            generation_annual_CO2: { type: Number, field: 'annual_CO2' },
+            generation_primaryenergy: { type: Number, field: 'primaryenergy' },
+            generation_fraction_used_onsite: { type: Number, field: 'fraction_used_onsite' },
+            generation_annual_savings: { type: Number, field: 'annual_savings' },
+            generation_annual_FIT_income: { type: Number, field: 'annual_FIT_income' },
         });
 
         this.scenarioData = scenarioData;

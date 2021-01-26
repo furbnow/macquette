@@ -313,24 +313,26 @@ function CurrentEnergy({ scenario }) {
 
             {scenario.currentEnergy.onsite_generation &&
                 <table className="table">
-                    <tr style={{ backgroundColor: '#f0f0f0' }}>
-                        <th><label htmlFor={`field_annual_generation`}><b>Annual generation<br />kWh </b></label></th>
-                        <th>CO<sub>2</sub> factor<br />kgCO<sub>2</sub>/kWh</th>
-                        <th>Annual kgCO<sub>2</sub> saved <i className="icon-question-sign" title="Due to total generation: includes energy used on-site and exported" ></i></th>
-                        <th>Primary energy factor</th>
-                        <th>Primary energy saved <br />kWh <i className="icon-question-sign" title="Due to total generation: includes energy used on-site and exported" ></i></th>
-                        <th>Unit cost<br /> p/kWh</th>
-                        <th><label htmlFor={`field_fration_used_onsite`}><b>Fraction used on-site</b></label></th>
-                        <th>Annual savings <i className="icon-question-sign" title="Due to energy used on-site. This amount would be part of your bills if you did not have generation." ></i></th>
-                        <th><label htmlFor={`field_FIT_annual_income`}><b>FIT annual income £</b></label></th>
-                    </tr>
+                    <thead style={{ backgroundColor: '#f0f0f0' }}>
+                        <tr>
+                            <th><label htmlFor={`field_annual_generation`}><b>Annual generation<br />kWh </b></label></th>
+                            <th>CO<sub>2</sub> factor<br />kgCO<sub>2</sub>/kWh</th>
+                            <th>Annual kgCO<sub>2</sub> saved <i className="icon-question-sign" title="Due to total generation: includes energy used on-site and exported" ></i></th>
+                            <th>Primary energy factor</th>
+                            <th>Primary energy saved <br />kWh <i className="icon-question-sign" title="Due to total generation: includes energy used on-site and exported" ></i></th>
+                            <th>Unit cost<br /> p/kWh</th>
+                            <th><label htmlFor={`field_fration_used_onsite`}><b>Fraction used on-site</b></label></th>
+                            <th>Annual savings <i className="icon-question-sign" title="Due to energy used on-site. This amount would be part of your bills if you did not have generation." ></i></th>
+                            <th><label htmlFor={`field_FIT_annual_income`}><b>FIT annual income £</b></label></th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
                             <td>
                                 <NumberField
                                     id="annual_generation"
-                                    value={scenario.currentEnergy.annual_generation}
-                                    setValue={(val) => (scenario.currentEnergy.annual_generation = val)}
+                                    value={scenario.currentEnergy.generation_annual_kwh}
+                                    setValue={(val) => (scenario.currentEnergy.generation_annual_kwh = val)}
                                     className="input-mini"
                                 />
                             </td>
@@ -342,7 +344,7 @@ function CurrentEnergy({ scenario }) {
                                     unitsBefore
                                 />
                             </td>
-                            <td><Result val={scenario.currentEnergy.annual_CO2} /></td>
+                            <td><Result val={scenario.currentEnergy.generation_annual_CO2} /></td>
                             <td>
                                 <Result
                                     val={getFuel('generation').primaryenergyfactor}
@@ -350,22 +352,22 @@ function CurrentEnergy({ scenario }) {
                                     unitsBefore
                                 />
                             </td>
-                            <td><Result val={scenario.currentEnergy.primaryenergy} dp={2} /></td>
+                            <td><Result val={scenario.currentEnergy.generation_primaryenergy} dp={2} /></td>
                             <td><Result val={getFuel('generation').fuelcost} /></td>
                             <td>
                                 <NumberField
                                     id="fration_used_onsite"
-                                    value={scenario.currentEnergy.fraction_used_onsite}
-                                    setValue={(val) => (scenario.currentEnergy.fraction_used_onsite = val)}
+                                    value={scenario.currentEnergy.generation_fraction_used_onsite}
+                                    setValue={(val) => (scenario.currentEnergy.generation_fraction_used_onsite = val)}
                                     className="input-mini"
                                 />
                             </td>
-                            <td><Result val={scenario.currentEnergy.annual_savings} units={'£'} unitsBefore /></td>
+                            <td><Result val={scenario.currentEnergy.generation_annual_savings} units={'£'} unitsBefore /></td>
                             <td>
                                 <NumberField
                                     id="FIT_annual_income"
-                                    value={scenario.currentEnergy.annual_FIT_income}
-                                    setValue={(val) => (scenario.currentEnergy.annual_FIT_income = val)}
+                                    value={scenario.currentEnergy.generation_annual_FIT_income}
+                                    setValue={(val) => (scenario.currentEnergy.generation_annual_FIT_income = val)}
                                     className="input-mini"
                                 />
                             </td>
