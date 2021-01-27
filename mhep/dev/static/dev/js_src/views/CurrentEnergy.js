@@ -9,9 +9,6 @@ import CheckboxField from '../components/CheckboxField'
 
 import targets from '../data/targets'
 
-
-//remove ":" from formrows
-
 function CurrentEnergy({ scenario }) {
     const [fuelToAdd, setFuelToAdd] = useState('')
 
