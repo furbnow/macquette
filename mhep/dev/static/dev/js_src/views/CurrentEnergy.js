@@ -10,6 +10,8 @@ import CheckboxField from '../components/CheckboxField'
 import targets from '../data/targets'
 
 
+//remove ":" from formrows
+
 function CurrentEnergy({ scenario }) {
     const [fuelToAdd, setFuelToAdd] = useState('')
 
@@ -60,7 +62,14 @@ function CurrentEnergy({ scenario }) {
                         />
                     </FormRow>
                     <FormRow>
-                        <span>CO<sub>2</sub> emissions <i className="icon-question-sign" title="Takes into account CO2 from all the different sources (gas, electricity grid, etc. including the fraction used onsite from renewable generation) minus the total savings due to generation" />
+                        <span>
+                            CO<sub>2</sub> emissions
+                            <Tooltip>
+                                Takes into account CO2 from all the different sources (gas,
+                                electricity grid, etc. including the fraction used onsite
+                                from renewable generation) minus the total savings
+                                due to generation
+                            </Tooltip>
                         </span>
                         <Result
                             val={scenario.currentEnergy.total_co2}
@@ -123,10 +132,10 @@ function CurrentEnergy({ scenario }) {
 
             <h4>Fuel use</h4>
 
-            <details style={{cursor: "pointer"}} className="mb-15">
+            <details style={{ cursor: "pointer" }} className="mb-15">
                 <summary>See conversion factors</summary>
 
-                <table className="table mb-15" style={{width: "auto"}}>
+                <table className="table mb-15" style={{ width: "auto" }}>
                     <thead style={{ backgroundColor: 'var(--brown-4)' }}>
                         <tr>
                             <th>Name</th>
@@ -265,7 +274,7 @@ function CurrentEnergy({ scenario }) {
                             <label htmlFor="field_fuel_to_add">Add new fuel</label>
                         </td>
                         <td colSpan="9">
-                            <div className="d-flex" style={{alignItems: "baseline"}}>
+                            <div className="d-flex" style={{ alignItems: "baseline" }}>
                                 <select
                                     id="field_fuel_to_add"
                                     value={fuelToAdd}
@@ -302,13 +311,13 @@ function CurrentEnergy({ scenario }) {
 
             <h4>Generation</h4>
 
-            <div className="d-flex" style={{alignItems: 'baseline'}}>
+            <div className="d-flex" style={{ alignItems: 'baseline' }}>
                 <CheckboxField
                     id="onsite_generation"
                     value={scenario.currentEnergy.onsite_generation}
                     setValue={(val) => (scenario.currentEnergy.onsite_generation = val)}
                 />
-                <label htmlFor="field_onsite_generation" style={{marginLeft: 10}}>Has on-site generation</label>
+                <label htmlFor="field_onsite_generation" style={{ marginLeft: 10 }}>Has on-site generation</label>
             </div>
 
             {scenario.currentEnergy.onsite_generation &&
@@ -317,12 +326,24 @@ function CurrentEnergy({ scenario }) {
                         <tr>
                             <th><label htmlFor={`field_annual_generation`}><b>Annual generation<br />kWh </b></label></th>
                             <th>CO<sub>2</sub> factor<br />kgCO<sub>2</sub>/kWh</th>
-                            <th>Annual kgCO<sub>2</sub> saved <i className="icon-question-sign" title="Due to total generation: includes energy used on-site and exported" ></i></th>
+                            <th>Annual kgCO<sub>2</sub> saved
+                                <Tooltip>
+                                    Due to total generation: includes energy used on-site and exported
+                                </Tooltip>
+                            </th>
                             <th>Primary energy factor</th>
-                            <th>Primary energy saved <br />kWh <i className="icon-question-sign" title="Due to total generation: includes energy used on-site and exported" ></i></th>
+                            <th>Primary energy saved <br />kWh
+                                <Tooltip>
+                                    Due to total generation: includes energy used on-site and exported
+                                </Tooltip>
+                            </th>
                             <th>Unit cost<br /> p/kWh</th>
                             <th><label htmlFor={`field_fration_used_onsite`}><b>Fraction used on-site</b></label></th>
-                            <th>Annual savings <i className="icon-question-sign" title="Due to energy used on-site. This amount would be part of your bills if you did not have generation." ></i></th>
+                            <th>Annual savings
+                                <Tooltip>
+                                    Due to energy used on-site. This amount would be part of your bills if you did not have generation
+                                </Tooltip>
+                            </th>
                             <th><label htmlFor={`field_FIT_annual_income`}><b>FIT annual income £</b></label></th>
                         </tr>
                     </thead>
