@@ -302,13 +302,13 @@ function CurrentEnergy({ scenario }) {
 
             <h4>Generation</h4>
 
-            <div className="d-flex">
+            <div className="d-flex" style={{alignItems: 'baseline'}}>
                 <CheckboxField
                     id="onsite_generation"
                     value={scenario.currentEnergy.onsite_generation}
                     setValue={(val) => (scenario.currentEnergy.onsite_generation = val)}
                 />
-                <label htmlFor="field_onsite_generation">Has on-site generation</label>
+                <label htmlFor="field_onsite_generation" style={{marginLeft: 10}}>Has on-site generation</label>
             </div>
 
             {scenario.currentEnergy.onsite_generation &&
