@@ -140,59 +140,59 @@ function CurrentEnergy({ scenario }) {
                         <tr>
                             <th>Name</th>
                             <th>Unit</th>
-                            <th>Equivalent energy</th>
+                            <th>Equivalent energy (kWh)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>Wood Logs*</td>
                             <td>1m3</td>
-                            <td>1380 kWh</td>
+                            <td>1380</td>
                         </tr>
                         <tr>
                             <td>Wood Pellets</td>
                             <td>1m3</td>
-                            <td>4230 kWh</td>
+                            <td>4230</td>
                         </tr>
                         <tr>
                             <td>Mains gas**</td>
                             <td>1m3</td>
-                            <td>11.18 kWh</td>
+                            <td>11.18</td>
                         </tr>
                         <tr>
                             <td>Mains gas**</td>
                             <td>1ft3</td>
-                            <td>31.7 kWh</td>
+                            <td>31.7</td>
                         </tr>
                         <tr>
                             <td>Oil</td>
                             <td>1L</td>
-                            <td>10.35 kWh</td>
+                            <td>10.35</td>
                         </tr>
                         <tr>
                             <td>Bottled gas (LPG)</td>
                             <td>1L</td>
-                            <td>7.11kWh</td>
+                            <td>7.11</td>
                         </tr>
                         <tr>
                             <td>Bottled gas (LPG)</td>
                             <td>1kg</td>
-                            <td>13.89kWh</td>
+                            <td>13.89</td>
                         </tr>
                         <tr>
                             <td>Coal</td>
                             <td>1kg</td>
-                            <td>8.34kWh</td>
+                            <td>8.34</td>
                         </tr>
                         <tr>
                             <td>Smokeless fuel</td>
                             <td>1kg</td>
-                            <td>8.9kWh</td>
+                            <td>8.9</td>
                         </tr>
                         <tr>
                             <td>Anthracite</td>
                             <td>1kg</td>
-                            <td>9.66kWh</td>
+                            <td>9.66</td>
                         </tr>
                     </tbody>
                 </table>
