@@ -440,6 +440,10 @@ label input[type=radio] {
     margin-bottom: 0;
 }
 
+.form-row i {
+    margin-left: 1ch;
+}
+
 /**** NAVIGATION ****/
 
 .nav-container {
