@@ -54,7 +54,7 @@ function CurrentEnergy({ scenario }) {
                         />
                     </FormRow>
                     <FormRow>
-                        <span>Primary energy consumption per m² floor area:</span>
+                        <span>Primary energy consumption per m² floor area</span>
                         <Result
                             val={scenario.currentEnergy.primaryenergy_annual_kwhm2}
                             dp={0}
@@ -78,7 +78,7 @@ function CurrentEnergy({ scenario }) {
                         />
                     </FormRow>
                     <FormRow>
-                        <span>CO<sub>2</sub> emissions per m² floor area:</span>
+                        <span>CO<sub>2</sub> emissions per m² floor area</span>
                         <Result
                             val={scenario.currentEnergy.total_co2m2}
                             dp={0}
