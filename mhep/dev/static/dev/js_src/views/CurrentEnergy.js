@@ -129,8 +129,8 @@ function CurrentEnergy({ scenario }) {
 
             <h4>Fuel use</h4>
 
-            <details style={{ cursor: "pointer" }} className="mb-15">
-                <summary>See conversion factors</summary>
+            <details className="mb-15">
+                <summary style={{ cursor: "pointer" }}>See conversion factors</summary>
 
                 <table className="table mb-15" style={{ width: "auto" }}>
                     <thead style={{ backgroundColor: 'var(--brown-4)' }}>
