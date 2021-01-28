@@ -129,77 +129,7 @@ function CurrentEnergy({ scenario }) {
 
             <h4>Fuel use</h4>
 
-            <details className="mb-15">
-                <summary style={{ cursor: "pointer" }}>See conversion factors</summary>
-
-                <table className="table mb-15" style={{ width: "auto" }}>
-                    <thead style={{ backgroundColor: 'var(--brown-4)' }}>
-                        <tr>
-                            <th>Name</th>
-                            <th>Unit</th>
-                            <th>Equivalent energy (kWh)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Wood Logs*</td>
-                            <td>1m3</td>
-                            <td>1380</td>
-                        </tr>
-                        <tr>
-                            <td>Wood Pellets</td>
-                            <td>1m3</td>
-                            <td>4230</td>
-                        </tr>
-                        <tr>
-                            <td>Mains gas**</td>
-                            <td>1m3</td>
-                            <td>11.18</td>
-                        </tr>
-                        <tr>
-                            <td>Mains gas**</td>
-                            <td>1ft3</td>
-                            <td>31.7</td>
-                        </tr>
-                        <tr>
-                            <td>Oil</td>
-                            <td>1L</td>
-                            <td>10.35</td>
-                        </tr>
-                        <tr>
-                            <td>Bottled gas (LPG)</td>
-                            <td>1L</td>
-                            <td>7.11</td>
-                        </tr>
-                        <tr>
-                            <td>Bottled gas (LPG)</td>
-                            <td>1kg</td>
-                            <td>13.89</td>
-                        </tr>
-                        <tr>
-                            <td>Coal</td>
-                            <td>1kg</td>
-                            <td>8.34</td>
-                        </tr>
-                        <tr>
-                            <td>Smokeless fuel</td>
-                            <td>1kg</td>
-                            <td>8.9</td>
-                        </tr>
-                        <tr>
-                            <td>Anthracite</td>
-                            <td>1kg</td>
-                            <td>9.66</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <p>* Assumes stacked measure, with gaps</p>
-                <p>** Calorific value of mains gas varies over time and by region -
-                you can check against current figures, or use this as an approximation</p>
-            </details>
-
-            <table className="table">
+            <table className="table mb-7">
                 {fuelsInUse.length > 0 &&
                     <thead style={{ backgroundColor: 'var(--brown-4)' }}>
                         <tr>
@@ -305,6 +235,83 @@ function CurrentEnergy({ scenario }) {
                     </tr>
                 </tbody>
             </table>
+
+            <details className="mb-30">
+                <summary>Show conversion factors</summary>
+
+                <table className="table mb-15" style={{ width: "auto" }}>
+                    <thead style={{ backgroundColor: 'var(--brown-4)' }}>
+                        <tr>
+                            <th>Name</th>
+                            <th>Unit</th>
+                            <th>Equivalent energy</th>
+                            <th style={{ width: "40ch" }}>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Wood logs</td>
+                            <td>1m3</td>
+                            <td className="text-right tabular-nums">1380 kWh</td>
+                            <td>Assumes stacked measure, with gaps</td>
+                        </tr>
+                        <tr>
+                            <td>Wood pellets</td>
+                            <td>1m3</td>
+                            <td className="text-right tabular-nums">4230 kWh</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td rowSpan="2">Mains gas</td>
+                            <td>1m3</td>
+                            <td className="text-right tabular-nums">11.18 kWh</td>
+                            <td rowSpan="2">
+                                Calorific value of mains gas varies over time and by region.
+                                You can check against current figures, or use this as an approximation.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1ft3</td>
+                            <td className="text-right tabular-nums">31.70 kWh</td>
+                        </tr>
+                        <tr>
+                            <td>Oil</td>
+                            <td>1L</td>
+                            <td className="text-right tabular-nums">10.35 kWh</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td rowSpan="2">Bottled gas (LPG)</td>
+                            <td>1L</td>
+                            <td className="text-right tabular-nums">7.11 kWh</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>1kg</td>
+                            <td className="text-right tabular-nums">13.89 kWh</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Coal</td>
+                            <td>1kg</td>
+                            <td className="text-right tabular-nums">8.34 kWh</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Smokeless fuel</td>
+                            <td>1kg</td>
+                            <td className="text-right tabular-nums">8.90 kWh</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Anthracite</td>
+                            <td>1kg</td>
+                            <td className="text-right tabular-nums">9.66 kWh</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </details>
 
             <h4>Generation</h4>
 

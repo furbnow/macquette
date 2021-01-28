@@ -240,6 +240,9 @@ body .modal {
 
 .clickable { cursor: pointer; }
 
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
 
 .list-unstyled { margin: 0; padding: 0; list-style: none; }
 .list-unstyled li { margin: 0; padding: 0; }
@@ -407,6 +410,15 @@ button.demote-role {
   margin-left: 0.5rem;
 }
 
+/*** Disclosure ***/
+
+summary {
+    background-color: #f3f3f3;
+    cursor: pointer;
+    padding: 7px;
+    width: max-content;
+    margin-bottom: 7px;
+}
 
 /**** FORMS ****/
 
