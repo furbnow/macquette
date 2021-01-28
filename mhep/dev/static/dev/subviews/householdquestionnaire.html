@@ -1,12 +1,12 @@
 <style>
-    .form-row { display: flex; align-items: first baseline; margin-bottom: 15px; }
-    .form-row-label { width: 10rem; flex-shrink: 0; }
-    .form-row-control { flex-grow: 1; }
-    .form-row-control input, .form-row-control select { margin-bottom: 0; }
+    .questionnaire-form-row { display: flex; align-items: first baseline; margin-bottom: 15px; }
+    .questionnaire-form-row-label { width: 10rem; flex-shrink: 0; }
+    .questionnaire-form-row-control { flex-grow: 1; }
+    .questionnaire-form-row-control input, .questionnaire-form-row-control select { margin-bottom: 0; }
 
-    .form-row--twoline { display: block; }
-    .form-row--twoline .form-row-label { width: 100%; }
-    .form-row--twoline .form-row-control { margin-left: 10rem; }
+    .questionnaire-form-row--twoline { display: block; }
+    .questionnaire-form-row--twoline .questionnaire-form-row-label { width: 100%; }
+    .questionnaire-form-row--twoline .questionnaire-form-row-control { margin-left: 10rem; }
 
     .{ margin-left: 2rem; }
 
@@ -45,44 +45,44 @@
 <section class="mb-45">
     <div class="d-flex">
         <div class="mr-15 w-50">
-            <div class="form-row mb-7">
-                <label class='form-row-label' for="assessor_name">Assessor's name:</label>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row mb-7">
+                <label class='questionnaire-form-row-label' for="assessor_name">Assessor's name:</label>
+                <div class="questionnaire-form-row-control">
                     <input type="text" key="data.household.assessor_name" id="assessor_name" style="width:250px">
                 </div>
             </div>
 
-            <div class="form-row">
-                <label class='form-row-label' for="assessment_date">Assessment date:</label>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row">
+                <label class='questionnaire-form-row-label' for="assessment_date">Assessment date:</label>
+                <div class="questionnaire-form-row-control">
                     <input type="text" placeholder="dd/mm/yyyy" key="data.household.assessment_date" id="assessment_date" style="width:150px">
                 </div>
             </div>
 
-            <div class="form-row">
-                <label class='form-row-label' for="householder_name">Householder's name:</label>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row">
+                <label class='questionnaire-form-row-label' for="householder_name">Householder's name:</label>
+                <div class="questionnaire-form-row-control">
                     <input type="text" key="data.household.householder_name" id="householder_name" style="width:250px">
                 </div>
             </div>
 
-            <div class="form-row mb-7">
-                <label class='form-row-label' for="address_1">Address:</label>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row mb-7">
+                <label class='questionnaire-form-row-label' for="address_1">Address:</label>
+                <div class="questionnaire-form-row-control">
                     <input type="text" key="data.household.address_1" class="mb-7" style="width:250px" id="address_1"><br>
                     <input type="text" key="data.household.address_2" class="mb-7" style="width:250px"><br>
                     <input type="text" key="data.household.address_3" class="mb-0" style="width:250px">
                 </div>
             </div>
-            <div class="form-row mb-7">
-                <label class='form-row-label' for="address_town">Town/city:</label>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row mb-7">
+                <label class='questionnaire-form-row-label' for="address_town">Town/city:</label>
+                <div class="questionnaire-form-row-control">
                     <input type="text" key="data.household.address_town" id="address_town" style="width:130px">
                 </div>
             </div>
-            <div class="form-row">
-                <label class='form-row-label' for="address_postcode">Postcode:</label>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row">
+                <label class='questionnaire-form-row-label' for="address_postcode">Postcode:</label>
+                <div class="questionnaire-form-row-control">
                     <input type="text" key="data.household.address_postcode" id="address_postcode" style="width:130px">
                 </div>
             </div>
@@ -103,18 +103,18 @@
             <div class="bg-assessor pa-15">
                 <p class="text-italic mb-15">Assessor: check and fill these if required.</p>
 
-                <div class="form-row">
-                    <label class='form-row-label' for="address_la">Local authority:</label>
-                    <div class="form-row-control">
+                <div class="questionnaire-form-row">
+                    <label class='questionnaire-form-row-label' for="address_la">Local authority:</label>
+                    <div class="questionnaire-form-row-control">
                         <input type="text" key="data.household.address_la" id="address_la" style="width:200px">
                     </div>
                 </div>
 
-                <div class="form-row bg-assessor mb-0">
-                    <label class='form-row-label' for="address_lsoa">
+                <div class="questionnaire-form-row bg-assessor mb-0">
+                    <label class='questionnaire-form-row-label' for="address_lsoa">
                         <abbr title="Lower Super Output Area">LSOA</abbr>:
                     </label>
-                    <div class="form-row-control">
+                    <div class="questionnaire-form-row-control">
                         <input type="text" key="data.household.address_lsoa" id="address_lsoa" style="width:200px">
                     </div>
                 </div>
@@ -126,9 +126,9 @@
     <p class="text-italic">This section contains sensitive data so won't be included in the report.</p>
 
     <div class="d-flex mb-15">
-        <div class="mr-15 w-50 form-row">
-            <span class='form-row-label'>Tenure:</span>
-            <div class="form-row-control">
+        <div class="mr-15 w-50 questionnaire-form-row">
+            <span class='questionnaire-form-row-label'>Tenure:</span>
+            <div class="questionnaire-form-row-control">
                 <label class="radio d-flex mb-7" for="tenure_1">
                     <input type="radio" class="mr-7 big-checkbox"
                             key="data.household.tenure"
@@ -186,9 +186,9 @@
     </div>
 
     <div class="d-flex mb-15">
-        <div class="form-row w-50 mr-15" style="align-items: flex-start;">
-            <label class='form-row-label mt-15'>How many occupants:</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row w-50 mr-15" style="align-items: flex-start;">
+            <label class='questionnaire-form-row-label mt-15'>How many occupants:</label>
+            <div class="questionnaire-form-row-control">
                 <table class="table mb-0 table--vertical-middle" style="width: 240px">
                     <tr>
                         <td style="border-top: none" width="1" class="text-left">Children</td>
@@ -495,9 +495,9 @@
         <div class="w-50 mr-15">
             <p class="mb-15">Would you mind changing the aesthetics of your home...</p>
 
-            <div class="form-row">
-                <span class="form-row-label">Externally?</span>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row">
+                <span class="questionnaire-form-row-label">Externally?</span>
+                <div class="questionnaire-form-row-control">
                     <label class="d-ib mr-15" for="aesthetics_external_2">
                         <input class="big-checkbox" id="aesthetics_external_2" name="aesthetics_external" type="radio" value="YES" key="data.household.aesthetics_external">
                         Yes
@@ -509,9 +509,9 @@
                 </div>
             </div>
 
-            <div class="form-row">
-                <span class="form-row-label">Internally?</span>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row">
+                <span class="questionnaire-form-row-label">Internally?</span>
+                <div class="questionnaire-form-row-control">
                     <label class="d-ib mr-15" for="aesthetics_internal_2">
                         <input class="big-checkbox" id="aesthetics_internal_2" name="aesthetics_internal" type="radio" value="YES" key="data.household.aesthetics_internal">
                         Yes
@@ -564,7 +564,7 @@
             </div>
         </div>
         <div class="w-50 pa-15 ml-15 bg-assessor">
-            <label class="form-row-label" style="margin-top: -7px" for="logistics_diy_note">Assessor notes</label>
+            <label class="questionnaire-form-row-label" style="margin-top: -7px" for="logistics_diy_note">Assessor notes</label>
             <textarea key="data.household.logistics_diy_note" id="logistics_diy_note" class="textarea--100"></textarea>
             <p class="text-italic mb-0">Record here any issues to do with procurement/packaging of works</p>
         </div>
@@ -596,7 +596,7 @@
             </label>
         </div>
         <div class="w-50 pa-15 ml-15 bg-assessor">
-            <label class="form-row-label" style="margin-top: -7px" for="logistics_disruption_note">Assessor notes</label>
+            <label class="questionnaire-form-row-label" style="margin-top: -7px" for="logistics_disruption_note">Assessor notes</label>
             <textarea key="data.household.logistics_disruption_note" id="logistics_disruption_note" class="textarea--100"></textarea>
             <p class="text-italic mb-0">Any areas where disruption should be avoided, or vulnerable residents that need to be considered in planning?</p>
         </div>
@@ -616,7 +616,7 @@
             </label>
         </div>
         <div class="w-50 pa-15 ml-15 bg-assessor">
-            <label class="form-row-label" style="margin-top: -7px" for="logistics_budget_note">Assessor notes</label>
+            <label class="questionnaire-form-row-label" style="margin-top: -7px" for="logistics_budget_note">Assessor notes</label>
             <textarea key="data.household.logistics_budget_note" id="logistics_budget_note" class="textarea--100"></textarea>
             <p class="text-italic mb-0">Can include budget figure here or specific thoughts/comments</p>
         </div>
@@ -628,9 +628,9 @@
     <h4>2.1 General property information</h4>
 
     <div class="d-flex mt-15">
-        <div class="w-50 mr-15 form-row">
-            <span class='form-row-label'>House type:</span>
-            <div class="form-row-control">
+        <div class="w-50 mr-15 questionnaire-form-row">
+            <span class='questionnaire-form-row-label'>House type:</span>
+            <div class="questionnaire-form-row-control">
                 <label class="radio d-flex mb-7" for="house_type_1">
                     <input type="radio" class="mr-7 big-checkbox"
                             key="data.household.house_type"
@@ -681,15 +681,15 @@
             </div>
         </div>
         <div class="w-50 pa-15 ml-15 bg-assessor">
-            <label class="form-row-label" style="margin-top: -7px" for="house_type_note">Assessor notes</label>
+            <label class="questionnaire-form-row-label" style="margin-top: -7px" for="house_type_note">Assessor notes</label>
             <textarea key="data.household.house_type_note" id="house_type_note" class="textarea--100"></textarea>
             <p class="text-italic mb-0">Any peculiarities?</p>
         </div>
     </div>
 
-    <div class="form-row mb-30">
-        <label class='form-row-label'>Number of bedrooms:</label>
-        <div class="form-row-control">
+    <div class="questionnaire-form-row mb-30">
+        <label class='questionnaire-form-row-label'>Number of bedrooms:</label>
+        <div class="questionnaire-form-row-control">
             <input type="text" key="data.household.house_nr_bedrooms" class="input--num">
         </div>
     </div>
@@ -698,51 +698,51 @@
         <h4 class="mt-0">2.1.1 General construction</h4>
         <p>Provide a one-line description of each element, plus any issues noticed during the survey.</p>
 
-        <div class="form-row">
-            <label style="width: 18rem" class="form-row-label" for="construct_note_floors">Floors</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row">
+            <label style="width: 18rem" class="questionnaire-form-row-label" for="construct_note_floors">Floors</label>
+            <div class="questionnaire-form-row-control">
                 <input type="text" id="construct_note_floors" key="data.household.construct_note_floors" style="width: 90% !important">
             </div>
         </div>
 
-        <div class="form-row">
-            <label style="width: 18rem" class="form-row-label" for="construct_note_walls">Walls</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row">
+            <label style="width: 18rem" class="questionnaire-form-row-label" for="construct_note_walls">Walls</label>
+            <div class="questionnaire-form-row-control">
                 <input type="text" id="construct_note_walls" key="data.household.construct_note_walls" style="width: 90% !important">
             </div>
         </div>
 
-        <div class="form-row">
-            <label style="width: 18rem" class="form-row-label" for="construct_note_roof">Roof</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row">
+            <label style="width: 18rem" class="questionnaire-form-row-label" for="construct_note_roof">Roof</label>
+            <div class="questionnaire-form-row-control">
                 <input type="text" id="construct_note_roof" key="data.household.construct_note_roof" style="width: 90% !important">
             </div>
         </div>
 
-        <div class="form-row">
-            <label style="width: 18rem" class="form-row-label" for="construct_note_openings">Windows and doors</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row">
+            <label style="width: 18rem" class="questionnaire-form-row-label" for="construct_note_openings">Windows and doors</label>
+            <div class="questionnaire-form-row-control">
                 <input type="text" id="construct_note_openings" key="data.household.construct_note_openings" style="width: 90% !important">
             </div>
         </div>
 
-        <div class="form-row">
-            <label style="width: 18rem" class="form-row-label" for="construct_note_drainage">Rainwater and drainage goods</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row">
+            <label style="width: 18rem" class="questionnaire-form-row-label" for="construct_note_drainage">Rainwater and drainage goods</label>
+            <div class="questionnaire-form-row-control">
                 <input type="text" id="construct_note_drainage" key="data.household.construct_note_drainage" style="width: 90% !important">
             </div>
         </div>
 
-        <div class="form-row">
-            <label style="width: 18rem" class="form-row-label" for="construct_note_ventiliation">Construction ventilation</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row">
+            <label style="width: 18rem" class="questionnaire-form-row-label" for="construct_note_ventiliation">Construction ventilation</label>
+            <div class="questionnaire-form-row-control">
                 <input type="text" id="construct_note_ventiliation" key="data.household.construct_note_ventiliation" style="width: 90% !important">
             </div>
         </div>
 
-        <div class="form-row mb-0">
-            <label style="width: 18rem" class="form-row-label" for="construct_note_ingress">Any evidence of water ingress or leaks?</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row mb-0">
+            <label style="width: 18rem" class="questionnaire-form-row-label" for="construct_note_ingress">Any evidence of water ingress or leaks?</label>
+            <div class="questionnaire-form-row-control">
                 <input type="text" id="construct_note_ingress" key="data.household.construct_note_ingress" style="width: 90% !important">
             </div>
         </div>
@@ -777,7 +777,7 @@
             <textarea key="data.household.structural_issues" class="mb-30 textarea--100"></textarea>
         </div>
         <div class="w-50 pa-15 ml-15 bg-assessor">
-            <label class="form-row-label" style="margin-top: -7px" for="structural_issues_note">Assessor notes</label>
+            <label class="questionnaire-form-row-label" style="margin-top: -7px" for="structural_issues_note">Assessor notes</label>
             <textarea key="data.household.structural_issues_note" id="structural_issues_note" class="textarea--100 mb-0"></textarea>
             <p class="text-italic mb-0">check for cracks, shifting/leaning walls, etc.</p>
         </div>
@@ -792,7 +792,7 @@
             <textarea key="data.household.damp" class="mb-30 textarea--100"></textarea>
         </div>
         <div class="w-50 pa-15 ml-15 bg-assessor">
-            <label class="form-row-label" style="margin-top: -7px" for="damp_note">Assessor notes</label>
+            <label class="questionnaire-form-row-label" style="margin-top: -7px" for="damp_note">Assessor notes</label>
             <textarea key="data.household.damp_note" id="damp_note" class="textarea--100 mb-0"></textarea>
             <p class="text-italic mb-0">check for cracks, shifting/leaning walls, etc.</p>
         </div>
@@ -1106,8 +1106,8 @@
             </label>
         </div>
         <div class="w-50 pa-15 ml-15 bg-assessor">
-            <span class="form-row-label">Assessor notes</span>
-            <div class="form-row-control">
+            <span class="questionnaire-form-row-label">Assessor notes</span>
+            <div class="questionnaire-form-row-control">
                 <textarea key="data.household.fuel_burner_note" class="textarea--100"></textarea>
             </div>
 
@@ -1228,14 +1228,14 @@
     </div>
 
     <div class="mb-15">
-        <label class="form-row-label" for="thermal_comfort_note">Notes:</label>
+        <label class="questionnaire-form-row-label" for="thermal_comfort_note">Notes:</label>
         <textarea key="data.household.thermal_comfort_note" id="thermal_comfort_note" class="textarea"></textarea>
     </div>
 
     <h4>2.3.2 Daylight</h4>
 
     <div class="mb-15">
-        <label class="form-row-label" for="daylight">Amount of daylight:</label>
+        <label class="questionnaire-form-row-label" for="daylight">Amount of daylight:</label>
         <select key="data.household.daylight">
             <option value="">Select...</option>
             <option value="LOW">Too little</option>
@@ -1267,7 +1267,7 @@
     </div>
 
     <div class="mb-15">
-        <label class="form-row-label" for="daylight_note">Note on where & what:</label>
+        <label class="questionnaire-form-row-label" for="daylight_note">Note on where & what:</label>
         <textarea key="data.household.daylight_note" id="daylight_note" class="textarea"></textarea>
     </div>
 
@@ -1295,7 +1295,7 @@
     </div>
 
     <div class="mb-15">
-        <label class="form-row-label" for="noise_note">Note on where & what:</label>
+        <label class="questionnaire-form-row-label" for="noise_note">Note on where & what:</label>
         <textarea key="data.household.noise_note" id="noise_note" class="textarea"></textarea>
     </div>
 
@@ -1313,9 +1313,9 @@
 
     <div class="d-flex">
         <div class="w-50 mr-15">
-            <div class="form-row">
-                <label class='form-row-label'>Built:</label>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row">
+                <label class='questionnaire-form-row-label'>Built:</label>
+                <div class="questionnaire-form-row-control">
                     <select key="data.household.historic_age_band" style="width:180px">
                         <option value="">Select...</option>
                         <option value="before-1900">Before 1900</option>
@@ -1334,16 +1334,16 @@
                 </div>
             </div>
 
-            <div class="form-row">
-                <label class="form-row-label">Exact year if known:</label>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row">
+                <label class="questionnaire-form-row-label">Exact year if known:</label>
+                <div class="questionnaire-form-row-control">
                     <input type="text" key="data.household.historic_age_precise" style="width:150px">
                 </div>
             </div>
 
-            <div class="form-row">
-                <label class='form-row-label'>Conservation area:</label>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row">
+                <label class='questionnaire-form-row-label'>Conservation area:</label>
+                <div class="questionnaire-form-row-control">
                     <select key="data.household.historic_conserved" style="width:180px">
                         <option value="">Select...</option>
                         <option value="NO">No</option>
@@ -1352,9 +1352,9 @@
                 </div>
             </div>
 
-            <div class="form-row">
-                <span class='form-row-label'>Listed?</span>
-                <div class="form-row-control">
+            <div class="questionnaire-form-row">
+                <span class='questionnaire-form-row-label'>Listed?</span>
+                <div class="questionnaire-form-row-control">
                     <label class="radio d-flex mb-0" for="historic_listed_1">
                         <input type="radio" class="mr-7"
                                 key="data.household.historic_listed"
@@ -1406,8 +1406,8 @@
             </div>
         </div>
         <div class="w-50 pa-15 ml-15 bg-assessor">
-            <span class="form-row-label">Assessor notes</span>
-            <div class="form-row-control">
+            <span class="questionnaire-form-row-label">Assessor notes</span>
+            <div class="questionnaire-form-row-control">
                 <textarea key="data.household.historic_note" class="textarea--100"></textarea>
             </div>
         </div>
@@ -1452,9 +1452,9 @@
             Please look this up using the <a href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/map" rel="noreferrer"target="_blank" style="text-decoration: underline;">uk.gov flood risk map</a>.
         </p>
 
-        <div class="form-row">
-            <label class="form-row-label" for="flooding_rivers_sea">Rivers and sea</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row">
+            <label class="questionnaire-form-row-label" for="flooding_rivers_sea">Rivers and sea</label>
+            <div class="questionnaire-form-row-control">
                 <select class="mb-0" key="data.household.flooding_rivers_sea" id="flooding_rivers_sea">
                     <option value="">Select...</option>
                     <option value="HIGH">High</option>
@@ -1465,9 +1465,9 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <label class="form-row-label" for="flooding_surface_water">Surface water</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row">
+            <label class="questionnaire-form-row-label" for="flooding_surface_water">Surface water</label>
+            <div class="questionnaire-form-row-control">
                 <select class="mb-0" key="data.household.flooding_surface_water" id="flooding_surface_water">
                     <option value="">Select...</option>
                     <option value="HIGH">High</option>
@@ -1478,9 +1478,9 @@
             </div>
         </div>
 
-        <div class="form-row mb-0">
-            <label class="form-row-label" for="flooding_reservoirs">Reservoirs</label>
-            <div class="form-row-control">
+        <div class="questionnaire-form-row mb-0">
+            <label class="questionnaire-form-row-label" for="flooding_reservoirs">Reservoirs</label>
+            <div class="questionnaire-form-row-control">
                 <select class="mb-0" key="data.household.flooding_reservoirs" id="flooding_reservoirs">
                     <option value="">Select...</option>
                     <option value="WITHIN">within potential extent of flooding from reservoir</option>
