@@ -4,6 +4,7 @@ import NumberField from '../components/NumberField';
 import CheckboxField from '../components/CheckboxField';
 import FormRow from '../components/FormRow';
 import Result from '../components/Result';
+import Tooltip from '../components/Tooltip'
 
 // ??? - dedicated Volume vs total Volume - what's the calculation there?
 // data.SHW.Veff = data.SHW.Vs + 0.3 * (data.SHW.combined_cylinder_volume - data.SHW.Vs);
@@ -55,11 +56,8 @@ function SolarHotWater({ scenario }) {
 
             <FormRow>
                 <label htmlFor="field_zeroloss_collector_efficiency">
-                    Zero-loss collector efficiency, <var>η0</var>{' '}
-                    <i
-                        className="icon-question-sign"
-                        title="from test certificate or Table H1"
-                    ></i>
+                    Zero-loss collector efficiency, <var>η0</var>
+                    <Tooltip>from test certificate or Table H1</Tooltip>
                 </label>
 
                 <NumberField
@@ -72,8 +70,8 @@ function SolarHotWater({ scenario }) {
 
             <FormRow>
                 <label htmlFor="field_linear_heat_loss_coefficient">
-                    Collector linear heat loss coefficient, <var>a1</var>{' '}
-                    <i className="icon-question-sign" title="from test certificate"></i>
+                    Collector linear heat loss coefficient, <var>a1</var>
+                    <Tooltip>from test certificate</Tooltip>
                 </label>
 
                 <NumberField
@@ -86,8 +84,8 @@ function SolarHotWater({ scenario }) {
 
             <FormRow>
                 <label htmlFor="field_second_order_heat_loss_coefficient">
-                    Collector 2nd order heat loss coefficient, <var>a2</var>{' '}
-                    <i className="icon-question-sign" title="from test certificate"></i>
+                    Collector 2nd order heat loss coefficient, <var>a2</var>
+                    <Tooltip>from test certificate</Tooltip>
                 </label>
 
                 <NumberField
@@ -145,11 +143,8 @@ function SolarHotWater({ scenario }) {
 
             <FormRow>
                 <span>
-                    Annual solar radiation per m²{' '}
-                    <i
-                        className="icon-question-sign"
-                        title="(from U3.3 in Appendix U for the orientation and tilt of the collector)"
-                    ></i>
+                    Annual solar radiation per m²
+                    <Tooltip>from U3.3 in Appendix U for the orientation and tilt of the collector</Tooltip>
                 </span>
 
                 <Result val={scenario.solarHotWater.annual_solar} dp={0} units="kWh" />
