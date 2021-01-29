@@ -6,6 +6,7 @@ import Assessment from "./Assessment";
 import Commentary from "./views/Commentary";
 import PageHeader from "./views/PageHeader";
 import SolarHotWater from "./views/SolarHotWater";
+import CurrentEnergy from "./views/CurrentEnergy";
 
 import TargetBar from "./components/TargetBar";
 import Graphics from "./components/Graphics";
@@ -16,6 +17,7 @@ window.Macquette = {
         Commentary,
         PageHeader,
         SolarHotWater,
+        CurrentEnergy,
     },
     components: {
         TargetBar,

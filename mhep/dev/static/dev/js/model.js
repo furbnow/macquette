@@ -2404,7 +2404,9 @@ calc.currentenergy = function (data) {
         enduse_annual_kwh += f_use.annual_use;
     }
 
-    if (data.currentenergy.onsite_generation === 1) { // See issue 304
+    data.currentenergy.annual_net_cost = total_cost;
+
+    if (data.currentenergy.onsite_generation) { // See issue 304
         // Add to the totals the amount of energy generated that was used onsite
         enduse_annual_kwh += data.currentenergy.generation.fraction_used_onsite * data.currentenergy.generation.annual_generation;
         primaryenergy_annual_kwh += data.fuels.generation.primaryenergyfactor * data.currentenergy.generation.fraction_used_onsite * data.currentenergy.generation.annual_generation;
@@ -2419,13 +2421,13 @@ calc.currentenergy = function (data) {
         total_co2 -= data.currentenergy.generation.annual_CO2;
         primaryenergy_annual_kwh -= data.currentenergy.generation.primaryenergy;
         // total_cost -= data.currentenergy.generation.annual_savings; -- Annual savings are not added: this is moeny that the user would pay on top of what they already pay if they didn't have generation
-    }
 
+        data.currentenergy.annual_net_cost -= data.currentenergy.generation.annual_FIT_income;
+    }
 
     data.currentenergy.primaryenergy_annual_kwh = primaryenergy_annual_kwh;
     data.currentenergy.total_co2 = total_co2;
     data.currentenergy.total_cost = total_cost;
-    data.currentenergy.annual_net_cost = total_cost - data.currentenergy.generation.annual_FIT_income;
     data.currentenergy.primaryenergy_annual_kwhm2 = primaryenergy_annual_kwh / data.TFA;
     data.currentenergy.total_co2m2 = total_co2 / data.TFA;
     data.currentenergy.total_costm2 = total_cost / data.TFA;
