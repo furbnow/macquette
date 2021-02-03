@@ -156,7 +156,6 @@ function CurrentEnergy({ scenario }) {
                                     id={fuel.name}
                                     value={fuel.annual_use}
                                     setValue={(val) => (fuel.annual_use = val)}
-                                    className="input-mini"
                                 />
                             </td>
                             <td>
@@ -358,7 +357,6 @@ function CurrentEnergy({ scenario }) {
                                     id="annual_generation"
                                     value={scenario.currentEnergy.generation_annual_kwh}
                                     setValue={(val) => (scenario.currentEnergy.generation_annual_kwh = val)}
-                                    className="input-mini"
                                 />
                             </td>
 
@@ -384,7 +382,6 @@ function CurrentEnergy({ scenario }) {
                                     id="fration_used_onsite"
                                     value={scenario.currentEnergy.generation_fraction_used_onsite}
                                     setValue={(val) => (scenario.currentEnergy.generation_fraction_used_onsite = val)}
-                                    className="input-mini"
                                 />
                             </td>
                             <td><Result val={scenario.currentEnergy.generation_annual_savings} units={'£'} unitsBefore /></td>
@@ -393,7 +390,6 @@ function CurrentEnergy({ scenario }) {
                                     id="FIT_annual_income"
                                     value={scenario.currentEnergy.generation_annual_FIT_income}
                                     setValue={(val) => (scenario.currentEnergy.generation_annual_FIT_income = val)}
-                                    className="input-mini"
                                 />
                             </td>
                         </tr>

@@ -7,14 +7,14 @@ function decimalise(s) {
     return s.replaceAll(notAllowed, '');
 }
 
-export default function NumberField({ id, units, value, setValue, className = '' }) {
+export default function NumberField({ id, units, value, setValue }) {
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
         <div>
             <input
                 type="text"
-                className={className}
+                className="input-mini"
                 id={`field_${id}`}
                 onChange={(evt) => setCurrent(decimalise(evt.target.value))}
                 onBlur={() => {

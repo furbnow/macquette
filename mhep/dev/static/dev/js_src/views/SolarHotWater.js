@@ -50,7 +50,6 @@ function SolarHotWater({ scenario }) {
                     units="m²"
                     value={scenario.solarHotWater.A}
                     setValue={(val) => (scenario.solarHotWater.A = val)}
-                    className="input-mini"
                 />
             </FormRow>
 
@@ -64,7 +63,6 @@ function SolarHotWater({ scenario }) {
                     id="zeroloss_collector_efficiency"
                     value={scenario.solarHotWater.n0}
                     setValue={(val) => (scenario.solarHotWater.n0 = val)}
-                    className="input-mini"
                 />
             </FormRow>
 
@@ -78,7 +76,6 @@ function SolarHotWater({ scenario }) {
                     id="linear_heat_loss_coefficient"
                     value={scenario.solarHotWater.a1}
                     setValue={(val) => (scenario.solarHotWater.a1 = val)}
-                    className="input-mini"
                 />
             </FormRow>
 
@@ -92,7 +89,6 @@ function SolarHotWater({ scenario }) {
                     id="second_order_heat_loss_coefficient"
                     value={scenario.solarHotWater.a2}
                     setValue={(val) => (scenario.solarHotWater.a2 = val)}
-                    className="input-mini"
                 />
             </FormRow>
 
@@ -137,7 +133,6 @@ function SolarHotWater({ scenario }) {
                     units="degrees"
                     value={scenario.solarHotWater.inclination}
                     setValue={(val) => (scenario.solarHotWater.inclination = val)}
-                    className="input-mini"
                 />
             </FormRow>
 
@@ -224,7 +219,6 @@ function SolarHotWater({ scenario }) {
                     units="litres"
                     value={scenario.solarHotWater.Vs}
                     setValue={(val) => (scenario.solarHotWater.Vs = val)}
-                    className="input-mini"
                 />
             </FormRow>
 
@@ -240,7 +234,6 @@ function SolarHotWater({ scenario }) {
                     setValue={(val) =>
                         (scenario.solarHotWater.combined_cylinder_volume = val)
                     }
-                    className="input-mini"
                 />
             </FormRow>
 
