@@ -1,5 +1,12 @@
-
-/**** REPORT GENERATION ****/
+//
+// REPORT GENERATION
+// This contains the logic for generating the HTML report.
+//
+// A report is generated using a Nunjucks template (which is stored on an organisation).
+// We collect a load of the data from the asessment into a set of context vars, which
+// are passed through to the report.  This gives us a lot of flexibility in the report
+// contents between organisations without needing to hack in lots of special cases.
+//
 
 function report_show(root, template, scenarios) {
     let t0 = performance.now();

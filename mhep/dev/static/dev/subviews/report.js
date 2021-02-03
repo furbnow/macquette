@@ -1,23 +1,3 @@
-/*
- * Report generation
- *
- * There are two main units of code here:
- * - the Report class which handles the UI logic, and
- * - the rest of the file, which contains the logic for generating the actual report
- *   (this isn't in a class yet but should be)
- *
- * The basic concept of a report is that it's a Nunjucks template stored on the
- * organisation.  We then collect a load of the data from the asessment into a set of
- * context vars, which are passed through to the report.  This gives us a lot of
- * flexibility in the report contents between organisations without needing to hack in
- * lots of special cases.
- *
- * The report is rendered in an iframe to give it the maximum freedom of style, and to
- * avoid clashing with MHEP's own styling.
- */
-
-console.log('debug report.js');
-
 function report_initUI() {
     if (!view_html['compare']) {
         $.ajax({
