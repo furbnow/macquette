@@ -19,15 +19,6 @@
 console.log('debug report.js');
 
 function report_initUI() {
-    if (!window.questionnaire) {
-        $.ajax({
-            url: urlHelper.static('subviews/householdquestionnaire.js'),
-            dataType: 'script',
-            async: false,
-            error: handleServerError('loading householdquestionnaire.js'),
-        });
-    }
-
     if (!view_html['compare']) {
         $.ajax({
             url: urlHelper.static('subviews/compare.js'),
