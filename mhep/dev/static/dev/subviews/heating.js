@@ -439,6 +439,26 @@ function add_water_usage() {
         $('#water-usage').append(out);
     }
 }
+function get_heating_system_options(mainHSs) {
+    var out = '';
+    if (mainHSs.mainHS1 === false) {
+        out += '<option value="mainHS1" Main heating system</option>';
+        out += '<option value="mainHS2_whole_house" disabled>2<sup>nd</sup> Main heating system - whole house</option>';
+        out += '<option value="mainHS2_part_of_the_house" disabled>2<sup>nd</sup> Main heating system - different part of the house</option>';
+    } else if (mainHSs.mainHS2 === false) {
+        out += '<option value="mainHS1" disabled>Main heating system</option>';
+        out += '<option value="mainHS2_whole_house">2<sup>nd</sup> Main heating system - whole house</option>';
+        out += '<option value="mainHS2_part_of_the_house">2<sup>nd</sup> Main heating system - different part of the house</option>';
+    } else {
+        out += '<option value="mainHS1" disabled>Main heating system</option>';
+        out += '<option value="mainHS2_whole_house" disabled>2<sup>nd</sup> Main heating system - whole house</option>';
+        out += '<option value="mainHS2_part_of_the_house" disabled>2<sup>nd</sup> Main heating system - different part of the house</option>';
+    }
+
+    out += '<option value="secondaryHS">Secondary heating system</option>';
+    return out;
+}
+
 function add_heating_systems() {
     if (data.heating_systems.length > 0) {
         $('#heating-systems').show();
@@ -446,77 +466,148 @@ function add_heating_systems() {
         $('#heating-systems').hide();
     }
 
-    $('#heating-systems').html('');
-    var out = "<tr><th>Tag</th><th>Name</th><th>Provides</th><th>Space heating / Winter efficiency</th><th>Water heating / Summer efficiency</th>\n\
-<th>Fuel</th><th>Fraction  <i class='icon-question-sign' title='This defines what proportion of the space heating or water heating for a home is provided by the system listed. For example, a standard assumption might be that a gas boiler provides 90% (0.9) of the space heating, and an open fire or room stove provides 10% (0.1). However, this can be adjusted using assessors informed judgement as required - and as many systems as are present can be included. If there are two main heating systems identified, the proportion of heat provided by each system should be taken as the relative heated floor area served by each system' /></th><th>Main heating system <i class='icon-question-sign' title='The main heating system is that which heats the largest proportion of the dwelling, and often provided hot water as well as space heating. If there is more than one main heating system identified, main system 1 always heats the living space. Secondary heating systems are room heaters - such as open fires or wood-stoves. If portable room heaters are used, they should be included in the calculations (note this is a deviation from standard SAP - ref p.40 SAP 9.92)' /></th>\n\
-<th>Responsiveness <i class='icon-question-sign' title='Refer to Table 4d, p.209 SAP 9.92' /></th>\n\
-<th>Temperature adjustment <i class='icon-question-sign' title='SAP2012, table 4e, p.210'></i></th>\n\
-<th>Space heating controls <i class='icon-question-sign' title='Refer to Table 4e, p.210 SAP 9.92' /></th>\n\
-<th>Instantaneous water heating?</th><th>Central heating pump inside dwelling</th></tr>";
-    $('#heating-systems').append(out);
+    $('#heating-systems tbody').html('');
 
     // Generate html string
     var mainHSs = {mainHS1: false, mainHS2: false};// Used to enable/disable options in the "main_space_heating_system" select
+    var isMaster = scenario === 'master';
 
     for (z in data.heating_systems) {
-        var item = data.heating_systems[z];
-        out = '<tr><td style="text-align:center">' + item.tag + '<br /><br />';
-        out += '<span class="edit-item-heating-system if-master" row="' + z + '" tag="' + item.tag + '" style="cursor:pointer; margin-right:15px" item=\'' + JSON.stringify(item) + '\' title="Editing this way is not considered a Measure"> <a><i class = "icon-edit"> </i></a></span>';
-        out += '<span class = "delete-heating-system if-master" row="' + z + '" style="cursor:pointer" title="Deleting an element this way is not considered a Measure" ><a> <i class="icon-trash" ></i></a></span>';
-        out += '<span class="apply-water-heating-measure if-not-master" type="heating_systems_measures" item-index="' + z + '" style="cursor:pointer"><button class="btn if-not-locked" style="">Apply measure</button></span><p class="heating_systems-measure-applied" item-id="' + item.id + '" style="margin-top: 10px;display:none">Measure applied</p></td><td>' + item.name + '</td>';
-        out += '<td><select style="width:100px" key="data.heating_systems.' + z + '.provides"><option value="heating">Space heating</option><option value="water">Water heating</option><option value="heating_and_water">Space and water heating</option></select></td>';
-        out += '<td class="if-SH">' + item.winter_efficiency + '</td><td class="if-WH">' + item.summer_efficiency + '</td>';
-        out += '<td><select style="width:150px" key="data.heating_systems.' + z + '.fuel">' + get_fuels_for_select() + '</select></td>';
-        out += '<td><p class="if-SH"><input style="width:55px" type="number" key="data.heating_systems.' + z + '.fraction_space" max="1" step="0.01" min="0" /></p>\n\
-        <p class="if-WH"><input style="width:55px" type="number" key="data.heating_systems.' + z + '.fraction_water_heating" max="1" step="0.01" min="0" /></td>';
-        out += '<td class="if-SH"><select style="width:100px" key="data.heating_systems.' + z + '.main_space_heating_system">';
-        if (mainHSs.mainHS1 === false) {
-            out += '<option value = "mainHS1" > Main heating system </option>';
-            out += '<option value="mainHS2_whole_house" disabled>2<sup>nd</sup > Main heating system - whole house </option>';
-            out += '<option value="mainHS2_part_of_the_house" disabled>2<sup>nd</sup > Main heating system - different part of the house </option>';
-        } else if (mainHSs.mainHS2 === false) {
-            out += '<option value = "mainHS1" disabled> Main heating system </option>';
-            out += '<option value="mainHS2_whole_house">2<sup>nd</sup > Main heating system - whole house </option>';
-            out += '<option value="mainHS2_part_of_the_house">2<sup>nd</sup > Main heating system - different part of the house </option>';
-        } else {
-            out += '<option value = "mainHS1" disabled> Main heating system </option>';
-            out += '<option value="mainHS2_whole_house" disabled>2<sup>nd</sup > Main heating system - whole house </option>';
-            out += '<option value="mainHS2_part_of_the_house" disabled>2<sup>nd</sup > Main heating system - different part of the house </option>';
-        }
+        const item = data.heating_systems[z];
+        const providesWH = item.provides === 'heating' || item.provides === 'heating_and_water';
+        const providesSH = item.provides === 'water' || item.provides === 'heating_and_water';
+
+        out = `
+            <tr style="background-color: var(--beige-800)">
+                <td colspan="10">
+                    <p>
+                        Tag: ${item.tag}<br>
+                        Name: ${item.name}
+                    </p>
+
+                    <button class="btn edit-item-heating-system if-master" row="${z}" tag="${item.tag}" style="cursor: pointer; margin-right: 15px" item='${JSON.stringify(item)}' title="Editing this way is not considered a Measure">
+                        <i class="icon-edit"></i> Edit
+                    </button>
+                    <button class="btn delete-heating-system if-master" row="${z}" title="Deleting an element this way is not considered a Measure">
+                        <i class="icon-trash"></i> Delete
+                    </button>
+                    <button class="btn apply-water-heating-measure if-not-master if-not-locked" type="heating_systems_measures" item-index="${z}">
+                        Apply measure
+                    </button>
+
+                    <p class="heating_systems-measure-applied" item-id="${item.id}" style="margin-top: 10px; display: none">
+                        Measure applied
+                    </p>
+                </td>
+            </tr>
+            <tr class="tr-no-top-border">
+                <td>
+                    <span class="small-caps">Provides</span><br>
+                    <select style="width: 200px" key="data.heating_systems.${z}.provides">
+                        <option value="heating">Space heating</option>
+                        <option value="water">Water heating</option>
+                        <option value="heating_and_water">Space and water heating</option>
+                    </select>
+
+                    <br>
+
+                    <span class="small-caps">Fuel</span><br>
+                    <select style="width: 230px" key="data.heating_systems.${z}.fuel">
+                        ${get_fuels_for_select()}
+                    </select>
+                </td>
+                <td class="stack-v">
+                    ${providesSH ? `
+                    <section>
+                        <h4 class="mt-0">Space Heating</h4>
+
+                        <div class="form-row">
+                            <label>Space heating / Winter efficiency</label>
+                            <div class="form-control">${item.winter_efficiency}</div>
+                        </div>
+
+                        <div class="form-row">
+                            <label>
+                                Main heating system?
+                                <i class='icon-question-sign' title='The main heating system is that which heats the largest proportion of the dwelling, and often provided hot water as well as space heating. If there is more than one main heating system identified, main system 1 always heats the living space. Secondary heating systems are room heaters - such as open fires or wood-stoves. If portable room heaters are used, they should be included in the calculations (note this is a deviation from standard SAP - ref p.40 SAP 9.92)'></i>
+                            </label>
+                            <select class="form-control" style="width: 200px" key="data.heating_systems.${z}.main_space_heating_system">
+                                ${get_heating_system_options(mainHSs)}
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label>
+                                Fraction of space heating provided
+                                <i class='icon-question-sign' title='This defines what proportion of the space heating or water heating for a home is provided by the system listed. For example, a standard assumption might be that a gas boiler provides 90% (0.9) of the space heating, and an open fire or room stove provides 10% (0.1). However, this can be adjusted using assessors informed judgement as required - and as many systems as are present can be included. If there are two main heating systems identified, the proportion of heat provided by each system should be taken as the relative heated floor area served by each system'></i>
+                            </label>
+                            <input class="form-control" style="width: 55px" type="number" key="data.heating_systems.${z}.fraction_space" max="1" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-row">
+                            <label>Responsiveness <i class='icon-question-sign' title='Refer to Table 4d, p.209 SAP 9.92'></i></label>
+                            <input class="form-control" style="width: 55px" type="number" key="data.heating_systems.${z}.responsiveness" max="1" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-row">
+                            <label>Temperature adjustment <i class='icon-question-sign' title='SAP2012, table 4e, p.210'></i></label>
+                            <input class="form-control" style="width: 55px" type="number" key="data.heating_systems.${z}.temperature_adjustment" max="1" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-row">
+                            <label>Space heating controls <i class='icon-question-sign' title='Refer to Table 4e, p.210 SAP 9.92'></i></label>
+                            <div class="form-control">
+                                <input key="data.heating_systems.${z}.heating_controls" ${isMaster ? '' : 'disabled'} style="width: 55px">
+                                <button class="btn if-not-locked apply-water-heating-measure if-not-master" type="space_heating_control_type" item-index="${z}">
+                                    Apply measure
+                                </button>
+
+                                <div class="space_heating_control_type-measure-applied" item-id="${item.id}" style="margin-top: 7px; display: none">
+                                    Measure applied
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Central heating pump inside dwelling?</label>
+                            <input class="form-control" type="checkbox" key="data.heating_systems.${z}.central_heating_pump_inside">
+                        </div>
+                    </section>
+                    ` : ''}
+
+                    ${providesWH ? `
+                    <section>
+                        <h4 class="mt-0">Water Heating</h4>
+
+                        <div class="form-row">
+                            <label>Water heating / Summer efficiency</label>
+                            <span>${item.summer_efficiency}</span>
+                        </div>
+
+                        <div class="form-row">
+                            <label>
+                                Fraction of water heating provided
+                                <i class='icon-question-sign' title='This defines what proportion of the space heating or water heating for a home is provided by the system listed. For example, a standard assumption might be that a gas boiler provides 90% (0.9) of the space heating, and an open fire or room stove provides 10% (0.1). However, this can be adjusted using assessors informed judgement as required - and as many systems as are present can be included. If there are two main heating systems identified, the proportion of heat provided by each system should be taken as the relative heated floor area served by each system'></i>
+                            </label>
+                            <input key="data.heating_systems.${z}.fraction_water_heating">
+                        </div>
+
+                        <div class="form-row">
+                            <label>Instantaneous water heating?</label>
+                            <input type="checkbox" key="data.heating_systems.${z}.instantaneous_water_heating">
+                        </div>
+                    </section>
+                    `: ''}
+                </td>
+            </tr>`;
+
         if (item.main_space_heating_system == 'mainHS1') {
             mainHSs.mainHS1 = true;
         } else if (item.main_space_heating_system == 'mainHS2_whole_house' || item.main_space_heating_system == 'mainHS2_part_of_the_house') {
             mainHSs.mainHS2 = true;
         }
-        out += '<option value="secondaryHS">Secondary heating system</option > </select></td >';
-        out += '<td class = "if-SH" > <input style = "width:55px" type = "number" key = "data.heating_systems.' + z + '.responsiveness" max = "1" step = "0.01" min = "0" /> </td>';
-        out += '<td class = "if-SH" > <input style = "width:55px" type = "number" key = "data.heating_systems.' + z + '.temperature_adjustment" max = "1" step = "0.01" min = "0" /> </td>';
-        out += '<td class = "if-SH" style = "text-align:center" > <input class="controls-input" style = "width:40px" type = "number" key = "data.heating_systems.' + z + '.heating_controls" max = "3" step = "1" min = "1" /> \n\
-        <br /> <span class = "apply-water-heating-measure if-not-master" type="space_heating_control_type" item-index = "' + z + '" style = "cursor:pointer" > <button class = "btn if-not-locked" > Apply measure </button></span ><p class="space_heating_control_type-measure-applied" item-id="' + item.id + '" style="margin-top: 10px;display:none">Measure applied</p></td>';
-        out += '<td class = "if-WH" > <input type = "checkbox" key = "data.heating_systems.' + z + '.instantaneous_water_heating" /> </td>';
-        out += '<td class = "if-SH" > <input type = "checkbox" key = "data.heating_systems.' + z + '.central_heating_pump_inside" /> </td>';
-        out += '</tr>';
 
-        $('#heating-systems').append(out);
-        if (scenario != 'master') {
-            $('.controls-input').attr('disabled', true);
-        }
-        switch (data.heating_systems[z].provides) {
-            case 'heating':
-                $('.if-WH').html('');
-                $('p.if-WH').hide();
-                break;
-            case 'water':
-                $('.if-SH').html('');
-                $('p.if-SH').hide();
-                break;
-            case 'heating_and_water':
-                $('[key="data.heating_systems.' + z + '.fraction_space"]').parent().html('Space: ' + $('[key="data.heating_systems.' + z + '.fraction_space"]').parent().html());
-                $('[key="data.heating_systems.' + z + '.fraction_water_heating"]').parent().html('Water: ' + $('[key="data.heating_systems.' + z + '.fraction_water_heating"]').parent().html());
-                break;
-        }
-        $('.if-WH').removeClass('if-WH');
-        $('.if-SH').removeClass('if-SH');
+        $('#heating-systems tbody').append(out);
     }
 
 }
