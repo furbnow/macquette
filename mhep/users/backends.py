@@ -39,6 +39,7 @@ class Auth0(auth0.Auth0OAuth2):
 
     ROLES_CLAIM_URL = "https://carbon.coop/auth/roles"
     GROUPS_CLAIM_URL = "https://carbon.coop/auth/groups"
+    EMAIL_CLAIM_URL = "https://carbon.coop/auth/email"
 
     # See extra_data at:
     # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html#personalized-configuration
@@ -49,6 +50,8 @@ class Auth0(auth0.Auth0OAuth2):
         data["roles"] = details["authorization.roles"]
         data["groups"] = details["authorization.groups"]
 
+        user.name = details["fullname"]
+        user.email = details["email"]
         user.is_staff = "mhep:staff" in data["roles"]
         user.is_superuser = "mhep:superuser" in data["roles"]
         user.save()
@@ -70,16 +73,11 @@ class Auth0(auth0.Auth0OAuth2):
             audience=audience,
             issuer=issuer,
         )
-        fullname, first_name, last_name = self.get_user_names(payload["name"])
 
         return {
-            "username": payload["nickname"],
-            "email": payload.get("email", False),
-            "email_verified": payload.get("email_verified", False),
-            "fullname": fullname,
-            "first_name": first_name,
-            "last_name": last_name,
+            "fullname": payload["name"],
             "user_id": payload["sub"],
+            "email": payload.get(self.EMAIL_CLAIM_URL, ""),
             "authorization.roles": payload.get(self.ROLES_CLAIM_URL, []),
             "authorization.groups": payload.get(self.GROUPS_CLAIM_URL, []),
         }
