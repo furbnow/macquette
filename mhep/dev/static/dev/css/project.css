@@ -439,12 +439,17 @@ label input[type=radio] {
 
 .form-row {
     display: flex;
-    align-items: center;
-    height: 40px;
+    align-items: first baseline;
+    min-height: 40px;
+    --form-row-width: 38ch;
+}
+
+.form-row--narrow {
+    --form-row-width: 25ch;
 }
 
 .form-row > :first-child {
-    width: 38ch;
+    width: var(--form-row-width);
     padding-right: 1ch;
 }
 
