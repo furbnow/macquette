@@ -223,6 +223,7 @@ function get_lookup(table, key) {
 function get_context_data(scenarios) {
     const hh = project.master.household;
     const commentary = project._commentary;
+    const report = project._report;
 
     return {
         front: {
@@ -231,8 +232,8 @@ function get_context_data(scenarios) {
             address: get_front_address(),
             local_authority: hh['address_la'],
             survey_date: hh['assessment_date'],
-            report_date: hh['report_date'],
-            report_version: hh['report_version'],
+            report_date: report.date,
+            report_version: report.version,
             mhep_version: VERSION,
             assessor_name: hh['assessor_name'],
         },
