@@ -857,41 +857,11 @@ libraryHelper.prototype.onShowLibraryItemsEditMode = function (library_id) {
     $('#show-library-modal-edit-mode #save').attr('disabled', 'disabled');
     // Empty message
     $('#show-library-modal-edit-mode #message').html('');
-    // Modal dimensions
-    var width = 1415;
-    switch (library.type) {
-        case 'intentional_vents_and_flues':
-            width = 1200;
-            break;
-        case 'elements':
-        case 'ventilation_systems':
-        case 'appliances_and_cooking':
-            width = 1415;
-            break;
-        case 'elements_measures':
-        case 'ventilation_systems_measures':
-        case 'draught_proofing_measures':
-        case 'extract_ventilation_points':
-        case 'generation_measures':
-        case 'heating_systems':
-        case 'heating_systems_measures':
-        case 'clothes_drying_facilities':
-        case 'space_heating_control_type':
-        case 'hot_water_control_type':
-        case 'intentional_vents_and_flues_measures':
-        case 'pipework_insulation':
-        case 'water_usage':
-        case 'storage_type':
-        case 'storage_type_measures':
-            width = 1600;
-            break;
-    }
-    var a = width + 'px';
-    $('#show-library-modal-edit-mode').css({'width': width + 'px', 'margin-left': -width / 2 + 'px'});
+
+
+    $('#show-library-modal-edit-mode').css({'width': '98vw', 'margin-left': 'calc(-49vw)'});
     // Show modal
     $('#show-library-modal-edit-mode').modal('show');
-    $('#show-library-modal-edit-mode').resizable({});
-    $('#show-library-modal-edit-mode').draggable();
     $('#show-library-modal-edit-mode').resize(function () {
         var new_height = $('#show-library-modal-edit-mode').height() - 150;
         $('#show-library-modal-edit-mode .modal-body').height(new_height);
