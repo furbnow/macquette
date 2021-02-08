@@ -1,5 +1,4 @@
 import datetime
-from collections import OrderedDict
 
 import pytest
 import pytz
@@ -39,43 +38,35 @@ class TestListOrganisations(APITestCase):
         assert response.status_code == status.HTTP_200_OK
 
         expected = [
-            OrderedDict(
-                [
-                    ("id", f"{my_org.id}"),
-                    ("name", my_org.name),
-                    ("assessments", 2),
-                    (
-                        "members",
-                        [
-                            {
-                                "id": f"{me.id}",
-                                "name": me.username,
-                                "is_admin": False,
-                                "is_librarian": True,
-                                "last_login": me.last_login.isoformat(),
-                            },
-                            {
-                                "id": f"{org_admin.id}",
-                                "name": org_admin.username,
-                                "is_admin": True,
-                                "is_librarian": False,
-                                "last_login": org_admin.last_login.isoformat(),
-                            },
-                        ],
-                    ),
-                    (
-                        "permissions",
-                        {
-                            "can_add_remove_members": False,
-                            "can_promote_demote_librarians": False,
-                        },
-                    ),
-                    ("report_template", ""),
-                ]
-            )
+            {
+                "id": f"{my_org.id}",
+                "name": my_org.name,
+                "assessments": 2,
+                "members": [
+                    {
+                        "id": f"{me.id}",
+                        "name": me.username,
+                        "is_admin": False,
+                        "is_librarian": True,
+                        "last_login": me.last_login.isoformat(),
+                    },
+                    {
+                        "id": f"{org_admin.id}",
+                        "name": org_admin.username,
+                        "is_admin": True,
+                        "is_librarian": False,
+                        "last_login": org_admin.last_login.isoformat(),
+                    },
+                ],
+                "permissions": {
+                    "can_add_remove_members": False,
+                    "can_promote_demote_librarians": False,
+                },
+                "report_template": "",
+            }
         ]
 
-        assert expected == response.data
+        assert expected == response.json()
 
     def test_returns_forbidden_if_not_logged_in(self):
         response = self.client.get(f"/{VERSION}/api/organisations/")

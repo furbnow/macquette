@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -178,13 +176,11 @@ class TestListOrganisationLibraryShares(SetUpMixin, AssertErrorMixin, APITestCas
 
         self.client.force_authenticate(self.org_admin)
         response = self.client.get(
-            f"/{VERSION}/api/organisations/{self.my_org.id}/libraries/{self.library.id}/shares/"
+            f"/{VERSION}/api/organisations/{self.my_org.id}/libraries/{self.library.id}/shares/",
         )
 
         assert status.HTTP_200_OK == response.status_code
-        expected = [
-            OrderedDict([("id", f"{self.other_org.id}"), ("name", self.other_org.name)])
-        ]
+        expected = [{"id": f"{self.other_org.id}", "name": self.other_org.name}]
 
         assert expected == response.data
 
