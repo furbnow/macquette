@@ -14,14 +14,8 @@ User = get_user_model()
 
 class CreateAssessmentTestsMixin:
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpTestData(cls):
         cls.user = UserFactory.create()
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        Assessment.objects.all().delete()
 
     def test_create_assessment_returns_expected_result_structure(self):
         self.client.force_authenticate(self.user)

@@ -7,8 +7,7 @@ from ..factories import LibraryFactory
 
 class TestCreateLibraryItem(APITestCase):
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpTestData(cls):
         cls.library = LibraryFactory.create(data={"tag1": {"name": "foo"}})
 
     def test_create_library_item(self):

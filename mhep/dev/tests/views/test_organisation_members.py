@@ -8,9 +8,7 @@ from mhep.users.tests.factories import UserFactory
 
 
 class SetUpMixin:
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(cls):
         cls.org_admin = UserFactory.create()
         cls.non_member = UserFactory.create()
         cls.member = UserFactory.create()

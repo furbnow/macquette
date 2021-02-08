@@ -10,9 +10,8 @@ from mhep.users.tests.factories import UserFactory
 
 class TestEditImageNote(APITestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpTestData(cls):
         cls.me = UserFactory.create()
-        super().setUpClass()
 
     def test_valid_note(self):
         a = factories.AssessmentFactory.create(owner=self.me)
@@ -58,9 +57,8 @@ class TestEditImageNote(APITestCase):
 
 class TestDeleteImage(APITestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpTestData(cls):
         cls.me = UserFactory.create()
-        super().setUpClass()
 
     def test_valid_image(self):
         a = factories.AssessmentFactory.create(owner=self.me)

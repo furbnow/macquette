@@ -10,14 +10,8 @@ from mhep.users.tests.factories import UserFactory
 
 class TestUpdateLibrary(APITestCase):
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpTestData(cls):
         cls.me = UserFactory.create()
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        Library.objects.all().delete()
 
     def test_update_library(self):
         with freeze_time("2019-06-01T16:35:34Z"):

@@ -11,8 +11,7 @@ from mhep.users.tests.factories import UserFactory
 
 class TestListCreateLibraries(APITestCase):
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpTestData(cls):
         cls.me = UserFactory.create()
 
     def test_list_libraries(self):
