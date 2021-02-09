@@ -1194,6 +1194,7 @@ function measureForCompleteTable(measure) {
         <div class="complete-measures-wrapper">
             <table class='complete-measures-table'>
                 <tr><th>Measure:</th>              <td>${measure.name}</td></tr>
+                <tr><th>Code:</th>                 <td>${measure.lib || measure.tag}</td></tr>
                 <tr><th>Label/location:</th>       <td>${location}</td></tr>
                 <tr><th>Description:</th>          <td>${measure.description}</td></tr>
                 <tr><th>Associated work:</th>      <td>${measure.associated_work}</td></tr>
