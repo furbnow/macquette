@@ -184,14 +184,11 @@ input[type="checkbox"] {
 }
 
 body .modal {
-    /* new custom width */
-    width: 1080px;
-    /* must be half of the width, minus scrollbar on the left (30px) */
-    margin-left: -540px;
+    max-width: 98vw;
 }
 
 .modal-body {
-    max-height: 70vh;
+    max-height: calc((100vh - 100px) / 1.5);
 }
 
 @media (max-width: 767px) {
