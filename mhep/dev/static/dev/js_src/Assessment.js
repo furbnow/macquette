@@ -20,6 +20,7 @@ export default class Assessment {
         this.update = update;
 
         this.commentary = new Commentary(this, update);
+        this.report = new Report(this, update);
     }
 
     // Get a list of scenarios: ids, titles, number (as in 'scenario 1') and whether
@@ -59,6 +60,21 @@ class Scenario {
         this.solarHotWater = new SolarHotWater(this.data, update);
         this.waterHeating = new WaterHeating(this.data, update);
         this.currentEnergy = new CurrentEnergy(this.data, update);
+    }
+}
+
+class Report {
+    constructor(assessment, update) {
+        if (!assessment.data._report) {
+            assessment.data._report = {};
+        }
+
+        properties(this, assessment.data._report, {
+            date: { type: String },
+            version: { type: String },
+        });
+
+        this.update = update;
     }
 }
 

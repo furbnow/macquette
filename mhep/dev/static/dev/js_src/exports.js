@@ -7,6 +7,7 @@ import Commentary from "./views/Commentary";
 import PageHeader from "./views/PageHeader";
 import SolarHotWater from "./views/SolarHotWater";
 import CurrentEnergy from "./views/CurrentEnergy";
+import Report from "./views/Report";
 
 import TargetBar from "./components/TargetBar";
 import Graphics from "./components/Graphics";
@@ -18,6 +19,7 @@ window.Macquette = {
         PageHeader,
         SolarHotWater,
         CurrentEnergy,
+        Report,
     },
     components: {
         TargetBar,
