@@ -71,9 +71,14 @@ coverage:  ## Run tests & generate line-by-line coverage
 upversion:  ## Mint a new version
 	scripts/upversion.sh
 
-test:  ## Run tests and flake8
+test: test-python test-js  ## Run all tests
+
+test-python:  ## Run Python tests
 	pytest --cov=mhep
 	flake8 mhep
+
+test-js:  ## Run non-browser JS tests
+	node --experimental-vm-modules node_modules/.bin/jest --watch
 
 docs:  ## Build HTML docs (for other options run make in docs/)
 	make -C docs/ html

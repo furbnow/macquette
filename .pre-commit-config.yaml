@@ -29,6 +29,7 @@ repos:
     - eslint-plugin-promise@4.2.1
     - eslint-plugin-react@7.21.5
     - eslint-plugin-react-hooks@4.2.0
+    - eslint-plugin-jest@24.1.5
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v3.3.0
