@@ -9,6 +9,8 @@ module.exports = {
     "plugin:import/errors",
     "plugin:react/recommended",
     "plugin:jsx-a11y/recommended",
+    "plugin:jest/recommended",
+    "plugin:jest/style",
     "prettier",
     "prettier/react",
   ],

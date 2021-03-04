@@ -1,3 +1,5 @@
+from typing import Set
+
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -27,7 +29,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
         AssessmentFactory.create()
         AssessmentFactory.create(organisation=OrganisationFactory.create())
 
-        assert self.fetch_organisation_assessment_ids() == [str(a1.id), str(a2.id)]
+        assert self.fetch_organisation_assessment_ids() == {str(a1.id), str(a2.id)}
 
     def test_returns_only_own_assessments_connected_to_organisation(self):
         AssessmentFactory.create(organisation=self.organisation)
@@ -38,7 +40,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
         AssessmentFactory.create(owner=self.org_member)
         AssessmentFactory.create(organisation=OrganisationFactory.create())
 
-        assert self.fetch_organisation_assessment_ids() == [str(a.id)]
+        assert self.fetch_organisation_assessment_ids() == {str(a.id)}
 
     def test_returns_only_assessments_connected_to_the_organisation(self):
         second_org = OrganisationFactory.create()
@@ -51,7 +53,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
 
         AssessmentFactory.create(organisation=second_org)
 
-        assert self.fetch_organisation_assessment_ids() == [str(a1.id), str(a2.id)]
+        assert self.fetch_organisation_assessment_ids() == {str(a1.id), str(a2.id)}
 
     def test_returns_structure_as_expected(self):
         with freeze_time("2019-06-01T16:35:34Z"):
@@ -127,14 +129,14 @@ class TestListAssessmentsForOrganisation(APITestCase):
             "detail": "You are not a member of the Organisation."
         } == response.json()
 
-    def fetch_organisation_assessment_ids(self):
+    def fetch_organisation_assessment_ids(self) -> Set[str]:
         self.client.force_authenticate(self.org_member)
         response = self.client.get(
             f"/{VERSION}/api/organisations/{self.organisation.pk}/assessments/"
         )
 
         assert response.status_code == status.HTTP_200_OK
-        return [assessment["id"] for assessment in response.data]
+        return {assessment["id"] for assessment in response.data}
 
 
 class TestCreateAssessmentForOrganisation(CreateAssessmentTestsMixin, APITestCase):
