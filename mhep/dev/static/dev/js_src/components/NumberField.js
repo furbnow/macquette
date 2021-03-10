@@ -7,12 +7,13 @@ function decimalise(s) {
     return s.replaceAll(notAllowed, '');
 }
 
-export default function NumberField({ id, units, value, setValue }) {
+export default function NumberField({ id, units, value, setValue, disabled }) {
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
         <div>
             <input
+                disabled={disabled}
                 type="text"
                 className="input-mini"
                 id={`field_${id}`}
