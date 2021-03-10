@@ -60,6 +60,63 @@ class Scenario {
         this.solarHotWater = new SolarHotWater(this.data, update);
         this.waterHeating = new WaterHeating(this.data, update);
         this.currentEnergy = new CurrentEnergy(this.data, update);
+
+        properties(this, this.data, {
+            name: { type: String, field: 'scenario_name' },
+            totalFloorArea: { type: Number, field: 'TFA' },
+            totalBuildingVolume: { type: Number, field: 'volume' },
+            region: { type: String },
+            altitude: { type: Number },
+            occupancy: { type: Number },
+            use_custom_occupancy: { type: Boolean },
+            custom_occupancy: { type: Number },
+        });
+
+        this.update = update;
+    }
+
+    getFloors() {
+        return this.data.floors.map(floor => new RoomFloor(floor, this.update));
+    }
+
+    deleteFloor(idx) {
+        this.data.floors.splice(idx, 1);
+        this.update();
+    }
+
+    addFloor() {
+        let name = "";
+        const n_floors = this.data.floors.length;
+        if (n_floors == 0) {
+            name = 'Ground Floor';
+        }
+        else if (n_floors == 1) {
+            name = '1st Floor';
+        }
+        else if (n_floors == 2) {
+            name = '2nd Floor';
+        }
+        else if (n_floors == 3) {
+            name = '3rd Floor';
+        }
+        else if (n_floors > 3) {
+            name = n_floors + 'th Floor';
+        }
+        this.data.floors.push({ name, area: 0, height: 0, volume: 0 });
+        this.update();
+    }
+}
+
+class RoomFloor {
+    constructor(floor, update) {
+        properties(this, floor, {
+            area: { type: Number },
+            name: { type: String },
+            height: { type: Number },
+            volume: { type: Number }
+        });
+
+        this.update = update;
     }
 }
 
