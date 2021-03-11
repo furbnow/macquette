@@ -23,15 +23,12 @@ class TestListUsers(APITestCase):
         response = self.client.get(f"/{VERSION}/api/users/")
         assert response.status_code == status.HTTP_200_OK
 
-        expected = sorted(
-            [
-                {"id": f"{me.id}", "name": me.username},
-                {"id": f"{user_1.id}", "name": user_1.username},
-                {"id": f"{user_2.id}", "name": user_2.username},
-            ],
-            key=lambda row: row["id"],
-        )
+        expected = [
+            {"id": f"{me.id}", "name": me.username},
+            {"id": f"{user_1.id}", "name": user_1.username},
+            {"id": f"{user_2.id}", "name": user_2.username},
+        ]
 
-        actual = sorted(response.json(), key=lambda row: row["id"])
+        actual = response.json()
 
         assert expected == actual
