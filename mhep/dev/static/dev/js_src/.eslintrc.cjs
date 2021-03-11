@@ -27,6 +27,7 @@ module.exports = {
     "no-console": 1,
     "react-hooks/rules-of-hooks": 2,
     "react-hooks/exhaustive-deps": 1,
+    "no-var": 2,
   },
   settings: { react: { version: "detect" } },
 };
