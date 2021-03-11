@@ -372,10 +372,6 @@
             $("#openbem").trigger("onKeyChange", {key: key, value: val});
 
             console.log(key + " changed from " + lastval + " to " + val);
-
-            if (key.endsWith('.scenario_name')) {
-              redraw_scenario_menu();
-            }
         }
         update();
     });
@@ -545,7 +541,7 @@
         UpdateUI(data);
         pageheader_new_values();
 
-        redraw_emissions();
+        redraw_sidebar();
 
         $("#saving_status").text("Saving...");
 
@@ -608,7 +604,7 @@
         <div class="side-block scenario-block" scenario="${id}">
             <div class="block-header block-header--clickable" style="display: flex; justify-content: space-between;">
                 <div>
-                    ${title}
+                    <span class="scenario-title">${title}</span>
                     ${locked ? '<i class="icon-lock"></i>' : ''}
                     <br>
                     ${created_from_html}
@@ -664,14 +660,24 @@
 
         redraw_emissions();
     }
+    function redraw_sidebar() {
+        redraw_scenario_names();
+        redraw_emissions();
+    }
+    function redraw_scenario_names() {
+        for (let scenarioId of get_scenario_ids(project)) {
+            const $title = $(`[scenario="${scenarioId}"] .scenario-title`);
+            $title.text(project[scenarioId].scenario_name);
+        }
+    }
     function redraw_emissions() {
         for (let scenarioId of get_scenario_ids(project)) {
             const $emissions = $(`[scenario="${scenarioId}"] .shd`)
             const space_heating_demand_m2 = project[scenarioId].space_heating_demand_m2
             if (typeof(space_heating_demand_m2) == "number" && !isNaN(space_heating_demand_m2)) {
-              $emissions.html(space_heating_demand_m2.toFixed(0));
+              $emissions.text(space_heating_demand_m2.toFixed(0));
             } else {
-              $emissions.html("-")
+              $emissions.text("-")
             }
         }
     }
