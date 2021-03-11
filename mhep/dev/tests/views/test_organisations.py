@@ -117,9 +117,7 @@ class TestListOrganisations(APITestCase):
 
 class TestListOrganisationsPermissions(APITestCase):
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
+    def setUpTestData(cls):
         cls.org = OrganisationFactory.create()
 
         cls.member_1 = UserFactory.create(

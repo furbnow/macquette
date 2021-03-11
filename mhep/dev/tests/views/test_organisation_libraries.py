@@ -11,8 +11,7 @@ from mhep.users.tests.factories import UserFactory
 
 class TestCreateOrganisationLibraries(APITestCase):
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpTestData(cls):
         cls.me = UserFactory.create()
         cls.org = OrganisationFactory.create()
         cls.org.members.add(cls.me)

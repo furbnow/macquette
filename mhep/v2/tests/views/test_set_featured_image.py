@@ -7,10 +7,8 @@ from mhep.users.tests.factories import UserFactory
 
 
 class TestSetFeaturedImage(APITestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.me = UserFactory.create()
-        super().setUpClass()
+    def setUp(self):
+        self.me = UserFactory.create()
 
     def test_invalid_id_format(self):
         a = factories.AssessmentFactory.create(owner=self.me)

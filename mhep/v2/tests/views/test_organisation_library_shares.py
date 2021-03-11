@@ -12,8 +12,7 @@ from mhep.users.tests.factories import UserFactory
 
 class SetUpMixin:
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpTestData(cls):
         cls.my_org = OrganisationFactory.create()
         cls.other_org = OrganisationFactory.create()
         cls.org_admin = UserFactory.create()
@@ -21,8 +20,9 @@ class SetUpMixin:
         cls.my_org.members.add(cls.org_admin)
         cls.my_org.admins.add(cls.org_admin)
 
-        cls.library = LibraryFactory.create(
-            owner_organisation=cls.my_org, owner_user=None
+    def setUp(self):
+        self.library = LibraryFactory.create(
+            owner_organisation=self.my_org, owner_user=None
         )
 
 

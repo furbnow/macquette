@@ -11,12 +11,10 @@ from mhep.users.tests.factories import UserFactory
 
 
 class TestListAssessmentsForOrganisation(APITestCase):
-    @classmethod
-    def setUpClass(cls):
+    def setUp(cls):
         cls.organisation = OrganisationFactory.create()
         cls.org_member = UserFactory.create()
         cls.organisation.members.add(cls.org_member)
-        super().setUpClass()
 
     def test_returns_all_assessments_connected_to_organisation_if_admin(self):
         self.organisation.admins.add(self.org_member)

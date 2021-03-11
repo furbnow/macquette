@@ -12,9 +12,8 @@ class CommonMixin:
         assert {"detail": expected_detail} == response.json()
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.library = LibraryFactory.create()
+    def setUp(self):
+        self.library = LibraryFactory.create()
 
 
 class TestCreateLibraryPermissions(CommonMixin, APITestCase):

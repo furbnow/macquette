@@ -24,10 +24,8 @@ def make_image():
 
 
 class TestUploadImage(APITestCase):
-    @classmethod
-    def setUpClass(cls):
+    def setUp(cls):
         cls.me = UserFactory.create()
-        super().setUpClass()
 
     def test_no_file(self):
         a = AssessmentFactory.create()

@@ -157,9 +157,8 @@ class TestListAssessments(APITestCase):
 
 class TestGetAssessment(APITestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpTestData(cls):
         cls.me = UserFactory.create()
-        super().setUpClass()
 
     def test_returns_result_structured_as_expected(self):
         with freeze_time("2019-06-01T16:35:34Z"):
@@ -284,18 +283,18 @@ class TestGetAssessment(APITestCase):
 
 class TestUpdateAssessment(APITestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpTestData(cls):
         cls.me = UserFactory.create()
+
+    def setUp(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            cls.assessment = AssessmentFactory.create(
-                owner=cls.me,
+            self.assessment = AssessmentFactory.create(
+                owner=self.me,
                 name="test name",
                 description="test description",
                 data={"foo": "bar"},
                 status="In progress",
             )
-
-        super().setUpClass()
 
     def test_updates_and_returns_as_expected(self):
         with freeze_time("2019-07-13T12:10:12Z"):
@@ -375,18 +374,18 @@ class TestUpdateAssessment(APITestCase):
 
 class TestDestroyAssessment(APITestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpTestData(cls):
         cls.me = UserFactory.create()
+
+    def setUp(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            cls.assessment = AssessmentFactory.create(
-                owner=cls.me,
+            self.assessment = AssessmentFactory.create(
+                owner=self.me,
                 name="test name",
                 description="test description",
                 data={"foo": "bar"},
                 status="In progress",
             )
-
-        super().setUpClass()
 
     def test_returns_204_if_user_is_owner(self):
         a = AssessmentFactory.create(
@@ -410,12 +409,12 @@ class TestDestroyAssessment(APITestCase):
 
 class TestDuplicateAssessment(APITestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpTestData(cls):
         cls.me = UserFactory.create()
-        with freeze_time("2019-06-01T16:35:34Z"):
-            cls.assessment = AssessmentFactory.create(owner=cls.me)
 
-        super().setUpClass()
+    def setUp(self):
+        with freeze_time("2019-06-01T16:35:34Z"):
+            self.assessment = AssessmentFactory.create(owner=self.me)
 
     def test_returns_200_if_user_is_owner(self):
         assessment_count = Assessment.objects.count()

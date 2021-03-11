@@ -9,10 +9,7 @@ from mhep.users.tests.factories import UserFactory
 
 
 class TestPromoteAsLibrarianPermissions(AssertErrorMixin, APITestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
+    def setUp(cls):
         cls.org = OrganisationFactory.create()
         cls.org_admin = UserFactory.create()
         cls.member_1 = UserFactory.create()
@@ -53,10 +50,7 @@ class TestPromoteAsLibrarianPermissions(AssertErrorMixin, APITestCase):
 
 
 class TestDemoteAsLibrarianPermissions(AssertErrorMixin, APITestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
+    def setUp(cls):
         cls.org = OrganisationFactory.create()
         cls.org_admin = UserFactory.create()
         cls.normal_member = UserFactory.create()
@@ -98,10 +92,7 @@ class TestDemoteAsLibrarianPermissions(AssertErrorMixin, APITestCase):
 
 
 class TestShareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
+    def setUp(cls):
         cls.my_org = OrganisationFactory.create()
         cls.org_admin = UserFactory.create()
         cls.my_org.members.add(cls.org_admin)
@@ -144,10 +135,7 @@ class TestShareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase):
 
 
 class TestAddMemberPermissions(AssertErrorMixin, APITestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
+    def setUp(cls):
         cls.org = OrganisationFactory.create()
         cls.org_admin = UserFactory.create()
         cls.member = UserFactory.create()
@@ -187,10 +175,7 @@ class TestAddMemberPermissions(AssertErrorMixin, APITestCase):
 
 
 class TestRemoveMemberPermissions(AssertErrorMixin, APITestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
+    def setUp(cls):
         cls.org = OrganisationFactory.create()
         cls.org_admin = UserFactory.create()
         cls.member = UserFactory.create()
@@ -229,10 +214,7 @@ class TestRemoveMemberPermissions(AssertErrorMixin, APITestCase):
 
 
 class TestUnshareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
+    def setUp(cls):
         cls.my_org = OrganisationFactory.create()
         cls.org_admin = UserFactory.create()
         cls.my_org.members.add(cls.org_admin)
@@ -276,10 +258,7 @@ class TestUnshareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase)
 
 
 class TestListOrganisationLibrarySharesPermissions(AssertErrorMixin, APITestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
+    def setUp(cls):
         cls.my_org = OrganisationFactory.create()
         cls.org_admin = UserFactory.create()
         cls.my_org.members.add(cls.org_admin)

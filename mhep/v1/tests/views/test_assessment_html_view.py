@@ -11,13 +11,11 @@ from mhep.users.tests.factories import UserFactory
 
 
 class TestListAssessmentsHTMLView(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.me = UserFactory()
-        cls.me.set_password("foo")
-        cls.me.save()
-        cls.my_assessment = AssessmentFactory.create(owner=cls.me)
+    def setUp(self):
+        self.me = UserFactory()
+        self.me.set_password("foo")
+        self.me.save()
+        self.my_assessment = AssessmentFactory.create(owner=self.me)
 
     def test_logged_out_users_get_redirected_to_log_in(self):
         login_url = settings.LOGIN_URL
@@ -36,13 +34,11 @@ class TestListAssessmentsHTMLView(TestCase):
 
 
 class TestAssessmentHTMLView(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.me = UserFactory()
-        cls.me.set_password("foo")
-        cls.me.save()
-        cls.my_assessment = AssessmentFactory.create(owner=cls.me)
+    def setUp(self):
+        self.me = UserFactory()
+        self.me.set_password("foo")
+        self.me.save()
+        self.my_assessment = AssessmentFactory.create(owner=self.me)
 
     def test_logged_out_users_get_redirected_to_log_in(self):
         login_url = settings.LOGIN_URL

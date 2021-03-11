@@ -2,6 +2,7 @@ from typing import Any
 from typing import Sequence
 
 import factory
+from factory.django import DjangoModelFactory
 from faker.providers import BaseProvider
 
 from ..models import Assessment
@@ -22,7 +23,7 @@ class Provider(BaseProvider):
 factory.Faker.add_provider(Provider)
 
 
-class AssessmentFactory(factory.DjangoModelFactory):
+class AssessmentFactory(DjangoModelFactory):
     name = factory.Faker("sentence")
     description = factory.Faker("paragraph")
     status = "In progress"
@@ -33,7 +34,7 @@ class AssessmentFactory(factory.DjangoModelFactory):
         model = Assessment
 
 
-class LibraryFactory(factory.DjangoModelFactory):
+class LibraryFactory(DjangoModelFactory):
     name = "Standard Library - exampleuser"
     type = "generation_measures"
     data = {}
@@ -43,7 +44,7 @@ class LibraryFactory(factory.DjangoModelFactory):
         model = Library
 
 
-class OrganisationFactory(factory.DjangoModelFactory):
+class OrganisationFactory(DjangoModelFactory):
     name = factory.Faker("company")
 
     class Meta:

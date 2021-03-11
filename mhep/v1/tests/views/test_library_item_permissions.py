@@ -11,10 +11,8 @@ class CommonMixin:
         assert expected_status == response.status_code
         assert {"detail": expected_detail} == response.json()
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.library = LibraryFactory.create(
+    def setUp(self):
+        self.library = LibraryFactory.create(
             data={"tag1": {"name": "foo"}, "tag2": {"name": "bar"}}
         )
 

@@ -12,8 +12,7 @@ from mhep.users.tests.factories import UserFactory
 
 class TestListAssessmentsHTMLView(TestCase):
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpTestData(cls):
         cls.me = UserFactory()
         cls.me.set_password("foo")
         cls.me.save()
@@ -37,8 +36,7 @@ class TestListAssessmentsHTMLView(TestCase):
 
 class TestAssessmentHTMLView(TestCase):
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpTestData(cls):
         cls.me = UserFactory()
         cls.me.set_password("foo")
         cls.me.save()
