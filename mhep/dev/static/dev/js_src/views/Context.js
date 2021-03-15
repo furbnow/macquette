@@ -5,8 +5,9 @@ import TextField from '../components/TextField';
 import NumberField from '../components/NumberField';
 import Result from '../components/Result';
 import SelectField from '../components/SelectField';
-import Regions from '../data/regions';
 import CheckboxField from '../components/CheckboxField'
+
+import regions from '../data/regions';
 
 export default function Context({ scenario }) {
     return (
@@ -115,7 +116,7 @@ export default function Context({ scenario }) {
                 <label htmlFor="field_region">UK region</label>
                 <SelectField
                     id="region"
-                    options={Regions}
+                    options={regions}
                     value={scenario.region}
                     setValue={(val) => (scenario.region = val)}
                 />
@@ -123,11 +124,10 @@ export default function Context({ scenario }) {
 
             <FormRow>
                 <label htmlFor="field_altitude">Altitude
-                <br />
-                    <a style={{ fontSize: 12 }} href="https://www.daftlogic.com/sandbox-google-maps-find-altitude.htm" target="blank">(find it here)</a>
+                    <a href="https://www.daftlogic.com/sandbox-google-maps-find-altitude.htm" target="blank"> (find it here)</a>
                 </label>
                 <NumberField
-                    id="height"
+                    id="altitude"
                     units="m"
                     value={scenario.altitude}
                     setValue={(val) => (scenario.altitude = val)}
