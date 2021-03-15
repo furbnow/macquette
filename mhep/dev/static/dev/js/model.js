@@ -201,6 +201,8 @@ calc.occupancy = function (data) {
         data.occupancy = 1;
     }
 
+    data.occupancy_SAP_value = data.occupancy;
+
     if (data.use_custom_occupancy) {
         data.occupancy = data.custom_occupancy;
     }
