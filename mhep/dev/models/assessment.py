@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from ..validators import validate_dict
@@ -49,7 +48,7 @@ class Assessment(models.Model):
         related_name="featured_on",
     )
 
-    data = JSONField(default=dict, validators=[validate_dict])
+    data = models.JSONField(default=dict, validators=[validate_dict])
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
