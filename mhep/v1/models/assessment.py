@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from ..validators import validate_dict
@@ -40,7 +39,7 @@ class Assessment(models.Model):
         max_length=20, choices=STATUS_CHOICES, default="In progress"
     )
 
-    data = JSONField(default=dict, validators=[validate_dict])
+    data = models.JSONField(default=dict, validators=[validate_dict])
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
