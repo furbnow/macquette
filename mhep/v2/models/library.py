@@ -52,6 +52,6 @@ class Library(models.Model):
                 check=(Q(owner_user__isnull=False) & Q(owner_organisation__isnull=True))
                 | (Q(owner_user__isnull=True) & Q(owner_organisation__isnull=False))
                 | (Q(owner_user__isnull=True) & Q(owner_organisation__isnull=True)),
-                name="owner_cant_be_both_user_and_organisation",
+                name="%(app_label)s_%(class)s_owner_cant_be_both_user_and_organisation",
             )
         ]
