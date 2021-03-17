@@ -68,6 +68,7 @@ class Scenario {
             region: { type: String },
             altitude: { type: Number },
             occupancy: { type: Number },
+            occupancy_SAP_value: { type: Number },
             use_custom_occupancy: { type: Boolean },
             custom_occupancy: { type: Number },
         });

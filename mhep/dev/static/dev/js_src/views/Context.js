@@ -5,7 +5,8 @@ import TextField from '../components/TextField';
 import NumberField from '../components/NumberField';
 import Result from '../components/Result';
 import SelectField from '../components/SelectField';
-import CheckboxField from '../components/CheckboxField'
+import OnOffToggleButton from '../components/OnOffToggleButton';
+import Tooltip from '../components/Tooltip';
 
 import regions from '../data/regions';
 
@@ -13,7 +14,6 @@ export default function Context({ scenario }) {
     return (
         <section>
             <h3 className="line-top mt-0">Context</h3>
-
             <FormRow>
                 <label htmlFor="field_scenario_name">Scenario name</label>
                 <TextField
@@ -124,7 +124,7 @@ export default function Context({ scenario }) {
 
             <FormRow>
                 <label htmlFor="field_altitude">Altitude
-                    <a href="https://www.daftlogic.com/sandbox-google-maps-find-altitude.htm" target="blank"> (find it here)</a>
+        <a href="https://www.daftlogic.com/sandbox-google-maps-find-altitude.htm" target="blank"> (find it here)</a>
                 </label>
                 <NumberField
                     id="altitude"
@@ -137,29 +137,36 @@ export default function Context({ scenario }) {
             <h4>Occupancy</h4>
 
             <FormRow>
-                <span>SAP Occupancy based on floor area</span>
-                <Result
-                    val={scenario.occupancy}
-                    dp="1"
-                />
-            </FormRow>
-
-            <FormRow>
-                <label htmlFor="field_use_custom_occupancy">Use custom occupancy figure?</label>
-                <CheckboxField
-                    id="use_custom_occupancy"
+                {!scenario.use_custom_occupancy
+                    ? (
+                        <>
+                            <label htmlFor="field_occupancy">Occupancy according to SAP
+                                <Tooltip>Based on floor area</Tooltip>
+                            </label>
+                            <NumberField
+                                disabled
+                                id="occupancy"
+                                value={scenario.occupancy.toFixed(1)}
+                                setValue={(val) => (scenario.occupancy = val)}
+                            />
+                        </>
+                    )
+                    : (
+                        <>
+                            <label htmlFor="field_occupancy">Custom occupancy</label>
+                            <NumberField
+                                id="occupancy"
+                                value={scenario.custom_occupancy.toFixed(1)}
+                                setValue={(val) => (scenario.custom_occupancy = val)}
+                            />
+                        </>
+                    )
+                }
+                <OnOffToggleButton
+                    onTitle={`Use SAP value (${scenario.occupancy_SAP_value.toFixed(1)})`}
+                    offTitle="Override"
                     value={scenario.use_custom_occupancy}
                     setValue={(val) => (scenario.use_custom_occupancy = val)}
-                />
-            </FormRow>
-
-            <FormRow>
-                <label htmlFor="field_custom_occupancy">Custom occupancy</label>
-                <NumberField
-                    disabled={!scenario.use_custom_occupancy}
-                    id="custom_occupancy"
-                    value={scenario.custom_occupancy}
-                    setValue={(val) => (scenario.custom_occupancy = val)}
                 />
             </FormRow>
 
