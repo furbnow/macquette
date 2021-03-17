@@ -10,10 +10,10 @@ import Tooltip from '../components/Tooltip';
 
 import regions from '../data/regions';
 
-export default function Context({ scenario }) {
+export default function DwellingData({ scenario }) {
     return (
         <section>
-            <h3 className="line-top mt-0">Context</h3>
+            <h3 className="line-top mt-0">Dwelling Data</h3>
             <FormRow>
                 <label htmlFor="field_scenario_name">Scenario name</label>
                 <TextField

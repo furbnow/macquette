@@ -155,7 +155,7 @@ function getValuesForScenarios(value) {
 function compareCarbonCoop(scenario) {
 
     var out = '';
-    // Basic dwelling data
+    // Dwelling data
     var properties_to_check = [
         ['Region', 'region'],
         ['Altitude', 'altitude'],
@@ -165,7 +165,7 @@ function compareCarbonCoop(scenario) {
     ];
     var BDD = comparePropertiesInArray(scenario, properties_to_check);
     if (BDD.changed === true) {
-        out += '<h4>Basic dwelling data</h4><table class="table table-striped">' + BDD.html + '</table>';
+        out += '<h4>Dwelling data</h4><table class="table table-striped">' + BDD.html + '</table>';
     }
     // Ventilation
     var Vent = compareVentilation(scenario);
