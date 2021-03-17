@@ -4,7 +4,7 @@ import { render, unmountComponentAtNode } from "react-dom";
 import Assessment from "./Assessment";
 
 import Commentary from "./views/Commentary";
-import Context from "./views/Context";
+import DwellingData from "./views/DwellingData";
 import PageHeader from "./views/PageHeader";
 import SolarHotWater from "./views/SolarHotWater";
 import CurrentEnergy from "./views/CurrentEnergy";
@@ -17,7 +17,7 @@ window.Macquette = {
     Assessment,
     views: {
         Commentary,
-        Context,
+        DwellingData,
         PageHeader,
         SolarHotWater,
         CurrentEnergy,
