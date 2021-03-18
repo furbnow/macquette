@@ -428,7 +428,8 @@ Returns:
        ...                     # All other fields the same
    }
 
-## Delete an image
+Delete an image
+---------------
 
 ::
 
