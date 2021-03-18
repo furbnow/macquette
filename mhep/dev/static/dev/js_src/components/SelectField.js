@@ -1,19 +1,13 @@
 import React from 'react';
-import useExternalState from '../hooks/useExternalState';
 
 // 'options' is an array of { value: String, display: String }
 function SelectField({ id, options, value, setValue }) {
-    const [current, monitor, setCurrent] = useExternalState(value);
     return (
         <select
-            value={current}
+            value={value}
             id={`field_${id}`}
-            onChange={(evt) => setCurrent(evt.target.value)}
-            onBlur={() => {
-                if (current !== monitor) {
-                    setValue(current);
-                }
-            }}
+            onChange={(evt) => setValue(evt.target.value)}
+            onBlur={(evt) => setValue(evt.target.value)}
         >
             <option hidden>Select one...</option>
             {options.map((opt, i) => (
