@@ -1,40 +1,6 @@
 v1 API endpoints
 ================
 
--  `List assessments <#list-assessments>`__
--  `List assessments for
-   organisation <#list-assessments-for-organisation>`__
--  `Get assessment <#get-assessment>`__
--  `Create assessment <#create-assessment>`__
--  `Create assessment for
-   organisation <#create-assessment-for-organisation>`__
--  `Update a field on assessment <#update-a-field-on-assessment>`__
--  `Delete assessment <#delete-assessment>`__
--  `List users <#list-users>`__
--  `List organisations <#list-organisations>`__
--  `Add member to organisation <#add-member-to-organisation>`__
--  `Remove member from
-   organisation <#remove-member-from-organisation>`__
--  `Set organisation user as
-   librarian <#set-organisation-user-as-librarian>`__
--  `Unset organisation user as
-   librarian <#unset-organisation-user-as-librarian>`__
--  `List libraries <#list-libraries>`__
--  `Create a library <#create-a-library>`__
--  `Create a library for
-   organisation <#create-a-library-for-organisation>`__
--  `Update a library <#update-a-library>`__
--  `Share an organisation library with another
-   organisation <#share-an-organisation-library-with-another-organisation>`__
--  `Unshare an organisation library with another
-   organisation <#unshare-an-organisation-library-with-another-organisation>`__
--  `List organisations a library is shared
-   with <#list-organisations-a-library-is-shared-with>`__
--  `Delete a library <#delete-a-library>`__
--  `Create item in library <#create-item-in-library>`__
--  `Update item in library <#update-item-in-library>`__
--  `Delete item in library <#delete-item-in-library>`__
-
 All endpoints start with ``/v1/api`` e.g.
 ``http://localhost:9090/v1/api/assessments/``.
 
@@ -360,7 +326,8 @@ Returns:
 
    HTTP 204 No content
 
-## Upload an image to the image gallery
+Upload an image to the image gallery
+------------------------------------
 
 ::
 
@@ -395,7 +362,8 @@ Returns:
        "is_featured": false
    }
 
-## Changing the featured image
+Changing the featured image
+---------------------------
 
 ::
 
