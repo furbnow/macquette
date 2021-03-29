@@ -11,11 +11,6 @@ from .models import Organisation
 User = get_user_model()
 
 
-class StringIDMixin:
-    def get_id(self, obj):
-        return "{:d}".format(obj.id)
-
-
 class MdateMixin:
     def get_mdate(self, obj):
         return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
@@ -29,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
     to be able to edit user data.
     """
 
-    id = serializers.CharField()
+    id = serializers.CharField(read_only=True)
     name = serializers.CharField()
     email = serializers.CharField()
 
@@ -41,7 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
 class OrganizationSerializer(serializers.ModelSerializer):
     """An organisation's details."""
 
-    id = serializers.CharField()
+    id = serializers.CharField(read_only=True)
     name = serializers.CharField()
 
     class Meta:
@@ -96,12 +91,8 @@ class ImageUpdateSerializer(serializers.Serializer):
     note = serializers.CharField(max_length=200)
 
 
-class AssessmentMetadataSerializer(
-    MdateMixin,
-    StringIDMixin,
-    serializers.ModelSerializer,
-):
-    id = serializers.SerializerMethodField()
+class AssessmentMetadataSerializer(MdateMixin, serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
     mdate = serializers.SerializerMethodField()
     user = UserSerializer(source="owner", read_only=True)
     organisation = OrganizationSerializer(read_only=True)
@@ -151,8 +142,8 @@ class AssessmentFullSerializer(ImagesMixin, AssessmentMetadataSerializer):
         ]
 
 
-class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
+class LibrarySerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
     permissions = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
 
@@ -216,8 +207,8 @@ class LibraryItemSerializer(serializers.Serializer):
     item = serializers.DictField(allow_empty=False)
 
 
-class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
+class OrganisationSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
     permissions = serializers.SerializerMethodField()
     assessments = serializers.SerializerMethodField()
     members = serializers.SerializerMethodField()
@@ -272,8 +263,8 @@ class OrganisationMetadataSerializer(OrganisationSerializer):
         fields = ["id", "name"]
 
 
-class UserSerializer(StringIDMixin, serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
+class UserSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
     name = serializers.SerializerMethodField()
 
     class Meta:
