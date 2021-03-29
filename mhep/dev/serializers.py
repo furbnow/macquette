@@ -11,11 +11,6 @@ from .models import Organisation
 User = get_user_model()
 
 
-class MdateMixin:
-    def get_mdate(self, obj):
-        return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
-
-
 class UserSerializer(serializers.ModelSerializer):
     """
     A user's details.
@@ -91,11 +86,14 @@ class ImageUpdateSerializer(serializers.Serializer):
     note = serializers.CharField(max_length=200)
 
 
-class AssessmentMetadataSerializer(MdateMixin, serializers.ModelSerializer):
+class AssessmentMetadataSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     mdate = serializers.SerializerMethodField()
     user = UserSerializer(source="owner", read_only=True)
     organisation = OrganisationMetadataSerializer(read_only=True)
+
+    def get_mdate(self, obj):
+        return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
 
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
