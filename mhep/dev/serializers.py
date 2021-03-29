@@ -11,14 +11,6 @@ from .models import Organisation
 User = get_user_model()
 
 
-class OrganisationMixin:
-    def get_organisation(self, obj):
-        if obj.organisation:
-            return {"id": obj.organisation.id, "name": obj.organisation.name}
-        else:
-            return None
-
-
 class StringIDMixin:
     def get_id(self, obj):
         return "{:d}".format(obj.id)
@@ -29,9 +21,9 @@ class MdateMixin:
         return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
 
 
-class UserSerializer(StringIDMixin, serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     """
-    A user's details
+    A user's details.
 
     Be careful to specify read_only when using this serializer unless you want the API
     to be able to edit user data.
@@ -44,6 +36,17 @@ class UserSerializer(StringIDMixin, serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "name", "email"]
+
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    """An organisation's details."""
+
+    id = serializers.CharField()
+    name = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ["id", "name"]
 
 
 class ImagesMixin:
@@ -95,14 +98,13 @@ class ImageUpdateSerializer(serializers.Serializer):
 
 class AssessmentMetadataSerializer(
     MdateMixin,
-    OrganisationMixin,
     StringIDMixin,
     serializers.ModelSerializer,
 ):
     id = serializers.SerializerMethodField()
     mdate = serializers.SerializerMethodField()
     user = UserSerializer(source="owner", read_only=True)
-    organisation = serializers.SerializerMethodField()
+    organisation = OrganizationSerializer(read_only=True)
 
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user

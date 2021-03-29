@@ -82,7 +82,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
                 "email": self.org_member.email,
             },
             "organisation": {
-                "id": self.organisation.pk,
+                "id": f"{self.organisation.pk}",
                 "name": self.organisation.name,
             },
         }

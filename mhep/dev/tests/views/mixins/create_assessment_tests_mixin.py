@@ -44,7 +44,7 @@ class CreateAssessmentTestsMixin:
 
         if hasattr(self, "organisation"):
             expected_result["organisation"] = {
-                "id": self.organisation.pk,
+                "id": f"{self.organisation.pk}",
                 "name": self.organisation.name,
             }
         else:
