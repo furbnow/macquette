@@ -11,14 +11,6 @@ from .models import Organisation
 User = get_user_model()
 
 
-class AuthorUserIDMixin:
-    def get_author(self, obj):
-        return obj.owner.username
-
-    def get_userid(self, obj):
-        return "{:d}".format(obj.owner.id)
-
-
 class OrganisationMixin:
     def get_organisation(self, obj):
         if obj.organisation:
@@ -35,6 +27,23 @@ class StringIDMixin:
 class MdateMixin:
     def get_mdate(self, obj):
         return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
+
+
+class UserSerializer(StringIDMixin, serializers.ModelSerializer):
+    """
+    A user's details
+
+    Be careful to specify read_only when using this serializer unless you want the API
+    to be able to edit user data.
+    """
+
+    id = serializers.CharField()
+    name = serializers.CharField()
+    email = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ["id", "name", "email"]
 
 
 class ImagesMixin:
@@ -88,15 +97,12 @@ class AssessmentMetadataSerializer(
     MdateMixin,
     OrganisationMixin,
     StringIDMixin,
-    AuthorUserIDMixin,
     serializers.ModelSerializer,
 ):
-
-    author = serializers.SerializerMethodField()
-    organisation = serializers.SerializerMethodField()
-    userid = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
     mdate = serializers.SerializerMethodField()
+    user = UserSerializer(source="owner", read_only=True)
+    organisation = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
@@ -112,8 +118,7 @@ class AssessmentMetadataSerializer(
             "status",
             "created_at",
             "updated_at",
-            "author",
-            "userid",
+            "user",
             "organisation",
             "mdate",
         ]
@@ -136,8 +141,7 @@ class AssessmentFullSerializer(ImagesMixin, AssessmentMetadataSerializer):
             "status",
             "created_at",
             "updated_at",
-            "author",
-            "userid",
+            "user",
             "organisation",
             "mdate",
             "images",

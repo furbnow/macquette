@@ -35,8 +35,11 @@ class CreateAssessmentTestsMixin:
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description 1",
-            "author": self.user.username,
-            "userid": f"{self.user.id}",
+            "user": {
+                "id": f"{self.user.id}",
+                "name": self.user.name,
+                "email": self.user.email,
+            },
         }
 
         if hasattr(self, "organisation"):
