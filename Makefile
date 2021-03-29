@@ -78,6 +78,9 @@ test-python:  ## Run Python tests
 	flake8 mhep
 
 test-js:  ## Run non-browser JS tests
+	node --experimental-vm-modules node_modules/.bin/jest
+
+test-js-watch:  ## Run non-browser JS tests (watch mode)
 	node --experimental-vm-modules node_modules/.bin/jest --watch
 
 docs:  ## Build HTML docs (for other options run make in docs/)
