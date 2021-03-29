@@ -263,18 +263,6 @@ class OrganisationMetadataSerializer(OrganisationSerializer):
         fields = ["id", "name"]
 
 
-class UserSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(read_only=True)
-    name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ["id", "name"]
-
-    def get_name(self, user):
-        return user.username
-
-
 class OrganisationLibrarianSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
