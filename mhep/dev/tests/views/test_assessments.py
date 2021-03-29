@@ -91,7 +91,10 @@ class TestListAssessments(APITestCase):
                 "id": f"{user.id}",
                 "email": user.email,
             },
-            "organisation": {"id": organisation.pk, "name": organisation.name},
+            "organisation": {
+                "id": f"{organisation.pk}",
+                "name": organisation.name,
+            },
         }
         assert expected_structure == response.data.pop()
 

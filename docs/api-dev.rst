@@ -33,7 +33,6 @@ Returns:
            "id": "1",
            "name": "Example assessment",
            "description": "Example description",
-           "openbem_version": "10.1.1",
            "status": "In progress",
            "created_at": "2019-08-15T15:25:37.634182Z",
            "updated_at": "2019-08-21T10:40:58.830425Z",
@@ -78,7 +77,6 @@ Returns:
            "id": "1",
            "name": "Example assessment",
            "description": "Example description",
-           "openbem_version": "10.1.1",
            "status": "In progress",
            "created_at": "2019-08-15T15:25:37.634182Z",
            "updated_at": "2019-08-21T10:40:58.830425Z",
@@ -120,7 +118,6 @@ Returns:
        "id": "1",
        "name": "Example assessment",
        "description": "Example description",
-       "openbem_version": "10.1.1",
        "status": "In progress",
        "created_at": "2019-08-15T15:25:37.634182Z",
        "updated_at": "2019-08-21T10:40:58.830425Z",
@@ -179,7 +176,6 @@ Example
    {
        "name": "Example assessment",
        "description": "Example description",
-       "openbem_version": "10.1.1"
    }
    EOF
 
@@ -194,7 +190,6 @@ Returns:
        "id": 6,
        "name": "Example assesment",
        "description": "Example description",
-       "openbem_version": "10.1.1",
        "status": "In progress",
        "created_at": "2019-06-01T16:35:34Z",
        "updated_at": "2019-06-01T16:35:34Z",
@@ -230,7 +225,6 @@ Example
    {
        "name": "Example assessment",
        "description": "Example description",
-       "openbem_version": "10.1.1"
    }
    EOF
 
@@ -245,7 +239,6 @@ Returns:
        "id": 6,
        "name": "Example assesment",
        "description": "Example description",
-       "openbem_version": "10.1.1",
        "status": "In progress",
        "created_at": "2019-06-01T16:35:34Z",
        "updated_at": "2019-06-01T16:35:34Z",

@@ -24,9 +24,9 @@ class TestListUsers(APITestCase):
         assert response.status_code == status.HTTP_200_OK
 
         expected = [
-            {"id": f"{me.id}", "name": me.username},
-            {"id": f"{user_1.id}", "name": user_1.username},
-            {"id": f"{user_2.id}", "name": user_2.username},
+            {"id": f"{me.id}", "name": me.name, "email": me.email},
+            {"id": f"{user_1.id}", "name": user_1.name, "email": user_1.email},
+            {"id": f"{user_2.id}", "name": user_2.name, "email": user_2.email},
         ]
 
         actual = response.json()

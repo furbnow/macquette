@@ -11,39 +11,32 @@ from .models import Organisation
 User = get_user_model()
 
 
-class OrganisationMixin:
-    def get_organisation(self, obj):
-        if obj.organisation:
-            return {"id": obj.organisation.id, "name": obj.organisation.name}
-        else:
-            return None
-
-
-class StringIDMixin:
-    def get_id(self, obj):
-        return "{:d}".format(obj.id)
-
-
-class MdateMixin:
-    def get_mdate(self, obj):
-        return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
-
-
-class UserSerializer(StringIDMixin, serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     """
-    A user's details
+    A user's details.
 
     Be careful to specify read_only when using this serializer unless you want the API
     to be able to edit user data.
     """
 
-    id = serializers.CharField()
+    id = serializers.CharField(read_only=True)
     name = serializers.CharField()
     email = serializers.CharField()
 
     class Meta:
         model = User
         fields = ["id", "name", "email"]
+
+
+class OrganisationMetadataSerializer(serializers.ModelSerializer):
+    """An organisation's details."""
+
+    id = serializers.CharField(read_only=True)
+    name = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ["id", "name"]
 
 
 class ImagesMixin:
@@ -93,16 +86,14 @@ class ImageUpdateSerializer(serializers.Serializer):
     note = serializers.CharField(max_length=200)
 
 
-class AssessmentMetadataSerializer(
-    MdateMixin,
-    OrganisationMixin,
-    StringIDMixin,
-    serializers.ModelSerializer,
-):
-    id = serializers.SerializerMethodField()
+class AssessmentMetadataSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
     mdate = serializers.SerializerMethodField()
     user = UserSerializer(source="owner", read_only=True)
-    organisation = serializers.SerializerMethodField()
+    organisation = OrganisationMetadataSerializer(read_only=True)
+
+    def get_mdate(self, obj):
+        return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
 
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
@@ -149,8 +140,8 @@ class AssessmentFullSerializer(ImagesMixin, AssessmentMetadataSerializer):
         ]
 
 
-class LibrarySerializer(StringIDMixin, serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
+class LibrarySerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
     permissions = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
 
@@ -214,8 +205,8 @@ class LibraryItemSerializer(serializers.Serializer):
     item = serializers.DictField(allow_empty=False)
 
 
-class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
+class OrganisationSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
     permissions = serializers.SerializerMethodField()
     assessments = serializers.SerializerMethodField()
     members = serializers.SerializerMethodField()
@@ -242,7 +233,8 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
         def userinfo(user):
             return {
                 "id": f"{user.id}",
-                "name": user.username,
+                "name": user.name,
+                "email": user.email,
                 "last_login": user.last_login.isoformat()
                 if user.last_login
                 else "never",
@@ -258,28 +250,6 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
             "can_add_remove_members": user in org.admins.all(),
             "can_promote_demote_librarians": user in org.admins.all(),
         }
-
-
-class OrganisationMetadataSerializer(OrganisationSerializer):
-    """
-    OrganisationMetadataSerializer serializes the id and name of an organisation.
-    """
-
-    class Meta:
-        model = Organisation
-        fields = ["id", "name"]
-
-
-class UserSerializer(StringIDMixin, serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ["id", "name"]
-
-    def get_name(self, user):
-        return user.username
 
 
 class OrganisationLibrarianSerializer(serializers.ModelSerializer):
