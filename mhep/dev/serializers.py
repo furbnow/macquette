@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "email"]
 
 
-class OrganizationSerializer(serializers.ModelSerializer):
+class OrganisationMetadataSerializer(serializers.ModelSerializer):
     """An organisation's details."""
 
     id = serializers.CharField(read_only=True)
@@ -95,7 +95,7 @@ class AssessmentMetadataSerializer(MdateMixin, serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     mdate = serializers.SerializerMethodField()
     user = UserSerializer(source="owner", read_only=True)
-    organisation = OrganizationSerializer(read_only=True)
+    organisation = OrganisationMetadataSerializer(read_only=True)
 
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
@@ -251,16 +251,6 @@ class OrganisationSerializer(serializers.ModelSerializer):
             "can_add_remove_members": user in org.admins.all(),
             "can_promote_demote_librarians": user in org.admins.all(),
         }
-
-
-class OrganisationMetadataSerializer(OrganisationSerializer):
-    """
-    OrganisationMetadataSerializer serializes the id and name of an organisation.
-    """
-
-    class Meta:
-        model = Organisation
-        fields = ["id", "name"]
 
 
 class OrganisationLibrarianSerializer(serializers.ModelSerializer):
