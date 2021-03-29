@@ -444,7 +444,7 @@
         $('#modal-create-scenario').modal('hide');
 
         scenario = s;
-        page = 'context';
+        page = 'dwellingdata';
         update();
         $(".scenario-block[scenario=" + s + "] .block-header").click();
         $(window).scrollTop(0);
@@ -464,7 +464,7 @@
             delete project[s];
         $(`.scenario-block[scenario=${s}] .block-header`).hide();
         scenario = 'master';
-        page = "context"
+        page = "dwellingdata"
 
         update();
         $("#modal-delete-scenario").modal("hide");
@@ -727,7 +727,7 @@
         let oldScenario = scenario;
 
         var tmp = (window.location.hash).substring(1).split('/');
-        page = tmp[1] || "context";
+        page = tmp[1] || "dwellingdata";
         scenario = tmp[0] || "master";
 
         if (project[scenario] == undefined)
