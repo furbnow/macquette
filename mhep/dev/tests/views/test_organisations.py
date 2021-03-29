@@ -45,14 +45,16 @@ class TestListOrganisations(APITestCase):
                 "members": [
                     {
                         "id": f"{me.id}",
-                        "name": me.username,
+                        "name": me.name,
+                        "email": me.email,
                         "is_admin": False,
                         "is_librarian": True,
                         "last_login": me.last_login.isoformat(),
                     },
                     {
                         "id": f"{org_admin.id}",
-                        "name": org_admin.username,
+                        "name": org_admin.name,
+                        "email": org_admin.email,
                         "is_admin": True,
                         "is_librarian": False,
                         "last_login": org_admin.last_login.isoformat(),
@@ -151,14 +153,16 @@ class TestListOrganisationsPermissions(APITestCase):
         expected_members = [
             {
                 "id": f"{self.member_1.id}",
-                "name": self.member_1.username,
+                "name": self.member_1.name,
+                "email": self.member_1.email,
                 "is_admin": False,
                 "is_librarian": False,
                 "last_login": self.member_1.last_login.isoformat(),
             },
             {
                 "id": f"{self.org_admin.id}",
-                "name": self.org_admin.username,
+                "name": self.org_admin.name,
+                "email": self.org_admin.email,
                 "is_admin": True,
                 "is_librarian": False,
                 "last_login": self.org_admin.last_login.isoformat(),
