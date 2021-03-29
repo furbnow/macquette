@@ -50,8 +50,11 @@ class TestListAssessments(APITestCase):
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description",
-            "author": user.username,
-            "userid": f"{user.id}",
+            "user": {
+                "name": user.name,
+                "id": f"{user.id}",
+                "email": user.email,
+            },
             "organisation": None,
         }
 
@@ -83,8 +86,11 @@ class TestListAssessments(APITestCase):
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description",
-            "author": user.username,
-            "userid": f"{user.id}",
+            "user": {
+                "name": user.name,
+                "id": f"{user.id}",
+                "email": user.email,
+            },
             "organisation": {"id": organisation.pk, "name": organisation.name},
         }
         assert expected_structure == response.data.pop()
@@ -184,8 +190,11 @@ class TestGetAssessment(APITestCase):
             "status": "In progress",
             "name": "test name",
             "description": "test description",
-            "author": self.me.username,
-            "userid": f"{self.me.id}",
+            "user": {
+                "name": self.me.name,
+                "id": f"{self.me.id}",
+                "email": self.me.email,
+            },
             "organisation": None,
             "images": [
                 {
@@ -223,8 +232,11 @@ class TestGetAssessment(APITestCase):
             "organisation": None,
             # defaults:
             "description": "",
-            "author": self.me.username,
-            "userid": f"{self.me.id}",
+            "user": {
+                "name": self.me.name,
+                "id": f"{self.me.id}",
+                "email": self.me.email,
+            },
             "status": "In progress",
             "images": [],
             "data": {},

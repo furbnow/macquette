@@ -379,7 +379,7 @@
             let statusColour = status_colours[assessment.status]
             let assessmentURL = urlHelper.html.assessment(assessment.id);
 
-            let owner = `${assessment.author}`;
+            let owner = `${assessment.user.name}`;
             if (assessment.organisation) {
                 owner += `<br><small>(${assessment.organisation.name})</small>`
             }

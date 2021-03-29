@@ -76,8 +76,11 @@ class TestListAssessmentsForOrganisation(APITestCase):
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description",
-            "author": self.org_member.username,
-            "userid": f"{self.org_member.id}",
+            "user": {
+                "id": f"{self.org_member.id}",
+                "name": self.org_member.name,
+                "email": self.org_member.email,
+            },
             "organisation": {
                 "id": self.organisation.pk,
                 "name": self.organisation.name,
