@@ -13,4 +13,4 @@ class ListUsers(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsAdminOfAnyOrganisation]
 
     def get_queryset(self, *args, **kwargs):
-        return User.objects.all()
+        return User.objects.all().order_by("id")
