@@ -19,3 +19,9 @@ class Organisation(models.Model):
 
     def __str__(self):
         return self.name
+
+    def can_add_remove_members(self, user: User):
+        return user in self.admins.all()
+
+    def can_promote_demote_librarians(self, user: User):
+        return user in self.admins.all()

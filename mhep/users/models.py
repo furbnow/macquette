@@ -11,3 +11,11 @@ class User(AbstractUser):
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})
+
+    def can_list_organisations(self) -> bool:
+        """Only users that are admins of something can list organisations."""
+        return self.is_staff or self.organisations_where_admin.exists()
+
+    def can_list_users(self) -> bool:
+        """Only users that are admins of something can list users."""
+        return self.organisations_where_admin.exists()

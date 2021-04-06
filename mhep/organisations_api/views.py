@@ -7,8 +7,10 @@ from rest_framework.response import Response
 
 from . import serializers
 from .exceptions import BadRequest
-from .permissions import IsAdminOfAnyOrganisation
-from .permissions import IsAdminOfOrganisation
+from .permissions import CanAddRemoveMembers
+from .permissions import CanListOrganisations
+from .permissions import CanListUsers
+from .permissions import CanPromoteDemoteLibrarians
 
 
 User = get_user_model()
@@ -16,7 +18,7 @@ User = get_user_model()
 
 class ListUsers(generics.ListAPIView):
     serializer_class = serializers.UserSerializer
-    permission_classes = [IsAuthenticated, IsAdminOfAnyOrganisation]
+    permission_classes = [IsAuthenticated, CanListUsers]
 
     def get_queryset(self, *args, **kwargs):
         return User.objects.all()
@@ -24,7 +26,7 @@ class ListUsers(generics.ListAPIView):
 
 class ListOrganisations(generics.ListAPIView):
     serializer_class = serializers.OrganisationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanListOrganisations]
 
     def get_queryset(self, *args, **kwargs):
         return self.request.user.organisations.all()
@@ -32,7 +34,7 @@ class ListOrganisations(generics.ListAPIView):
 
 class CreateDeleteOrganisationMembers(generics.UpdateAPIView):
     serializer_class = serializers.OrganisationMemberSerializer
-    permission_classes = [IsAuthenticated, IsAdminOfOrganisation]
+    permission_classes = [IsAuthenticated, CanAddRemoveMembers]
 
     def get_queryset(self, *args, **kwargs):
         return self.request.user.organisations.all()
@@ -63,7 +65,7 @@ class CreateDeleteOrganisationMembers(generics.UpdateAPIView):
 
 class CreateDeleteOrganisationLibrarians(generics.UpdateAPIView):
     serializer_class = serializers.OrganisationLibrarianSerializer
-    permission_classes = [IsAuthenticated, IsAdminOfOrganisation]
+    permission_classes = [IsAuthenticated, CanPromoteDemoteLibrarians]
 
     def get_queryset(self, *args, **kwargs):
         return self.request.user.organisations

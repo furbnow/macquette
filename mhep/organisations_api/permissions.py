@@ -4,7 +4,7 @@ from rest_framework import permissions
 from mhep.organisations.models import Organisation
 
 
-class IsAdminOfOrganisation(permissions.BasePermission):
+class CanAddRemoveMembers(permissions.BasePermission):
     message = "You are not an admin of the Organisation."
 
     def has_permission(self, request, view):
@@ -12,13 +12,29 @@ class IsAdminOfOrganisation(permissions.BasePermission):
             organisation = Organisation.objects.get(pk=view.kwargs["pk"])
         except Organisation.DoesNotExist:
             raise exceptions.NotFound("Organisation not found")
-        return request.user in organisation.admins.all()
+        return organisation.can_add_remove_members(request.user)
 
 
-class IsAdminOfAnyOrganisation(permissions.BasePermission):
-    message = "You are not an admin of an organisation."
+class CanPromoteDemoteLibrarians(permissions.BasePermission):
+    message = "You are not an admin of the Organisation."
 
     def has_permission(self, request, view):
-        orgs_where_admin = request.user.organisations_where_admin
+        try:
+            organisation = Organisation.objects.get(pk=view.kwargs["pk"])
+        except Organisation.DoesNotExist:
+            raise exceptions.NotFound("Organisation not found")
+        return organisation.can_promote_demote_librarians(request.user)
 
-        return orgs_where_admin.count() > 0
+
+class CanListOrganisations(permissions.BasePermission):
+    message = "You are not an admin of an organisation."
+
+    def has_permission(self, request, view) -> bool:
+        return request.user.can_list_organisations()
+
+
+class CanListUsers(permissions.BasePermission):
+    message = "You are not an admin of an organisation."
+
+    def has_permission(self, request, view) -> bool:
+        return request.user.can_list_users()
