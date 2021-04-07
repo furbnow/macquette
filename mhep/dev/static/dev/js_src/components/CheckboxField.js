@@ -6,7 +6,7 @@ export default function CheckboxField({ id, value, setValue }) {
             type="checkbox"
             id={`field_${id}`}
             onChange={(evt) => setValue(evt.target.checked)}
-            checked={value}
+            checked={value ? true : false}
         />
     );
 }
