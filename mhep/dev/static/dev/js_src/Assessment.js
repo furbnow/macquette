@@ -45,7 +45,7 @@ export default class Assessment {
             id,
             title: this.data[id].scenario_name,
             isBaseline: id === 'master',
-            num: id === 'master' ? 0 : parseInt(id.replaceAll(/scenario/g, ''), 10),
+            num: id === 'master' ? 0 : parseInt(id.replace(/scenario/g, ''), 10),
         }));
     }
 

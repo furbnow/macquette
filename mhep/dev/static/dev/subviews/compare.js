@@ -1100,68 +1100,10 @@ function format_performance_string(performance) {
 //*******************************************
 
 function getMeasuresCompleteTables(scenario) {
-    var out = '';
-
-    // Fabric
-    if (project[scenario].fabric.measures != undefined) {
-        out += measuresByIdForCompleteTable(project[scenario].fabric.measures);
-    }
-
-    if (project[scenario].measures != undefined) {
-        // Ventilation
-        if (project[scenario].measures.ventilation != undefined) {
-            if (project[scenario].measures.ventilation.extract_ventilation_points != undefined) {
-                out += measuresByIdForCompleteTable(project[scenario].measures.ventilation.extract_ventilation_points);
-            }
-            if (project[scenario].measures.ventilation.intentional_vents_and_flues != undefined) {
-                out += measuresByIdForCompleteTable(project[scenario].measures.ventilation.intentional_vents_and_flues);
-            }
-            if (project[scenario].measures.ventilation.intentional_vents_and_flues_measures != undefined) {
-                out += measuresByIdForCompleteTable(project[scenario].measures.ventilation.intentional_vents_and_flues_measures);
-            }
-            if (project[scenario].measures.ventilation.draught_proofing_measures != undefined) {
-                out += measureForCompleteTable(project[scenario].measures.ventilation.draught_proofing_measures.measure);
-            }
-            if (project[scenario].measures.ventilation.ventilation_systems_measures != undefined) {
-                out += measureForCompleteTable(project[scenario].measures.ventilation.ventilation_systems_measures.measure);
-            }
-            if (project[scenario].measures.ventilation.clothes_drying_facilities != undefined) {
-                out += measuresByIdForCompleteTable(project[scenario].measures.ventilation.clothes_drying_facilities);
-            }
-        }
-        // Water heating
-        if (project[scenario].measures.water_heating != undefined) {
-            if (project[scenario].measures.water_heating.water_usage != undefined) {
-                out += measuresByIdForCompleteTable(project[scenario].measures.water_heating.water_usage);
-            }
-            if (project[scenario].measures.water_heating.storage_type != undefined) {
-                out += measureForCompleteTable(project[scenario].measures.water_heating.storage_type.measure);
-            }
-            if (project[scenario].measures.water_heating.pipework_insulation != undefined) {
-                out += measureForCompleteTable(project[scenario].measures.water_heating.pipework_insulation.measure);
-            }
-            if (project[scenario].measures.water_heating.hot_water_control_type != undefined) {
-                out += measureForCompleteTable(project[scenario].measures.water_heating.hot_water_control_type.measure);
-            }
-        }
-        // Heating controls
-        if (project[scenario].measures.space_heating_control_type != undefined) {
-            out += measuresByIdForCompleteTable(project[scenario].measures.space_heating_control_type);
-        }
-        // Heating systems
-        if (project[scenario].measures.heating_systems != undefined) {
-            out += measuresByIdForCompleteTable(project[scenario].measures.heating_systems);
-        }
-        // Generation
-        if (project[scenario].use_generation == 1 && project[scenario].measures.PV_generation != undefined) {
-            out += measureForCompleteTable(project[scenario].measures.PV_generation.measure);
-        }
-        // Lighting
-        if (project[scenario].measures.LAC != undefined) {
-            if (project[scenario].measures.LAC.lighting != undefined) {
-                out += measureForCompleteTable(project[scenario].measures.LAC.lighting.measure);
-            }
-        }
+    const measures = Macquette.lib.getScenarioMeasures(scenario, p);
+    let out = '';
+    for (let measure of measures) {
+        out += measureForCompleteTable(measure);
     }
     return out;
 }
@@ -1185,7 +1127,7 @@ function measureForCompleteTable(measure) {
 
     let min_cost =
         measure.min_cost != undefined
-            ? `<tr><th>Minimum cost</th>         <td>${measure.min_cost}</td></tr>`
+            ? `<tr><th>Minimum cost</th>         <td>£${measure.min_cost}</td></tr>`
             : '';
 
     return `
@@ -1211,17 +1153,6 @@ function measureForCompleteTable(measure) {
         </div>
     `;
 }
-
-function measuresByIdForCompleteTable(measures_by_id) {
-    var out = '';
-    for (var id in measures_by_id) {
-        out += measureForCompleteTable(measures_by_id[id].measure);
-    }
-    return out;
-}
-
-
-
 
 function populateMeasuresTable(scenario, tableSelector, summaryTableSelector, listSelector) {
     if (project[scenario].fabric.measures != undefined) {
