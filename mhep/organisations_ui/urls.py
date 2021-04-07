@@ -1,11 +1,8 @@
 from django.urls import path
-from django.views.generic.base import TemplateView
+
+from mhep.organisations_ui import views
 
 app_name = "organisations-ui"
 urlpatterns = [
-    path(
-        "",
-        view=TemplateView.as_view(template_name="organisations/index.html"),
-        name="index",
-    ),
+    path("", view=views.OrganisationEditor.as_view(), name="index"),
 ]
