@@ -19,6 +19,9 @@ js:  ## Compile JS (one off, for development)
 		--define:process.env.NODE_ENV=\"dev\" \
 		--sourcemap --bundle
 
+ts-check:
+	npx tsc --noEmit --allowJs -p mhep/dev/static/dev/tsconfig.json
+
 js-prod:  ## Compile JS (one off, for production)
 	npx esbuild \
 		mhep/dev/static/dev/js_src/exports.js \

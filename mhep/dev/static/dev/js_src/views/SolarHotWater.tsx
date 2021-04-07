@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unresolved */
+// ^ be quiet for now...
 import React from 'react';
 import SelectField from '../components/SelectField';
 import NumberField from '../components/NumberField';
@@ -13,7 +15,7 @@ import Tooltip from '../components/Tooltip'
 function SolarHotWater({ scenario }) {
     return (
         <section>
-            <h3>Solar Hot Water system</h3>
+            <h3>Solar Hot Water systems</h3>
 
             <FormRow>
                 <label htmlFor="field_use_shw">Use solar hot water</label>
