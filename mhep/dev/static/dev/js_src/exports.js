@@ -9,9 +9,12 @@ import PageHeader from "./views/PageHeader";
 import SolarHotWater from "./views/SolarHotWater";
 import CurrentEnergy from "./views/CurrentEnergy";
 import Report from "./views/Report";
+import ScopeOfWorks from "./views/ScopeOfWorks"
 
 import TargetBar from "./components/TargetBar";
 import Graphics from "./components/Graphics";
+
+import { getScenarioMeasures } from "./lib/measures"
 
 window.Macquette = {
     Assessment,
@@ -22,10 +25,14 @@ window.Macquette = {
         SolarHotWater,
         CurrentEnergy,
         Report,
+        ScopeOfWorks,
     },
     components: {
         TargetBar,
         Graphics,
+    },
+    lib: {
+        getScenarioMeasures,
     },
     render: (view, props, root) =>
         render(

@@ -101,6 +101,7 @@
                 <ul>
                     <li><a class="project-menu-item" href="#master/compare">Compare Scenarios</a></li>
                     <li><a class="project-menu-item" href="#master/report">Reports</a></li>
+                    <li><a class="project-menu-item" href="#master/scopeofworks">Scope of Works</a></li>
                 </ul>
             </div>
 
@@ -691,6 +692,7 @@
             case 'export':
             case 'librariesmanager':
             case 'fuelsmanager':
+            case 'scopeofworks':
                 return false;
             default:
                 return true;
@@ -716,6 +718,8 @@
                 return 'Libraries manager';
             case 'fuelsmanager':
                 return 'Fuels manager';
+            case 'scopeofworks':
+                return 'Scope of Works';
             default:
                 return (
                     scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name
