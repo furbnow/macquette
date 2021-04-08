@@ -1,6 +1,7 @@
 import json
 import logging
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
@@ -46,6 +47,7 @@ class CommonContextMixin:
     def get_context_data(self, object=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context["VERSION"] = VERSION
+        context["appname"] = settings.APP_NAME
         context["static_urls"] = json.dumps(STATIC_URLS, indent=4)
         return context
 

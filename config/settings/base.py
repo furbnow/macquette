@@ -48,6 +48,8 @@ LOCALE_PATHS = [ROOT_DIR.path("locale")]
 # This is used to tell external apps where we are. e.g. Auth0 post-login redirects
 SITE_URL = env.str("SITE_URL", "")
 
+APP_NAME = env.str("APP_NAME", "Macquette")
+
 
 # Sentry
 # ------------------------------------------------------------------------------

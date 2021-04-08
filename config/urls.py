@@ -7,9 +7,9 @@ from django.urls import reverse_lazy
 from django.views import defaults as default_views
 from django.views.generic.base import RedirectView
 
-admin.site.site_header = "My Home Energy Planner administration"
-admin.site.site_title = "Django admin"
-admin.site.index_title = "My Home Energy Planner administration"
+admin.site.site_header = "Macquette"
+admin.site.site_title = "Backend admin"
+admin.site.index_title = "Macquette administration"
 
 if settings.ENV == "production":
     DEFAULT_ROUTE = "v2:list-assessments"
