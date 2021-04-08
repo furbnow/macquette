@@ -1,7 +1,14 @@
 import React from 'react';
 
+interface ISelectField {
+    id: string,
+    options: any,
+    value: string | number | any,
+    setValue: any
+}
+
 // 'options' is an array of { value: String, display: String }
-function SelectField({ id, options, value, setValue }) {
+function SelectField({ id, options, value, setValue }: ISelectField) {
     return (
         <select
             value={value}

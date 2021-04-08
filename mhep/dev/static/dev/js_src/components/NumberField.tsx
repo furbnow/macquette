@@ -7,7 +7,7 @@ function decimalise(s) {
     return s.replaceAll(notAllowed, '');
 }
 
-type NumberFieldProps = {
+interface INumberField {
     id: string,
     units?: string,
     value: number,
@@ -15,7 +15,7 @@ type NumberFieldProps = {
     disabled?: boolean
 }
 
-export default function NumberField({ id, units, value, setValue, disabled }: NumberFieldProps) {
+export default function NumberField({ id, units, value, setValue, disabled }: INumberField) {
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (

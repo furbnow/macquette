@@ -1,6 +1,12 @@
 import React from 'react';
 
-export default function CheckboxField({ id, value, setValue }) {
+interface ICheckboxField {
+    id: string,
+    value: boolean,
+    setValue: any
+}
+
+export default function CheckboxField({ id, value, setValue }: ICheckboxField) {
     return (
         <input
             type="checkbox"

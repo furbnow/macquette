@@ -1,6 +1,13 @@
 import React from 'react';
 
-export default function Result({ val, dp = 2, units = '', unitsBefore = false }) {
+interface IResult {
+    val: number,
+    dp?: number,
+    units?: string,
+    unitsBefore?: boolean
+}
+
+export default function Result({ val, dp = 2, units = '', unitsBefore = false }: IResult) {
     if (isNaN(val) || val === null) {
         return <span>- {units}</span>;
     } else {

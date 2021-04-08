@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 // ^ be quiet for now...
 import React from 'react';
+
 import SelectField from '../components/SelectField';
 import NumberField from '../components/NumberField';
 import CheckboxField from '../components/CheckboxField';
