@@ -62,8 +62,9 @@ function pageheader_new_values() {
     pageheader_render();
 }
 
-function pageheader_new_page({ title, showGraphics }) {
+function pageheader_new_page({ title, totalLock, showGraphics }) {
     pageheader_state.title = title;
+    pageheader_state.totalLock = totalLock;
     pageheader_state.showGraphics = showGraphics;
     pageheader_state.houseData = _house_params(scenario);
     pageheader_state.targetData = _targetbars_params(scenario);

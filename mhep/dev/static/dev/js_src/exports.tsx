@@ -10,12 +10,13 @@ import { getScenarioList } from './lib/scenarios';
 import { getScenarioMeasures } from './lib/measures';
 
 import Commentary from './views/Commentary';
+import CurrentEnergy from './views/CurrentEnergy';
 import DwellingData from './views/DwellingData';
 import PageHeader from './views/PageHeader';
-import SolarHotWater from './views/SolarHotWater';
-import CurrentEnergy from './views/CurrentEnergy';
 import Report from './views/Report';
 import ScopeOfWorks from './views/ScopeOfWorks';
+import Sidebar from './views/Sidebar';
+import SolarHotWater from './views/SolarHotWater';
 
 import TargetBar from './components/TargetBar';
 import Graphics from './components/Graphics';
@@ -31,12 +32,13 @@ window.Macquette = {
     Assessment,
     views: {
         Commentary,
+        CurrentEnergy,
         DwellingData,
         PageHeader,
-        SolarHotWater,
-        CurrentEnergy,
         Report,
         ScopeOfWorks,
+        Sidebar,
+        SolarHotWater,
     },
     lib: {
         blank,

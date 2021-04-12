@@ -14,6 +14,8 @@ export default function blank(): NewAssessment {
         },
         master: {
             scenario_name: 'Baseline',
+            locked: false,
+            creation_hash: null,
             region: null,
             altitude: null,
             use_custom_occupancy: false,
@@ -22,6 +24,7 @@ export default function blank(): NewAssessment {
             TFA: NaN,
             occupancy: NaN,
             occupancy_SAP_value: NaN,
+            space_heating_demand_m2: NaN,
             floors: [],
             water_heating: {
                 solar_water_heating: false,
@@ -50,6 +53,11 @@ export default function blank(): NewAssessment {
                 volume_ratio: NaN,
                 f2: NaN,
                 Qs: NaN,
+            },
+            measures: {},
+            fabric: {
+                measures: {},
+                elements: [],
             },
         },
     };

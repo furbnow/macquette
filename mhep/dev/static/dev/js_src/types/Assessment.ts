@@ -31,9 +31,15 @@ export interface CommentaryScenarios {
 
 export type Scenario = {
     scenario_name: string;
+    locked: boolean;
+    created_from?: string;
+    creation_hash: number | null;
+
     water_heating: WaterHeating;
     SHW: SolarHotWater;
     floors: Floor[];
+    measures: Measures;
+    fabric: Fabric;
 } & ScenarioInputs &
     ScenarioOutputs;
 
@@ -48,6 +54,7 @@ export interface ScenarioOutputs {
     readonly TFA: number;
     readonly occupancy: number;
     readonly occupancy_SAP_value: number;
+    readonly space_heating_demand_m2: number;
 }
 
 export interface Floor {
@@ -61,6 +68,15 @@ export interface WaterHeating {
     annual_energy_content: number;
     Vd_average: number;
 }
+export interface Fabric {
+    measures: Measures;
+    elements: FabricElement[];
+}
+export interface FabricElement {
+    cost_total?: number;
+}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Measures {}
 
 //
 // Solar hot water
