@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import useExternalState from '../hooks/useExternalState';
 
 function decimalise(s) {
@@ -8,14 +8,20 @@ function decimalise(s) {
 }
 
 interface INumberField {
-    id: string,
-    units?: string,
-    value: number,
-    setValue: any,
-    disabled?: boolean
+    id: string;
+    units?: string;
+    value: number;
+    setValue: (a: number) => void;
+    disabled?: boolean;
 }
 
-export default function NumberField({ id, units, value, setValue, disabled }: INumberField) {
+export default function NumberField({
+    id,
+    units = '',
+    value,
+    setValue,
+    disabled = false,
+}: INumberField): ReactElement {
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
@@ -31,7 +37,7 @@ export default function NumberField({ id, units, value, setValue, disabled }: IN
                         setValue(parseFloat(current));
                     }
                 }}
-                value={current || undefined}
+                value={current}
             />{' '}
             {units}
         </div>
