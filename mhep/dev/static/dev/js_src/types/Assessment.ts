@@ -1,6 +1,6 @@
 export interface NewAssessment {
     _commentary: Commentary;
-    _report: any;
+    _report: Report;
     master: Scenario;
     scenario1?: Scenario;
     scenario2?: Scenario;
@@ -11,6 +11,11 @@ export interface NewAssessment {
     scenario7?: Scenario;
     scenario8?: Scenario;
     scenario9?: Scenario;
+}
+
+export interface Report {
+    date: string;
+    version: string;
 }
 
 export interface Commentary {

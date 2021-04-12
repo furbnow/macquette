@@ -1,21 +1,32 @@
-import React, { useState } from 'react';
+import React, { ReactElement, useState, useRef } from 'react';
+
+import { NewAssessment } from '../types/Assessment';
 
 import useListState from '../hooks/useListState';
+
+import { getScenarioList } from '../lib/scenarios';
 
 import FormRow from '../components/FormRow';
 import TextField from '../components/TextField';
 
-export default function Report({ assessment, template }) {
-    let scenarioList = assessment.getScenarioList();
-    let initial = scenarioList
+interface ReportProps {
+    assessment: NewAssessment;
+    template: string;
+}
+
+export default function Report({ assessment, template }: ReportProps): ReactElement {
+    const iframe = useRef(null);
+
+    const scenarioList = getScenarioList(assessment);
+    const initial = scenarioList
         .filter((scenario) => scenario.num < 4 && scenario.num > 0)
         .map((scenario) => scenario.id);
 
-    let [reportGenerated, setReportGenerated] = useState(false);
-    let [includedScenarios, setIncludedScenarios] = useListState(initial);
+    const [reportGenerated, setReportGenerated] = useState(false);
+    const [includedScenarios, setIncludedScenarios] = useListState(initial);
 
-    let baseline = scenarioList[0];
-    let scenarios = scenarioList.filter((scenario) => scenario.num > 0);
+    const baseline = scenarioList[0];
+    const scenarios = scenarioList.filter((scenario) => scenario.num > 0);
 
     return (
         <section>
@@ -23,8 +34,8 @@ export default function Report({ assessment, template }) {
                 <label htmlFor="field_date">Report date (dd/mm/yyyy):</label>
                 <TextField
                     id="date"
-                    value={assessment.report.date}
-                    setValue={(val) => (assessment.report.date = val)}
+                    value={assessment._report.date}
+                    setValue={(val) => (assessment._report.date = val)}
                 />
             </FormRow>
 
@@ -32,8 +43,8 @@ export default function Report({ assessment, template }) {
                 <label htmlFor="field_version">Report version:</label>
                 <TextField
                     id="version"
-                    value={assessment.report.version}
-                    setValue={(val) => (assessment.report.version = val)}
+                    value={assessment._report.version}
+                    setValue={(val) => (assessment._report.version = val)}
                 />
             </FormRow>
 
@@ -64,7 +75,10 @@ export default function Report({ assessment, template }) {
                                 }
                                 className="big-checkbox"
                             />
-                            <label className="d-i ml-7 tabular-nums" htmlFor={`check-${scenario.id}`}>
+                            <label
+                                className="d-i ml-7 tabular-nums"
+                                htmlFor={`check-${scenario.id}`}
+                            >
                                 Scenario {scenario.num}: {scenario.title}
                             </label>
                         </li>
@@ -76,11 +90,10 @@ export default function Report({ assessment, template }) {
                 <button
                     className="btn mr-15"
                     onClick={() => {
-                        let iframe = document.getElementById('report-iframe');
                         setReportGenerated(true);
                         /*global report_show*/
                         report_show(
-                            iframe.contentDocument.querySelector('body'),
+                            iframe.current.contentDocument.querySelector('body'),
                             template,
                             includedScenarios
                         );
@@ -91,8 +104,8 @@ export default function Report({ assessment, template }) {
                 <button
                     className="btn"
                     onClick={() => {
-                        document.getElementById('report-iframe').contentWindow.focus();
-                        document.getElementById('report-iframe').contentWindow.print();
+                        iframe.current.contentWindow.focus();
+                        iframe.current.contentWindow.print();
                     }}
                 >
                     Print
@@ -102,6 +115,7 @@ export default function Report({ assessment, template }) {
             <div style={{ display: reportGenerated ? 'block' : 'none' }}>
                 <span className="small-caps">Report preview</span>
                 <iframe
+                    ref={iframe}
                     title="Report"
                     id="report-iframe"
                     className="report-frame-body"

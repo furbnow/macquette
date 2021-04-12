@@ -18,11 +18,9 @@ async function report_UpdateUI() {
         template = org.report_template;
     }
 
-    let assessment = new Macquette.Assessment(p, update);
-
     Macquette.render(
         Macquette.views.Report,
-        { assessment, template },
+        { assessment: p.data, template },
         document.querySelector('#content'),
         update
     );
