@@ -17,7 +17,8 @@ function commentary_initUI() {
                     ])
             ),
         },
-        document.querySelector('#content')
+        document.querySelector('#content'),
+        update
     );
 }
 

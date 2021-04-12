@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import useExternalState from '../hooks/useExternalState';
+import { UpdateFunction } from '../context/UpdateFunction';
 
-export default function LongTextField({ children, notes, id, value, setValue, className = "" }) {
+export default function LongTextField({
+    children,
+    notes,
+    id,
+    value,
+    setValue,
+    className = '',
+}) {
+    const updateFn = useContext(UpdateFunction);
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
@@ -14,6 +23,7 @@ export default function LongTextField({ children, notes, id, value, setValue, cl
                 onBlur={() => {
                     if (current !== monitor) {
                         setValue(current);
+                        updateFn();
                     }
                 }}
                 value={current}

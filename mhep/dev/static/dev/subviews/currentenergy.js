@@ -4,7 +4,8 @@ function currentenergy_UpdateUI() {
     Macquette.render(
         Macquette.views.CurrentEnergy,
         {scenario: scenarioData},
-        document.querySelector('#content')
+        document.querySelector('#content'),
+        update
     );
 }
 

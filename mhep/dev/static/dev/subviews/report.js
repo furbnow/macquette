@@ -23,7 +23,8 @@ async function report_UpdateUI() {
     Macquette.render(
         Macquette.views.Report,
         { assessment, template },
-        document.querySelector('#content')
+        document.querySelector('#content'),
+        update
     );
 }
 

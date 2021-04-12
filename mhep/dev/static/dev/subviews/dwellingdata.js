@@ -4,7 +4,8 @@ function dwellingdata_UpdateUI() {
     Macquette.render(
         Macquette.views.DwellingData,
         {scenario: scenarioData},
-        document.querySelector('#content')
+        document.querySelector('#content'),
+        update
     );
 }
 

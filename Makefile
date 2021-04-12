@@ -13,7 +13,7 @@ dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for c
 
 js:  ## Compile JS (one off, for development)
 	npx esbuild \
-		mhep/dev/static/dev/js_src/exports.js \
+		mhep/dev/static/dev/js_src/exports.tsx \
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
@@ -24,7 +24,7 @@ ts-check:
 
 js-prod:  ## Compile JS (one off, for production)
 	npx esbuild \
-		mhep/dev/static/dev/js_src/exports.js \
+		mhep/dev/static/dev/js_src/exports.tsx \
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \

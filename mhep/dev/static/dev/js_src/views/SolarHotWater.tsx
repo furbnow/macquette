@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import SelectField from '../components/SelectField';
 import NumberField from '../components/NumberField';
@@ -11,7 +11,11 @@ import Tooltip from '../components/Tooltip';
 // data.SHW.Veff = data.SHW.Vs + 0.3 * (data.SHW.combined_cylinder_volume - data.SHW.Vs);
 // double check this is correct!
 
-function SolarHotWater({ scenario }) {
+interface SolarHotWaterProps {
+    scenario: any;
+}
+
+function SolarHotWater({ scenario }: SolarHotWaterProps): ReactElement {
     return (
         <section>
             <h3>Solar Hot Water systems</h3>
