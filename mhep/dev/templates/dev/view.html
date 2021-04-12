@@ -258,8 +258,9 @@
 
     var p = mhep_helper.get(projectid);
 
-    if (p.data == false || p.data == null || Object.keys(p.data).length == 0)
-        p.data = {'master': { scenario_name: 'Baseline'}};
+    if (p.data == false || p.data == null || Object.keys(p.data).length == 0) {
+        p.data = window.Macquette.lib.blank();
+    }
 
     var project = p.data;
 

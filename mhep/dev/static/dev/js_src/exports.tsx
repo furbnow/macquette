@@ -5,6 +5,9 @@ import { UpdateFunction } from './context/UpdateFunction';
 
 import Assessment from './Assessment';
 
+import blank from './lib/blank';
+import { getScenarioList } from './lib/scenarios';
+
 import Commentary from './views/Commentary';
 import DwellingData from './views/DwellingData';
 import PageHeader from './views/PageHeader';
@@ -24,6 +27,10 @@ window.Macquette = {
         SolarHotWater,
         CurrentEnergy,
         Report,
+    },
+    lib: {
+        blank,
+        getScenarioList,
     },
     components: {
         TargetBar,

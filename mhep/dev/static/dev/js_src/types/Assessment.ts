@@ -1,7 +1,27 @@
 export interface NewAssessment {
-    _commentary: any;
+    _commentary: Commentary;
     _report: any;
-    [key: string]: Scenario;
+    master: Scenario;
+    scenario1?: Scenario;
+    scenario2?: Scenario;
+    scenario3?: Scenario;
+    scenario4?: Scenario;
+    scenario5?: Scenario;
+    scenario6?: Scenario;
+    scenario7?: Scenario;
+    scenario8?: Scenario;
+    scenario9?: Scenario;
+}
+
+export interface Commentary {
+    brief: string;
+    context: string;
+    decisions: string;
+    scenarios: CommentaryScenarios;
+}
+
+export interface CommentaryScenarios {
+    [key: string]: string;
 }
 
 export interface Scenario {
