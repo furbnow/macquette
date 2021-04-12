@@ -20,7 +20,7 @@ js:  ## Compile JS (one off, for development)
 		--sourcemap --bundle
 
 ts-check:
-	npx tsc --noEmit --allowJs -p mhep/dev/static/dev/tsconfig.json
+	npx tsc --noEmit --allowJs -p mhep/dev/static/dev/tsconfig.json -w
 
 js-prod:  ## Compile JS (one off, for production)
 	npx esbuild \
