@@ -7,6 +7,7 @@ import Assessment from './Assessment';
 
 import blank from './lib/blank';
 import { getScenarioList } from './lib/scenarios';
+import { getScenarioMeasures } from './lib/measures';
 
 import Commentary from './views/Commentary';
 import DwellingData from './views/DwellingData';
@@ -14,11 +15,13 @@ import PageHeader from './views/PageHeader';
 import SolarHotWater from './views/SolarHotWater';
 import CurrentEnergy from './views/CurrentEnergy';
 import Report from './views/Report';
+import ScopeOfWorks from './views/ScopeOfWorks';
 
 import TargetBar from './components/TargetBar';
 import Graphics from './components/Graphics';
 
-window.Macquette = {
+// 'as any' makes the TS typechecker shut up
+(window as any).Macquette = {
     Assessment,
     views: {
         Commentary,
@@ -27,10 +30,12 @@ window.Macquette = {
         SolarHotWater,
         CurrentEnergy,
         Report,
+        ScopeOfWorks,
     },
     lib: {
         blank,
         getScenarioList,
+        getScenarioMeasures,
     },
     components: {
         TargetBar,
