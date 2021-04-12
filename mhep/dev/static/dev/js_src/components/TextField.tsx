@@ -1,7 +1,21 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import useExternalState from '../hooks/useExternalState';
 
-export default function TextField({ id, units, value, setValue, className = '' }) {
+interface TextFieldProps {
+    id: string;
+    units?: string;
+    value: string;
+    setValue: (a: string) => void;
+    className?: string;
+}
+
+export default function TextField({
+    id,
+    units = '',
+    value,
+    setValue,
+    className = '',
+}: TextFieldProps): ReactElement {
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
