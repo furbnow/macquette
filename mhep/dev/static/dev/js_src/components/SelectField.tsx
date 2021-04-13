@@ -1,10 +1,10 @@
 import React from 'react';
 
 interface ISelectField {
-    id: string,
-    options: any,
-    value: string | number | any,
-    setValue: any
+    id: string;
+    options: any;
+    value: string | number | any;
+    setValue: any;
 }
 
 // 'options' is an array of { value: String, display: String }

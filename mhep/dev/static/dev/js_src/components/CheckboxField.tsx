@@ -1,9 +1,9 @@
 import React from 'react';
 
 interface ICheckboxField {
-    id: string,
-    value: boolean,
-    setValue: any
+    id: string;
+    value: boolean;
+    setValue: any;
 }
 
 export default function CheckboxField({ id, value, setValue }: ICheckboxField) {

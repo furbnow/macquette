@@ -5,7 +5,7 @@ import NumberField from '../components/NumberField';
 import CheckboxField from '../components/CheckboxField';
 import FormRow from '../components/FormRow';
 import Result from '../components/Result';
-import Tooltip from '../components/Tooltip'
+import Tooltip from '../components/Tooltip';
 
 // ??? - dedicated Volume vs total Volume - what's the calculation there?
 // data.SHW.Veff = data.SHW.Vs + 0.3 * (data.SHW.combined_cylinder_volume - data.SHW.Vs);
@@ -140,7 +140,10 @@ function SolarHotWater({ scenario }) {
             <FormRow>
                 <span>
                     Annual solar radiation per m²
-                    <Tooltip>from U3.3 in Appendix U for the orientation and tilt of the collector</Tooltip>
+                    <Tooltip>
+                        from U3.3 in Appendix U for the orientation and tilt of the
+                        collector
+                    </Tooltip>
                 </span>
 
                 <Result val={scenario.solarHotWater.annual_solar} dp={0} units="kWh" />
