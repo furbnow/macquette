@@ -9,7 +9,7 @@ help:
 # ----------------------------------------------------------------------------
 
 dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for changes)
-	npx concurrently -n "django,js    " -c green "make server" "make js-watch" "make js"
+	npx concurrently -n "django,js    " -c green "make server" "make js"
 
 js:  ## Compile JS (one off, for development)
 	npx esbuild \
@@ -17,7 +17,7 @@ js:  ## Compile JS (one off, for development)
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
-		--sourcemap --bundle
+		--sourcemap --bundle --watch
 
 ts-check:
 	npx tsc --noEmit --allowJs -p mhep/dev/static/dev/tsconfig.json -w
@@ -29,9 +29,6 @@ js-prod:  ## Compile JS (one off, for production)
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
 		--sourcemap --bundle
-
-js-watch:  ## Compile JS (watching for changes, for development)
-	npx chokidar "mhep/dev/static/dev/js_src/**/*" -c "make js"
 
 load-placeholder-library:
 	python manage.py loaddata mhep/dev/fixtures/standard_library.json
