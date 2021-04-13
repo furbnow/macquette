@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface IResult {
+interface ResultProps {
     val: number;
     dp?: number;
     units?: string;
@@ -12,7 +12,7 @@ export default function Result({
     dp = 2,
     units = '',
     unitsBefore = false,
-}: IResult) {
+}: ResultProps) {
     if (isNaN(val) || val === null) {
         return <span>- {units}</span>;
     } else {
