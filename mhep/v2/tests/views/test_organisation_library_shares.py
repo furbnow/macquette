@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -182,11 +180,9 @@ class TestListOrganisationLibraryShares(SetUpMixin, AssertErrorMixin, APITestCas
         )
 
         assert status.HTTP_200_OK == response.status_code
-        expected = [
-            OrderedDict([("id", f"{self.other_org.id}"), ("name", self.other_org.name)])
-        ]
+        expected = [{"id": f"{self.other_org.id}", "name": self.other_org.name}]
 
-        assert expected == response.data
+        assert expected == response.json()
 
     def test_returns_404_if_organisation_id_doesnt_exist(self):
         self.client.force_authenticate(self.org_admin)

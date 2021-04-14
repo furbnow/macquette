@@ -39,7 +39,9 @@ class ListOrganisations(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
-        return getattr(self.request.user, f"{VERSION}_organisations").all()
+        return (
+            getattr(self.request.user, f"{VERSION}_organisations").all().order_by("id")
+        )
 
 
 class ListCreateOrganisationAssessments(
