@@ -58,30 +58,37 @@ export interface WaterHeating {
     Vd_average: number;
 }
 
+//
+// Solar hot water
+//
+
+export type SolarHotWater = SolarHotWaterInputs & SolarHotWaterOutputs;
+export interface SolarHotWaterInputs {
+    // Inputs
+    pump: SolarHotWaterPump | null;
+    A: number | null;
+    n0: number | null;
+    a1: number | null;
+    a2: number | null;
+    orientation: SolarHotWaterOrientation | null;
+    inclination: number | null;
+    overshading: SolarHotWaterOvershading | null;
+    Vs: number | null;
+    combined_cylinder_volume: number | null;
+}
+export interface SolarHotWaterOutputs {
+    readonly a: number;
+    readonly collector_performance_ratio: number;
+    readonly annual_solar: number;
+    readonly solar_energy_available: number;
+    readonly solar_load_ratio: number;
+    readonly utilisation_factor: number;
+    readonly collector_performance_factor: number;
+    readonly Veff: number;
+    readonly volume_ratio: number;
+    readonly f2: number;
+    readonly Qs: number;
+}
 export type SolarHotWaterOrientation = 0 | 1 | 2 | 3 | 4;
 export type SolarHotWaterPump = 'PV' | 'electric';
 export type SolarHotWaterOvershading = 'HEAVY' | 'SIGNIFICANT' | 'MODEST' | 'NONE';
-
-export interface SolarHotWater {
-    pump: SolarHotWaterPump;
-    A: number;
-    n0: number;
-    a1: number;
-    a2: number;
-    a: number;
-    Vs: number;
-    collector_performance_ratio: number;
-    orientation: SolarHotWaterOrientation;
-    inclination: number;
-    annual_solar: number;
-    overshading: SolarHotWaterOvershading;
-    solar_energy_available: number;
-    solar_load_ratio: number;
-    utilisation_factor: number;
-    collector_performance_factor: number;
-    combined_cylinder_volume: number;
-    Veff: number;
-    volume_ratio: number;
-    f2: number;
-    Qs: number;
-}
