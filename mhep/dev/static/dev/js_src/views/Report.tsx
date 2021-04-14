@@ -9,13 +9,19 @@ import { getScenarioList } from '../lib/scenarios';
 import FormRow from '../components/FormRow';
 import TextField from '../components/TextField';
 
+declare function report_show(
+    greeting: HTMLElement,
+    template: string,
+    included: string[]
+): void;
+
 interface ReportProps {
     assessment: NewAssessment;
     template: string;
 }
 
 export default function Report({ assessment, template }: ReportProps): ReactElement {
-    const iframe = useRef(null);
+    const iframe = useRef<HTMLIFrameElement>(null);
 
     const scenarioList = getScenarioList(assessment);
     const initial = scenarioList
@@ -90,13 +96,21 @@ export default function Report({ assessment, template }: ReportProps): ReactElem
                 <button
                     className="btn mr-15"
                     onClick={() => {
+                        if (
+                            !iframe ||
+                            !iframe.current ||
+                            !iframe.current.contentDocument
+                        ) {
+                            throw new Error('Error R001 generating report');
+                        }
+
+                        const body = iframe.current.contentDocument.querySelector('body');
+                        if (!body) {
+                            throw new Error('Error R003 generating report');
+                        }
+
                         setReportGenerated(true);
-                        /*global report_show*/
-                        report_show(
-                            iframe.current.contentDocument.querySelector('body'),
-                            template,
-                            includedScenarios
-                        );
+                        report_show(body, template, includedScenarios);
                     }}
                 >
                     Generate
@@ -104,6 +118,10 @@ export default function Report({ assessment, template }: ReportProps): ReactElem
                 <button
                     className="btn"
                     onClick={() => {
+                        if (!iframe || !iframe.current || !iframe.current.contentWindow) {
+                            throw new Error('Error R002 printing report');
+                        }
+
                         iframe.current.contentWindow.focus();
                         iframe.current.contentWindow.print();
                     }}
