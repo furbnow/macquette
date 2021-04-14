@@ -5,12 +5,12 @@ repos:
   - id: black
 
 - repo: https://gitlab.com/pycqa/flake8
-  rev: 3.8.4
+  rev: 3.9.0
   hooks:
   - id: flake8
 
 - repo: https://github.com/asottile/reorder_python_imports
-  rev: v2.3.6
+  rev: v2.4.0
   hooks:
   - id: reorder-python-imports
 
@@ -22,10 +22,12 @@ repos:
       files: \.(ts|tsx)$
 
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v7.13.0-1
+  rev: v7.24.0
   hooks:
   - id: eslint
     args: ["--fix"]
+    types: [file]
+    files: \.(js|jsx|ts|tsx)$
     additional_dependencies:
     - eslint@7.21.0
     - eslint-config-prettier@6.15.0
@@ -38,11 +40,11 @@ repos:
     - eslint-plugin-react-hooks@4.2.0
     - eslint-plugin-jest@24.1.5
     - typescript@4.2.2
-    - "@typescript-eslint/eslint-plugin@4.15.2"
-    - "@typescript-eslint/parser@4.15.2"
+    - "@typescript-eslint/eslint-plugin@4.22.0"
+    - "@typescript-eslint/parser@4.22.0"
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.3.0
+  rev: v3.4.0
   hooks:
   - id: check-merge-conflict
   - id: debug-statements
