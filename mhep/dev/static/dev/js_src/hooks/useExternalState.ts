@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function useExternalState(propVal) {
+export default function useExternalState<T>(propVal: T): [T, T, (val: T) => void] {
     // External state might not be the best phrase to use for this concept.
     //
     // The idea is that we need a form of state-holding that can react to changes in our

@@ -2,7 +2,7 @@ import React, { ReactElement, useContext } from 'react';
 import useExternalState from '../hooks/useExternalState';
 import { UpdateFunction } from '../context/UpdateFunction';
 
-function decimalise(s) {
+function decimalise(s: string): string {
     // Remove everything that isn't allowed in a decimal fraction
     const notAllowed = /([^0-9.])/g;
     return s.replaceAll(notAllowed, '');
