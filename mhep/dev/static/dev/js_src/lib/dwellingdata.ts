@@ -16,7 +16,7 @@ export function addFloor(scenario: Scenario): void {
     } else if (n_floors == 3) {
         name = '3rd Floor';
     } else if (n_floors > 3) {
-        name = n_floors + 'th Floor';
+        name = `${n_floors}th Floor`;
     }
     scenario.floors.push({ name, area: 0, height: 0, volume: 0 });
 }
