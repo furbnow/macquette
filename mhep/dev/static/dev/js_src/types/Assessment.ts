@@ -58,8 +58,12 @@ export interface WaterHeating {
     Vd_average: number;
 }
 
+export type SolarHotWaterOrientation = 0 | 1 | 2 | 3 | 4;
+export type SolarHotWaterPump = 'PV' | 'electric';
+export type SolarHotWaterOvershading = 'HEAVY' | 'SIGNIFICANT' | 'MODEST' | 'NONE';
+
 export interface SolarHotWater {
-    pump: 'PV' | 'electric';
+    pump: SolarHotWaterPump;
     A: number;
     n0: number;
     a1: number;
@@ -67,10 +71,10 @@ export interface SolarHotWater {
     a: number;
     Vs: number;
     collector_performance_ratio: number;
-    orientation: string;
+    orientation: SolarHotWaterOrientation;
     inclination: number;
     annual_solar: number;
-    overshading: string;
+    overshading: SolarHotWaterOvershading;
     solar_energy_available: number;
     solar_load_ratio: number;
     utilisation_factor: number;
