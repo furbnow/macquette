@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 
 interface ResultProps {
-    val: number;
+    val: number | null;
     dp?: number;
     units?: string;
     unitsBefore?: boolean;
@@ -13,7 +13,7 @@ export default function Result({
     units = '',
     unitsBefore = false,
 }: ResultProps): ReactElement {
-    if (isNaN(val) || val === null) {
+    if (val === null || isNaN(val)) {
         return <span>- {units}</span>;
     } else {
         return unitsBefore ? (

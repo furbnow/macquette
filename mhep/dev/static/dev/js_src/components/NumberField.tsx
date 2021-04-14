@@ -11,8 +11,8 @@ function decimalise(s: string): string {
 interface NumberFieldProps {
     id: string;
     units?: string;
-    value: number;
-    setValue: (a: number) => void;
+    value: number | null;
+    setValue: (a: number | null) => void;
     disabled?: boolean;
 }
 
@@ -24,7 +24,9 @@ export default function NumberField({
     disabled = false,
 }: NumberFieldProps): ReactElement {
     const updateFn = useContext(UpdateFunction);
-    const [current, monitor, setCurrent] = useExternalState(value);
+    const [current, monitor, setCurrent] = useExternalState(
+        value === null ? '' : value.toString()
+    );
 
     return (
         <div>
@@ -36,7 +38,11 @@ export default function NumberField({
                 onChange={(evt) => setCurrent(decimalise(evt.target.value))}
                 onBlur={() => {
                     if (current !== monitor) {
-                        setValue(parseFloat(current));
+                        let val: number | null = parseFloat(current);
+                        if (isNaN(val)) {
+                            val = null;
+                        }
+                        setValue(val);
                         updateFn();
                     }
                 }}
