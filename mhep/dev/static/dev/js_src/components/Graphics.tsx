@@ -6,7 +6,7 @@ import targets from '../data/targets';
 const fmtPrice = (price: number): string =>
     new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(price);
 
-interface GraphicsProps {
+export interface GraphicsProps {
     houseData: HouseProps;
     targetData: {
         width: number;

@@ -4,17 +4,13 @@ import { UpdateFunction } from '../context/UpdateFunction';
 import { getScenarioList } from '../lib/scenarios';
 import { getOrphanedScenarioIds } from '../lib/commentary';
 import { NewAssessment } from '../types/Assessment';
-import Graphics from '../components/Graphics';
+import Graphics, { GraphicsProps } from '../components/Graphics';
 import LongTextField from '../components/LongTextField';
 
 interface CommentaryProps {
     assessment: NewAssessment;
     scenarioId: string;
-    overviewData: {
-        houseData: any;
-        targetData: any;
-        cost: any;
-    };
+    overviewData: { [k: string]: GraphicsProps };
 }
 
 // Passing in overviewData like this is definitely suboptimal and should be refactored
@@ -73,35 +69,29 @@ export default function Commentary({
 
             <h2 className="mb-0">Scenarios</h2>
 
-            {getScenarioList(assessment, true).map(({ id, title, num }) => {
-                const { houseData, targetData, cost } = overviewData[id];
+            {getScenarioList(assessment, true).map(({ id, title, num }) => (
+                <section key={`commentary_${id}`} className="mb-30">
+                    <h3>
+                        Scenario {num}: {title}
+                    </h3>
 
-                return (
-                    <section key={`commentary_${id}`} className="mb-30">
-                        <h3>
-                            Scenario {num}: {title}
-                        </h3>
+                    <Graphics
+                        houseData={overviewData[id].houseData}
+                        targetData={overviewData[id].targetData}
+                        cost={overviewData[id].cost}
+                    />
 
-                        <Graphics
-                            houseData={houseData}
-                            targetData={targetData}
-                            cost={cost}
-                        />
+                    <label htmlFor={`field_commentary_for_${id}`}>
+                        <b>Description</b>:
+                    </label>
 
-                        <label htmlFor={`field_commentary_for_${id}`}>
-                            <b>Description</b>:
-                        </label>
-
-                        <LongTextField
-                            id={`field_commentary_for_${id}`}
-                            value={assessment._commentary.scenarios[id]}
-                            setValue={(val) =>
-                                (assessment._commentary.scenarios[id] = val)
-                            }
-                        />
-                    </section>
-                );
-            })}
+                    <LongTextField
+                        id={`field_commentary_for_${id}`}
+                        value={assessment._commentary.scenarios[id]}
+                        setValue={(val) => (assessment._commentary.scenarios[id] = val)}
+                    />
+                </section>
+            ))}
 
             {orphans.map((id) => (
                 <div key={`commentary_for_${id}`} className="bg-lighter mb-30 pa-15">
