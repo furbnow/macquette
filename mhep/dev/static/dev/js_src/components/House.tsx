@@ -1,22 +1,48 @@
-import React from "react";
+import React, { ReactElement } from 'react';
 
 const SCALE = 30;
 
-const Arrow = ({ x, y, value, rotate = 0, dark = false }) => {
+interface ArrowProps {
+    x: number;
+    y: number;
+    value: number;
+    rotate?: number;
+    dark?: boolean;
+}
+
+const Arrow = ({ x, y, value, rotate = 0, dark = false }: ArrowProps): ReactElement => {
     let v = Math.sqrt(value / SCALE);
     if (isNaN(v)) {
         v = 0;
     }
 
-    return <path
-        d="m0 25h65v-25l35 50-35 50v-25h-65z"
-        transform={`translate(${x},${y}) rotate(${rotate}) scale(${v}) translate(0,-50)`}
-        className={dark ? "house--darker" : "house--light"}
-    />;
+    return (
+        <path
+            d="m0 25h65v-25l35 50-35 50v-25h-65z"
+            transform={`translate(${x},${y}) rotate(${rotate}) scale(${v}) translate(0,-50)`}
+            className={dark ? 'house--darker' : 'house--light'}
+        />
+    );
+};
+
+interface LabelProps {
+    x: number;
+    y: number;
+    label: string;
+    value: number;
+    anchor?: string;
+    dark?: boolean;
 }
 
-const Label = ({ x, y, label, value, anchor = "start", dark = false }) => {
-    const textClass = `text-bold ${dark ? "house--darker" : "house--dark"}`;
+const Label = ({
+    x,
+    y,
+    label,
+    value,
+    anchor = 'start',
+    dark = false,
+}: LabelProps): ReactElement => {
+    const textClass = `text-bold ${dark ? 'house--darker' : 'house--dark'}`;
     return (
         <>
             <text x={x} y={y} textAnchor={anchor} className={textClass}>
@@ -29,6 +55,16 @@ const Label = ({ x, y, label, value, anchor = "start", dark = false }) => {
     );
 };
 
+export interface HouseProps {
+    floor: number;
+    ventilation: number;
+    infiltration: number;
+    windows: number;
+    walls: number;
+    roof: number;
+    thermalbridge: number;
+}
+
 export default function House({
     floor,
     ventilation,
@@ -37,7 +73,7 @@ export default function House({
     walls,
     roof,
     thermalbridge,
-}) {
+}: HouseProps): ReactElement {
     const total =
         floor + ventilation + infiltration + windows + walls + roof + thermalbridge;
 
@@ -50,21 +86,15 @@ export default function House({
             <path d="m278 310h16v80h-16zm0 140h16v80h-16z" className="house--med" />
             <Label x={500} y={400} label="Total" value={total} anchor="middle" />
 
-            { /* Top */ }
+            {/* Top */}
 
             <Arrow x={340} y={205} value={infiltration} rotate={235} dark={true} />
-            <Label
-                x={315}
-                y={50}
-                label="Infiltration"
-                value={infiltration}
-                dark={true}
-            />
+            <Label x={315} y={50} label="Infiltration" value={infiltration} dark={true} />
 
             <Arrow x={645} y={200} rotate={-55} value={roof} dark={true} />
             <Label x={530} y={50} label="Roof" value={roof} dark={true} />
 
-            { /* Right */ }
+            {/* Right */}
 
             <Arrow x={730} y={350} value={thermalbridge} />
             <Label x={730} y={210} label="Thermal bridging" value={thermalbridge} />
@@ -72,12 +102,12 @@ export default function House({
             <Arrow x={730} y={535} value={walls} />
             <Label x={730} y={650} label="Walls" value={walls} />
 
-            { /* Bottom */ }
+            {/* Bottom */}
 
             <Arrow x={460} y={615} rotate={90} value={floor} dark={true} />
             <Label x={540} y={650} label="Floor" value={floor} dark={true} />
 
-            { /* Left */ }
+            {/* Left */}
 
             <Arrow x={260} y={215 + 135} rotate={180} value={windows} />
             <Label x={260} y={215} label="Windows" value={windows} anchor="end" />

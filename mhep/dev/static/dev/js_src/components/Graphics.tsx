@@ -1,12 +1,28 @@
-import React from "react";
-import House from "../components/House";
-import TargetBar from "./../components/TargetBar";
-import targets from "../data/targets";
+import React, { ReactElement } from 'react';
+import House, { HouseProps } from '../components/House';
+import TargetBar from './../components/TargetBar';
+import targets from '../data/targets';
 
-const fmtPrice = (price) =>
-    new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(price);
+const fmtPrice = (price: number): string =>
+    new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(price);
 
-export default function Graphics({ houseData, targetData, cost }) {
+interface GraphicsProps {
+    houseData: HouseProps;
+    targetData: {
+        width: number;
+        space_heating_demand: number;
+        primary_energy: number;
+        co2: number;
+        energyuse: number;
+    };
+    cost: number;
+}
+
+export default function Graphics({
+    houseData,
+    targetData,
+    cost,
+}: GraphicsProps): ReactElement {
     return (
         <div className="d-flex align-items-center justify-content-between pb-30">
             <div className="mr-30">
