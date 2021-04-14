@@ -3,7 +3,7 @@ function dwellingdata_UpdateUI() {
     let scenarioData = assessment.getScenario(scenario);
     Macquette.render(
         Macquette.views.DwellingData,
-        {scenario: scenarioData},
+        {assessment: p.data, scenarioId: scenario},
         document.querySelector('#content'),
         update
     );
