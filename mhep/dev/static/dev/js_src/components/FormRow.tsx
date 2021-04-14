@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 interface FormRowProps {
     narrow?: boolean;
-    children?: any;
+    children: React.ReactNode;
 }
 
-export default function FormRow({ narrow, children }: FormRowProps) {
+export default function FormRow({
+    narrow = false,
+    children,
+}: FormRowProps): ReactElement {
     return (
         <div className={`form-row ${narrow ? 'form-row--narrow' : ''}`}>{children}</div>
     );
