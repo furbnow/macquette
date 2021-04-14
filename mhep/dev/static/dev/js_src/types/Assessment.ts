@@ -29,28 +29,32 @@ export interface CommentaryScenarios {
     [key: string]: string;
 }
 
-export interface Scenario {
+export type Scenario = {
+    scenario_name: string;
     water_heating: WaterHeating;
     SHW: SolarHotWater;
-
-    scenario_name: string;
-
-    TFA: number;
-    volume: number;
-    region: string;
-    altitude: number;
-    occupancy: number;
-    occupancy_SAP_value: number;
-    use_custom_occupancy: boolean;
-    custom_occupancy: number;
-
     floors: Floor[];
+} & ScenarioInputs &
+    ScenarioOutputs;
+
+export interface ScenarioInputs {
+    region: number | null;
+    altitude: number | null;
+    use_custom_occupancy: boolean;
+    custom_occupancy: number | null;
 }
+export interface ScenarioOutputs {
+    readonly volume: number;
+    readonly TFA: number;
+    readonly occupancy: number;
+    readonly occupancy_SAP_value: number;
+}
+
 export interface Floor {
-    area: number;
+    area: number | null;
     name: string;
-    height: number;
-    volume: number;
+    height: number | null;
+    volume: number | null;
 }
 export interface WaterHeating {
     solar_water_heating: boolean;
