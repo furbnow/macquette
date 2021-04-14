@@ -1,4 +1,9 @@
-import React from 'react';
+import React, { useContext, ReactElement } from 'react';
+import { UpdateFunction } from '../context/UpdateFunction';
+
+import { NewAssessment } from '../types/Assessment';
+import { getScenario } from '../lib/scenarios';
+import { deleteFloor, addFloor } from '../lib/dwellingdata';
 
 import FormRow from '../components/FormRow';
 import TextField from '../components/TextField';
@@ -10,7 +15,15 @@ import Tooltip from '../components/Tooltip';
 
 import regions from '../data/regions';
 
-export default function DwellingData({ scenario }) {
+interface DwellingDataProps {
+    assessment: NewAssessment;
+    scenarioId: string;
+}
+
+function DwellingData({ assessment, scenarioId }: DwellingDataProps): ReactElement {
+    const updateFn = useContext(UpdateFunction);
+    const scenario = getScenario(assessment, scenarioId);
+
     return (
         <section>
             <h3 className="line-top mt-0">Dwelling Data</h3>
@@ -18,15 +31,15 @@ export default function DwellingData({ scenario }) {
                 <label htmlFor="field_scenario_name">Scenario name</label>
                 <TextField
                     id="scenario_name"
-                    value={scenario.name}
-                    setValue={(val) => (scenario.name = val)}
+                    value={scenario.scenario_name}
+                    setValue={(val) => (scenario.scenario_name = val)}
                 />
             </FormRow>
 
             <h4>Building dimensions</h4>
 
             <table className="table" style={{ width: 'auto' }}>
-                <thead style={{ backgroundColor: "var(--brown-4)" }}>
+                <thead style={{ backgroundColor: 'var(--brown-4)' }}>
                     <tr>
                         <th className="text-left">Name</th>
                         <th>Area</th>
@@ -39,7 +52,7 @@ export default function DwellingData({ scenario }) {
                 </thead>
 
                 <tbody>
-                    {scenario.getFloors().map((floor, idx) => (
+                    {scenario.floors.map((floor, idx) => (
                         <tr key={idx}>
                             <td>
                                 <TextField
@@ -72,7 +85,10 @@ export default function DwellingData({ scenario }) {
                             <td>
                                 <button
                                     className="btn"
-                                    onClick={() => scenario.deleteFloor(idx)}
+                                    onClick={() => {
+                                        deleteFloor(scenario, idx);
+                                        updateFn();
+                                    }}
                                 >
                                     <i className="icon-trash"></i> Delete
                                 </button>
@@ -84,26 +100,28 @@ export default function DwellingData({ scenario }) {
                 <tfoot>
                     <tr>
                         <td colSpan="7">
-                            <button className="btn mb-0" onClick={() => scenario.addFloor()}>
+                            <button
+                                className="btn mb-0"
+                                onClick={() => {
+                                    addFloor(scenario);
+                                    updateFn();
+                                }}
+                            >
                                 <i className="icon-plus"></i> Add new floor
                             </button>
                         </td>
                     </tr>
 
-                    <tr style={{ backgroundColor: "var(--brown-4)" }}>
+                    <tr style={{ backgroundColor: 'var(--brown-4)' }}>
                         <th>Totals</th>
                         <td>
-                            <Result val={scenario.totalFloorArea} units="m²" dp="1" />
+                            <Result val={scenario.TFA} units="m²" dp={1} />
                         </td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td>
-                            <Result
-                                val={scenario.totalBuildingVolume}
-                                units="m³"
-                                dp="1"
-                            />
+                            <Result val={scenario.volume} units="m³" dp={1} />
                         </td>
                         <td></td>
                     </tr>
@@ -123,8 +141,15 @@ export default function DwellingData({ scenario }) {
             </FormRow>
 
             <FormRow>
-                <label htmlFor="field_altitude">Altitude
-        <a href="https://www.daftlogic.com/sandbox-google-maps-find-altitude.htm" target="blank"> (find it here)</a>
+                <label htmlFor="field_altitude">
+                    Altitude
+                    <a
+                        href="https://www.daftlogic.com/sandbox-google-maps-find-altitude.htm"
+                        target="blank"
+                    >
+                        {' '}
+                        (find it here)
+                    </a>
                 </label>
                 <NumberField
                     id="altitude"
@@ -137,26 +162,24 @@ export default function DwellingData({ scenario }) {
             <h4>Occupancy</h4>
 
             <FormRow>
-                {!scenario.use_custom_occupancy
-                    ? (
-                        <>
-                            <label htmlFor="field_occupancy">Occupancy according to SAP
-                                <Tooltip>Based on floor area</Tooltip>
-                            </label>
-                            <Result value={scenario.occupancy_SAP_value} dp="1" />
-                        </>
-                    )
-                    : (
-                        <>
-                            <label htmlFor="field_occupancy">Custom occupancy</label>
-                            <NumberField
-                                id="occupancy"
-                                value={scenario.custom_occupancy.toFixed(1)}
-                                setValue={(val) => (scenario.custom_occupancy = val)}
-                            />
-                        </>
-                    )
-                }
+                {!scenario.use_custom_occupancy ? (
+                    <>
+                        <label htmlFor="field_occupancy">
+                            Occupancy according to SAP
+                            <Tooltip>Based on floor area</Tooltip>
+                        </label>
+                        <Result val={scenario.occupancy_SAP_value} dp={1} />
+                    </>
+                ) : (
+                    <>
+                        <label htmlFor="field_occupancy">Custom occupancy</label>
+                        <NumberField
+                            id="occupancy"
+                            value={+scenario.custom_occupancy.toFixed(1)}
+                            setValue={(val) => (scenario.custom_occupancy = val)}
+                        />
+                    </>
+                )}
                 <OnOffToggleButton
                     onTitle={`Use SAP value (${scenario.occupancy_SAP_value.toFixed(1)})`}
                     offTitle="Override"
@@ -164,8 +187,8 @@ export default function DwellingData({ scenario }) {
                     setValue={(val) => (scenario.use_custom_occupancy = val)}
                 />
             </FormRow>
-
-
         </section>
     );
 }
+
+export default DwellingData;

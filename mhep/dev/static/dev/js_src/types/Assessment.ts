@@ -32,8 +32,26 @@ export interface CommentaryScenarios {
 export interface Scenario {
     water_heating: WaterHeating;
     SHW: SolarHotWater;
-}
 
+    scenario_name: string;
+
+    TFA: number;
+    volume: number;
+    region: string;
+    altitude: number;
+    occupancy: number;
+    occupancy_SAP_value: number;
+    use_custom_occupancy: boolean;
+    custom_occupancy: number;
+
+    floors: Floor[];
+}
+export interface Floor {
+    area: number;
+    name: string;
+    height: number;
+    volume: number;
+}
 export interface WaterHeating {
     solar_water_heating: boolean;
     annual_energy_content: number;
