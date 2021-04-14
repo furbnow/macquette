@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 interface TooltipProps {
-    children?: any;
+    children: string;
 }
 
-export default function Tooltip({ children }: TooltipProps) {
+export default function Tooltip({ children }: TooltipProps): ReactElement {
     return <i className="icon-question-sign" title={children}></i>;
 }
