@@ -2,7 +2,7 @@ import { NewAssessment, Scenario } from '../types/Assessment';
 
 export function getScenario(assessment: NewAssessment, scenarioId: string): Scenario {
     if (scenarioId in assessment) {
-        return assessment[scenarioId];
+        return assessment[scenarioId] as Scenario;
     }
 
     throw new Error(`Scenario doesn't exist: ${scenarioId}`);
@@ -38,7 +38,7 @@ export function getScenarioList(
 
     return scenarioIds.map((id) => ({
         id,
-        title: assessment[id].scenario_name,
+        title: (assessment[id] as Scenario).scenario_name,
         isBaseline: id === 'master',
         num: id === 'master' ? 0 : parseInt(id.replaceAll(/scenario/g, ''), 10),
     }));
