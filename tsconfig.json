@@ -15,6 +15,7 @@
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "preserve",
-        "noImplicitAny": false
+        "noImplicitAny": false,
+        "types": ["react", "react-dom", "jest"]
     }
 }
