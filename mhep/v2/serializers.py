@@ -246,7 +246,7 @@ class OrganisationSerializer(StringIDMixin, serializers.ModelSerializer):
                 "is_librarian": user in org.librarians.all(),
             }
 
-        return [userinfo(u) for u in org.members.all()]
+        return [userinfo(u) for u in org.members.all().order_by("id")]
 
     def get_permissions(self, org):
         user = self.context["request"].user
