@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 interface ResultProps {
     val: number;
@@ -12,7 +12,7 @@ export default function Result({
     dp = 2,
     units = '',
     unitsBefore = false,
-}: ResultProps) {
+}: ResultProps): ReactElement {
     if (isNaN(val) || val === null) {
         return <span>- {units}</span>;
     } else {
