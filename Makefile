@@ -9,26 +9,26 @@ help:
 # ----------------------------------------------------------------------------
 
 dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for changes)
-	npx concurrently -n "django,js    " -c green "make server" "make js-watch" "make js"
+	npx concurrently -n "django,js    " -c green "make server" "make js"
 
 js:  ## Compile JS (one off, for development)
 	npx esbuild \
-		mhep/dev/static/dev/js_src/exports.js \
+		mhep/dev/static/dev/js_src/exports.tsx \
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
-		--sourcemap --bundle
+		--sourcemap --bundle --watch
+
+ts-check:
+	npx tsc --noEmit --allowJs -p mhep/dev/static/dev/tsconfig.json -w
 
 js-prod:  ## Compile JS (one off, for production)
 	npx esbuild \
-		mhep/dev/static/dev/js_src/exports.js \
+		mhep/dev/static/dev/js_src/exports.tsx \
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
 		--sourcemap --bundle
-
-js-watch:  ## Compile JS (watching for changes, for development)
-	npx chokidar "mhep/dev/static/dev/js_src/**/*" -c "make js"
 
 load-placeholder-library:
 	python manage.py loaddata mhep/dev/fixtures/standard_library.json
@@ -78,10 +78,10 @@ test-python:  ## Run Python tests
 	flake8 mhep
 
 test-js:  ## Run non-browser JS tests
-	node --experimental-vm-modules node_modules/.bin/jest
+	npx jest
 
 test-js-watch:  ## Run non-browser JS tests (watch mode)
-	node --experimental-vm-modules node_modules/.bin/jest --watch
+	npx jest --watch
 
 docs:  ## Build HTML docs (for other options run make in docs/)
 	make -C docs/ html

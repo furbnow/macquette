@@ -1,26 +1,36 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
+
+import { NewAssessment } from '../types/Assessment';
+import { getScenario } from '../lib/scenarios';
 import SelectField from '../components/SelectField';
 import NumberField from '../components/NumberField';
 import CheckboxField from '../components/CheckboxField';
 import FormRow from '../components/FormRow';
 import Result from '../components/Result';
-import Tooltip from '../components/Tooltip'
+import Tooltip from '../components/Tooltip';
 
 // ??? - dedicated Volume vs total Volume - what's the calculation there?
 // data.SHW.Veff = data.SHW.Vs + 0.3 * (data.SHW.combined_cylinder_volume - data.SHW.Vs);
 // double check this is correct!
 
-function SolarHotWater({ scenario }) {
+interface SolarHotWaterProps {
+    assessment: NewAssessment;
+    scenarioId: string;
+}
+
+function SolarHotWater({ assessment, scenarioId }: SolarHotWaterProps): ReactElement {
+    const scenario = getScenario(assessment, scenarioId);
+
     return (
         <section>
-            <h3>Solar Hot Water system</h3>
+            <h3>Solar Hot Water systems</h3>
 
             <FormRow>
                 <label htmlFor="field_use_shw">Use solar hot water</label>
                 <CheckboxField
                     id="use_shw"
-                    value={scenario.waterHeating.solar_water_heating}
-                    setValue={(val) => (scenario.waterHeating.solar_water_heating = val)}
+                    value={scenario.water_heating.solar_water_heating}
+                    setValue={(val) => (scenario.water_heating.solar_water_heating = val)}
                 />
             </FormRow>
 
@@ -35,8 +45,8 @@ function SolarHotWater({ scenario }) {
                         { value: 'electric', display: 'Mains powered' },
                         // { value: 'electric', display: 'Electrically powered' },
                     ]}
-                    value={scenario.solarHotWater.pump}
-                    setValue={(val) => (scenario.solarHotWater.pump = val)}
+                    value={scenario.SHW.pump}
+                    setValue={(val) => (scenario.SHW.pump = val)}
                 />
             </FormRow>
 
@@ -48,8 +58,8 @@ function SolarHotWater({ scenario }) {
                 <NumberField
                     id="aperture_area"
                     units="m²"
-                    value={scenario.solarHotWater.A}
-                    setValue={(val) => (scenario.solarHotWater.A = val)}
+                    value={scenario.SHW.A}
+                    setValue={(val) => (scenario.SHW.A = val)}
                 />
             </FormRow>
 
@@ -61,8 +71,8 @@ function SolarHotWater({ scenario }) {
 
                 <NumberField
                     id="zeroloss_collector_efficiency"
-                    value={scenario.solarHotWater.n0}
-                    setValue={(val) => (scenario.solarHotWater.n0 = val)}
+                    value={scenario.SHW.n0}
+                    setValue={(val) => (scenario.SHW.n0 = val)}
                 />
             </FormRow>
 
@@ -74,8 +84,8 @@ function SolarHotWater({ scenario }) {
 
                 <NumberField
                     id="linear_heat_loss_coefficient"
-                    value={scenario.solarHotWater.a1}
-                    setValue={(val) => (scenario.solarHotWater.a1 = val)}
+                    value={scenario.SHW.a1}
+                    setValue={(val) => (scenario.SHW.a1 = val)}
                 />
             </FormRow>
 
@@ -87,15 +97,15 @@ function SolarHotWater({ scenario }) {
 
                 <NumberField
                     id="second_order_heat_loss_coefficient"
-                    value={scenario.solarHotWater.a2}
-                    setValue={(val) => (scenario.solarHotWater.a2 = val)}
+                    value={scenario.SHW.a2}
+                    setValue={(val) => (scenario.SHW.a2 = val)}
                 />
             </FormRow>
 
             <FormRow>
                 <var>a* = 0.892 × (a1 + 45 × a2)</var>
 
-                <Result val={scenario.solarHotWater.a} />
+                <Result val={scenario.SHW.a} />
             </FormRow>
 
             <FormRow>
@@ -103,7 +113,7 @@ function SolarHotWater({ scenario }) {
                     Collector performance ratio, <var>a*/η0</var>
                 </span>
 
-                <Result val={scenario.solarHotWater.collector_performance_ratio} />
+                <Result val={scenario.SHW.collector_performance_ratio} />
             </FormRow>
 
             <FormRow>
@@ -118,8 +128,8 @@ function SolarHotWater({ scenario }) {
                         { value: 3, display: 'SE/SW' },
                         { value: 4, display: 'South' },
                     ]}
-                    value={scenario.solarHotWater.orientation}
-                    setValue={(val) => (scenario.solarHotWater.orientation = val)}
+                    value={scenario.SHW.orientation}
+                    setValue={(val) => (scenario.SHW.orientation = val)}
                 />
             </FormRow>
 
@@ -131,18 +141,21 @@ function SolarHotWater({ scenario }) {
                 <NumberField
                     id="inclination"
                     units="degrees"
-                    value={scenario.solarHotWater.inclination}
-                    setValue={(val) => (scenario.solarHotWater.inclination = val)}
+                    value={scenario.SHW.inclination}
+                    setValue={(val) => (scenario.SHW.inclination = val)}
                 />
             </FormRow>
 
             <FormRow>
                 <span>
                     Annual solar radiation per m²
-                    <Tooltip>from U3.3 in Appendix U for the orientation and tilt of the collector</Tooltip>
+                    <Tooltip>
+                        from U3.3 in Appendix U for the orientation and tilt of the
+                        collector
+                    </Tooltip>
                 </span>
 
-                <Result val={scenario.solarHotWater.annual_solar} dp={0} units="kWh" />
+                <Result val={scenario.SHW.annual_solar} dp={0} units="kWh" />
             </FormRow>
 
             <FormRow>
@@ -156,19 +169,15 @@ function SolarHotWater({ scenario }) {
                         { value: 'MODEST', display: 'Modest 20% - 60%' },
                         { value: 'NONE', display: 'None or very little, less than 20%' },
                     ]}
-                    value={scenario.solarHotWater.overshading}
-                    setValue={(val) => (scenario.solarHotWater.overshading = val)}
+                    value={scenario.SHW.overshading}
+                    setValue={(val) => (scenario.SHW.overshading = val)}
                 />
             </FormRow>
 
             <FormRow>
                 <span>Solar energy available</span>
 
-                <Result
-                    val={scenario.solarHotWater.solar_energy_available}
-                    dp={0}
-                    units="kWh"
-                />
+                <Result val={scenario.SHW.solar_energy_available} dp={0} units="kWh" />
             </FormRow>
 
             <h4>Utilisation</h4>
@@ -185,7 +194,7 @@ function SolarHotWater({ scenario }) {
                 <span>Load</span>
 
                 <Result
-                    val={scenario.waterHeating.annual_energy_content}
+                    val={scenario.water_heating.annual_energy_content}
                     dp={0}
                     units="kWh"
                 />
@@ -194,19 +203,19 @@ function SolarHotWater({ scenario }) {
             <FormRow>
                 <span>Solar-to-load ratio</span>
 
-                <Result val={scenario.solarHotWater.solar_load_ratio} />
+                <Result val={scenario.SHW.solar_load_ratio} />
             </FormRow>
 
             <FormRow>
                 <span>Utilisation factor</span>
 
-                <Result val={scenario.solarHotWater.utilisation_factor} />
+                <Result val={scenario.SHW.utilisation_factor} />
             </FormRow>
 
             <FormRow>
                 <span>Collector performance factor</span>
 
-                <Result val={scenario.solarHotWater.collector_performance_factor} />
+                <Result val={scenario.SHW.collector_performance_factor} />
             </FormRow>
 
             <FormRow>
@@ -217,8 +226,8 @@ function SolarHotWater({ scenario }) {
                 <NumberField
                     id="dedicated_solar_storage_volume"
                     units="litres"
-                    value={scenario.solarHotWater.Vs}
-                    setValue={(val) => (scenario.solarHotWater.Vs = val)}
+                    value={scenario.SHW.Vs}
+                    setValue={(val) => (scenario.SHW.Vs = val)}
                 />
             </FormRow>
 
@@ -230,10 +239,8 @@ function SolarHotWater({ scenario }) {
                 <NumberField
                     id="total_cylinder_volume"
                     units="litres"
-                    value={scenario.solarHotWater.combined_cylinder_volume}
-                    setValue={(val) =>
-                        (scenario.solarHotWater.combined_cylinder_volume = val)
-                    }
+                    value={scenario.SHW.combined_cylinder_volume}
+                    setValue={(val) => (scenario.SHW.combined_cylinder_volume = val)}
                 />
             </FormRow>
 
@@ -242,7 +249,7 @@ function SolarHotWater({ scenario }) {
                     Effective solar volume, <var>Veff</var>
                 </span>
 
-                <Result val={scenario.solarHotWater.Veff} dp={0} units="litres" />
+                <Result val={scenario.SHW.Veff} dp={0} units="litres" />
             </FormRow>
 
             <FormRow>
@@ -250,7 +257,7 @@ function SolarHotWater({ scenario }) {
                     Daily hot water demand, <var>Vd</var>, average (from water heating)
                 </span>
 
-                <Result val={scenario.waterHeating.Vd_average} dp={0} units="litres" />
+                <Result val={scenario.water_heating.Vd_average} dp={0} units="litres" />
             </FormRow>
 
             <FormRow>
@@ -258,7 +265,7 @@ function SolarHotWater({ scenario }) {
                     Volume ratio, <var>Veff/Vd</var>, (average)
                 </span>
 
-                <Result val={scenario.solarHotWater.volume_ratio} />
+                <Result val={scenario.SHW.volume_ratio} />
             </FormRow>
 
             <FormRow>
@@ -267,7 +274,7 @@ function SolarHotWater({ scenario }) {
                     <var>f2 = 1 + 0.2 × ln(Volume Ratio)</var>
                 </span>
 
-                <Result val={scenario.solarHotWater.f2} />
+                <Result val={scenario.SHW.f2} />
             </FormRow>
 
             <FormRow>
@@ -275,7 +282,7 @@ function SolarHotWater({ scenario }) {
                     Annual solar input, <var>Qs</var>
                 </span>
 
-                <Result val={scenario.solarHotWater.Qs} units="kWh" />
+                <Result val={scenario.SHW.Qs} units="kWh" />
             </FormRow>
         </section>
     );

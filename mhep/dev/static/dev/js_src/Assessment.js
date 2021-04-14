@@ -14,13 +14,12 @@
 // there is a utility function, `properties`, which helps define properties of a class
 // that façade onto another class (with type checking).  See more in its comments.
 export default class Assessment {
-    constructor(assessmentData, update) {
+    constructor(assessmentData) {
         this.metadata = assessmentData;
         this.data = assessmentData.data;
-        this.update = update;
 
-        this.commentary = new Commentary(this, update);
-        this.report = new Report(this, update);
+        this.commentary = new Commentary(this);
+        this.report = new Report(this);
     }
 
     // Get a list of scenarios: ids, titles, number (as in 'scenario 1') and whether
@@ -50,16 +49,16 @@ export default class Assessment {
     }
 
     getScenario(id) {
-        return new Scenario(this, id, this.update);
+        return new Scenario(this, id);
     }
 }
 
 class Scenario {
-    constructor(assessment, scenarioId, update) {
+    constructor(assessment, scenarioId) {
         this.data = assessment.data[scenarioId];
-        this.solarHotWater = new SolarHotWater(this.data, update);
-        this.waterHeating = new WaterHeating(this.data, update);
-        this.currentEnergy = new CurrentEnergy(this.data, update);
+        this.solarHotWater = new SolarHotWater(this.data);
+        this.waterHeating = new WaterHeating(this.data);
+        this.currentEnergy = new CurrentEnergy(this.data);
 
         properties(this, this.data, {
             name: { type: String, field: 'scenario_name' },
@@ -72,17 +71,14 @@ class Scenario {
             use_custom_occupancy: { type: Boolean },
             custom_occupancy: { type: Number },
         });
-
-        this.update = update;
     }
 
     getFloors() {
-        return this.data.floors.map(floor => new RoomFloor(floor, this.update));
+        return this.data.floors.map(floor => new RoomFloor(floor));
     }
 
     deleteFloor(idx) {
         this.data.floors.splice(idx, 1);
-        this.update();
     }
 
     addFloor() {
@@ -104,25 +100,22 @@ class Scenario {
             name = n_floors + 'th Floor';
         }
         this.data.floors.push({ name, area: 0, height: 0, volume: 0 });
-        this.update();
     }
 }
 
 class RoomFloor {
-    constructor(floor, update) {
+    constructor(floor) {
         properties(this, floor, {
             area: { type: Number },
             name: { type: String },
             height: { type: Number },
             volume: { type: Number }
         });
-
-        this.update = update;
     }
 }
 
 class Report {
-    constructor(assessment, update) {
+    constructor(assessment) {
         if (!assessment.data._report) {
             assessment.data._report = {};
         }
@@ -131,13 +124,11 @@ class Report {
             date: { type: String },
             version: { type: String },
         });
-
-        this.update = update;
     }
 }
 
 class CurrentEnergy {
-    constructor(scenarioData, update) {
+    constructor(scenarioData) {
         if (!scenarioData.currentenergy) {
             scenarioData.currentenergy = {};
         }
@@ -163,7 +154,6 @@ class CurrentEnergy {
         });
 
         this.scenarioData = scenarioData;
-        this.update = update;
     }
 
     getAllFuelsList() {
@@ -174,7 +164,7 @@ class CurrentEnergy {
 
     getFuelsInUseList() {
         return Object.entries(this.scenarioData.currentenergy.use_by_fuel).map(
-            ([name, data]) => new FuelUse(name, data, this.update)
+            ([name, data]) => new FuelUse(name, data)
         );
     }
 
@@ -185,7 +175,6 @@ class CurrentEnergy {
 
         this.scenarioData.currentenergy.use_by_fuel[name] =
             { annual_co2: 0, annual_use: 0, annualcost: 0, primaryenergy: 0 }
-        this.update()
     }
 
     deleteFuelInUse(name) {
@@ -194,12 +183,11 @@ class CurrentEnergy {
         }
 
         delete this.scenarioData.currentenergy.use_by_fuel[name]
-        this.update()
     }
 }
 
 class FuelUse {
-    constructor(name, data, update) {
+    constructor(name, data) {
         properties(this, data, {
             annual_co2: { type: Number },
             annual_use: { type: Number },
@@ -208,12 +196,11 @@ class FuelUse {
         });
 
         this.name = name;
-        this.update = update;
     }
 }
 
 class WaterHeating {
-    constructor(scenarioData, update) {
+    constructor(scenarioData) {
         if (!scenarioData.water_heating) {
             scenarioData.water_heating = {};
         }
@@ -225,12 +212,11 @@ class WaterHeating {
         });
 
         this.scenarioData = scenarioData;
-        this.update = update;
     }
 }
 
 class SolarHotWater {
-    constructor(scenarioData, update) {
+    constructor(scenarioData) {
         if (!scenarioData.SHW) {
             scenarioData.SHW = {};
         }
@@ -260,12 +246,11 @@ class SolarHotWater {
         });
 
         this.scenarioData = scenarioData;
-        this.update = update;
     }
 }
 
 class Commentary {
-    constructor(assessment, update) {
+    constructor(assessment) {
         if (!assessment.data._commentary) {
             assessment.data._commentary = {};
         }
@@ -278,7 +263,6 @@ class Commentary {
         });
 
         this.assessment = assessment;
-        this.update = update;
     }
 
     // List scenario commentaries that for scenarios that don't exist in the assessment
@@ -301,11 +285,9 @@ class Commentary {
     }
     setText(id, text) {
         this.scenarios[id] = text;
-        this.update();
     }
     deleteText(id) {
         delete this.scenarios[id];
-        this.update();
     }
 }
 
@@ -321,7 +303,6 @@ class Commentary {
 // * Initialise project.data._commentary.brief to '' if it is undefined
 // * Check the new value is a string
 // * Update project.data._commentary.brief with that string
-// * Call commentary.update() to save the change to the server
 function properties(cls, root, props) {
     const DEFAULTS_FOR_TYPE = [
         { type: String, default: () => '' },
@@ -367,7 +348,6 @@ function properties(cls, root, props) {
                 }
 
                 root[destinationField] = val;
-                cls.update();
             },
         });
     }

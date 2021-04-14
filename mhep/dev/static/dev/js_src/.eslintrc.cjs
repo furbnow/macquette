@@ -6,14 +6,16 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
+    'plugin:@typescript-eslint/recommended',
     "plugin:import/errors",
+    "plugin:import/typescript",
     "plugin:react/recommended",
     "plugin:jsx-a11y/recommended",
     "plugin:jest/recommended",
     "plugin:jest/style",
     "prettier",
-    "prettier/react",
   ],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -21,7 +23,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: "module",
   },
-  plugins: ["react", "import", "jsx-a11y", "react-hooks"],
+  plugins: ["@typescript-eslint", "react", "import", "jsx-a11y", "react-hooks"],
   rules: {
     "react/prop-types": 0,
     "no-console": 1,

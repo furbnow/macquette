@@ -71,7 +71,7 @@ pre-commit:
         - npm install
     script:
         - python -V
-        - pip install pre-commit==2.8.2
+        - pip install pre-commit==2.11.1
         - pre-commit run --all
 
 pages:

@@ -143,12 +143,7 @@ export default function DwellingData({ scenario }) {
                             <label htmlFor="field_occupancy">Occupancy according to SAP
                                 <Tooltip>Based on floor area</Tooltip>
                             </label>
-                            <NumberField
-                                disabled
-                                id="occupancy"
-                                value={scenario.occupancy.toFixed(1)}
-                                setValue={(val) => (scenario.occupancy = val)}
-                            />
+                            <Result value={scenario.occupancy_SAP_value} dp="1" />
                         </>
                     )
                     : (

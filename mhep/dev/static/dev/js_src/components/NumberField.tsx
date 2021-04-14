@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { ReactElement, useContext } from 'react';
 import useExternalState from '../hooks/useExternalState';
+import { UpdateFunction } from '../context/UpdateFunction';
 
 function decimalise(s) {
     // Remove everything that isn't allowed in a decimal fraction
@@ -7,7 +8,22 @@ function decimalise(s) {
     return s.replaceAll(notAllowed, '');
 }
 
-export default function NumberField({ id, units, value, setValue, disabled }) {
+interface INumberField {
+    id: string;
+    units?: string;
+    value: number;
+    setValue: (a: number) => void;
+    disabled?: boolean;
+}
+
+export default function NumberField({
+    id,
+    units = '',
+    value,
+    setValue,
+    disabled = false,
+}: INumberField): ReactElement {
+    const updateFn = useContext(UpdateFunction);
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
@@ -21,9 +37,10 @@ export default function NumberField({ id, units, value, setValue, disabled }) {
                 onBlur={() => {
                     if (current !== monitor) {
                         setValue(parseFloat(current));
+                        updateFn();
                     }
                 }}
-                value={current || undefined}
+                value={current}
             />{' '}
             {units}
         </div>

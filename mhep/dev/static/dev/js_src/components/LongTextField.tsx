@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useContext, ReactElement } from 'react';
 import useExternalState from '../hooks/useExternalState';
+import { UpdateFunction } from '../context/UpdateFunction';
 
-export default function LongTextField({ children, notes, id, value, setValue, className = "" }) {
+interface LongTextFieldProps {
+    id: string;
+    notes?: string;
+    value: string;
+    setValue: (a: string) => void;
+}
+
+export default function LongTextField({
+    id,
+    notes,
+    value,
+    setValue,
+}: LongTextFieldProps): ReactElement {
+    const updateFn = useContext(UpdateFunction);
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
-        <div className={className}>
-            <label htmlFor={`field_${id}`}>{children}:</label>
+        <>
             <textarea
                 className="textarea"
                 id={`field_${id}`}
@@ -14,11 +27,12 @@ export default function LongTextField({ children, notes, id, value, setValue, cl
                 onBlur={() => {
                     if (current !== monitor) {
                         setValue(current);
+                        updateFn();
                     }
                 }}
                 value={current}
             />
             {notes ? <p className="textarea--note text-italic">{notes}</p> : null}
-        </div>
+        </>
     );
 }

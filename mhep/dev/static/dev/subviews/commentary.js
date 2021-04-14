@@ -1,12 +1,10 @@
-function commentary_initUI() {
-    let assessment = new Macquette.Assessment(p, update);
+function commentary_UpdateUI() {
     Macquette.render(
         Macquette.views.Commentary,
         {
-            assessment,
+            assessment: p.data,
             overviewData: Object.fromEntries(
-                assessment
-                    .getScenarioList({ excludeBase: true })
+                Macquette.lib.getScenarioList(p.data, true)
                     .map(({ id, num, title }) => [
                         id,
                         {
@@ -17,7 +15,8 @@ function commentary_initUI() {
                     ])
             ),
         },
-        document.querySelector('#content')
+        document.querySelector('#content'),
+        update
     );
 }
 
