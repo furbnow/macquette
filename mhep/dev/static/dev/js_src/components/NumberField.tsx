@@ -8,7 +8,7 @@ function decimalise(s) {
     return s.replaceAll(notAllowed, '');
 }
 
-interface INumberField {
+interface NumberFieldProps {
     id: string;
     units?: string;
     value: number;
@@ -22,7 +22,7 @@ export default function NumberField({
     value,
     setValue,
     disabled = false,
-}: INumberField): ReactElement {
+}: NumberFieldProps): ReactElement {
     const updateFn = useContext(UpdateFunction);
     const [current, monitor, setCurrent] = useExternalState(value);
 

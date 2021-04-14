@@ -1,7 +1,7 @@
 import React, { useContext, ReactElement } from 'react';
 import { UpdateFunction } from '../context/UpdateFunction';
 
-interface ICheckboxField {
+interface CheckboxFieldProps {
     id: string;
     value: boolean;
     setValue: (boolean) => void;
@@ -11,7 +11,7 @@ export default function CheckboxField({
     id,
     value,
     setValue,
-}: ICheckboxField): ReactElement {
+}: CheckboxFieldProps): ReactElement {
     const updateFn = useContext(UpdateFunction);
 
     return (
