@@ -1,15 +1,19 @@
-import React, { useContext } from 'react';
+import React, { useContext, ReactElement } from 'react';
 import { UpdateFunction } from '../context/UpdateFunction';
 
-interface ISelectField {
+interface SelectFieldProps<T> {
     id: string;
-    options: any;
-    value: string | number | any;
-    setValue: any;
+    options: { value: T; display: string }[];
+    value: T;
+    setValue: (val: T) => void;
 }
 
-// 'options' is an array of { value: String, display: String }
-function SelectField({ id, options, value, setValue }: ISelectField) {
+export default function SelectField<Type>({
+    id,
+    options,
+    value,
+    setValue,
+}: SelectFieldProps<Type>): ReactElement {
     const updateFn = useContext(UpdateFunction);
     return (
         <select
@@ -33,5 +37,3 @@ function SelectField({ id, options, value, setValue }: ISelectField) {
         </select>
     );
 }
-
-export default SelectField;
