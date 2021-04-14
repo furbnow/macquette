@@ -79,6 +79,7 @@ test-python:  ## Run Python tests
 
 test-js:  ## Run non-browser JS tests
 	npx jest
+	npx tsc --noEmit --allowJs -p mhep/dev/static/dev/tsconfig.json
 
 test-js-watch:  ## Run non-browser JS tests (watch mode)
 	npx jest --watch
