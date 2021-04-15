@@ -20,8 +20,14 @@ import ScopeOfWorks from './views/ScopeOfWorks';
 import TargetBar from './components/TargetBar';
 import Graphics from './components/Graphics';
 
-// 'as any' makes the TS typechecker shut up
-(window as any).Macquette = {
+declare global {
+    interface Window {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Macquette: any;
+    }
+}
+
+window.Macquette = {
     Assessment,
     views: {
         Commentary,
@@ -41,7 +47,7 @@ import Graphics from './components/Graphics';
         TargetBar,
         Graphics,
     },
-    render: (view, props, root, updateFn) =>
+    render: (view, props, root, updateFn: () => void) =>
         render(
             <UpdateFunction.Provider value={updateFn}>
                 {React.createElement(view, props)}
