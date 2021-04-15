@@ -99,7 +99,7 @@ function DwellingData({ assessment, scenarioId }: DwellingDataProps): ReactEleme
 
                 <tfoot>
                     <tr>
-                        <td colSpan="7">
+                        <td colSpan={7}>
                             <button
                                 className="btn mb-0"
                                 onClick={() => {
@@ -175,7 +175,7 @@ function DwellingData({ assessment, scenarioId }: DwellingDataProps): ReactEleme
                         <label htmlFor="field_occupancy">Custom occupancy</label>
                         <NumberField
                             id="occupancy"
-                            value={+scenario.custom_occupancy.toFixed(1)}
+                            value={scenario.custom_occupancy}
                             setValue={(val) => (scenario.custom_occupancy = val)}
                         />
                     </>

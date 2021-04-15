@@ -4,7 +4,7 @@ import { UpdateFunction } from '../context/UpdateFunction';
 interface CheckboxFieldProps {
     id: string;
     value: boolean;
-    setValue: (boolean) => void;
+    setValue: (val: boolean) => void;
 }
 
 export default function CheckboxField({

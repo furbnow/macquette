@@ -1,6 +1,11 @@
 import React, { ReactElement } from 'react';
 
-import { NewAssessment } from '../types/Assessment';
+import {
+    NewAssessment,
+    SolarHotWaterPump,
+    SolarHotWaterOvershading,
+    SolarHotWaterOrientation,
+} from '../types/Assessment';
 import { getScenario } from '../lib/scenarios';
 import SelectField from '../components/SelectField';
 import NumberField from '../components/NumberField';
@@ -27,6 +32,7 @@ function SolarHotWater({ assessment, scenarioId }: SolarHotWaterProps): ReactEle
 
             <FormRow>
                 <label htmlFor="field_use_shw">Use solar hot water</label>
+
                 <CheckboxField
                     id="use_shw"
                     value={scenario.water_heating.solar_water_heating}
@@ -36,17 +42,15 @@ function SolarHotWater({ assessment, scenarioId }: SolarHotWaterProps): ReactEle
 
             <FormRow>
                 <label htmlFor="field_pump_power_supply">Pump power supply</label>
-                {/* Solar water heating pump */}
 
                 <SelectField
                     id="pump_power_supply"
                     options={[
                         { value: 'PV', display: 'PV powered' },
                         { value: 'electric', display: 'Mains powered' },
-                        // { value: 'electric', display: 'Electrically powered' },
                     ]}
                     value={scenario.SHW.pump}
-                    setValue={(val) => (scenario.SHW.pump = val)}
+                    setValue={(val: SolarHotWaterPump) => (scenario.SHW.pump = val)}
                 />
             </FormRow>
 
@@ -129,7 +133,9 @@ function SolarHotWater({ assessment, scenarioId }: SolarHotWaterProps): ReactEle
                         { value: 4, display: 'South' },
                     ]}
                     value={scenario.SHW.orientation}
-                    setValue={(val) => (scenario.SHW.orientation = val)}
+                    setValue={(val: SolarHotWaterOrientation) =>
+                        (scenario.SHW.orientation = val)
+                    }
                 />
             </FormRow>
 
@@ -170,7 +176,9 @@ function SolarHotWater({ assessment, scenarioId }: SolarHotWaterProps): ReactEle
                         { value: 'NONE', display: 'None or very little, less than 20%' },
                     ]}
                     value={scenario.SHW.overshading}
-                    setValue={(val) => (scenario.SHW.overshading = val)}
+                    setValue={(val: SolarHotWaterOvershading) =>
+                        (scenario.SHW.overshading = val)
+                    }
                 />
             </FormRow>
 
