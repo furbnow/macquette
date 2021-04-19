@@ -71,72 +71,7 @@
 {% block content %}
 
 <div id="openbem">
-    <div id="sidebar" style="background: white">
-        <div class="side-block" style="background-color: #EEECE5 !important; padding: 15px;">
-            <button id="edit-project-name-and-description" style="float:right">
-                <i class="icon-edit"></i>
-            </button>
-            <p style="margin-bottom: 0">
-                <b><span id="project-title"></span></b><br>
-                <span id="project-description"></span><br>
-                <span style="font-style: italic;" id="project-author"></span>
-            </p>
-        </div>
-
-        <div class="side-block">
-            <div class="side-section">
-                <div class="side-section--header">Assessment</div>
-
-                <ul>
-                    <li><a class="project-menu-item" href="#master/householdquestionnaire">Household Questionnaire</a></li>
-                    <li><a class="project-menu-item" href="#master/commentary">Commentary</a></li>
-                    <li><a class="project-menu-item" href="#master/currentenergy">Current Energy</a></li>
-                    <li><a class="project-menu-item" href="#master/imagegallery">Image gallery</a></li>
-                </ul>
-            </div>
-
-            <div class="side-section">
-                <div class="side-section--header">Output</div>
-
-                <ul>
-                    <li><a class="project-menu-item" href="#master/compare">Compare Scenarios</a></li>
-                    <li><a class="project-menu-item" href="#master/report">Reports</a></li>
-                    <li><a class="project-menu-item" href="#master/scopeofworks">Scope of Works</a></li>
-                </ul>
-            </div>
-
-            <div class="side-section" style="padding-bottom: 5px">
-                <div class="side-section--header" style="display: flex; justify-content: space-between;">
-                    <div>Scenarios</div>
-                    <div><abbr title="Space Heating Demand (kWh/m²·year)">SHD</abbr></div>
-                </div>
-            </div>
-
-        </div>
-
-        <div id="scenario-list"></div>
-
-        <div class="side-block side-section" style="border-bottom: none">
-            <ul>
-                <li>
-                    <button id="create-new" class="btn">
-                        <i class="icon-plus" style="margin-right: 0.25rem"></i> New scenario
-                    </button>
-                </li>
-            </ul>
-        </div>
-
-        <div class="side-block" style="margin-bottom: 10px; border-bottom: none">
-            <div class="side-section">
-                <div class="side-section--header">Tools & Settings</div>
-
-                <ul>
-                    <li><a class="project-menu-item" href="#master/export">Import/Export</a></li>
-                    <li><a class="project-menu-item" href="#master/librariesmanager">Libraries manager</a></li>
-                    <li><a class="project-menu-item" href="#master/fuelsmanager">Fuels manager</a></li>
-                </ul>
-            </div>
-        </div>
+    <div id="sidebar">
     </div>
 
     <div id="wrapper" class="pa-30">
@@ -179,46 +114,6 @@
     </div>
     <div class="modal-footer">
         <button id="modal-error-submitting-data-done" class="btn btn-danger">Done</button>
-    </div>
-</div>
-<div id="modal-assessment-locked" class="modal alert-danger hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
-    <div class="modal-header">
-        <h3>The assessment is locked!</h3>
-    </div>
-    <div class="modal-body">
-        <p>Your changes won't be saved.</p>
-        <p>To unlock the assessment change the status from "Complete" to "In progress".</p>
-    </div>
-    <div class="modal-footer">
-        <button id="modal-assessment-locked-done" data-dismiss="modal" class="btn btn-danger">Done</button>
-    </div>
-</div>
-
-<div id="modal-delete-scenario" class="modal alert-danger hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
-    <div class="modal-header">
-        <h3>Delete scenario</h3>
-    </div>
-    <div class="modal-body">
-        Are you sure you want to delete this scenario?
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button id="delete-scenario-confirm" class="btn btn-primary">Delete</button>
-    </div>
-</div>
-
-
-<div id="modal-create-scenario" class="modal modal-sm hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3>Which scenario do you want to duplicate?</h3>
-    </div>
-    <div class="modal-body">
-        <select id="select-scenario"></select>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button id="modal-create-scenario-done" class="btn btn-primary">Done</button>
     </div>
 </div>
 
@@ -300,60 +195,11 @@
     //************************
     // Side Menus
     //************************
-    redraw_scenario_menu();
-    toggle_scenario_menu(scenario);
-
-    //****************
-    // Sidebar
-    //****************
-    var max_wrapper_width = 1150;
-    var sidebar_enabled = true;
-    var sidebar_visible = true;
-    sidebar_resize();
-
-    //*********************
-    // Assessment locked?
-    //*********************
-    if (locked === true) {
-        setTimeout(function () {
-            $('#modal-assessment-locked').modal('show');
-        }, 1);
-    }
-
-    // Don't show reports to people who can't issue reports to avoid
-    // confusion
-    if (!p.organisation) {
-        $('[href="#master/report"]').hide();
-    }
-
-    $("#project-title").html(p.name);
-    $("#project-description").html(p.description);
-    if (p.organisation) {
-        $("#project-author").html(`${p.user.name}, ${p.organisation.name}`);
-    } else {
-        $("#project-author").html(`${p.user.name}`);
-    }
+    redraw_sidebar();
 
     //**********
     // Events
     //**********
-    $("#openbem").on('click', '.lock', function () {
-        const id = this.dataset.scenario
-        project[id].locked = !project[id].locked
-
-        if (project[id].locked) {
-            $('.if-not-locked').hide();
-        } else {
-            $('.if-not-locked').show();
-        }
-
-        redraw_scenario_menu();
-
-        // Disable measures if master
-        show_hide_if_master();
-
-        update();
-    });
     $("#openbem").on("change", '[key]', function () {
         if (data.locked == true && page != "librariesmanager" && page != 'imagegallery' && page != 'export' && page != 'householdquestionnaire' && page != 'currentenergy' && page != 'commentary')
             $('#modal-scenario-locked').modal('show');
@@ -378,102 +224,10 @@
         update();
     });
     $(window).on('hashchange', function () {
+        $(window).scrollTop(0);
         load_page_from_hash();
     });
-    // Scenarios interactions
-    $("#openbem").on('click', ".scenario-nav", function () {
-        $(window).scrollTop(650);
-    });
-    $("#openbem").on('click', ".scenario-block .block-header", function () {
-        const project_id = this.closest("[scenario]").getAttribute('scenario');
 
-        if (project_id !== scenario) {
-            window.location = '#' + project_id + '/' + page;
-            $(window).scrollTop(0);
-        }
-
-        toggle_scenario_menu(project_id);
-    });
-    $('#openbem').on('click', '.project-menu-item', function () {
-        $('.scenario-block[scenario=master] .block-header').click();
-        toggle_scenario_menu(null);
-        $(window).scrollTop(0);
-    });
-    // Scenarios management
-    $("#openbem").on('click', "#create-new", function () {
-        // Reset select
-        $('#select-scenario').html("");
-
-        // Fill up the select
-        for (let scenarioId of get_scenario_ids(project)) {
-            const name = project[scenarioId].scenario_name || scenarioId;
-            $('#select-scenario').append(`<option value='${scenarioId}'>${name}</option>`);
-        }
-
-        $('#modal-create-scenario').modal('show');
-    });
-    $("#modal-create-scenario").on('click', '#modal-create-scenario-done', function () {
-        var n = 0;
-        for (let scenarioId of get_scenario_ids(project)) {
-            var scenario_number = scenarioId.slice(8);
-            if (scenarioId != 'master' && n != scenario_number) // if for a reason a scenario was deleted, when we create a new one it takes its position. Example: we have master, scenario1 and scenario2. We delete scenario1. We create a new one that becomes scenario1
-                break;
-            n++;
-        }
-        var s = "scenario" + n;
-        project[s] = JSON.parse(JSON.stringify(project[$('#select-scenario').val()]));
-        project[s].locked = false;
-        project[s].creation_hash = generate_hash(JSON.stringify(project[s]));
-        project[s].measures = {};
-        project[s].fabric.measures = {};
-        project[s].fabric.elements.forEach(function (element) {
-            if (element.cost_total != undefined)
-                delete element.cost_total;
-        });
-        project[s].created_from = $('#select-scenario').val();
-
-        //sort project alphabetically
-        temp_project = {};
-        Object.keys(project)
-                .sort()
-                .forEach(function (v, i) {
-                    temp_project[v] = project[v];
-                });
-        project = JSON.parse(JSON.stringify(temp_project));
-
-        $(".menu-content").hide();
-        redraw_scenario_menu();
-        $('#modal-create-scenario').modal('hide');
-
-        scenario = s;
-        page = 'dwellingdata';
-        update();
-        $(".scenario-block[scenario=" + s + "] .block-header").click();
-        $(window).scrollTop(0);
-    });
-    $("#openbem").on('click', ".delete-scenario-launch", function () {
-        const id = this.dataset.scenario
-
-        if (id != "master") {
-            $("#modal-delete-scenario").modal("show");
-            $("#modal-delete-scenario").attr("scenario", id);
-        }
-    });
-    $("#delete-scenario-confirm").click(function () {
-        var s = $("#modal-delete-scenario").attr('scenario');
-
-        if (s != "master")
-            delete project[s];
-        $(`.scenario-block[scenario=${s}] .block-header`).hide();
-        scenario = 'master';
-        page = "dwellingdata"
-
-        update();
-        $("#modal-delete-scenario").modal("hide");
-        $(".scenario-block[scenario=master] .block-header").click();
-        $(window).scrollTop(0);
-
-    });
     // Project's name and description management
     $("#edit-project-name-and-description").on('click', function () {
         $("#project-name-input").val(p.name);
@@ -487,10 +241,12 @@
         $("#project-description").html(p.description);
         $("#modal-edit-project-name-and-description").modal("hide");
         mhep_helper.set_name_and_description(projectid, p.name, p.description);
+        redraw_sidebar();
     });
     $("#modal-error-submitting-data-done").on('click', function () {
         location.reload();
     });
+
     // Do/undo
     $('body').on('click', '#undo', function () {
         if (historical_index < historical.length - 1) {
@@ -513,7 +269,6 @@
     // Side menu
     $(window).resize(function () {
         pageheader_resize();
-        sidebar_resize();
     });
 
 
@@ -522,7 +277,7 @@
     //*************
     function update(undo_redo = false) {
         // We need to calculate the periods of heating off here because if we try to do it in household.js it happens after the update
-        if (project.master.household != undefined) {
+        if ("household" in project.master.household) {
             // we ensure all the scenarios have the same household data and heating off periods
             for (let scenarioId of get_scenario_ids(project)) {
                 project[scenarioId].household = project.master.household;
@@ -557,6 +312,17 @@
                 alert_if_assessment_locked(result);
             }
         });
+
+        // Validate our current location
+        if (!(scenario in p.data)) {
+            load_page_from_hash();
+        } else {
+            if (project[scenario].locked) {
+                $('.if-not-locked').hide();
+            } else {
+                $('.if-not-locked').show();
+            }
+        }
     }
     function show_hide_if_master() {
         if (scenario == 'master')
@@ -566,122 +332,22 @@
             $('#content .disabled-if-not-master').attr('disabled', 'true');
         }
     }
-    function has_changed_base_scenario(scenario_id) {
-        const creation_hash = project[scenario_id].creation_hash
-        if (!creation_hash) {
-            return false;
-        }
-
-        const created_from = project[scenario_id].created_from
-        let original_scenario = JSON.parse(JSON.stringify(project[created_from]));
-        original_scenario.locked = false;
-        let current_hash = generate_hash(JSON.stringify(original_scenario));
-
-        return creation_hash != current_hash;
-    }
-    function scenario_block(id, currently_open) {
-        const title = project[id].scenario_name || id.charAt(0).toUpperCase() + id.slice(1)
-        const locked = project[id].locked
-        const menu_class = id === currently_open ? "active" : ""
-        const is_master = id === "master"
-        const created_from = project[id].created_from == "master" ? "baseline" : project[id].created_from
-
-        let created_from_html = ""
-        if (created_from) {
-            let created_from_extra = ""
-            let created_from_title = ""
-
-            if (project[created_from] == undefined && created_from != "baseline") {
-                // If the parent scenario has been deleted
-                created_from_extra = " - deleted"
-            } else if (has_changed_base_scenario(id)) {
-                created_from_extra = '*'
-                created_from_title = `title="${created_from} has changed since the creation of ${title}"`
-            }
-
-            created_from_html = `<span style="font-weight: normal" ${created_from_title}>Based on ${created_from}${created_from_extra}</span>`
-        }
-
-        return `
-        <div class="side-block scenario-block" scenario="${id}">
-            <div class="block-header block-header--clickable" style="display: flex; justify-content: space-between;">
-                <div>
-                    <span class="scenario-title">${title}</span>
-                    ${locked ? '<i class="icon-lock"></i>' : ''}
-                    <br>
-                    ${created_from_html}
-                </div>
-
-                <div style="text-align: right; font-weight: normal" class="shd"></div>
-            </div>
-
-            <div class="menu-content" class="${menu_class}">
-                <div class="side-section" style="margin-top: 10px">
-                    <ul>
-                        <li><a href="#${id}/dwellingdata">Dwelling Data</a></li>
-                        <li><a href="#${id}/ventilation">Ventilation and Infiltration</a></li>
-                        <li><a href="#${id}/elements">Fabric</a></li>
-                        <li><a href="#${id}/LAC">Lighting, Appliances & Cooking</a></li>
-                        <li><a href="#${id}/heating">Heating</a></li>
-                        <li><a href="#${id}/fuel_requirements">Fuel requirements</a></li>
-                        <li><a href="#${id}/generation">Generation</a></li>
-                        <li><a href="#${id}/solarhotwater">Solar Hot Water heating</a></li>
-                    </ul>
-                </div>
-
-                <div class="side-section">
-                    <div class="side-section--header">Other</div>
-                        <ul>
-                        <li><a href="#${id}/worksheets">SAP worksheets</a></li>
-                        <li>
-                            <button class="lock" data-scenario="${id}">
-                                ${locked ? "Unlock scenario" : "Lock scenario" }
-                            </button>
-                        </li>
-
-                        <li ${is_master ? "hidden" : ""}>
-                            <button class="delete-scenario-launch" data-scenario="${id}">
-                                <i class="icon-trash"></i>
-                                Delete scenario
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        `
-    }
-    function redraw_scenario_menu() {
-        const currently_open = $("[scenario] .menu-content").filter(".active").closest("[scenario]").attr("scenario")
-
-        $("#scenario-list").html(
-            get_scenario_ids(project).map(id => scenario_block(id, currently_open)).join("")
-        )
-
-        toggle_scenario_menu(currently_open);
-
-        redraw_emissions();
-    }
     function redraw_sidebar() {
-        redraw_scenario_names();
-        redraw_emissions();
-    }
-    function redraw_scenario_names() {
-        for (let scenarioId of get_scenario_ids(project)) {
-            const $title = $(`[scenario="${scenarioId}"] .scenario-title`);
-            $title.text(project[scenarioId].scenario_name);
-        }
-    }
-    function redraw_emissions() {
-        for (let scenarioId of get_scenario_ids(project)) {
-            const $emissions = $(`[scenario="${scenarioId}"] .shd`)
-            const space_heating_demand_m2 = project[scenarioId].space_heating_demand_m2
-            if (typeof(space_heating_demand_m2) == "number" && !isNaN(space_heating_demand_m2)) {
-              $emissions.text(space_heating_demand_m2.toFixed(0));
-            } else {
-              $emissions.text("-")
-            }
-        }
+        Macquette.render(
+            Macquette.components.Sidebar,
+            {
+                assessment: p.data,
+                initialExpanded: scenario,
+                totalLock: locked,
+                hasReports: !!p.organisation,
+                name: p.name,
+                description: p.description,
+                username: p.user.name,
+                orgname: p.organisation ? p.organisation.name : null
+            },
+            document.querySelector('#sidebar'),
+            update
+        );
     }
     function show_graphics_for_page(page) {
         switch (page) {
@@ -735,8 +401,9 @@
         page = tmp[1] || "dwellingdata";
         scenario = tmp[0] || "master";
 
-        if (project[scenario] == undefined)
+        if (!(scenario in project)) {
             scenario = 'master';
+        }
 
         if (oldPage === page && oldScenario === scenario) {
             return;
@@ -751,6 +418,7 @@
         // Render page
         pageheader_new_page({
             title: title_for_page(page, scenario),
+            totalLock: locked,
             showGraphics: show_graphics_for_page(page)
         });
         load_view("#content", page);
@@ -802,47 +470,6 @@
         else {
             $('#redo').css('opacity', 0.1);
             $('#redo').css('cursor', 'default');
-        }
-    }
-    function generate_hash(string) {
-        var hash = 0, i, chr;
-        if (string.length === 0)
-            return hash;
-        for (i = 0; i < string.length; i++) {
-            chr = string.charCodeAt(i);
-            hash = ((hash << 5) - hash) + chr;
-            hash |= 0; // Convert to 32bit integer
-        }
-        return hash;
-    }
-    function sidebar_resize() {
-        var width = $(window).width();
-
-        if (width < max_wrapper_width) {
-            hide_sidebar()
-        } else if (sidebar_enabled) {
-            show_sidebar()
-        }
-    }
-    function show_sidebar() {
-        var width = $(window).width();
-        sidebar_visible = true;
-
-        $("#wrapper").css("margin", "15px 15px 15px 305px")
-        $("#sidebar").show();
-    }
-    function hide_sidebar() {
-        sidebar_visible = false;
-        $("#wrapper").css("margin", "15px auto")
-        $("#sidebar").hide();
-    }
-    function toggle_scenario_menu(project_id) {
-        const $menu_content = $(`div[scenario="${project_id}"] .menu-content`);
-        const visible = $menu_content.hasClass("active");
-
-        $(".menu-content").removeClass("active")
-        if (!visible) {
-            $menu_content.addClass("active");
         }
     }
 
