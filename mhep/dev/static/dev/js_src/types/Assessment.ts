@@ -37,11 +37,50 @@ export type Scenario = {
 
     water_heating: WaterHeating;
     SHW: SolarHotWater;
+    currentenergy: CurrentEnergy;
+    fuels: { [key: string]: Fuel };
     floors: Floor[];
     measures: Measures;
     fabric: Fabric;
 } & ScenarioInputs &
     ScenarioOutputs;
+
+export interface CurrentEnergy {
+    primaryenergy_annual_kwh: number;
+    total_co2: number;
+    total_cost: number;
+    annual_net_cost: number;
+    primaryenergy_annual_kwhm2: number;
+    total_co2m2: number;
+    energyuseperperson: number;
+    onsite_generation: boolean;
+
+    generation: CurrentEnergyGeneration;
+    use_by_fuel: { [key: string]: FuelUse };
+}
+export interface Fuel {
+    SAP_code: number;
+    category: string;
+    co2factor: number;
+    fuelcost: number;
+    primaryenergyfactor: number;
+    standingcharge: number;
+}
+
+export interface FuelUse {
+    annual_co2: number;
+    annual_use: number | null;
+    annualcost: number;
+    primaryenergy: number;
+}
+export interface CurrentEnergyGeneration {
+    annual_generation: number | null;
+    annual_CO2: number;
+    primaryenergy: number;
+    fraction_used_onsite: number | null;
+    annual_savings: number;
+    annual_FIT_income: number | null;
+}
 
 export interface ScenarioInputs {
     region: number | null;
