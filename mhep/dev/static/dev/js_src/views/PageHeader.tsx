@@ -1,5 +1,21 @@
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import Graphics from '../components/Graphics';
+import { HouseProps } from '../components/House';
+
+interface PageHeaderProps {
+    title: string;
+    totalLock: boolean;
+    showGraphics: boolean;
+    houseData: HouseProps;
+    targetData: {
+        width: number;
+        space_heating_demand: number;
+        primary_energy: number;
+        co2: number;
+        energyuse: number;
+    };
+    cost: number;
+}
 
 export default function PageHeader({
     title = '',
@@ -8,7 +24,7 @@ export default function PageHeader({
     houseData,
     targetData,
     cost,
-}) {
+}: PageHeaderProps): ReactElement {
     const [showHouse, setShowHouse] = useState(true);
 
     return (
