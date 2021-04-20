@@ -12,6 +12,7 @@ import { getScenarioMeasures } from './lib/measures';
 import Commentary from './views/Commentary';
 import CurrentEnergy from './views/CurrentEnergy';
 import DwellingData from './views/DwellingData';
+import Generation from './views/Generation';
 import PageHeader from './views/PageHeader';
 import Report from './views/Report';
 import ScopeOfWorks from './views/ScopeOfWorks';
@@ -34,6 +35,7 @@ window.Macquette = {
         Commentary,
         CurrentEnergy,
         DwellingData,
+        Generation,
         PageHeader,
         Report,
         ScopeOfWorks,

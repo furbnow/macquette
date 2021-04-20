@@ -192,6 +192,11 @@ function ScenarioBlock({
                     <SidebarLink scenario={id} view={`generation`} text="Generation" />
                     <SidebarLink
                         scenario={id}
+                        view={`generation2`}
+                        text="Generation (React)"
+                    />
+                    <SidebarLink
+                        scenario={id}
                         view={`solarhotwater`}
                         text="Solar hot water heating"
                     />

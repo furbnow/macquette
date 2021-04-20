@@ -1,5 +1,9 @@
 import { NewAssessment, Scenario } from '../types/Assessment';
 
+export function scenarioIsBaseline(scenarioId: string): boolean {
+    return scenarioId === 'master';
+}
+
 export function getScenario(assessment: NewAssessment, scenarioId: string): Scenario {
     if (scenarioId in assessment) {
         return assessment[scenarioId] as Scenario;
