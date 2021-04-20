@@ -1,6 +1,6 @@
 import React, { useState, ReactElement, useContext } from 'react';
 import { NewAssessment } from '../types/Assessment';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 import { getScenario } from '../lib/scenarios';
 
 import Tooltip from '../components/Tooltip';
@@ -18,7 +18,7 @@ interface CurrentEnergyProps {
 
 function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactElement {
     const [fuelToAdd, setFuelToAdd] = useState('');
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
 
     const scenario = getScenario(assessment, scenarioId);
 
@@ -264,7 +264,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                             delete scenario.currentenergy.use_by_fuel[
                                                 name
                                             ];
-                                            updateFn();
+                                            update();
                                         }}
                                     >
                                         <i className="currentenergy-delete-fuel icon-trash" />
@@ -317,7 +317,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                             annualcost: 0,
                                             primaryenergy: 0,
                                         };
-                                        updateFn();
+                                        update();
                                         setFuelToAdd('');
                                     }}
                                 >

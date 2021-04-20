@@ -1,5 +1,5 @@
 import React, { useState, useContext, ReactElement } from 'react';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 
 import { NewAssessment, Scenario } from '../types/Assessment';
 import {
@@ -57,7 +57,7 @@ function ScenarioBlock({
     shd,
     setActiveScenario,
 }: ScenarioBlockProps): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
 
     return (
         <div>
@@ -122,7 +122,7 @@ function ScenarioBlock({
                                 );
                                 if (newTitle) {
                                     duplicateScenario(assessment, id, newTitle);
-                                    updateFn();
+                                    update();
                                 }
                             }}
                         >
@@ -133,7 +133,7 @@ function ScenarioBlock({
                                 className="btn mr-7"
                                 onClick={() => {
                                     getScenario(assessment, id).locked = false;
-                                    updateFn();
+                                    update();
                                 }}
                             >
                                 Unlock
@@ -144,7 +144,7 @@ function ScenarioBlock({
                                 className="btn mr-7"
                                 onClick={() => {
                                     getScenario(assessment, id).locked = true;
-                                    updateFn();
+                                    update();
                                 }}
                             >
                                 Lock
@@ -159,7 +159,7 @@ function ScenarioBlock({
                                     );
                                     if (confirm) {
                                         delete assessment[id];
-                                        updateFn();
+                                        update();
                                     }
                                 }}
                             >

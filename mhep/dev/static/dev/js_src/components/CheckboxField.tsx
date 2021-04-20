@@ -1,5 +1,5 @@
 import React, { useContext, ReactElement } from 'react';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 
 interface CheckboxFieldProps {
     id: string;
@@ -12,7 +12,7 @@ export default function CheckboxField({
     value,
     setValue,
 }: CheckboxFieldProps): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
 
     return (
         <input
@@ -20,7 +20,7 @@ export default function CheckboxField({
             id={`field_${id}`}
             onChange={(evt) => {
                 setValue(evt.target.checked);
-                updateFn();
+                update();
             }}
             checked={value}
         />

@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext } from 'react';
 import useExternalState from '../hooks/useExternalState';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 
 function decimalise(s: string): string {
     // Remove everything that isn't allowed in a decimal fraction
@@ -23,7 +23,7 @@ export default function NumberField({
     setValue,
     disabled = false,
 }: NumberFieldProps): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
     const [current, monitor, setCurrent] = useExternalState(
         value === null ? '' : value.toString()
     );
@@ -43,7 +43,7 @@ export default function NumberField({
                             val = null;
                         }
                         setValue(val);
-                        updateFn();
+                        update();
                     }
                 }}
                 value={current}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 
-import { UpdateFunction } from './context/UpdateFunction';
+import { AppContext } from './context/AppContext';
 
 import Assessment from './Assessment';
 
@@ -49,11 +49,11 @@ window.Macquette = {
         TargetBar,
         Graphics,
     },
-    render: (view, props, root, updateFn: () => void) =>
+    render: (view, props, root, update: () => void) =>
         render(
-            <UpdateFunction.Provider value={updateFn}>
+            <AppContext.Provider value={{ update, libraries: [] }}>
                 {React.createElement(view, props)}
-            </UpdateFunction.Provider>,
+            </AppContext.Provider>,
             root || document.getElementById('content')
         ),
     unmount: (element) => unmountComponentAtNode(element),

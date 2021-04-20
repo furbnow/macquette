@@ -1,6 +1,6 @@
 import React, { useContext, ReactElement } from 'react';
 import useExternalState from '../hooks/useExternalState';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 
 interface LongTextFieldProps {
     id: string;
@@ -15,7 +15,7 @@ export default function LongTextField({
     value,
     setValue,
 }: LongTextFieldProps): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
@@ -27,7 +27,7 @@ export default function LongTextField({
                 onBlur={() => {
                     if (current !== monitor) {
                         setValue(current);
-                        updateFn();
+                        update();
                     }
                 }}
                 value={current}

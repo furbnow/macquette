@@ -1,5 +1,5 @@
 import React, { useContext, ReactElement } from 'react';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 
 interface SelectFieldProps<T> {
     id: string;
@@ -14,7 +14,7 @@ export default function SelectField<T>({
     value,
     setValue,
 }: SelectFieldProps<T>): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
     const current = options.findIndex((row) => row.value === value);
 
     return (
@@ -24,12 +24,12 @@ export default function SelectField<T>({
             onChange={(evt) => {
                 const idx = parseInt(evt.target.value, 10);
                 setValue(options[idx].value);
-                updateFn();
+                update();
             }}
             onBlur={(evt) => {
                 const idx = parseInt(evt.target.value, 10);
                 setValue(options[idx].value);
-                updateFn();
+                update();
             }}
         >
             <option hidden>Select one...</option>
