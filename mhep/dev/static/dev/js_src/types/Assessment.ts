@@ -46,6 +46,7 @@ export type Scenario = {
     measures: Measures;
     fabric: Fabric;
     ventilation: Ventilation;
+    generation: Generation;
 } & ScenarioInputs &
     ScenarioOutputs;
 
@@ -138,6 +139,26 @@ export interface Measures {}
 export interface Ventilation {
     average_ventilation_WK: number;
     average_infiltration_WK: number;
+}
+
+export interface Generation {
+    use_PV_calculator: boolean;
+    solar_annual_kwh: number | null;
+    solar_fraction_used_onsite: number | null;
+    solar_FIT: number | null;
+    solar_export_FIT: number | null;
+    wind_annual_kwh: number | null;
+    wind_fraction_used_onsite: number | null;
+    wind_FIT: number | null;
+    wind_export_FIT: number | null;
+    hydro_annual_kwh: number | null;
+    hydro_fraction_used_onsite: number | null;
+    hydro_FIT: number | null;
+    hydro_export_FIT: number | null;
+    solarpv_kwp_installed: number | null;
+    solarpv_orientation: number | null;
+    solarpv_inclination: number | null;
+    solarpv_overshading: number | null;
 }
 
 //
