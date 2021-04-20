@@ -1,9 +1,7 @@
 function currentenergy_UpdateUI() {
-    let assessment = new Macquette.Assessment(p, update);
-    let scenarioData = assessment.getScenario(scenario);
     Macquette.render(
         Macquette.views.CurrentEnergy,
-        {scenario: scenarioData},
+        {assessment: p.data, scenarioId: scenario},
         document.querySelector('#content'),
         update
     );

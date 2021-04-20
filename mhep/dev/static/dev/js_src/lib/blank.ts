@@ -26,6 +26,7 @@ export default function blank(): NewAssessment {
             occupancy_SAP_value: NaN,
             space_heating_demand_m2: NaN,
             floors: [],
+            fuels: {},
             water_heating: {
                 solar_water_heating: false,
                 annual_energy_content: NaN,
@@ -58,6 +59,26 @@ export default function blank(): NewAssessment {
             fabric: {
                 measures: {},
                 elements: [],
+            },
+            currentenergy: {
+                primaryenergy_annual_kwh: NaN,
+                total_co2: NaN,
+                total_cost: NaN,
+                annual_net_cost: NaN,
+                primaryenergy_annual_kwhm2: NaN,
+                total_co2m2: NaN,
+                energyuseperperson: NaN,
+                onsite_generation: false,
+
+                generation: {
+                    annual_generation: NaN,
+                    annual_CO2: NaN,
+                    primaryenergy: NaN,
+                    fraction_used_onsite: NaN,
+                    annual_savings: NaN,
+                    annual_FIT_income: NaN,
+                },
+                use_by_fuel: {},
             },
         },
     };

@@ -1,9 +1,9 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 interface ResultProps {
     val: number | null;
     dp?: number;
-    units?: string;
+    units?: string | ReactNode;
     unitsBefore?: boolean;
 }
 
