@@ -277,7 +277,7 @@
     //*************
     function update(undo_redo = false) {
         // We need to calculate the periods of heating off here because if we try to do it in household.js it happens after the update
-        if ("household" in project.master.household) {
+        if ("household" in project.master) {
             // we ensure all the scenarios have the same household data and heating off periods
             for (let scenarioId of get_scenario_ids(project)) {
                 project[scenarioId].household = project.master.household;
