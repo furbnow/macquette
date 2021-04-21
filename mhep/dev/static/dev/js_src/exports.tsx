@@ -49,9 +49,9 @@ window.Macquette = {
         TargetBar,
         Graphics,
     },
-    render: (view, props, root, update: () => void) =>
+    render: (view, props, root, update: () => void, libraries: [] = []) =>
         render(
-            <AppContext.Provider value={{ update, libraries: [] }}>
+            <AppContext.Provider value={{ update, libraries }}>
                 {React.createElement(view, props)}
             </AppContext.Provider>,
             root || document.getElementById('content')

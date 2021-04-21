@@ -144,6 +144,7 @@
     var locked = {{ locked_javascript }}; // populated via Django template
     var data = {};
     var keys = {};
+    var libraries = [];
 
     //*********************
     // Initialize project
@@ -158,6 +159,16 @@
     }
 
     var project = p.data;
+
+    $.ajax({
+        url: urlHelper.api.libraries(),
+        async: false,
+        datatype: 'json',
+        error: handleServerError('loading libraries'),
+        success: (result) => {
+            libraries = result;
+        },
+    });
 
     //********************************
     // Initialize undo functionality
