@@ -6,6 +6,7 @@ interface SelectFieldProps<T> {
     options: { value: T; display: string }[];
     value: T | null;
     setValue: (val: T) => void;
+    updateModel?: boolean;
 }
 
 export default function SelectField<T>({
@@ -13,24 +14,23 @@ export default function SelectField<T>({
     options,
     value,
     setValue,
+    updateModel = true,
 }: SelectFieldProps<T>): ReactElement {
     const { update } = useContext(AppContext);
     const current = options.findIndex((row) => row.value === value);
+
+    function handleUpdate(value: string) {
+        const idx = parseInt(value, 10);
+        setValue(options[idx].value);
+        updateModel && update();
+    }
 
     return (
         <select
             id={`field_${id}`}
             value={current === -1 ? undefined : current}
-            onChange={(evt) => {
-                const idx = parseInt(evt.target.value, 10);
-                setValue(options[idx].value);
-                update();
-            }}
-            onBlur={(evt) => {
-                const idx = parseInt(evt.target.value, 10);
-                setValue(options[idx].value);
-                update();
-            }}
+            onChange={(evt) => handleUpdate(evt.target.value)}
+            onBlur={(evt) => handleUpdate(evt.target.value)}
         >
             <option hidden>Select one...</option>
             {options.map((opt, i) => (
