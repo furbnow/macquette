@@ -55,33 +55,53 @@ const GenerationMeasureSelector = ({
 
     return (
         <>
-            <div style={{ paddingTop: 10 }}>
-                <SelectField
-                    id="library_select"
-                    options={generationLibs.map((lib, i) => ({
-                        value: i,
-                        display: lib.name,
-                    }))}
-                    value={selectedLibIdx}
-                    setValue={(idx) => {
-                        setSelectedLibIdx(idx);
-                    }}
-                    updateModel={false}
-                />
-            </div>
-            <div style={{ paddingTop: 10 }}>
-                <SelectField
-                    id="library_item"
-                    options={Object.entries(selectedLib.data).map(([tag, value]) => ({
-                        value: tag,
-                        display: value.name,
-                    }))}
-                    value={selectedItemTag}
-                    setValue={(tag) => {
-                        setSelectedItemTag(tag);
-                    }}
-                    updateModel={false}
-                />
+            <div className="d-flex">
+                <div>
+                    <label htmlFor="field_library_select" className="small-caps">
+                        Library
+                    </label>
+                    {generationLibs.length > 1 ? (
+                        <SelectField
+                            id="library_select"
+                            options={generationLibs.map((lib, i) => ({
+                                value: i,
+                                display: lib.name,
+                            }))}
+                            value={selectedLibIdx}
+                            setValue={(idx) => {
+                                setSelectedLibIdx(idx);
+                            }}
+                            updateModel={false}
+                        />
+                    ) : (
+                        <div
+                            style={{
+                                height: 30,
+                                verticalAlign: 'middle',
+                                display: 'table-cell',
+                            }}
+                        >
+                            {selectedLib.name}
+                        </div>
+                    )}
+                </div>
+                <div className="ml-30">
+                    <label htmlFor="field_library_item" className="small-caps">
+                        Item
+                    </label>
+                    <SelectField
+                        id="library_item"
+                        options={Object.entries(selectedLib.data).map(([tag, value]) => ({
+                            value: tag,
+                            display: value.name,
+                        }))}
+                        value={selectedItemTag}
+                        setValue={(tag) => {
+                            setSelectedItemTag(tag);
+                        }}
+                        updateModel={false}
+                    />
+                </div>
             </div>
 
             <table className="table">

@@ -407,6 +407,10 @@ label input[type=radio] {
     margin-top: 0;
 }
 
+select {
+    width: max-content;
+}
+
 .textarea {
     --line-height: 20px;
     --textarea-rows: 6;
