@@ -12,9 +12,58 @@ import NumberField from '../components/NumberField';
 import Result from '../components/Result';
 import SelectField from '../components/SelectField';
 
-interface GenerationProps {
-    assessment: NewAssessment;
-    scenarioId: string;
+interface DialogProps {
+    /** HTML id for the header that labels this dialog */
+    headerId: string;
+    /** Function to be called when dialog closes */
+    onClose: () => void;
+    children: ReactElement | ReactElement[];
+}
+
+function Dialog({ headerId, onClose, children }: DialogProps): ReactElement {
+    // WAI-ARIA-PRACTICES says we should have Escape as a way to close the dialog
+    const escapeKeyHandler = useCallback(
+        (evt: KeyboardEvent) => {
+            if (evt.code === 'Escape') {
+                onClose();
+            }
+        },
+        [onClose]
+    );
+
+    useEffect(() => {
+        document.addEventListener('keydown', escapeKeyHandler, false);
+        // We need to put has_dialog on the body to remove the scrollbar
+        document.body.classList.add('has_dialog');
+        return () => {
+            document.removeEventListener('keydown', escapeKeyHandler, false);
+            document.body.classList.remove('has_dialog');
+        };
+    }, [escapeKeyHandler]);
+
+    return (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+        <div
+            className="dialog-backdrop"
+            onClick={(evt) => {
+                // Clicking on the backdrop (but not its nested children) should also
+                // close the dialog
+                const target = evt.target as HTMLDivElement;
+                if (target.className === 'dialog-backdrop') {
+                    onClose();
+                }
+            }}
+        >
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={headerId}
+                className="notbootstrap"
+            >
+                {children}
+            </div>
+        </div>
+    );
 }
 
 interface GenerationMeasureSelectorProps {
@@ -56,133 +105,104 @@ const GenerationMeasureSelector = ({
         { value: selectedItem.maintenance, title: 'Maintenance' },
     ];
 
-    const keydownHandler = useCallback(
-        (evt: KeyboardEvent) => {
-            if (evt.code === 'Escape') {
-                onClose();
-            }
-        },
-        [onClose]
-    );
-
-    useEffect(() => {
-        document.addEventListener('keydown', keydownHandler, false);
-        document.body.classList.add('has_dialog');
-        return () => {
-            document.removeEventListener('keydown', keydownHandler, false);
-            document.body.classList.remove('has_dialog');
-        };
-    }, [keydownHandler]);
-
     return (
-        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-        <div
-            className="dialog-backdrop"
-            onClick={(evt) => {
-                const target = evt.target as HTMLDivElement;
-                if (target.className === 'dialog-backdrop') {
-                    onClose();
-                }
-            }}
-        >
-            <div
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="generation_measure_header"
-                className="notbootstrap"
-            >
-                <div className="dialog-header">
-                    <h4 className="mt-0 mb-15" id="generation_measure_header">
-                        Select generation measure
-                    </h4>
+        <Dialog onClose={onClose} headerId="generation_measure_header">
+            <div className="dialog-header">
+                <h4 className="mt-0 mb-15" id="generation_measure_header">
+                    Select generation measure
+                </h4>
 
-                    <div className="d-flex">
-                        <div>
-                            <label htmlFor="field_library_item" className="small-caps">
-                                Item
-                            </label>
+                <div className="d-flex">
+                    <div>
+                        <label htmlFor="field_library_item" className="small-caps">
+                            Item
+                        </label>
+                        <SelectField
+                            id="library_item"
+                            options={Object.entries(selectedLib.data).map(
+                                ([tag, value]) => ({
+                                    value: tag,
+                                    display: value.name,
+                                })
+                            )}
+                            value={selectedItemTag}
+                            setValue={(tag) => {
+                                setSelectedItemTag(tag);
+                            }}
+                            updateModel={false}
+                            // WAI-ARIA-PRACTICES tells us to use autofocus here so...
+                            // https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html
+                            // eslint-disable-next-line jsx-a11y/no-autofocus
+                            autoFocus={true}
+                        />
+                    </div>
+                    <div className="ml-30">
+                        <label htmlFor="field_library_select" className="small-caps">
+                            From library
+                        </label>
+                        {generationLibs.length > 1 ? (
                             <SelectField
-                                id="library_item"
-                                options={Object.entries(selectedLib.data).map(
-                                    ([tag, value]) => ({
-                                        value: tag,
-                                        display: value.name,
-                                    })
-                                )}
-                                value={selectedItemTag}
-                                setValue={(tag) => {
-                                    setSelectedItemTag(tag);
+                                id="library_select"
+                                options={generationLibs.map((lib, i) => ({
+                                    value: i,
+                                    display: lib.name,
+                                }))}
+                                value={selectedLibIdx}
+                                setValue={(idx) => {
+                                    setSelectedLibIdx(idx);
                                 }}
                                 updateModel={false}
-                                // WAI-ARIA-PRACTICES tells us to use autofocus here so...
-                                // https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html
-                                // eslint-disable-next-line jsx-a11y/no-autofocus
-                                autoFocus={true}
                             />
-                        </div>
-                        <div className="ml-30">
-                            <label htmlFor="field_library_select" className="small-caps">
-                                From library
-                            </label>
-                            {generationLibs.length > 1 ? (
-                                <SelectField
-                                    id="library_select"
-                                    options={generationLibs.map((lib, i) => ({
-                                        value: i,
-                                        display: lib.name,
-                                    }))}
-                                    value={selectedLibIdx}
-                                    setValue={(idx) => {
-                                        setSelectedLibIdx(idx);
-                                    }}
-                                    updateModel={false}
-                                />
-                            ) : (
-                                <div
-                                    style={{
-                                        height: 30,
-                                        verticalAlign: 'middle',
-                                        display: 'table-cell',
-                                    }}
-                                >
-                                    {selectedLib.name}
-                                </div>
-                            )}
-                        </div>
+                        ) : (
+                            <div
+                                style={{
+                                    height: 30,
+                                    verticalAlign: 'middle',
+                                    display: 'table-cell',
+                                }}
+                            >
+                                {selectedLib.name}
+                            </div>
+                        )}
                     </div>
                 </div>
-
-                <div className="dialog-body">
-                    <table className="table">
-                        <tbody>
-                            {headings.map((h, i) => (
-                                <tr key={i}>
-                                    <th className="text-left">{h.title}</th>
-                                    <td>{h.value}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div className="dialog-footer text-right">
-                    <button className="btn mr-15" onClick={() => onClose()}>
-                        Cancel
-                    </button>
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => {
-                            onSelect(selectedItemTag, selectedItem);
-                            onClose();
-                        }}
-                    >
-                        Apply measure
-                    </button>
-                </div>
             </div>
-        </div>
+
+            <div className="dialog-body">
+                <table className="table">
+                    <tbody>
+                        {headings.map((h, i) => (
+                            <tr key={i}>
+                                <th className="text-left">{h.title}</th>
+                                <td>{h.value}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <div className="dialog-footer text-right">
+                <button className="btn mr-15" onClick={() => onClose()}>
+                    Cancel
+                </button>
+                <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                        onSelect(selectedItemTag, selectedItem);
+                        onClose();
+                    }}
+                >
+                    Apply measure
+                </button>
+            </div>
+        </Dialog>
     );
 };
+
+interface GenerationProps {
+    assessment: NewAssessment;
+    scenarioId: string;
+}
 
 function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
     const [showMeasuresDialogue, setShowMeasuresDialogue] = useState(false);
