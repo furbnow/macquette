@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, ReactElement } from 'react';
+import React, { useState, useContext, ReactElement } from 'react';
 
 import { AppContext } from '../context/AppContext';
 import { NewAssessment } from '../types/Assessment';
@@ -18,7 +18,7 @@ interface GenerationProps {
     scenarioId: string;
 }
 
-function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
+const MakeMeIntoAModal = (): ReactElement => {
     const { libraries } = useContext(AppContext);
 
     const generationLibs = libraries.filter<GenerationMeasuresLibrary>(
@@ -28,18 +28,8 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
     const [selectedItem, setSelectedItem] = useState(
         selectedLib.data[Object.keys(selectedLib.data)[0]]
     );
-
-    const scenario = getScenario(assessment, scenarioId);
-    const isBaseline = scenarioIsBaseline(scenarioId);
-
     return (
-        <section>
-            <h3 className="line-top mt-0">Generation</h3>
-
-            <h4>Solar PV</h4>
-
-            {isBaseline ? null : <button>Apply measure</button>}
-
+        <>
             <div style={{ paddingTop: 10 }}>
                 <SelectField
                     id="library_select"
@@ -72,6 +62,23 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
             </div>
 
             <pre>{JSON.stringify(selectedItem)}</pre>
+        </>
+    );
+};
+
+function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
+    const scenario = getScenario(assessment, scenarioId);
+    const isBaseline = scenarioIsBaseline(scenarioId);
+
+    return (
+        <section>
+            <h3 className="line-top mt-0">Generation</h3>
+
+            <h4>Solar PV</h4>
+
+            {isBaseline ? null : <button>Apply measure</button>}
+
+            <MakeMeIntoAModal/>
 
             <FormRow narrow>
                 <label htmlFor="field_use_PV_calculator">Use PV calculator</label>
