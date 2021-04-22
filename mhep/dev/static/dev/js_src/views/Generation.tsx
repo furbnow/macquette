@@ -24,13 +24,10 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
     const generationLibs = libraries.filter<GenerationMeasuresLibrary>(
         (lib): lib is GenerationMeasuresLibrary => lib.type === 'generation_measures'
     );
-    const [selectedLibId, setSelectedLibId] = useState(generationLibs[0].id);
     const [selectedLib, setSelectedLib] = useState(generationLibs[0]);
-
-    const [selectedItemKey, setSelectedItemKey] = useState(
-        Object.keys(selectedLib.data)[0]
+    const [selectedItem, setSelectedItem] = useState(
+        selectedLib.data[Object.keys(selectedLib.data)[0]]
     );
-    const [selectedItem, setSelectedItem] = useState(selectedLib.data[selectedItemKey]);
 
     const scenario = getScenario(assessment, scenarioId);
     const isBaseline = scenarioIsBaseline(scenarioId);
@@ -50,11 +47,10 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                         value: lib.id,
                         display: lib.name,
                     }))}
-                    value={selectedLibId}
-                    setValue={(id) => {
-                        setSelectedLibId(id);
+                    value={selectedLib.id}
+                    setValue={() => {
                         setSelectedLib(
-                            generationLibs.find((lib) => lib.id === selectedLibId)
+                            generationLibs.find((lib) => lib.id === selectedLib.id)
                         );
                     }}
                     updateModel={false}
@@ -67,9 +63,8 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                         value: id,
                         display: value.name,
                     }))}
-                    value={selectedItemKey}
+                    value={selectedItem.name}
                     setValue={(key) => {
-                        setSelectedItemKey(key);
                         setSelectedItem(selectedLib.data[key]);
                     }}
                     updateModel={false}
