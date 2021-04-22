@@ -11,8 +11,6 @@ import Result from '../components/Result';
 import SelectField from '../components/SelectField';
 import { GenerationMeasuresLibrary } from '../types/Library';
 
-//using FormRows for quick scaffold - should be replaced by a similar structure (table?)
-
 interface GenerationProps {
     assessment: NewAssessment;
     scenarioId: string;
@@ -21,27 +19,44 @@ interface GenerationProps {
 const MakeMeIntoAModal = (): ReactElement => {
     const { libraries } = useContext(AppContext);
 
-    const generationLibs = libraries.filter<GenerationMeasuresLibrary>(
-        (lib): lib is GenerationMeasuresLibrary => lib.type === 'generation_measures'
+    const [generationLibs] = useState(
+        libraries.filter<GenerationMeasuresLibrary>(
+            (lib): lib is GenerationMeasuresLibrary => lib.type === 'generation_measures'
+        )
     );
-    const [selectedLib, setSelectedLib] = useState(generationLibs[0]);
+    const [selectedLibIdx, setSelectedLibIdx] = useState(0);
+    const selectedLib = generationLibs[selectedLibIdx];
     const [selectedItem, setSelectedItem] = useState(
         selectedLib.data[Object.keys(selectedLib.data)[0]]
     );
+
+    const headings = [
+        { internal: 'kWp', external: 'kWp' },
+        { internal: 'cost', external: 'cost' },
+        { internal: 'name', external: 'name' },
+        { internal: 'notes', external: 'notes' },
+        { internal: 'who_by', external: 'who_by' },
+        { internal: 'benefits', external: 'benefits' },
+        { internal: 'key_risks', external: 'key_risks' },
+        { internal: 'cost_units', external: 'cost_units' },
+        { internal: 'disruption', external: 'disruption' },
+        { internal: 'maintenance', external: 'maintenance' },
+        { internal: 'performance', external: 'performance' },
+        { internal: 'associated_work', external: 'associated_work' },
+    ];
+
     return (
         <>
             <div style={{ paddingTop: 10 }}>
                 <SelectField
                     id="library_select"
-                    options={generationLibs.map((lib) => ({
-                        value: lib.id,
+                    options={generationLibs.map((lib, i) => ({
+                        value: i,
                         display: lib.name,
                     }))}
-                    value={selectedLib.id}
-                    setValue={() => {
-                        setSelectedLib(
-                            generationLibs.find((lib) => lib.id === selectedLib.id)
-                        );
+                    value={selectedLibIdx}
+                    setValue={(idx) => {
+                        setSelectedLibIdx(idx);
                     }}
                     updateModel={false}
                 />
@@ -61,7 +76,14 @@ const MakeMeIntoAModal = (): ReactElement => {
                 />
             </div>
 
-            <pre>{JSON.stringify(selectedItem)}</pre>
+            {headings.map((h, i) => (
+                <div key={i}>
+                    <FormRow narrow>
+                        <span>{h.external}</span>
+                        <span>{selectedItem[h.internal]}</span>
+                    </FormRow>
+                </div>
+            ))}
         </>
     );
 };
@@ -78,7 +100,7 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
 
             {isBaseline ? null : <button>Apply measure</button>}
 
-            <MakeMeIntoAModal/>
+            <MakeMeIntoAModal />
 
             <FormRow narrow>
                 <label htmlFor="field_use_PV_calculator">Use PV calculator</label>
