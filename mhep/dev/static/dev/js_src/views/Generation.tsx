@@ -16,7 +16,13 @@ interface GenerationProps {
     scenarioId: string;
 }
 
-const MakeMeIntoAModal = (): ReactElement => {
+interface GenerationMeasureSelectorProps {
+    onSelect: (tag: string, measure: GenerationMeasuresLibrary) => void;
+}
+
+const GenerationMeasureSelector = ({
+    onSelect,
+}: GenerationMeasureSelectorProps): ReactElement => {
     const { libraries } = useContext(AppContext);
 
     const [generationLibs] = useState(
@@ -26,23 +32,25 @@ const MakeMeIntoAModal = (): ReactElement => {
     );
     const [selectedLibIdx, setSelectedLibIdx] = useState(0);
     const selectedLib = generationLibs[selectedLibIdx];
-    const [selectedItem, setSelectedItem] = useState(
-        selectedLib.data[Object.keys(selectedLib.data)[0]]
+    const [selectedItemTag, setSelectedItemTag] = useState(
+        Object.keys(selectedLib.data)[0]
     );
+    const selectedItem = selectedLib.data[selectedItemTag];
 
     const headings = [
-        { internal: 'kWp', external: 'kWp' },
-        { internal: 'cost', external: 'cost' },
-        { internal: 'name', external: 'name' },
-        { internal: 'notes', external: 'notes' },
-        { internal: 'who_by', external: 'who_by' },
-        { internal: 'benefits', external: 'benefits' },
-        { internal: 'key_risks', external: 'key_risks' },
-        { internal: 'cost_units', external: 'cost_units' },
-        { internal: 'disruption', external: 'disruption' },
-        { internal: 'maintenance', external: 'maintenance' },
-        { internal: 'performance', external: 'performance' },
-        { internal: 'associated_work', external: 'associated_work' },
+        { value: selectedItemTag, title: 'Tag' },
+        { value: selectedItem.name, title: 'Name' },
+        { value: selectedItem.description, title: 'Description' },
+        { value: `${selectedItem.kWp} kWp`, title: 'Peak power' },
+        { value: selectedItem.performance, title: 'Performance' },
+        { value: selectedItem.benefits, title: 'Benefits' },
+        { value: `£${selectedItem.cost} per ${selectedItem.cost_units}`, title: 'Cost' },
+        { value: selectedItem.who_by, title: 'Who by' },
+        { value: selectedItem.disruption, title: 'Disruption' },
+        { value: selectedItem.associated_work, title: 'Associated work' },
+        { value: selectedItem.key_risks, title: 'Key risks' },
+        { value: selectedItem.notes, title: 'Notes' },
+        { value: selectedItem.maintenance, title: 'Maintenance' },
     ];
 
     return (
@@ -64,26 +72,34 @@ const MakeMeIntoAModal = (): ReactElement => {
             <div style={{ paddingTop: 10 }}>
                 <SelectField
                     id="library_item"
-                    options={Object.entries(selectedLib.data).map(([id, value]) => ({
-                        value: id,
+                    options={Object.entries(selectedLib.data).map(([tag, value]) => ({
+                        value: tag,
                         display: value.name,
                     }))}
-                    value={selectedItem.name}
-                    setValue={(key) => {
-                        setSelectedItem(selectedLib.data[key]);
+                    value={selectedItemTag}
+                    setValue={(tag) => {
+                        setSelectedItemTag(tag);
                     }}
                     updateModel={false}
                 />
             </div>
 
-            {headings.map((h, i) => (
-                <div key={i}>
-                    <FormRow narrow>
-                        <span>{h.external}</span>
-                        <span>{selectedItem[h.internal]}</span>
-                    </FormRow>
-                </div>
-            ))}
+            <table className="table">
+                {headings.map((h, i) => (
+                    <tr key={i}>
+                        <th className="text-left">{h.title}</th>
+                        <td>{h.value}</td>
+                    </tr>
+                ))}
+            </table>
+
+            <button
+                onClick={() => {
+                    onSelect(selectedItemTag, selectedItem);
+                }}
+            >
+                Apply measure
+            </button>
         </>
     );
 };
@@ -100,7 +116,11 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
 
             {isBaseline ? null : <button>Apply measure</button>}
 
-            <MakeMeIntoAModal />
+            <GenerationMeasureSelector
+                onSelect={(tag, measure) =>
+                    alert(`Howdidoodledo ${tag} ${measure.toString()}`)
+                }
+            />
 
             <FormRow narrow>
                 <label htmlFor="field_use_PV_calculator">Use PV calculator</label>
