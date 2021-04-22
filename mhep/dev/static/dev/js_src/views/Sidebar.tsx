@@ -66,7 +66,7 @@ function ScenarioBlock({
                 style={{ padding: '5px 0' }}
                 onClick={() => setActiveScenario(active ? null : id)}
                 onKeyDown={(evt) => {
-                    if (evt.charCode == 13) {
+                    if (evt.key === 'Enter') {
                         setActiveScenario(active ? null : id);
                     }
                 }}
