@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, ReactElement } from 'react';
+import React, { useState, useContext, useEffect, useCallback, ReactElement } from 'react';
 
 import { AppContext } from '../context/AppContext';
 import { NewAssessment } from '../types/Assessment';
@@ -55,26 +55,35 @@ const GenerationMeasureSelector = ({
         { value: selectedItem.maintenance, title: 'Maintenance' },
     ];
 
-    useEffect(() => {
-        if (document !== null) {
-            const body = document.querySelector('body');
-            if (body) {
-                body.classList.add('has_dialog');
+    const keydownHandler = useCallback(
+        (evt: KeyboardEvent) => {
+            if (evt.code === 'Escape') {
+                onClose();
             }
-        }
-    }, []);
+        },
+        [onClose]
+    );
 
-    const cleanUpBody = () => {
-        if (document !== null) {
-            const body = document.querySelector('body');
-            if (body) {
-                body.classList.remove('has_dialog');
-            }
-        }
-    };
+    useEffect(() => {
+        document.addEventListener('keydown', keydownHandler, false);
+        document.body.classList.add('has_dialog');
+        return () => {
+            document.removeEventListener('keydown', keydownHandler, false);
+            document.body.classList.remove('has_dialog');
+        };
+    }, [keydownHandler]);
 
     return (
-        <div className="dialog-backdrop">
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+        <div
+            className="dialog-backdrop"
+            onClick={(evt) => {
+                const target = evt.target as HTMLDivElement;
+                if (target.className === 'dialog-backdrop') {
+                    onClose();
+                }
+            }}
+        >
             <div
                 role="dialog"
                 aria-modal="true"
@@ -104,6 +113,10 @@ const GenerationMeasureSelector = ({
                                     setSelectedItemTag(tag);
                                 }}
                                 updateModel={false}
+                                // WAI-ARIA-PRACTICES tells us to use autofocus here so...
+                                // https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html
+                                // eslint-disable-next-line jsx-a11y/no-autofocus
+                                autoFocus={true}
                             />
                         </div>
                         <div className="ml-30">
@@ -152,13 +165,7 @@ const GenerationMeasureSelector = ({
                 </div>
 
                 <div className="dialog-footer text-right">
-                    <button
-                        className="btn mr-15"
-                        onClick={() => {
-                            cleanUpBody();
-                            onClose();
-                        }}
-                    >
+                    <button className="btn mr-15" onClick={() => onClose()}>
                         Cancel
                     </button>
                     <button

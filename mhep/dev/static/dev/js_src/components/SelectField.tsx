@@ -7,6 +7,9 @@ interface SelectFieldProps<T> {
     value: T | null;
     setValue: (val: T) => void;
     updateModel?: boolean;
+
+    /** Should only be used for the first input on a dialog */
+    autoFocus?: boolean;
 }
 
 export default function SelectField<T>({
@@ -15,6 +18,7 @@ export default function SelectField<T>({
     value,
     setValue,
     updateModel = true,
+    autoFocus = false,
 }: SelectFieldProps<T>): ReactElement {
     const { update } = useContext(AppContext);
     const current = options.findIndex((row) => row.value === value);
@@ -31,6 +35,8 @@ export default function SelectField<T>({
             value={current === -1 ? undefined : current}
             onChange={(evt) => handleUpdate(evt.target.value)}
             onBlur={(evt) => handleUpdate(evt.target.value)}
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus={autoFocus}
         >
             <option hidden>Select one...</option>
             {options.map((opt, i) => (
