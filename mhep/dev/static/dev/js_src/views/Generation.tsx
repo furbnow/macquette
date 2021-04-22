@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect, useCallback, ReactElement } fro
 
 import { AppContext } from '../context/AppContext';
 import { NewAssessment } from '../types/Assessment';
+import { GenerationMeasuresLibrary, GenerationMeasure } from '../types/Library';
+
 import { getScenario, scenarioIsBaseline } from '../lib/scenarios';
 
 import CheckboxField from '../components/CheckboxField';
@@ -9,7 +11,6 @@ import FormRow from '../components/FormRow';
 import NumberField from '../components/NumberField';
 import Result from '../components/Result';
 import SelectField from '../components/SelectField';
-import { GenerationMeasuresLibrary } from '../types/Library';
 
 interface GenerationProps {
     assessment: NewAssessment;
@@ -17,7 +18,7 @@ interface GenerationProps {
 }
 
 interface GenerationMeasureSelectorProps {
-    onSelect: (tag: string, measure: GenerationMeasuresLibrary) => void;
+    onSelect: (tag: string, measure: GenerationMeasure) => void;
     onClose: () => void;
 }
 

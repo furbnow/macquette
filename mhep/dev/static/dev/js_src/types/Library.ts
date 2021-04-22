@@ -87,12 +87,14 @@ export interface ClothesDryingFacilitiesLibrary extends LibraryBase {
 export interface GenerationMeasuresLibrary extends LibraryBase {
     type: 'generation_measures';
     data: {
-        [k: string]: {
-            kWp: number;
-            cost: number;
-            name: string;
-        } & MeasureBase;
+        [k: string]: GenerationMeasure;
     };
+}
+export interface GenerationMeasure extends MeasureBase {
+    tag?: string;
+    name: string;
+    kWp: number;
+    cost: number;
 }
 
 export type Library =
