@@ -205,6 +205,8 @@ interface GenerationProps {
 }
 
 function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
+    const { update } = useContext(AppContext);
+
     const [showMeasuresDialogue, setShowMeasuresDialogue] = useState(false);
 
     const scenario = getScenario(assessment, scenarioId);
@@ -216,17 +218,56 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
 
             <h4>Solar PV</h4>
 
+            {/* any reason not to use `&&` instead? */}
             {isBaseline ? null : (
-                <button onClick={() => setShowMeasuresDialogue(true)}>
-                    Apply measure
-                </button>
+                <>
+                    <button onClick={() => setShowMeasuresDialogue(true)}>
+                        Apply measure
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            scenario.generation.use_PV_calculator = false;
+                            delete scenario.measures.PV_generation;
+                            update();
+                        }}
+                    >
+                        Remove
+                    </button>
+                </>
+            )}
+
+            {/* use a FormRow??? */}
+            {scenario.measures.PV_generation?.measure.tag && (
+                <FormRow>
+                    <span>
+                        <br />
+                        <b>{scenario.measures.PV_generation.measure.tag}</b> measure has
+                        been applied:
+                        <div>{scenario.measures.PV_generation.measure.description}</div>
+                        <br />
+                    </span>
+                </FormRow>
             )}
 
             {showMeasuresDialogue && (
                 <GenerationMeasureSelector
-                    onSelect={(tag, measure) =>
-                        alert(`Howdidoodledo ${tag} ${measure.toString()}`)
-                    }
+                    onSelect={(tag, measure) => {
+                        if (scenario.measures.PV_generation === undefined) {
+                            scenario.measures.PV_generation = {
+                                measure: measure,
+                            };
+                        } else {
+                            scenario.measures.PV_generation.measure = measure;
+                        }
+                        scenario.measures.PV_generation.measure.tag = tag;
+                        scenario.measures.PV_generation.measure.quantity = measure.kWp;
+                        scenario.measures.PV_generation.measure.cost_total =
+                            measure.cost * measure.kWp;
+                        scenario.generation.solarpv_kwp_installed = measure.kWp;
+                        scenario.generation.use_PV_calculator = true;
+                        update();
+                    }}
                     onClose={() => setShowMeasuresDialogue(false)}
                 />
             )}
@@ -236,7 +277,10 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                 <CheckboxField
                     id="use_PV_calculator"
                     value={scenario.generation.use_PV_calculator}
-                    setValue={(val) => (scenario.generation.use_PV_calculator = val)}
+                    setValue={(useCalc) => {
+                        scenario.generation.use_PV_calculator = useCalc;
+                    }}
+                    disabled={scenario.measures.PV_generation?.measure && true}
                 />
             </FormRow>
 
@@ -321,7 +365,11 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
             <FormRow narrow>
                 <span>Annual Generation</span>
                 {scenario.generation.use_PV_calculator ? (
-                    <Result val={scenario.generation.solar_annual_kwh} units={'kWh'} />
+                    <Result
+                        val={scenario.generation.solar_annual_kwh}
+                        units={'kWh'}
+                        dp={0}
+                    />
                 ) : (
                     <NumberField
                         id="solar_annual_kwh"

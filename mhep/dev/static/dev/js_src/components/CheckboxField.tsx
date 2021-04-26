@@ -3,12 +3,14 @@ import { AppContext } from '../context/AppContext';
 
 interface CheckboxFieldProps {
     id: string;
+    disabled?: boolean;
     value: boolean;
     setValue: (val: boolean) => void;
 }
 
 export default function CheckboxField({
     id,
+    disabled,
     value,
     setValue,
 }: CheckboxFieldProps): ReactElement {
@@ -23,6 +25,7 @@ export default function CheckboxField({
                 update();
             }}
             checked={value}
+            disabled={disabled}
         />
     );
 }

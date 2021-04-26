@@ -95,6 +95,8 @@ export interface GenerationMeasure extends MeasureBase {
     name: string;
     kWp: number;
     cost: number;
+    quantity?: number;
+    cost_total?: number;
 }
 
 export type Library =

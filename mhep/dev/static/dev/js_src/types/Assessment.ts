@@ -133,8 +133,13 @@ export interface Fabric {
 export interface FabricElement {
     cost_total?: number;
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Measures {}
+
+import { GenerationMeasure } from './Library';
+export interface Measures {
+    PV_generation?: {
+        measure: GenerationMeasure;
+    };
+}
 
 export interface Ventilation {
     average_ventilation_WK: number;
