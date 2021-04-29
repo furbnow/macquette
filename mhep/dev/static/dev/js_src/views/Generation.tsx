@@ -305,7 +305,7 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                             Array installed capacity
                         </label>
 
-                        {scenario.generation.use_PV_calculator ? (
+                        {scenario.measures.PV_generation ? (
                             <Result
                                 val={scenario.generation.solarpv_kwp_installed}
                                 units="kWp"
