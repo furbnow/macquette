@@ -36,18 +36,18 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
     return (
         <section>
             <p>
-                The figures shown below are the totals for your actual energy use. If the
-                input data is accurate, these figures represent real values.
+                The figures shown below on the left are the totals for actual energy use.
+                If the input data is accurate, these figures represent real values.
             </p>
             <p>
-                The figures shown in the overview above are the result of running your
-                house through the model. According to the characteristics of the building,
-                your target temperature, your type of fuel, etc. the model calculates the
-                theoretical amount of energy you need to run your house.
+                The graphs compare these values against the ones given by the model for
+                the baseline scenario. According to the characteristics of the building,
+                target temperature, type of fuel, etc. the model calculates the
+                theoretical amount of energy needed to run the dwelling.
             </p>
             <p>
-                Comparing your Current Energy figures against the model ones can give an
-                idea of how well the model represents your specific situation.
+                Comparing current energy use against the modelled use can give an idea of
+                how well the model represents reality.
             </p>
 
             <div className="d-flex justify-content-between pb-30">
