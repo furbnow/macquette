@@ -292,14 +292,23 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                         <label htmlFor="field_solarpv_kwp_installed">
                             Array installed capacity
                         </label>
-                        <NumberField
-                            id="solarpv_kwp_installed"
-                            units="kWp"
-                            value={scenario.generation.solarpv_kwp_installed}
-                            setValue={(val) =>
-                                (scenario.generation.solarpv_kwp_installed = val)
-                            }
-                        />
+
+                        {scenario.generation.use_PV_calculator ? (
+                            <Result
+                                val={scenario.generation.solarpv_kwp_installed}
+                                units="kWp"
+                                dp={1}
+                            />
+                        ) : (
+                            <NumberField
+                                id="solarpv_kwp_installed"
+                                units="kWp"
+                                value={scenario.generation.solarpv_kwp_installed}
+                                setValue={(val) =>
+                                    (scenario.generation.solarpv_kwp_installed = val)
+                                }
+                            />
+                        )}
                     </FormRow>
 
                     <FormRow narrow>
