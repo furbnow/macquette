@@ -218,8 +218,7 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
 
             <h4>Solar PV</h4>
 
-            {/* any reason not to use `&&` instead? */}
-            {isBaseline ? null : (
+            {isBaseline || (
                 <>
                     <button onClick={() => setShowMeasuresDialogue(true)}>
                         Apply measure
@@ -237,17 +236,14 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                 </>
             )}
 
-            {/* use a FormRow??? */}
             {scenario.measures.PV_generation?.measure.tag && (
-                <FormRow>
-                    <span>
-                        <br />
+                <div>
+                    <p>
                         <b>{scenario.measures.PV_generation.measure.tag}</b> measure has
                         been applied:
-                        <div>{scenario.measures.PV_generation.measure.description}</div>
-                        <br />
-                    </span>
-                </FormRow>
+                    </p>
+                    <p>{scenario.measures.PV_generation.measure.description}</p>
+                </div>
             )}
 
             {showMeasuresDialogue && (
@@ -286,7 +282,7 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
 
             {scenario.generation.use_PV_calculator && (
                 <div className="bg-lighter pt-15 px-15 mb-15 width-max-content">
-                    {/* !!! - Are any of these coupled to SHW? - should they be? */}
+                    {/* TODO: Are any of these coupled to SHW? Should they be? */}
 
                     <FormRow narrow>
                         <label htmlFor="field_solarpv_kwp_installed">
