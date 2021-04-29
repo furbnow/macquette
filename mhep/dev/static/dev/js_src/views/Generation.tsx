@@ -265,19 +265,14 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
             {showMeasuresDialogue && (
                 <GenerationMeasureSelector
                     onSelect={(tag, measure) => {
-                        if (scenario.measures.PV_generation === undefined) {
-                            scenario.measures.PV_generation = {
-                                measure: measure,
-                            };
-                        } else {
-                            scenario.measures.PV_generation.measure = measure;
-                        }
-                        scenario.measures.PV_generation.measure.tag = tag;
-                        scenario.measures.PV_generation.measure.quantity = measure.kWp;
-                        scenario.measures.PV_generation.measure.cost_total =
-                            measure.cost * measure.kWp;
+                        measure.tag = tag;
+                        measure.quantity = measure.kWp;
+                        measure.cost_total = measure.cost * measure.kWp;
+                        scenario.measures.PV_generation = { measure };
+
                         scenario.generation.solarpv_kwp_installed = measure.kWp;
                         scenario.generation.use_PV_calculator = true;
+
                         update();
                     }}
                     onClose={() => setShowMeasuresDialogue(false)}
@@ -292,7 +287,7 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                     setValue={(useCalc) => {
                         scenario.generation.use_PV_calculator = useCalc;
                     }}
-                    disabled={scenario.measures.PV_generation?.measure && true}
+                    disabled={scenario.measures.PV_generation ? true : false}
                 />
             </FormRow>
 
