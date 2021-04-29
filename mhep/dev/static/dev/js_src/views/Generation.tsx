@@ -218,31 +218,47 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
 
             <h4>Solar PV</h4>
 
-            {isBaseline || (
-                <>
-                    <button onClick={() => setShowMeasuresDialogue(true)}>
+            {!scenario.measures.PV_generation && !isBaseline && (
+                <div
+                    className="d-flex pa-15 mb-15 width-max-content"
+                    style={{ border: '1px solid black' }}
+                >
+                    <span style={{ minWidth: '20rem' }}>No measure applied</span>
+
+                    <button className="btn" onClick={() => setShowMeasuresDialogue(true)}>
                         Apply measure
                     </button>
-
-                    <button
-                        onClick={() => {
-                            scenario.generation.use_PV_calculator = false;
-                            delete scenario.measures.PV_generation;
-                            update();
-                        }}
-                    >
-                        Remove
-                    </button>
-                </>
+                </div>
             )}
 
-            {scenario.measures.PV_generation?.measure.tag && (
-                <div>
-                    <p>
-                        <b>{scenario.measures.PV_generation.measure.tag}</b> measure has
-                        been applied:
+            {scenario.measures.PV_generation && (
+                <div className="d-flex pa-15 mb-15" style={{ border: '1px solid black' }}>
+                    <p className="mb-0">
+                        <b>Measure {scenario.measures.PV_generation.measure.tag}</b>{' '}
+                        applied:
+                        <br />
+                        {scenario.measures.PV_generation.measure.description}
                     </p>
-                    <p>{scenario.measures.PV_generation.measure.description}</p>
+
+                    <div style={{ flexShrink: 0 }}>
+                        <button
+                            className="btn ml-15"
+                            onClick={() => setShowMeasuresDialogue(true)}
+                        >
+                            Apply different measure
+                        </button>
+
+                        <button
+                            className="btn ml-15"
+                            onClick={() => {
+                                scenario.generation.use_PV_calculator = false;
+                                delete scenario.measures.PV_generation;
+                                update();
+                            }}
+                        >
+                            Remove
+                        </button>
+                    </div>
                 </div>
             )}
 
