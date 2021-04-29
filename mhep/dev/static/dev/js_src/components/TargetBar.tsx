@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 
 const HEIGHT = 40;
+const COLOURS = ['fill-beige-700', 'fill-beige-400'];
 
 interface Target {
     label: string;
@@ -9,29 +10,22 @@ interface Target {
 
 interface TargetProps {
     target: Target;
+    y: number;
+    height: number;
     xscale: number;
     units: string;
 }
 
-function Target({ target, xscale, units }: TargetProps) {
-    const x = target.value * xscale;
+function Target({ target, height, y, xscale, units }: TargetProps) {
+    const x = 1.5 + target.value * xscale;
 
     return (
         <>
-            {x === 0 ? null : (
-                <line
-                    x1={x}
-                    y1="1"
-                    x2={x}
-                    y2={HEIGHT - 1}
-                    className="stroke-beige-200"
-                    strokeDasharray="4.33 4.33"
-                />
-            )}
-            <text x={x + 5} y={HEIGHT - 22} className="fill-beige-200">
+            <line x1={x} y1={y} x2={x} y2={y + height / 3} className="stroke-beige-200" />
+            <text x={x + 5} y={y + height - 22} className="fill-beige-200">
                 {target.value} {units}
             </text>
-            <text x={x + 5} y={HEIGHT - 8} className="fill-beige-200 text-bold">
+            <text x={x + 5} y={y + height - 8} className="fill-beige-200 text-bold">
                 {target.label}
             </text>
         </>
@@ -41,7 +35,7 @@ function Target({ target, xscale, units }: TargetProps) {
 interface TargetBarProps {
     width: number;
     name: string;
-    value: number;
+    value: number | number[];
     units: string;
     targets: Target[];
 }
@@ -62,51 +56,97 @@ export default function TargetBar({
     units,
     targets,
 }: TargetBarProps): ReactElement {
-    const unknown = value === null || isNaN(value) || value == Infinity;
+    const values = !Array.isArray(value) ? [value] : value;
+    const unknown =
+        values.filter((val) => val === null || isNaN(val) || val == Infinity).length > 0;
+
+    const hasZeroTarget = targets.filter((target) => target.value === 0).length;
+    if (!hasZeroTarget) {
+        targets = [{ label: '', value: 0 }, ...targets];
+    }
 
     // Always 25% larger than max target or value
     const targetValues = targets.map((t) => t.value);
-    const maxval = Math.max(value, ...targetValues) * 1.25;
+    const maxval = unknown
+        ? Math.max(...targetValues) * 1.25
+        : Math.max(...values, ...targetValues) * 1.25;
     const xscale = width / maxval;
+
+    const barHeight = 20;
+    const barsHeight = 20 * values.length;
+    const axisHeight = 1;
+    const targetsHeight = 38;
+    const totalHeight = barsHeight + axisHeight + targetsHeight;
 
     return (
         <div className="targetbar">
             <div className="targetbar-head">
-                <span>{name}:</span>
-                <span className="text-bold">
-                    {unknown ? 'Not enough data' : `${Math.round(value)} ${units}`}
-                </span>
+                <span>{name}</span>
+                {unknown ? (
+                    <span className="text-bold">Not enough data</span>
+                ) : (
+                    values.length === 1 && (
+                        <span className="text-bold">
+                            {Math.round(value)} {units}
+                        </span>
+                    )
+                )}
             </div>
 
             <svg
-                viewBox={`0 0 ${width} ${HEIGHT}`}
-                height={HEIGHT}
+                viewBox={`0 0 ${width} ${totalHeight}`}
+                height={totalHeight}
                 style={{ maxWidth: '100%' }}
             >
-                <rect
-                    x="1"
-                    y="1"
-                    width={width - 2}
-                    height={HEIGHT - 2}
-                    className="fill-beige-800 stroke-beige-200"
+                {values.map((val, idx) => (
+                    <g key={idx}>
+                        <rect
+                            x={1}
+                            y={1.5 + barHeight * idx}
+                            width={Math.round(val) * xscale - 2}
+                            height={barHeight}
+                            className={COLOURS[idx]}
+                        />
+                        {values.length > 1 && !unknown && (
+                            <text
+                                x={4 + Math.round(val) * xscale}
+                                y={11.5 + barHeight * idx}
+                                style={{ dominantBaseline: 'middle' }}
+                            >
+                                {Math.round(val)} {units}
+                            </text>
+                        )}
+                    </g>
+                ))}
+
+                {/* Vertical axis line */}
+                <line
+                    x1={1.5}
+                    y1={1.5}
+                    x2={1.5}
+                    y2={barsHeight}
+                    className="stroke-beige-200"
                 />
-                <rect
-                    x="2"
-                    y="2"
-                    width={Math.round(value) * xscale - 4}
-                    height={HEIGHT - 4}
-                    className="fill-beige-700"
+
+                {/* Horizontal axis line */}
+                <line
+                    x1={1}
+                    y1={barsHeight + 0.5}
+                    x2={width}
+                    y2={barsHeight + 1.5}
+                    className="stroke-beige-200"
                 />
-                {unknown
-                    ? []
-                    : targets.map((target) => (
-                          <Target
-                              key={name + target.label + units}
-                              xscale={xscale}
-                              target={target}
-                              units={units}
-                          />
-                      ))}
+
+                {targets.map((target, idx) => (
+                    <Target
+                        key={idx}
+                        y={barsHeight + axisHeight}
+                        height={targetsHeight}
+                        xscale={xscale}
+                        target={target}
+                        units={units}
+                    />
+                ))}
             </svg>
         </div>
     );

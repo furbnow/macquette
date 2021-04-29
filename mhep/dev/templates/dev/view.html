@@ -353,13 +353,14 @@
         switch (page) {
             case 'householdquestionnaire':
             case 'commentary':
-            case 'report':
+            case 'currentenergy':
             case 'imagegallery':
             case 'compare':
+            case 'report':
+            case 'scopeofworks':
             case 'export':
             case 'librariesmanager':
             case 'fuelsmanager':
-            case 'scopeofworks':
                 return false;
             default:
                 return true;
@@ -374,7 +375,7 @@
             case 'report':
                 return 'Generate Report';
             case 'currentenergy':
-                return 'Current Energy';
+                return 'Current Energy Use';
             case 'imagegallery':
                 return 'Image Gallery';
             case 'compare':

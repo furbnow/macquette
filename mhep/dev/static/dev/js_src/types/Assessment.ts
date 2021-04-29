@@ -60,6 +60,9 @@ export interface ScenarioOutputs {
     readonly occupancy: number;
     readonly occupancy_SAP_value: number;
     readonly space_heating_demand_m2: number;
+    readonly primary_energy_use_m2: number;
+    readonly kgco2perm2: number;
+    readonly kwhdpp: number;
 }
 
 //

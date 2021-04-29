@@ -35,8 +35,6 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
 
     return (
         <section>
-            <h3 className="line-top mt-0">Current Energy Use</h3>
-
             <p>
                 The figures shown below are the totals for your actual energy use. If the
                 input data is accurate, these figures represent real values.
@@ -52,10 +50,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                 idea of how well the model represents your specific situation.
             </p>
 
-            <div
-                id="totals"
-                className="d-flex align-items-center justify-content-between pb-30"
-            >
+            <div className="d-flex justify-content-between pb-30">
                 <div>
                     <h4>Annual totals</h4>
 
@@ -134,24 +129,39 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                 </div>
 
                 <div id="targetbars">
+                    <h4>Comparison charts</h4>
+                    <p>
+                        Top/lighter = from data provided on this page
+                        <br />
+                        Bottom/darker = from the modelled baseline
+                    </p>
+
                     <TargetBar
                         name="Primary energy demand"
                         width={424.5}
-                        value={scenario.currentenergy.primaryenergy_annual_kwhm2}
+                        value={[
+                            scenario.currentenergy.primaryenergy_annual_kwhm2,
+                            scenario.primary_energy_use_m2,
+                        ]}
                         units="kWh/m²"
                         targets={targets.primary_energy_demand}
                     />
+
                     <TargetBar
                         name="CO₂ emission rate"
                         width={424.5}
-                        value={scenario.currentenergy.total_co2m2}
+                        value={[scenario.currentenergy.total_co2m2, scenario.kgco2perm2]}
                         units="kgCO₂/m²"
                         targets={targets.co2_per_m2}
                     />
+
                     <TargetBar
                         name="Per person energy use"
                         width={424.5}
-                        value={scenario.currentenergy.energyuseperperson}
+                        value={[
+                            scenario.currentenergy.energyuseperperson,
+                            scenario.kwhdpp,
+                        ]}
                         units="kWh/day"
                         targets={targets.energy_use_per_person}
                     />

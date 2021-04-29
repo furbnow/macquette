@@ -367,16 +367,15 @@ body .modal {
 .house--darker { fill: rgba(99, 86, 71, 0.8) }
 
 .targetbar {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   font-size: 12px;
 }
 
 .targetbar-head {
   display: flex;
-  font-size: 16px;
+  font-size: 14px;
   justify-content: space-between;
   padding-bottom: 0.25rem;
-  color: rgba(99,86,71,0.8);
 }
 
 .member-last-active {
