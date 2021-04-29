@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useCallback, ReactElement } fro
 
 import { AppContext } from '../context/AppContext';
 import { NewAssessment } from '../types/Assessment';
-import { GenerationMeasuresLibrary, GenerationMeasure } from '../types/Library';
+import { Library, GenerationMeasuresLibrary, GenerationMeasure } from '../types/Library';
 
 import { getScenario, scenarioIsBaseline } from '../lib/scenarios';
 
@@ -199,18 +199,38 @@ const GenerationMeasureSelector = ({
     );
 };
 
+/**
+ * Check if there are any generation measures that can be applied.
+ */
+function haveGenerationMeasures(libraries: Library[]): boolean {
+    const generationLibs = libraries.filter<GenerationMeasuresLibrary>(
+        (lib): lib is GenerationMeasuresLibrary => lib.type === 'generation_measures'
+    );
+
+    /* For this to return true, at least one library must have one item */
+    for (const lib of generationLibs) {
+        if (Object.keys(lib.data).length !== 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 interface GenerationProps {
     assessment: NewAssessment;
     scenarioId: string;
 }
 
 function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
-    const { update } = useContext(AppContext);
+    const { update, libraries } = useContext(AppContext);
 
     const [showMeasuresDialogue, setShowMeasuresDialogue] = useState(false);
 
     const scenario = getScenario(assessment, scenarioId);
     const isBaseline = scenarioIsBaseline(scenarioId);
+
+    const measuresExist = haveGenerationMeasures(libraries);
 
     return (
         <section>
@@ -225,8 +245,12 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                 >
                     <span style={{ minWidth: '20rem' }}>No measure applied</span>
 
-                    <button className="btn" onClick={() => setShowMeasuresDialogue(true)}>
-                        Apply measure
+                    <button
+                        className="btn"
+                        onClick={() => setShowMeasuresDialogue(true)}
+                        disabled={!measuresExist}
+                    >
+                        {measuresExist ? 'Apply measure' : 'No measures available'}
                     </button>
                 </div>
             )}
@@ -244,8 +268,11 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                         <button
                             className="btn ml-15"
                             onClick={() => setShowMeasuresDialogue(true)}
+                            disabled={!measuresExist}
                         >
-                            Apply different measure
+                            {measuresExist
+                                ? 'Apply different measure'
+                                : 'No measures available'}
                         </button>
 
                         <button
