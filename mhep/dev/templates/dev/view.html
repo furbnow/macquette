@@ -366,12 +366,15 @@
 
         const location = window.location.hash.substring(1);
 
-        if (location.match("/") === null) {
+        if (location.length === 0) {
+            scenario = "master";
+            page = "setup";
+        } else if (location.match("/") === null) {
             scenario = "master";
             page = location;
         } else {
-            scenario = location.split('/')[0] || "master";
-            page = location.split('/')[1] || "dwellingdata";
+            scenario = location.split('/')[0];
+            page = location.split('/')[1];
         }
 
         if (!(scenario in project)) {
