@@ -1944,9 +1944,7 @@ calc.water_heating = function (data) {
     data.water_heating.annual_waterheating_demand = annual_waterheating_demand;
     data.water_heating.heat_gains_from_water_heating = heat_gains_from_water_heating;
     data.gains_W['waterheating'] = waterheating_gains;
-    if (annual_waterheating_demand > 0) {
-        data.energy_requirements.waterheating = {name: 'Water Heating', quantity: annual_waterheating_demand, monthly: hot_water_heater_output};
-    }
+    data.energy_requirements.waterheating = {name: 'Water Heating', quantity: annual_waterheating_demand, monthly: hot_water_heater_output};
 
     return data;
 };
