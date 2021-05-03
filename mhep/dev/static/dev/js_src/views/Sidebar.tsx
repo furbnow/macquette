@@ -20,7 +20,7 @@ interface SidebarLinkProps {
 }
 
 function SidebarLink({ view, scenario, text }: SidebarLinkProps): ReactElement {
-    const url = scenario ? `#${scenario}/${view}` : `#master/${view}`;
+    const url = scenario ? `#${scenario}/${view}` : `#${view}`;
     return (
         <li>
             <a className="sidebar-link" href={url}>

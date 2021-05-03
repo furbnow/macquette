@@ -364,9 +364,15 @@
         let oldPage = page;
         let oldScenario = scenario;
 
-        var tmp = (window.location.hash).substring(1).split('/');
-        page = tmp[1] || "dwellingdata";
-        scenario = tmp[0] || "master";
+        const location = window.location.hash.substring(1);
+
+        if (location.match("/") === null) {
+            scenario = "master";
+            page = location;
+        } else {
+            scenario = location.split('/')[0] || "master";
+            page = location.split('/')[1] || "dwellingdata";
+        }
 
         if (!(scenario in project)) {
             scenario = 'master';
