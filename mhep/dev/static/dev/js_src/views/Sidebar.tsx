@@ -288,6 +288,7 @@ export default function Sidebar({
                 <div className="side-section--header">Assessment</div>
 
                 <ul className="list-unstyled">
+                    <SidebarLink view="setup" text="Setup" />
                     <SidebarLink view="householdquestionnaire" text="Questionnaire" />
                     <SidebarLink view="commentary" text="Commentary" />
                     <SidebarLink view="currentenergy" text="Current energy use" />
