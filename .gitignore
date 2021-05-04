@@ -263,6 +263,9 @@ Session.vim
 # Auto-generated tag files
 tags
 
+# FlooBits pairing stuff
+.floo
+.flooignore
 
 ### Project template
 
