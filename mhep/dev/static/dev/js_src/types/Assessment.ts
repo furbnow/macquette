@@ -29,6 +29,9 @@ export interface CommentaryScenarios {
     [key: string]: string;
 }
 
+//
+// A scenario
+//
 export type Scenario = {
     scenario_name: string;
     locked: boolean;
@@ -45,6 +48,27 @@ export type Scenario = {
 } & ScenarioInputs &
     ScenarioOutputs;
 
+export interface ScenarioInputs {
+    region: number | null;
+    altitude: number | null;
+    use_custom_occupancy: boolean;
+    custom_occupancy: number | null;
+}
+export interface ScenarioOutputs {
+    readonly volume: number;
+    readonly TFA: number;
+    readonly occupancy: number;
+    readonly occupancy_SAP_value: number;
+    readonly space_heating_demand_m2: number;
+    readonly primary_energy_use_m2: number;
+    readonly kgco2perm2: number;
+    readonly kwhdpp: number;
+}
+
+//
+// Current energy
+//
+
 export interface CurrentEnergy {
     primaryenergy_annual_kwh: number;
     total_co2: number;
@@ -58,21 +82,7 @@ export interface CurrentEnergy {
     generation: CurrentEnergyGeneration;
     use_by_fuel: { [key: string]: FuelUse };
 }
-export interface Fuel {
-    SAP_code: number;
-    category: string;
-    co2factor: number;
-    fuelcost: number;
-    primaryenergyfactor: number;
-    standingcharge: number;
-}
 
-export interface FuelUse {
-    annual_co2: number;
-    annual_use: number | null;
-    annualcost: number;
-    primaryenergy: number;
-}
 export interface CurrentEnergyGeneration {
     annual_generation: number | null;
     annual_CO2: number;
@@ -82,18 +92,20 @@ export interface CurrentEnergyGeneration {
     annual_FIT_income: number | null;
 }
 
-export interface ScenarioInputs {
-    region: number | null;
-    altitude: number | null;
-    use_custom_occupancy: boolean;
-    custom_occupancy: number | null;
+export interface FuelUse {
+    annual_co2: number;
+    annual_use: number | null;
+    annualcost: number;
+    primaryenergy: number;
 }
-export interface ScenarioOutputs {
-    readonly volume: number;
-    readonly TFA: number;
-    readonly occupancy: number;
-    readonly occupancy_SAP_value: number;
-    readonly space_heating_demand_m2: number;
+
+export interface Fuel {
+    SAP_code: number;
+    category: string;
+    co2factor: number;
+    fuelcost: number;
+    primaryenergyfactor: number;
+    standingcharge: number;
 }
 
 export interface Floor {

@@ -25,6 +25,9 @@ export default function blank(): NewAssessment {
             occupancy: NaN,
             occupancy_SAP_value: NaN,
             space_heating_demand_m2: NaN,
+            primary_energy_use_m2: NaN,
+            kgco2perm2: NaN,
+            kwhdpp: NaN,
             floors: [],
             fuels: {},
             water_heating: {
