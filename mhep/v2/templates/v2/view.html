@@ -98,6 +98,7 @@
                 <ul>
                     <li><a class="project-menu-item" href="#master/compare">Compare Scenarios</a></li>
                     <li><a class="project-menu-item" href="#master/report">Reports</a></li>
+                    <li><a class="project-menu-item" href="#master/scopeofworks">Scope of Works</a></li>
                 </ul>
             </div>
 
@@ -729,7 +730,7 @@
         // Render page
         load_view("#content", page);
 
-        if (page == 'report' || page == 'householdquestionnaire' || page == 'commentary') {
+        if (page == 'report' || page == 'householdquestionnaire' || page == 'commentary' || page == 'scopeofworks') {
             hide_house_graphic();
         } else {
             show_house_graphic();
