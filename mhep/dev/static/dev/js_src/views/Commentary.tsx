@@ -4,24 +4,37 @@ import { UpdateFunction } from '../context/UpdateFunction';
 import { getScenarioList } from '../lib/scenarios';
 import { getOrphanedScenarioIds } from '../lib/commentary';
 import { NewAssessment } from '../types/Assessment';
-import Graphics, { GraphicsProps } from '../components/Graphics';
+import Graphics from '../components/Graphics';
 import LongTextField from '../components/LongTextField';
+import { houseData, targetData } from '../views/PageHeader';
+
+declare global {
+    /* TODO: This is a nasty hack, but one day _cost_params will migrate to TS */
+    function _cost_param(scenarioId: string): number;
+}
 
 interface CommentaryProps {
     assessment: NewAssessment;
     scenarioId: string;
-    overviewData: { [k: string]: GraphicsProps };
 }
 
 // Passing in overviewData like this is definitely suboptimal and should be refactored
 // away later, in favour of getting the right fields off the assssment class.  (When
 // the assessment type has the right fields.)  XXX
-export default function Commentary({
-    assessment,
-    overviewData,
-}: CommentaryProps): ReactElement {
+export default function Commentary({ assessment }: CommentaryProps): ReactElement {
     const updateFn = useContext(UpdateFunction);
     const orphans = getOrphanedScenarioIds(assessment);
+
+    const overviewData = Object.fromEntries(
+        getScenarioList(assessment, true).map(({ id }) => [
+            id,
+            {
+                houseData: houseData(assessment[id]),
+                targetData: targetData(400, assessment[id]),
+                cost: _cost_param(id),
+            },
+        ])
+    );
 
     return (
         <section>

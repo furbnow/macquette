@@ -62,6 +62,15 @@ export default function blank(): NewAssessment {
             fabric: {
                 measures: {},
                 elements: [],
+                total_floor_WK: NaN,
+                total_window_WK: NaN,
+                total_wall_WK: NaN,
+                total_roof_WK: NaN,
+                thermal_bridging_heat_loss: NaN,
+            },
+            ventilation: {
+                average_ventilation_WK: NaN,
+                average_infiltration_WK: NaN,
             },
             currentenergy: {
                 primaryenergy_annual_kwh: NaN,
