@@ -266,7 +266,7 @@
 
         refresh_undo_redo_buttons();
     });
-    // Side menu
+
     $(window).resize(function () {
         pageheader_resize();
     });
@@ -296,7 +296,7 @@
         }
 
         UpdateUI(data);
-        pageheader_new_values();
+        pageheader_new_values({ scenario: data, scenarioId: scenario });
 
         redraw_sidebar();
 
@@ -349,51 +349,6 @@
             update
         );
     }
-    function show_graphics_for_page(page) {
-        switch (page) {
-            case 'householdquestionnaire':
-            case 'commentary':
-            case 'currentenergy':
-            case 'imagegallery':
-            case 'compare':
-            case 'report':
-            case 'scopeofworks':
-            case 'export':
-            case 'librariesmanager':
-            case 'fuelsmanager':
-                return false;
-            default:
-                return true;
-        }
-    }
-    function title_for_page(page, scenario) {
-        switch (page) {
-            case 'householdquestionnaire':
-                return 'Household Questionnaire';
-            case 'commentary':
-                return 'Commentary';
-            case 'report':
-                return 'Generate Report';
-            case 'currentenergy':
-                return 'Current Energy Use';
-            case 'imagegallery':
-                return 'Image Gallery';
-            case 'compare':
-                return 'Compare Scenarios';
-            case 'export':
-                return 'Import/Export';
-            case 'librariesmanager':
-                return 'Libraries manager';
-            case 'fuelsmanager':
-                return 'Fuels manager';
-            case 'scopeofworks':
-                return 'Scope of Works';
-            default:
-                return (
-                    scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name
-                );
-        }
-    }
     function load_page_from_hash() {
         let oldPage = page;
         let oldScenario = scenario;
@@ -418,9 +373,10 @@
 
         // Render page
         pageheader_new_page({
-            title: title_for_page(page, scenario),
+            page,
+            scenario: data,
+            scenarioId: scenario,
             totalLock: locked,
-            showGraphics: show_graphics_for_page(page)
         });
         load_view("#content", page);
 

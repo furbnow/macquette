@@ -45,6 +45,7 @@ export type Scenario = {
     floors: Floor[];
     measures: Measures;
     fabric: Fabric;
+    ventilation: Ventilation;
 } & ScenarioInputs &
     ScenarioOutputs;
 
@@ -122,12 +123,22 @@ export interface WaterHeating {
 export interface Fabric {
     measures: Measures;
     elements: FabricElement[];
+    total_floor_WK: number;
+    total_window_WK: number;
+    total_wall_WK: number;
+    total_roof_WK: number;
+    thermal_bridging_heat_loss: number;
 }
 export interface FabricElement {
     cost_total?: number;
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Measures {}
+
+export interface Ventilation {
+    average_ventilation_WK: number;
+    average_infiltration_WK: number;
+}
 
 //
 // Solar hot water

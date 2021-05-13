@@ -177,7 +177,7 @@ function ScenarioBlock({
                         view={`ventilation`}
                         text="Ventilation and infiltration"
                     />
-                    <SidebarLink scenario={id} view={`elements`} text="Fabric" />
+                    <SidebarLink scenario={id} view={`elements`} text="Fabric elements" />
                     <SidebarLink
                         scenario={id}
                         view={`LAC`}
