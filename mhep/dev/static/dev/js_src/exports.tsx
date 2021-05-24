@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 
-import { UpdateFunction } from './context/UpdateFunction';
+import { AppContext } from './context/AppContext';
 
 import Assessment from './Assessment';
 
@@ -12,6 +12,7 @@ import { getScenarioMeasures } from './lib/measures';
 import Commentary from './views/Commentary';
 import CurrentEnergy from './views/CurrentEnergy';
 import DwellingData from './views/DwellingData';
+import Generation from './views/Generation';
 import PageHeader from './views/PageHeader';
 import Report from './views/Report';
 import ScopeOfWorks from './views/ScopeOfWorks';
@@ -34,6 +35,7 @@ window.Macquette = {
         Commentary,
         CurrentEnergy,
         DwellingData,
+        Generation,
         PageHeader,
         Report,
         ScopeOfWorks,
@@ -49,11 +51,11 @@ window.Macquette = {
         TargetBar,
         Graphics,
     },
-    render: (view, props, root, updateFn: () => void) =>
+    render: (view, props, root, update: () => void, libraries: [] = []) =>
         render(
-            <UpdateFunction.Provider value={updateFn}>
+            <AppContext.Provider value={{ update, libraries }}>
                 {React.createElement(view, props)}
-            </UpdateFunction.Provider>,
+            </AppContext.Provider>,
             root || document.getElementById('content')
         ),
     unmount: (element) => unmountComponentAtNode(element),

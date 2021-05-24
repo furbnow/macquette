@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext } from 'react';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 
 interface OnOffToggleButtonProps {
     onTitle: string;
@@ -14,13 +14,13 @@ export default function OnOffToggleButton({
     value,
     setValue,
 }: OnOffToggleButtonProps): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
     return (
         <button
             className="btn"
             onClick={() => {
                 setValue(!value);
-                updateFn();
+                update();
             }}
             style={{ marginLeft: 10 }}
         >

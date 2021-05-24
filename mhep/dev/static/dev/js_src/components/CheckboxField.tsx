@@ -1,18 +1,20 @@
 import React, { useContext, ReactElement } from 'react';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 
 interface CheckboxFieldProps {
     id: string;
+    disabled?: boolean;
     value: boolean;
     setValue: (val: boolean) => void;
 }
 
 export default function CheckboxField({
     id,
+    disabled,
     value,
     setValue,
 }: CheckboxFieldProps): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
 
     return (
         <input
@@ -20,9 +22,10 @@ export default function CheckboxField({
             id={`field_${id}`}
             onChange={(evt) => {
                 setValue(evt.target.checked);
-                updateFn();
+                update();
             }}
             checked={value}
+            disabled={disabled}
         />
     );
 }

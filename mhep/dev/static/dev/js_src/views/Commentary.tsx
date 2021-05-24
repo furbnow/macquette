@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext } from 'react';
 
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 import { getScenarioList } from '../lib/scenarios';
 import { getOrphanedScenarioIds } from '../lib/commentary';
 import { NewAssessment } from '../types/Assessment';
@@ -22,7 +22,7 @@ interface CommentaryProps {
 // away later, in favour of getting the right fields off the assssment class.  (When
 // the assessment type has the right fields.)  XXX
 export default function Commentary({ assessment }: CommentaryProps): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
     const orphans = getOrphanedScenarioIds(assessment);
 
     const overviewData = Object.fromEntries(
@@ -122,7 +122,7 @@ export default function Commentary({ assessment }: CommentaryProps): ReactElemen
                         className="btn btn--icon"
                         onClick={() => {
                             delete assessment._commentary.scenarios[id];
-                            updateFn();
+                            update();
                         }}
                     >
                         <svg viewBox="0 0 1792 1792">

@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext } from 'react';
 import useExternalState from '../hooks/useExternalState';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 
 interface TextFieldProps {
     id: string;
@@ -17,7 +17,7 @@ export default function TextField({
     setValue,
     className = '',
 }: TextFieldProps): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
     const [current, monitor, setCurrent] = useExternalState(value);
 
     return (
@@ -30,7 +30,7 @@ export default function TextField({
                 onBlur={() => {
                     if (current !== monitor) {
                         setValue(current);
-                        updateFn();
+                        update();
                     }
                 }}
                 value={current}

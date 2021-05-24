@@ -1,5 +1,5 @@
 import React, { useContext, ReactElement } from 'react';
-import { UpdateFunction } from '../context/UpdateFunction';
+import { AppContext } from '../context/AppContext';
 
 import { NewAssessment } from '../types/Assessment';
 import { getScenario } from '../lib/scenarios';
@@ -21,7 +21,7 @@ interface DwellingDataProps {
 }
 
 function DwellingData({ assessment, scenarioId }: DwellingDataProps): ReactElement {
-    const updateFn = useContext(UpdateFunction);
+    const { update } = useContext(AppContext);
     const scenario = getScenario(assessment, scenarioId);
 
     return (
@@ -87,7 +87,7 @@ function DwellingData({ assessment, scenarioId }: DwellingDataProps): ReactEleme
                                     className="btn"
                                     onClick={() => {
                                         deleteFloor(scenario, idx);
-                                        updateFn();
+                                        update();
                                     }}
                                 >
                                     <i className="icon-trash"></i> Delete
@@ -104,7 +104,7 @@ function DwellingData({ assessment, scenarioId }: DwellingDataProps): ReactEleme
                                 className="btn mb-0"
                                 onClick={() => {
                                     addFloor(scenario);
-                                    updateFn();
+                                    update();
                                 }}
                             >
                                 <i className="icon-plus"></i> Add new floor
