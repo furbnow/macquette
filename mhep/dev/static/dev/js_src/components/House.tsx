@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import { Info } from './icons/info';
 
 const SCALE = 30;
 
@@ -55,6 +56,46 @@ const Label = ({
     );
 };
 
+interface RoundingErrorTooltipProps extends HouseProps {
+    total: number;
+}
+
+const RoundingErrorTooltip = ({
+    floor,
+    ventilation,
+    infiltration,
+    windows,
+    walls,
+    roof,
+    thermalbridge,
+    total,
+}: RoundingErrorTooltipProps): null | ReactElement => {
+    const cumulativeRoundedTotal =
+        Math.round(floor) +
+        Math.round(ventilation) +
+        Math.round(infiltration) +
+        Math.round(windows) +
+        Math.round(walls) +
+        Math.round(roof) +
+        Math.round(thermalbridge);
+    const isRoundingError = cumulativeRoundedTotal !== Math.round(total);
+
+    if (!isRoundingError) {
+        return null;
+    } else {
+        return (
+            <svg x={550} y={365}>
+                <Info
+                    width={16 * 2.5}
+                    height={16 * 2.5}
+                    style={{ color: 'rgba(99, 86, 71, 0.6)' }}
+                />
+                <title>Total not equal to sum of output arrows due to rounding</title>
+            </svg>
+        );
+    }
+};
+
 export interface HouseProps {
     floor: number;
     ventilation: number;
@@ -85,7 +126,16 @@ export default function House({
             />
             <path d="m278 310h16v80h-16zm0 140h16v80h-16z" className="house--med" />
             <Label x={500} y={400} label="Total" value={total} anchor="middle" />
-
+            <RoundingErrorTooltip
+                floor={floor}
+                ventilation={ventilation}
+                infiltration={infiltration}
+                windows={windows}
+                walls={walls}
+                roof={roof}
+                thermalbridge={thermalbridge}
+                total={total}
+            />
             {/* Top */}
 
             <Arrow x={340} y={205} value={infiltration} rotate={235} dark={true} />
