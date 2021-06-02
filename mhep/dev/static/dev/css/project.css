@@ -566,6 +566,7 @@ select {
 
 .dialog-header select {
     margin-bottom: 0;
+    max-width: 30em
 }
 
 .dialog-body {
