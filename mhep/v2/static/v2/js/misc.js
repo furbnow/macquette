@@ -499,8 +499,8 @@ function measures_costs(scenario) {
         if (project[scenario].measures.water_heating.water_usage != undefined) {
             measures_total_cost += cost_of_measures_by_id(project[scenario].measures.water_heating.water_usage);
         }
-        if (project[scenario].measures.water_heating.storage_type != undefined) {
-            measures_total_cost += project[scenario].measures.water_heating.storage_type.measure.cost_total;
+        if (project[scenario].measures.water_heating.storage_type_measures != undefined) {
+            measures_total_cost += project[scenario].measures.water_heating.storage_type_measures.measure.cost_total;
         }
         if (project[scenario].measures.water_heating.pipework_insulation != undefined) {
             measures_total_cost += project[scenario].measures.water_heating.pipework_insulation.measure.cost_total;

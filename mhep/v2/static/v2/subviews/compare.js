@@ -1136,8 +1136,8 @@ function getMeasuresCompleteTables(scenario) {
             if (project[scenario].measures.water_heating.water_usage != undefined) {
                 out += measuresByIdForCompleteTable(project[scenario].measures.water_heating.water_usage);
             }
-            if (project[scenario].measures.water_heating.storage_type != undefined) {
-                out += measureForCompleteTable(project[scenario].measures.water_heating.storage_type.measure);
+            if (project[scenario].measures.water_heating.storage_type_measures != undefined) {
+                out += measureForCompleteTable(project[scenario].measures.water_heating.storage_type_measures.measure);
             }
             if (project[scenario].measures.water_heating.pipework_insulation != undefined) {
                 out += measureForCompleteTable(project[scenario].measures.water_heating.pipework_insulation.measure);

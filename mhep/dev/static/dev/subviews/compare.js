@@ -1183,8 +1183,8 @@ function populateMeasuresTable(scenario, tableSelector, summaryTableSelector, li
             if (project[scenario].measures.water_heating.water_usage != undefined) {
                 addListOfMeasuresByIdToSummaryTable(project[scenario].measures.water_heating.water_usage, tableSelector, summaryTableSelector, listSelector);
             }
-            if (project[scenario].measures.water_heating.storage_type != undefined) {
-                addMeasureToSummaryTable(project[scenario].measures.water_heating.storage_type, tableSelector, summaryTableSelector, listSelector);
+            if (project[scenario].measures.water_heating.storage_type_measures != undefined) {
+                addMeasureToSummaryTable(project[scenario].measures.water_heating.storage_type_measures, tableSelector, summaryTableSelector, listSelector);
             }
             if (project[scenario].measures.water_heating.pipework_insulation != undefined) {
                 addMeasureToSummaryTable(project[scenario].measures.water_heating.pipework_insulation, tableSelector, summaryTableSelector, listSelector);

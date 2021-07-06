@@ -48,8 +48,8 @@ export function getScenarioMeasures(scenario, assessment) {
         if ("water_usage" in scenarioData.measures.water_heating) {
             pushedNestedMeasures(scenarioData.measures.water_heating.water_usage);
         }
-        if ("storage_type" in scenarioData.measures.water_heating) {
-            scenarioMeasures.push(scenarioData.measures.water_heating.storage_type.measure);
+        if ("storage_type_measures" in scenarioData.measures.water_heating) {
+            scenarioMeasures.push(scenarioData.measures.water_heating.storage_type_measures.measure);
         }
         if ("pipework_insulation" in scenarioData.measures.water_heating) {
             scenarioMeasures.push(scenarioData.measures.water_heating.pipework_insulation.measure);
