@@ -73,7 +73,7 @@ export function duplicateScenario(
     id: string,
     title: string
 ): void {
-    const nums = getScenarioList(assessment, true).map(({ num }) => num);
+    const nums = getScenarioList(assessment).map(({ num }) => num);
     const newNum = getNextEmptyId(nums);
     const newId = `scenario${newNum}`;
 
