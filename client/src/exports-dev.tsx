@@ -12,14 +12,15 @@ import { getScenarioMeasures } from './ui/lib/measures';
 import Commentary from './ui/views/Commentary';
 import CurrentEnergy from './ui/views/CurrentEnergy';
 import DwellingData from './ui/views/DwellingData';
+import FloorUValueCalculator from './ui/views/FloorUValueCalculator/FloorUValueCalculator';
 import Generation from './ui/views/Generation';
+import ImageGallery from './ui/views/ImageGallery';
 import PageHeader from './ui/views/PageHeader';
 import Report from './ui/views/Report';
 import ScopeOfWorks from './ui/views/ScopeOfWorks';
 import Setup from './ui/views/Setup';
 import Sidebar from './ui/views/Sidebar';
 import SolarHotWater from './ui/views/SolarHotWater';
-import ImageGallery from './ui/views/ImageGallery';
 import Ventilation from './ui/views/Ventilation';
 
 import TargetBar from './ui/components/TargetBar';
@@ -47,6 +48,7 @@ window.Macquette = {
         SolarHotWater,
         ImageGallery,
         Ventilation,
+        FloorUValueCalculator,
     },
     lib: {
         blank,

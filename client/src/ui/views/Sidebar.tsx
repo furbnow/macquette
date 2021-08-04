@@ -210,6 +210,11 @@ function ScenarioBlock({
                         view={`worksheets`}
                         text="SAP worksheets"
                     />
+                    <SidebarLink
+                        scenario={id}
+                        view={`flooruvaluecalculator`}
+                        text="Floor U-value calculator"
+                    />
                 </ul>
             ) : null}
         </div>

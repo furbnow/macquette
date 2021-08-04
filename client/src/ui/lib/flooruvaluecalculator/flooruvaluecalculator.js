@@ -1,8 +1,9 @@
 //link to docs!
 //https://carboncoop.gitlab.io/macquette/...
 
-import { C1, C2, C3, C4, C5 } from '../data/flooruvaluecalculator/tables';
-import { insulationMaterials } from '../data/flooruvaluecalculator/insulationmaterials'
+import { C1, C2, C3, C4, C5 } from '../../data/flooruvaluecalculator/tables';
+import { insulationMaterials } from '../../data/flooruvaluecalculator/insulationmaterials'
+import calcCombined from './combinedmethod'
 
 function calculateResistance(thickness, conductivity) {
     if (thickness === null || conductivity === '') {
@@ -59,8 +60,15 @@ function calculateSolidGroundFloor(perimeter_area_ratio, resistance_floor, edge_
     return U_0 - perimeter_area_ratio * calculatePsi();
 }
 
-function calculateSuspendedFloor(ventilation, perimeter_area_ratio) {
-    return lookupUValue(C4, ventilation, perimeter_area_ratio);
+function calculateSuspendedFloor(ventilation, perimeter_area_ratio, suspended_floor_insulation, layer_resistances) {
+    const U_uninsulated = lookupUValue(C4, ventilation, perimeter_area_ratio);
+    if (!suspended_floor_insulation) {
+        return U_uninsulated
+    }
+    const U_T = calcCombined(layer_resistances)
+    const R_suspended_floor = U_T ** -1 - 0.17 * 2
+    const U_insulated = (U_uninsulated ** -1 - 0.2 + R_suspended_floor) ** -1
+    return U_insulated
 }
 
 function calculateBasementFloor(basement_depth, perimeter_area_ratio, resistance_floor) {
@@ -78,7 +86,8 @@ export default function calculate(inputs) {
         case 'SOLID_GROUND_FLOOR':
             return calculateSolidGroundFloor(perimeter_area_ratio, resistance_floor, inputs.edge_insulation_type, inputs.horizontal_edge_insulation, inputs.vertical_edge_insulation);
         case 'SUSPENDED_FLOOR':
-            return calculateSuspendedFloor(inputs.ventilation, perimeter_area_ratio);
+            if (inputs.floor_insulation.hasInsulation) inputs.suspended_floor_insulation = true
+            return calculateSuspendedFloor(inputs.ventilation, perimeter_area_ratio, inputs.suspended_floor_insulation, inputs.layer_resistances);
         case 'BASEMENT_FLOOR':
             return calculateBasementFloor(inputs.basement_depth, perimeter_area_ratio, resistance_floor);
     }

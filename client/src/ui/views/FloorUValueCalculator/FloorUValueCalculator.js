@@ -8,9 +8,10 @@ import SuspendedFloor from './SuspendedFloor';
 import NumberField from '../../components/NumberField';
 import CheckboxField from '../../components/CheckboxField';
 import Insulation from './Insulation';
+import Insulation2_RenameMe from './Insulation2_RenameMe'
 import Result from '../../components/Result';
 
-import calculate from '../../lib/flooruvaluecalculator';
+import calculate from '../../lib/flooruvaluecalculator/flooruvaluecalculator';
 
 function blankInputs() {
     return {
@@ -39,6 +40,20 @@ function blankInputs() {
 
         //Suspended Floor only
         ventilation: null,
+        suspended_floor_insulation: false,
+        layer_resistances: {
+            bridged: {
+                F1: null,
+                conductivity1: null,
+                thickness1: null,
+                R_M1: null, //R_M1 = conductivity1/thickness1
+                F2: null,
+                conductivity2: null,
+                thickness2: null,
+                R_M2: null //R_M2 = conductivity2/thickness2
+            },
+            notbridged: []
+        },
 
         //Basement only
         basement_depth: null,
@@ -98,7 +113,7 @@ function FloorUValueCalculator({ inputs, cancel, saver }) {
                 />
             </FormRow>
 
-            {state.floor_insulation.hasInsulation && (
+            {(state.floor_insulation.hasInsulation && state.floor_type !== 'SUSPENDED_FLOOR') && (
                 <Insulation
                     id="floor_insulation"
                     conductivity={state.floor_insulation.conductivity}
@@ -118,6 +133,115 @@ function FloorUValueCalculator({ inputs, cancel, saver }) {
                 />
             )}
 
+            {(state.floor_insulation.hasInsulation && state.floor_type === 'SUSPENDED_FLOOR') && (
+                <>
+                    <Insulation2_RenameMe
+                        id="floor_insulation"
+                        conductivity={state.layer_resistances.bridged.conductivity1}
+                        thickness={state.layer_resistances.bridged.thickness1}
+                        fraction={state.layer_resistances.bridged.F1}
+                        setConductivity={(val) =>
+                            setState({
+                                ...state,
+                                layer_resistances: {
+                                    ...state.layer_resistances,
+                                    bridged: {
+                                        ...state.layer_resistances.bridged,
+                                        conductivity1: val
+                                    }
+                                },
+                            })
+                        }
+                        setThickness={(val) =>
+                            setState({
+                                ...state,
+                                layer_resistances: {
+                                    ...state.layer_resistances,
+                                    bridged: {
+                                        ...state.layer_resistances.bridged,
+                                        thickness1: val
+                                    }
+                                },
+                            })
+                        }
+                        setFraction={(val) =>
+                            setState({
+                                ...state,
+                                layer_resistances: {
+                                    ...state.layer_resistances,
+                                    bridged: {
+                                        ...state.layer_resistances.bridged,
+                                        F1: val
+                                    }
+                                },
+                            })
+                        }
+                    />
+                    <Insulation2_RenameMe
+                        id="floor_insulation"
+                        conductivity={state.layer_resistances.bridged.conductivity2}
+                        thickness={state.layer_resistances.bridged.thickness2}
+                        fraction={1 - state.layer_resistances.bridged.F1}
+                        setConductivity={(val) =>
+                            setState({
+                                ...state,
+                                layer_resistances: {
+                                    ...state.layer_resistances,
+                                    bridged: {
+                                        ...state.layer_resistances.bridged,
+                                        conductivity2: val
+                                    }
+                                },
+                            })
+                        }
+                        setThickness={(val) =>
+                            setState({
+                                ...state,
+                                layer_resistances: {
+                                    ...state.layer_resistances,
+                                    bridged: {
+                                        ...state.layer_resistances.bridged,
+                                        thickness2: val
+                                    }
+                                },
+                            })
+                        }
+                        setFraction={(val) =>
+                            setState({
+                                ...state,
+                                layer_resistances: {
+                                    ...state.layer_resistances,
+                                    bridged: {
+                                        ...state.layer_resistances.bridged,
+                                        F2: val
+                                    }
+                                },
+                            })
+                        }
+                    />
+                    {/* <Insulation
+                        id="floor_insulation"
+                        conductivity={state.floor_insulation.conductivity}
+                        thickness={state.floor_insulation.thickness}
+                        setConductivity={(val) =>
+                            setState({
+                                ...state,
+                                floor_insulation: { ...state.floor_insulation, conductivity: val },
+                            })
+                        }
+                        setThickness={(val) =>
+                            setState({
+                                ...state,
+                                floor_insulation: { ...state.floor_insulation, thickness: val },
+                            })
+                        }
+                    /> */}
+                </>
+            )}
+{
+            //https://dev.to/andyrewlee/cheat-sheet-for-updating-objects-and-arrays-in-react-state-48np
+            //i am in a muddle!
+}
             {state.floor_type === 'SOLID_GROUND_FLOOR' && (
                 <SolidGroundFloor state={state} setState={setState} />
             )}

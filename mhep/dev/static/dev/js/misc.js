@@ -748,6 +748,9 @@ function _extract_scenario_inputs(data) {
             notes: data.fabric.elements[z].notes || '',
             maintenance: data.fabric.elements[z].maintenance || ''
         };
+        if ('uvalue_inputs' in data.fabric.elements[z]) {
+            inputdata.fabric.elements[z].uvalue_inputs = data.fabric.elements[z].uvalue_inputs;
+        }
         if (data.fabric.elements[z].EWI != undefined) {
             inputdata.fabric.elements[z].EWI = data.fabric.elements[z].EWI;
         }

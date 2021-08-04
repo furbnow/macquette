@@ -522,6 +522,19 @@ select {
     margin-left: 1ch;
 }
 
+.form-row select {
+    width: auto
+}
+
+.form-row--indent {
+    --indent-size: 3ch;
+    padding-left: var(--indent-size);
+}
+
+.form-row--indent > :nth-child(2) {
+    margin-left: calc(var(--indent-size) * -1);
+}
+
 /**** ARTISANAL DIALOGUE BOXES ****/
 
 /* Based on the CSS at https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html */
