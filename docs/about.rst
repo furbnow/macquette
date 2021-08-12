@@ -83,6 +83,9 @@ was written in PHP using the EmonCMS framework. Macquette has been
 ported to Python/Django and is the software backing assessments as part
 of the People Powered Retrofit project.
 
+The calculation engine is a fork of `openBEM <https://github.com/TrystanLea/openBEM/>`_,
+originally and continuingly developed by Trystan Lea.
+
 MHEP was originally a spreadsheet which was turned into a web
 application by Trystan Lea. It was ported to Python in 2019 by Ian
 Drysdale and Paul Fawkesley. It continues being developed in-house at
