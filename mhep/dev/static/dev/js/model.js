@@ -37,6 +37,14 @@ if (typeof module !== 'undefined') {
     module.exports = calc;
 }
 
+calc.runAll = function (input, datasets) {
+    let output = {};
+    for (let [k, v] of Object.entries(input.data)) {
+        output[k] = calc.run(v, datasets);
+    }
+    return output;
+};
+
 /******************************************************************
  * RUN
  *
