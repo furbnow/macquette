@@ -540,7 +540,7 @@
     });
     // Side menu
     $(window).resize(function () {
-        draw_openbem_graphics('#topgraphic');
+        draw_openbem_graphics('#topgraphic', data);
         sidebar_resize();
     });
 
@@ -568,7 +568,7 @@
         }
 
         UpdateUI(data);
-        draw_openbem_graphics('#topgraphic');
+        draw_openbem_graphics('#topgraphic', data);
 
         redraw_emissions();
 
@@ -734,7 +734,7 @@
             hide_house_graphic();
         } else {
             show_house_graphic();
-            draw_openbem_graphics('#topgraphic');
+            draw_openbem_graphics('#topgraphic', data);
         }
 
         InitUI();

@@ -15,7 +15,7 @@ function commentary_initUI() {
         $('#overviews').append('<div id="overview-' + s + '" class="overview"></div>');
         load_view('#overview-' + s, 'topgraphic');
         $('#overviews #overview-' + s + ' #scenario-name').html(s.charAt(0).toUpperCase() + s.slice(1) + ' - ' + scenario.scenario_name);
-        draw_openbem_graphics('#overview-' + s);
+        draw_openbem_graphics('#overview-' + s, scenario);
     }
 
     for (let scenario_name of scenarios) {

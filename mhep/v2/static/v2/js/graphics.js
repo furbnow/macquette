@@ -1,10 +1,10 @@
-function draw_openbem_graphics(parent) {
-    $(`${parent} .house-container`).html(houseSVG(data));
+function draw_openbem_graphics(parent, scenarioData) {
+    $(`${parent} .house-container`).html(houseSVG(scenarioData));
 
-    draw_space_heating_targetbar(parent, data);
-    draw_primary_energy_targetbar(parent, data);
-    draw_co2_targetbar(parent, data);
-    draw_perperson_targetbar(parent, data);
+    draw_space_heating_targetbar(parent, scenarioData);
+    draw_primary_energy_targetbar(parent, scenarioData);
+    draw_co2_targetbar(parent, scenarioData);
+    draw_perperson_targetbar(parent, scenarioData);
 
     if (scenario != undefined) {
         if (page != 'report' && scenario != 'master') {
