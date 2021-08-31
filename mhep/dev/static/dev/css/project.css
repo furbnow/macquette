@@ -148,10 +148,73 @@ input[type="checkbox"] {
     margin:0px;
 }
 
-#gallery i,#gallery input{
-    vertical-align:top;
-    cursor:pointer;
-    margin-left:5px
+.gallery-card {
+    border: 1px solid #CCC7B4;
+    background: #444;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    max-width: 800px;
+}
+.gallery-head {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    max-width: 300px;
+    max-height: 300px;
+}
+.gallery-head img {
+    object-fit: scale-down;
+    max-height: 100%;
+    max-width: 100%;
+}
+.gallery-content {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    flex-direction: column;
+    padding: 1rem;
+    background-color: #EEECE5;
+}
+.gallery-content button {
+    margin-right: 5px;
+}
+.gallery-card--selected .gallery-content {
+    background-color: #dff3ff;
+}
+.gallery-card--selected {
+    border-color: #8cd4ff;
+}
+.gallery-checkbox {
+    transform: scale(1.5);
+}
+.gallery-editor {
+    width: 97%;
+}
+.gallery-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.gallery-controls input {
+    margin-left: auto;
+}
+
+input[type="file"].file-dropper {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+label.file-dropper {
+    font-size: 1em;
+    display: inline-flex;
+    align-items: center;
 }
 
 #delete-images{

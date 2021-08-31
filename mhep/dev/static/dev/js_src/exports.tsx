@@ -18,6 +18,7 @@ import Report from './views/Report';
 import ScopeOfWorks from './views/ScopeOfWorks';
 import Sidebar from './views/Sidebar';
 import SolarHotWater from './views/SolarHotWater';
+import ImageGallery from './views/ImageGallery';
 
 import TargetBar from './components/TargetBar';
 import Graphics from './components/Graphics';
@@ -41,6 +42,7 @@ window.Macquette = {
         ScopeOfWorks,
         Sidebar,
         SolarHotWater,
+        ImageGallery,
     },
     lib: {
         blank,
