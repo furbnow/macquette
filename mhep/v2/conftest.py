@@ -1,13 +1,13 @@
 import pytest
 
 from . import VERSION
-from mhep.v1.models import Assessment
-from mhep.v1.models import Library
-from mhep.v1.models import Organisation
-from mhep.v1.tests.factories import AssessmentFactory
-from mhep.v1.tests.factories import LibraryFactory
-from mhep.v1.tests.factories import OrganisationFactory
-from mhep.v1.tests.factories import OrganisationWithExtrasFactory
+from .models import Assessment
+from .models import Library
+from .models import Organisation
+from .tests.factories import AssessmentFactory
+from .tests.factories import LibraryFactory
+from .tests.factories import OrganisationFactory
+from .tests.factories import OrganisationWithExtrasFactory
 
 pytest.register_assert_rewrite(f"mhep.{VERSION}.tests.views.mixins.assert_error")
 
