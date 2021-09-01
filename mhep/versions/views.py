@@ -17,6 +17,9 @@ def _all_versions():
             continue
         if not name.startswith("mhep.v"):
             continue
+        # Temporary hack until we've migrated away v1
+        if name == "mhep.v1":
+            continue
 
         yield app_config
 
