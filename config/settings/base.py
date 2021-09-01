@@ -112,7 +112,7 @@ LOCAL_APPS = [
     "mhep.dev.apps.AssessmentsConfig",
     # Your stuff: custom apps go here
     "mhep.v2.apps.AssessmentsConfig",
-    "mhep.v1.apps.AssessmentsConfig",
+    "mhep.v1",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
