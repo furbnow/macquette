@@ -14,7 +14,7 @@ Macquette developer documentation
    versions
    reports
    terms
-   api-v1
+   api-dev
    carbon-co-op-internal
 
 
