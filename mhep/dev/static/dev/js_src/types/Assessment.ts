@@ -1,3 +1,18 @@
+export interface AssessmentMeta {
+    id: string;
+    name: string;
+    description: string;
+    status: 'In progress' | 'Completed' | 'Test';
+
+    user: { id: string; name: string; email: string };
+    organisation: { id: string; name: string } | null;
+
+    created_at: string;
+    updated_at: string;
+
+    data: NewAssessment;
+}
+
 export interface NewAssessment {
     _commentary: Commentary;
     _report: Report;
