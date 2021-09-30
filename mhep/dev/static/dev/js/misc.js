@@ -708,6 +708,7 @@ function _extract_scenario_inputs(data) {
         }
     }
 
+    inputdata.num_of_floors_override = data.num_of_floors_override;
     inputdata.ventilation = {
         air_permeability_test: data.ventilation.air_permeability_test,
         air_permeability_value: data.ventilation.air_permeability_value,
