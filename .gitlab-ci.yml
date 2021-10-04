@@ -1,5 +1,6 @@
 stages:
     - docs
+    - deploy
     - test
 
 python-test:
@@ -91,3 +92,10 @@ pages:
         - pip install sphinx-rtd-theme
         - make html -C docs/
         - mv docs/_build/html/ public/
+
+trigger deploy:
+    stage: deploy
+    rules:
+        - if: $CI_COMMIT_BRANCH == "master"
+    script:
+        - "curl -X POST -F token=$DEPLOY_TOKEN -F ref=main https://gitlab.com/api/v4/projects/14916939/trigger/pipeline"
