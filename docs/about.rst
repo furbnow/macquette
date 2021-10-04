@@ -41,10 +41,13 @@ Householders:
    make their house more comfortable or have a lower carbon footprint
    -and how much that will cost!
 
-Interested tinkerers:
-   People interested in energy systems or in modelling their own house
-   may also use the tool, but for Macquette this group of users is
-   tertiary to the former two.
+
+Unintended users
+----------------
+
+This tool is not aimed at 'interested tinkerers', i.e. people who have
+an interest in energy systems or in modelling their own house.  You may
+find `SAPjs <https://github.com/TrystanLea/SAPjs>`_ to be of more interest.
 
 
 Open source model
