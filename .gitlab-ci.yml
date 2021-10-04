@@ -95,7 +95,6 @@ pages:
 
 trigger deploy:
     stage: deploy
-    needs: []
     image: curlimages/curl:latest
     rules:
         - if: $CI_COMMIT_BRANCH == "main"
