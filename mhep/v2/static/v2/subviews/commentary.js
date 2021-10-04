@@ -10,6 +10,10 @@ function commentary_initUI() {
     }
     scenarios.sort();
 
+    if (!('household' in data)) {
+        data.household = {};
+    }
+
     for (let s of scenarios) {
         let scenario = project[s];
         $('#overviews').append('<div id="overview-' + s + '" class="overview"></div>');
