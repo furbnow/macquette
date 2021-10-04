@@ -64,28 +64,76 @@ function varset(key, value) {
         case 0:
             break;
         case 1:
-            lastval = window[p[0]];
-            window[p[0]] = value;
+            try {
+                lastval = window[p[0]];
+            } catch (err) {
+                throw new Error(`Failed to get window[${p[0]}]`);
+            }
+            try {
+                window[p[0]] = value;
+            } catch (err) {
+                throw new Error(`Failed to set window[${p[0]}]`);
+            }
             break;
         case 2:
-            lastval = window[p[0]][p[1]];
-            window[p[0]][p[1]] = value;
+            try {
+                lastval = window[p[0]][p[1]];
+            } catch (err) {
+                throw new Error(`Failed to get window.${p[0]}.${p[1]}`);
+            }
+            try {
+                window[p[0]][p[1]] = value;
+            } catch (err) {
+                throw new Error(`Failed to set window.${p[0]}.${p[1]}`);
+            }
             break;
         case 3:
-            lastval = window[p[0]][p[1]][p[2]];
-            window[p[0]][p[1]][p[2]] = value;
+            try {
+                lastval = window[p[0]][p[1]][p[2]];
+            } catch (err) {
+                throw new Error(`Failed to get window.${p[0]}.${p[1]}.${p[2]}`);
+            }
+            try {
+                window[p[0]][p[1]][p[2]] = value;
+            } catch (err) {
+                throw new Error(`Failed to set window.${p[0]}.${p[1]}.${p[2]}`);
+            }
             break;
         case 4:
-            lastval = window[p[0]][p[1]][p[2]][p[3]];
-            window[p[0]][p[1]][p[2]][p[3]] = value;
+            try {
+                lastval = window[p[0]][p[1]][p[2]][p[3]];
+            } catch (err) {
+                throw new Error(`Failed to get window.${p[0]}.${p[1]}.${p[2]}.${p[3]}`);
+            }
+            try {
+                window[p[0]][p[1]][p[2]][p[3]] = value;
+            } catch (err) {
+                throw new Error(`Failed to set window.${p[0]}.${p[1]}.${p[2]}.${p[3]}`);
+            }
             break;
         case 5:
-            lastval = window[p[0]][p[1]][p[2]][p[3]][p[4]];
-            window[p[0]][p[1]][p[2]][p[3]][p[4]] = value;
+            try {
+                lastval = window[p[0]][p[1]][p[2]][p[3]][p[4]];
+            } catch (err) {
+                throw new Error(`Failed to get window.${p[0]}.${p[1]}.${p[2]}.${p[3]}.${p[4]}`);
+            }
+            try {
+                window[p[0]][p[1]][p[2]][p[3]][p[4]] = value;
+            } catch (err) {
+                throw new Error(`Failed to set window.${p[0]}.${p[1]}.${p[2]}.${p[3]}.${p[4]}`);
+            }
             break;
         case 6:
-            lastval = window[p[0]][p[1]][p[2]][p[3]][p[4]][p[5]];
-            window[p[0]][p[1]][p[2]][p[3]][p[4]][p[5]] = value;
+            try {
+                lastval = window[p[0]][p[1]][p[2]][p[3]][p[4]][p[5]];
+            } catch (err) {
+                throw new Error(`Failed to get window.${p[0]}.${p[1]}.${p[2]}.${p[3]}.${p[4]}.${p[5]}`);
+            }
+            try {
+                window[p[0]][p[1]][p[2]][p[3]][p[4]][p[5]] = value;
+            } catch (err) {
+                throw new Error(`Failed to set window.${p[0]}.${p[1]}.${p[2]}.${p[3]}.${p[4]}.${p[5]}`);
+            }
             break;
     }
     return lastval;
