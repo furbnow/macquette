@@ -25,7 +25,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
         AssessmentFactory.create()
         AssessmentFactory.create(organisation=OrganisationFactory.create())
 
-        assert self.fetch_organisation_assessment_ids() == [str(a1.id), str(a2.id)]
+        assert {*self.fetch_organisation_assessment_ids()} == {str(a1.id), str(a2.id)}
 
     def test_returns_only_own_assessments_connected_to_organisation(self):
         AssessmentFactory.create(organisation=self.organisation)
