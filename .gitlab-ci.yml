@@ -1,7 +1,7 @@
 stages:
-    - docs
-    - deploy
     - test
+    - deploy
+    - docs
 
 python-test:
     stage: test
@@ -95,7 +95,6 @@ pages:
 
 trigger deploy:
     stage: deploy
-    needs: ["python-test", "js-test", pre-commit"]
     rules:
         - if: $CI_COMMIT_BRANCH == "master"
     script:
