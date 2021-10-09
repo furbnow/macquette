@@ -83,27 +83,6 @@
     </div>
 </div>
 
-<div id="modal-edit-project-name-and-description" class="modal modal-sm hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3>Edit project name and description</h3>
-    </div>
-    <div class="modal-body">
-        <p>
-            <span class="muted">Project name</span>
-            <br><input id="project-name-input" type="text" style="width:90%" />
-        </p>
-        <p>
-            <span class="muted">Project description</span>
-            <br><input id="project-description-input" type="text" style="width:90%" />
-        </p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button id="assessment-update-name-and-description" class="btn btn-primary">Done</button>
-    </div>
-</div>
-
 <div id="modal-error-submitting-data" class="modal alert-danger hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
     <div class="modal-header">
         <h3>You have been logged out!</h3>
@@ -237,25 +216,6 @@
     $(window).on('hashchange', function () {
         $(window).scrollTop(0);
         load_page_from_hash();
-    });
-
-    // Project's name and description management
-    $("#edit-project-name-and-description").on('click', function () {
-        $("#project-name-input").val(p.name);
-        $("#project-description-input").val(p.description);
-        $("#modal-edit-project-name-and-description").modal("show");
-    });
-    $('#assessment-update-name-and-description').on('click', function () {
-        p.name = $("#project-name-input").val();
-        p.description = $('#project-description-input').val();
-        $("#project-title").html(p.name);
-        $("#project-description").html(p.description);
-        $("#modal-edit-project-name-and-description").modal("hide");
-        mhep_helper.set_name_and_description(projectid, p.name, p.description);
-        redraw_sidebar();
-    });
-    $("#modal-error-submitting-data-done").on('click', function () {
-        location.reload();
     });
 
     // Do/undo
