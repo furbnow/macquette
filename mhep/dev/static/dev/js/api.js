@@ -121,14 +121,26 @@ var mhep_helper = {
             });
         });
     },
-    'set_name_and_description': function (id, name, description) {
+    'set_name': function (id, name) {
         $.ajax({type: 'PATCH',
             url: urlHelper.api.assessment(id),
-            data: JSON.stringify({'name': name, 'description': description}),
+            data: JSON.stringify({'name': name}),
             dataType: 'json',
             contentType: 'application/json;charset=utf-8',
             async: false,
-            error: handleServerError('setting assessment name and description'),
+            error: handleServerError('setting assessment name'),
+            success: function (data) {
+            },
+        });
+    },
+    'set_description': function (id, description) {
+        $.ajax({type: 'PATCH',
+            url: urlHelper.api.assessment(id),
+            data: JSON.stringify({'description': description}),
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8',
+            async: false,
+            error: handleServerError('setting assessment description'),
             success: function (data) {
             },
         });

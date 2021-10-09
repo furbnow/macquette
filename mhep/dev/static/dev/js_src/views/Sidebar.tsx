@@ -20,7 +20,7 @@ interface SidebarLinkProps {
 }
 
 function SidebarLink({ view, scenario, text }: SidebarLinkProps): ReactElement {
-    const url = scenario ? `#${scenario}/${view}` : `#master/${view}`;
+    const url = scenario ? `#${scenario}/${view}` : `#${view}`;
     return (
         <li>
             <a className="sidebar-link" href={url}>
@@ -246,9 +246,6 @@ interface SidebarProps {
     initialExpanded: string;
     hasReports: boolean;
     name: string;
-    description: string;
-    username: string;
-    orgname?: string;
 }
 
 /**
@@ -259,9 +256,6 @@ export default function Sidebar({
     initialExpanded,
     hasReports,
     name,
-    description,
-    username,
-    orgname,
 }: SidebarProps): ReactElement {
     const [expandedScenario, setExpandedScenario] = useState(initialExpanded);
     const scenarios = getScenarioList(assessment);
@@ -269,25 +263,14 @@ export default function Sidebar({
     return (
         <div>
             <div className="side-section" style={{ padding: '15px 20px 10px' }}>
-                <button id="edit-project-name-and-description" style={{ float: 'right' }}>
-                    <i className="icon-edit"></i>
-                </button>
-                <p className="mb-0">
-                    <b>{name}</b>
-                    <br />
-                    {description}
-                    <br />
-                    <span className="text-italic">
-                        {username}
-                        {orgname ? `, ${orgname}` : ''}
-                    </span>
-                </p>
+                <b>{name}</b>
             </div>
 
             <div className="side-section">
                 <div className="side-section--header">Assessment</div>
 
                 <ul className="list-unstyled">
+                    <SidebarLink view="setup" text="Setup" />
                     <SidebarLink view="householdquestionnaire" text="Questionnaire" />
                     <SidebarLink view="commentary" text="Commentary" />
                     <SidebarLink view="currentenergy" text="Current energy use" />

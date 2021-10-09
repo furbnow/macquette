@@ -43,84 +43,30 @@
 </style>
 
 <section class="mb-45">
-    <div class="d-flex">
-        <div class="mr-15 w-50">
-            <div class="questionnaire-form-row mb-7">
-                <label class='questionnaire-form-row-label' for="assessor_name">Assessor's name:</label>
-                <div class="questionnaire-form-row-control">
-                    <input type="text" key="data.household.assessor_name" id="assessor_name" style="width:250px">
-                </div>
+    <details class="mb-30">
+        <summary>CSV import/export</summary>
+        <div class="bg-assessor pa-15 mb-30">
+            <p>
+                <a style="text-decoration: underline; cursor: pointer;" id="get_csv">Get CSV file</a>
+            </p>
+
+            <div>
+            <b>Import</b><br>
+            <input type="file" id="csv_file" class="mb-15"><br>
+            <button class="btn" id="process_csv">Import answers</button>
             </div>
 
-            <div class="questionnaire-form-row">
-                <label class='questionnaire-form-row-label' for="assessment_date">Assessment date:</label>
-                <div class="questionnaire-form-row-control">
-                    <input type="text" placeholder="dd/mm/yyyy" key="data.household.assessment_date" id="assessment_date" style="width:150px">
-                </div>
-            </div>
-
-            <div class="questionnaire-form-row">
-                <label class='questionnaire-form-row-label' for="householder_name">Householder's name:</label>
-                <div class="questionnaire-form-row-control">
-                    <input type="text" key="data.household.householder_name" id="householder_name" style="width:250px">
-                </div>
-            </div>
-
-            <div class="questionnaire-form-row mb-7">
-                <label class='questionnaire-form-row-label' for="address_1">Address:</label>
-                <div class="questionnaire-form-row-control">
-                    <input type="text" key="data.household.address_1" class="mb-7" style="width:250px" id="address_1"><br>
-                    <input type="text" key="data.household.address_2" class="mb-7" style="width:250px"><br>
-                    <input type="text" key="data.household.address_3" class="mb-0" style="width:250px">
-                </div>
-            </div>
-            <div class="questionnaire-form-row mb-7">
-                <label class='questionnaire-form-row-label' for="address_town">Town/city:</label>
-                <div class="questionnaire-form-row-control">
-                    <input type="text" key="data.household.address_town" id="address_town" style="width:130px">
-                </div>
-            </div>
-            <div class="questionnaire-form-row">
-                <label class='questionnaire-form-row-label' for="address_postcode">Postcode:</label>
-                <div class="questionnaire-form-row-control">
-                    <input type="text" key="data.household.address_postcode" id="address_postcode" style="width:130px">
-                </div>
-            </div>
+            <p class="mb-0" id="csv-result"></p>
         </div>
-        <div class="ml-15 w-50">
-            <div class="bg-assessor pa-15 mb-30">
-                <div class="d-flex justify-content-between">
-                    <h4 class="ma-0 mb-15">CSV Questionnaire</h4>
-                    <a style="text-decoration: underline; cursor: pointer;" id="get_csv">Get CSV file</a>
-                </div>
+    </details>
 
-                <input type="file" id="csv_file" class="mb-15"><br>
-                <button class="btn" id="process_csv">Import answers</button>
-
-                <p class="mb-0" id="csv-result"></p>
-            </div>
-
-            <div class="bg-assessor pa-15">
-                <p class="text-italic mb-15">Assessor: check and fill these if required.</p>
-
-                <div class="questionnaire-form-row">
-                    <label class='questionnaire-form-row-label' for="address_la">Local authority:</label>
-                    <div class="questionnaire-form-row-control">
-                        <input type="text" key="data.household.address_la" id="address_la" style="width:200px">
-                    </div>
-                </div>
-
-                <div class="questionnaire-form-row bg-assessor mb-0">
-                    <label class='questionnaire-form-row-label' for="address_lsoa">
-                        <abbr title="Lower Super Output Area">LSOA</abbr>:
-                    </label>
-                    <div class="questionnaire-form-row-control">
-                        <input type="text" key="data.household.address_lsoa" id="address_lsoa" style="width:200px">
-                    </div>
-                </div>
-            </div>
+    <div class="questionnaire-form-row">
+        <label class='questionnaire-form-row-label' for="assessment_date">Survey date:</label>
+        <div class="questionnaire-form-row-control">
+            <input type="text" placeholder="dd/mm/yyyy" key="data.household.assessment_date" id="assessment_date" style="width:150px">
         </div>
     </div>
+
 
     <h4>Household details</h4>
     <p class="text-italic">This section contains sensitive data so won't be included in the report.</p>

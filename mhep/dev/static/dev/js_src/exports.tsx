@@ -16,6 +16,7 @@ import Generation from './views/Generation';
 import PageHeader from './views/PageHeader';
 import Report from './views/Report';
 import ScopeOfWorks from './views/ScopeOfWorks';
+import Setup from './views/Setup';
 import Sidebar from './views/Sidebar';
 import SolarHotWater from './views/SolarHotWater';
 import ImageGallery from './views/ImageGallery';
@@ -40,6 +41,7 @@ window.Macquette = {
         PageHeader,
         Report,
         ScopeOfWorks,
+        Setup,
         Sidebar,
         SolarHotWater,
         ImageGallery,

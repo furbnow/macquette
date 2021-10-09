@@ -5,6 +5,7 @@ import { HouseProps } from '../components/House';
 
 function inScenario(page: string): boolean {
     switch (page) {
+        case 'setup':
         case 'householdquestionnaire':
         case 'commentary':
         case 'report':
@@ -66,6 +67,8 @@ export function targetData(
 
 function pageTitle(page: string): string {
     switch (page) {
+        case 'setup':
+            return 'Setup';
         case 'householdquestionnaire':
             return 'Household Questionnaire';
         case 'commentary':

@@ -62,6 +62,7 @@ export type Scenario = {
     fabric: Fabric;
     ventilation: Ventilation;
     generation: Generation;
+    household: Household;
 } & ScenarioInputs &
     ScenarioOutputs;
 
@@ -179,6 +180,18 @@ export interface Generation {
     solarpv_orientation: number | null;
     solarpv_inclination: number | null;
     solarpv_overshading: number | null;
+}
+
+export interface Household {
+    assessor_name: string;
+    householder_name: string;
+    address_1: string;
+    address_2: string;
+    address_3: string;
+    address_town: string;
+    address_postcode: string;
+    address_la: string;
+    address_lsoa: string;
 }
 
 //

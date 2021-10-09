@@ -83,27 +83,6 @@
     </div>
 </div>
 
-<div id="modal-edit-project-name-and-description" class="modal modal-sm hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3>Edit project name and description</h3>
-    </div>
-    <div class="modal-body">
-        <p>
-            <span class="muted">Project name</span>
-            <br><input id="project-name-input" type="text" style="width:90%" />
-        </p>
-        <p>
-            <span class="muted">Project description</span>
-            <br><input id="project-description-input" type="text" style="width:90%" />
-        </p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button id="assessment-update-name-and-description" class="btn btn-primary">Done</button>
-    </div>
-</div>
-
 <div id="modal-error-submitting-data" class="modal alert-danger hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="true">
     <div class="modal-header">
         <h3>You have been logged out!</h3>
@@ -239,25 +218,6 @@
         load_page_from_hash();
     });
 
-    // Project's name and description management
-    $("#edit-project-name-and-description").on('click', function () {
-        $("#project-name-input").val(p.name);
-        $("#project-description-input").val(p.description);
-        $("#modal-edit-project-name-and-description").modal("show");
-    });
-    $('#assessment-update-name-and-description').on('click', function () {
-        p.name = $("#project-name-input").val();
-        p.description = $('#project-description-input').val();
-        $("#project-title").html(p.name);
-        $("#project-description").html(p.description);
-        $("#modal-edit-project-name-and-description").modal("hide");
-        mhep_helper.set_name_and_description(projectid, p.name, p.description);
-        redraw_sidebar();
-    });
-    $("#modal-error-submitting-data-done").on('click', function () {
-        location.reload();
-    });
-
     // Do/undo
     $('body').on('click', '#undo', function () {
         if (historical_index < historical.length - 1) {
@@ -364,9 +324,18 @@
         let oldPage = page;
         let oldScenario = scenario;
 
-        var tmp = (window.location.hash).substring(1).split('/');
-        page = tmp[1] || "dwellingdata";
-        scenario = tmp[0] || "master";
+        const location = window.location.hash.substring(1);
+
+        if (location.length === 0) {
+            scenario = "master";
+            page = "setup";
+        } else if (location.match("/") === null) {
+            scenario = "master";
+            page = location;
+        } else {
+            scenario = location.split('/')[0];
+            page = location.split('/')[1];
+        }
 
         if (!(scenario in project)) {
             scenario = 'master';

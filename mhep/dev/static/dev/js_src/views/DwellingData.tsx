@@ -9,11 +9,8 @@ import FormRow from '../components/FormRow';
 import TextField from '../components/TextField';
 import NumberField from '../components/NumberField';
 import Result from '../components/Result';
-import SelectField from '../components/SelectField';
 import OnOffToggleButton from '../components/OnOffToggleButton';
 import Tooltip from '../components/Tooltip';
-
-import regions from '../data/regions';
 
 interface DwellingDataProps {
     assessment: NewAssessment;
@@ -127,37 +124,6 @@ function DwellingData({ assessment, scenarioId }: DwellingDataProps): ReactEleme
                     </tr>
                 </tfoot>
             </table>
-
-            <h4>Dwelling Location</h4>
-
-            <FormRow>
-                <label htmlFor="field_region">UK region</label>
-                <SelectField
-                    id="region"
-                    options={regions}
-                    value={scenario.region}
-                    setValue={(val) => (scenario.region = val)}
-                />
-            </FormRow>
-
-            <FormRow>
-                <label htmlFor="field_altitude">
-                    Altitude
-                    <a
-                        href="https://www.daftlogic.com/sandbox-google-maps-find-altitude.htm"
-                        target="blank"
-                    >
-                        {' '}
-                        (find it here)
-                    </a>
-                </label>
-                <NumberField
-                    id="altitude"
-                    units="m"
-                    value={scenario.altitude}
-                    setValue={(val) => (scenario.altitude = val)}
-                />
-            </FormRow>
 
             <h4>Occupancy</h4>
 
