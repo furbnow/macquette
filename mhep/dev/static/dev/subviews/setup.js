@@ -1,8 +1,9 @@
 function setup_UpdateUI() {
     Macquette.render(
         Macquette.views.Setup,
-        {},
-        document.querySelector('#content')
+        { data: p },
+        document.querySelector('#content'),
+        update
     );
 }
 

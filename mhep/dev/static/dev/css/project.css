@@ -383,6 +383,9 @@ body .modal {
     padding-left: 45px !important;
 }
 
+.width-130 {
+    width: 130px;
+}
 
 .width-max-content {
     width: max-content;

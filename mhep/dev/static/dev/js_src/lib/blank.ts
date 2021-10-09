@@ -81,7 +81,6 @@ export default function blank(): NewAssessment {
                 total_co2m2: NaN,
                 energyuseperperson: NaN,
                 onsite_generation: false,
-
                 generation: {
                     annual_generation: NaN,
                     annual_CO2: NaN,
@@ -110,6 +109,17 @@ export default function blank(): NewAssessment {
                 solarpv_orientation: null,
                 solarpv_inclination: null,
                 solarpv_overshading: null,
+            },
+            household: {
+                assessor_name: '',
+                householder_name: '',
+                address_1: '',
+                address_2: '',
+                address_3: '',
+                address_town: '',
+                address_postcode: '',
+                address_la: '',
+                address_lsoa: '',
             },
         },
     };

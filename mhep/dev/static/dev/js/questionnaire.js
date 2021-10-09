@@ -186,16 +186,7 @@ const qtype = {
 };
 
 const qfields = {
-    'assessor_name': qtype.str,
     'assessment_date': qtype.date,
-    'householder_name': qtype.str,
-    'address_1': qtype.str,
-    'address_2': qtype.str,
-    'address_3': qtype.str,
-    'address_town': qtype.str,
-    'address_postcode': qtype.str,
-    'address_la': qtype.str,
-    'address_lsoa': qtype.str,
     'tenure': qtype.opt(questionnaire.TENURE),
     'tenure_note': qtype.str,
     'occupants_under5': qtype.int,

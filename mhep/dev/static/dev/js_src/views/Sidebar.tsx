@@ -246,9 +246,6 @@ interface SidebarProps {
     initialExpanded: string;
     hasReports: boolean;
     name: string;
-    description: string;
-    username: string;
-    orgname?: string;
 }
 
 /**
@@ -259,9 +256,6 @@ export default function Sidebar({
     initialExpanded,
     hasReports,
     name,
-    description,
-    username,
-    orgname,
 }: SidebarProps): ReactElement {
     const [expandedScenario, setExpandedScenario] = useState(initialExpanded);
     const scenarios = getScenarioList(assessment);
@@ -269,19 +263,7 @@ export default function Sidebar({
     return (
         <div>
             <div className="side-section" style={{ padding: '15px 20px 10px' }}>
-                <button id="edit-project-name-and-description" style={{ float: 'right' }}>
-                    <i className="icon-edit"></i>
-                </button>
-                <p className="mb-0">
-                    <b>{name}</b>
-                    <br />
-                    {description}
-                    <br />
-                    <span className="text-italic">
-                        {username}
-                        {orgname ? `, ${orgname}` : ''}
-                    </span>
-                </p>
+                <b>{name}</b>
             </div>
 
             <div className="side-section">

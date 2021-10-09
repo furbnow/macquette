@@ -8,6 +8,7 @@ interface TextFieldProps {
     value: string;
     setValue: (a: string) => void;
     className?: string;
+    updateModel?: boolean;
 }
 
 export default function TextField({
@@ -16,6 +17,7 @@ export default function TextField({
     value,
     setValue,
     className = '',
+    updateModel = true,
 }: TextFieldProps): ReactElement {
     const { update } = useContext(AppContext);
     const [current, monitor, setCurrent] = useExternalState(value);
@@ -30,7 +32,9 @@ export default function TextField({
                 onBlur={() => {
                     if (current !== monitor) {
                         setValue(current);
-                        update();
+                        if (updateModel) {
+                            update();
+                        }
                     }
                 }}
                 value={current}
