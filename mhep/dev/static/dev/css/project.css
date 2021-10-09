@@ -5,6 +5,9 @@
 :root {
     --app-color: #ff2712;
 
+    --warning-700: #ff5050;
+    --warning-300: #ffa9a9;
+
     --brown-1: #897A67;
     --brown-2: rgba(215, 210, 201, 0.9);
     --brown-3: #EEECE5;
@@ -27,6 +30,12 @@
     --beige-800: #e0ddda; /* rgba(99,86,71,0.2) */
     --beige-900: rgb(238, 236, 229);
 }
+
+.bg-warning-300 { background-color: var(--warning-300); }
+.bg-warning-700 { background-color: var(--warning-700); }
+
+.border-warning-300 { border: 2px solid var(--warning-300); }
+.border-warning-700 { border: 2px solid var(--warning-700); }
 
 .fill-beige-000 { fill: var(--beige-000); }
 .fill-beige-200 { fill: var(--beige-200); }

@@ -266,20 +266,27 @@ export default function Setup({ data }: SetupProps): ReactElement {
             <FormRow narrow>
                 <label htmlFor="field_address_postcode">Postcode:</label>
 
-                <TextField
-                    id="address_postcode"
-                    className="width-130"
-                    value={scenario.household.address_postcode}
-                    setValue={(val) => {
-                        scenario.household.address_postcode = val;
-                        void getDeets(scenario.household.address_postcode);
-                    }}
-                />
-            </FormRow>
+                <div>
+                    <TextField
+                        id="address_postcode"
+                        className="width-130"
+                        value={scenario.household.address_postcode}
+                        setValue={(val) => {
+                            scenario.household.address_postcode = val;
+                            void getDeets(scenario.household.address_postcode);
+                        }}
+                    />
 
-            {badPostcode && (
-                <span>Couldn&apos;t find this postcode. Please check it is correct.</span>
-            )}
+                    {badPostcode && (
+                        <div className="bg-warning-300 border-warning-700 pa-7 mb-15 mt-7 width-max-content">
+                            <span role="img" aria-label="Warning">
+                                ⚠️
+                            </span>
+                            Couldn&apos;t find this postcode. Please check it is correct.
+                        </div>
+                    )}
+                </div>
+            </FormRow>
 
             <FormRow narrow>
                 <label htmlFor="address_la">Local authority:</label>
@@ -292,7 +299,7 @@ export default function Setup({ data }: SetupProps): ReactElement {
                     }}
                 />
 
-                {waitingFor === 'both' && <span>Fetching...</span>}
+                {waitingFor === 'both' && <span className="ml-7">Fetching...</span>}
             </FormRow>
 
             <FormRow narrow>
@@ -308,7 +315,7 @@ export default function Setup({ data }: SetupProps): ReactElement {
                     }}
                 />
 
-                {waitingFor === 'both' && <span>Fetching...</span>}
+                {waitingFor === 'both' && <span className="ml-7">Fetching...</span>}
             </FormRow>
 
             <FormRow narrow>
@@ -322,7 +329,7 @@ export default function Setup({ data }: SetupProps): ReactElement {
                     />
                 }
 
-                {waitingFor === 'both' && <span>Fetching...</span>}
+                {waitingFor === 'both' && <span className="ml-7">Fetching...</span>}
             </FormRow>
 
             <FormRow narrow>
@@ -334,7 +341,7 @@ export default function Setup({ data }: SetupProps): ReactElement {
                     setValue={(val) => (scenario.altitude = val)}
                 />
 
-                {waitingFor !== 'none' && <span>Fetching...</span>}
+                {waitingFor !== 'none' && <span className="ml-7">Fetching...</span>}
             </FormRow>
         </section>
     );
