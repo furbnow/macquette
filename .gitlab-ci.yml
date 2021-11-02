@@ -31,6 +31,7 @@ python-test:
         - pip install virtualenv
         - virtualenv venv
         - source venv/bin/activate
+        - pip -V
         - pip install pip-tools
         - pip-sync requirements/local.txt
     script:
