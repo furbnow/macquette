@@ -32,7 +32,7 @@ python-test:
         - virtualenv venv
         - source venv/bin/activate
         - pip -V
-        - pip install pip-tools
+        - pip install pip-tools==6.4.0
         - pip-sync requirements/local.txt
     script:
         # Silence warnings
