@@ -51,7 +51,7 @@ django-crispy-forms==1.11.1
     # via -r requirements/./base.in
 django-environ==0.4.5
     # via -r requirements/./base.in
-django-import-export==2.5.0
+django-import-export==2.6.1
     # via -r requirements/./base.in
 django-model-utils==4.1.1
     # via -r requirements/./base.in
