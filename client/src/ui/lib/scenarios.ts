@@ -91,7 +91,7 @@ export function duplicateScenario(
     newScenario.scenario_name = title;
     newScenario.locked = false;
     newScenario.creation_hash = generate_hash(JSON.stringify(newScenario));
-    newScenario.measures = {};
+    newScenario.measures = { ventilation: {} };
     newScenario.fabric.measures = {};
     newScenario.created_from = id;
     for (const elem of newScenario.fabric.elements) {

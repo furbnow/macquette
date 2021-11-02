@@ -73,6 +73,8 @@ export interface ScenarioInputs {
     altitude: number | null;
     use_custom_occupancy: boolean;
     custom_occupancy: number | null;
+    use_num_of_floors_override: boolean;
+    num_of_floors_override: number | null;
 }
 export interface ScenarioOutputs {
     readonly volume: number;
@@ -83,6 +85,7 @@ export interface ScenarioOutputs {
     readonly primary_energy_use_m2: number;
     readonly kgco2perm2: number;
     readonly kwhdpp: number;
+    readonly num_of_floors: number;
 }
 
 //
@@ -140,7 +143,7 @@ export interface WaterHeating {
     Vd_average: number;
 }
 export interface Fabric {
-    measures: Measures;
+    measures: Record<never, never>;
     elements: FabricElement[];
     total_floor_WK: number;
     total_window_WK: number;
@@ -152,17 +155,69 @@ export interface FabricElement {
     cost_total?: number;
 }
 
-import { GenerationMeasure } from './Library';
+import {
+    GenerationMeasure,
+    VentilationSystemMeasure,
+    DraughtProofingMeasure,
+    ClothesDryingItem,
+    IntentionalVentMeasure,
+    ExtractVentilationMeasure,
+} from './Library';
 export interface Measures {
     PV_generation?: {
         measure: GenerationMeasure & { quantity: number; cost_total: number };
         original_annual_generation: number | null;
     };
+    ventilation: {
+        ventilation_systems_measures?: {
+            measure: VentilationSystemMeasure;
+        };
+        draught_proofing_measures?: {
+            measure: DraughtProofingMeasure;
+        };
+        extract_ventilation_points?: ExtractVentilationMeasure[];
+        clothes_drying_facilities?: Record<
+            number,
+            {
+                measure: ClothesDryingItem & { id: number };
+            }
+        >;
+        intentional_vents_and_flues_measures?: Record<
+            number,
+            {
+                measure: IntentionalVentMeasure & { id: number };
+            }
+        >;
+    };
 }
 
-export interface Ventilation {
+import { VentilationSystem, IntentionalVent } from './Library';
+export interface Ventilation extends VentilationSystem {
+    // TODO: ventilation_tag, _name and system_specific_fan_power are all duplicates
+    // of stuff in VentilationSystem for reasons better known to someone else.
+    ventilation_tag: string;
+    ventilation_name: string;
+    system_specific_fan_power: string;
     average_ventilation_WK: number;
     average_infiltration_WK: number;
+    infiltration_rate_incorp_shelter_factor: number;
+    number_of_sides_sheltered: number | null;
+    air_permeability_test: boolean;
+    air_permeability_value: number | null;
+    dwelling_construction: VentilationDwellingConstruction | null;
+    suspended_wooden_floor: VentilationSuspendedWoodenFloor | null;
+    percentage_draught_proofed: number | null;
+    draught_lobby: boolean;
+    IVF: (IntentionalVent & { id: number; location: string })[];
+    CDF: (ClothesDryingItem & { id: number })[];
+    EVP: {
+        id: number;
+        tag: string;
+        name: string;
+        type: string;
+        ventilation_rate: string;
+        location: string;
+    }[];
 }
 
 export interface Generation {
@@ -231,3 +286,6 @@ export interface SolarHotWaterOutputs {
 export type SolarHotWaterOrientation = 0 | 1 | 2 | 3 | 4;
 export type SolarHotWaterPump = 'PV' | 'electric';
 export type SolarHotWaterOvershading = 'HEAVY' | 'SIGNIFICANT' | 'MODEST' | 'NONE';
+
+export type VentilationDwellingConstruction = 'timberframe' | 'masonry';
+export type VentilationSuspendedWoodenFloor = 'unsealed' | 'sealed' | '0';

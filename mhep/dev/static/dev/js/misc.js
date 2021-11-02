@@ -928,6 +928,7 @@ if (typeof module !== 'undefined') {
     module.exports = {
         diff,
         extract_assessment_inputs,
-        get_scenario_ids
+        get_scenario_ids,
+        add_quantity_and_cost_to_measure
     };
 }

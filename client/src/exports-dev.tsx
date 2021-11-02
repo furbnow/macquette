@@ -20,6 +20,7 @@ import Setup from './ui/views/Setup';
 import Sidebar from './ui/views/Sidebar';
 import SolarHotWater from './ui/views/SolarHotWater';
 import ImageGallery from './ui/views/ImageGallery';
+import Ventilation from './ui/views/Ventilation';
 
 import TargetBar from './ui/components/TargetBar';
 import Graphics from './ui/components/Graphics';
@@ -45,6 +46,7 @@ window.Macquette = {
         Sidebar,
         SolarHotWater,
         ImageGallery,
+        Ventilation,
     },
     lib: {
         blank,

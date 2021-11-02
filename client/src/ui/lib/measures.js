@@ -130,3 +130,29 @@ export function formatMeasures(measures) {
     formatted.unshift(header) // prepend header row
     return formatted
 }
+
+export function addQuantityAndCostToMeasure(measure) {
+    // ares of EWI is bigger than the actual area of the wall
+    if (measure.cost_units == 'sqm') {
+        if (measure.EWI != undefined && measure.EWI == true) {
+            measure.area != undefined ? measure.quantity = 1.15 * measure.area : measure.quantity = 0;
+        } else {
+            // We use measure.area not measure.netarea (See issue 382: https://github.com/emoncms/MyHomeEnergyPlanner/issues/382#event-1681266801)
+            measure.area != undefined ? measure.quantity = 1.0 * measure.area : measure.quantity = 0;
+        }
+    } else if (measure.cost_units == 'ln m') {
+        measure.perimeter != undefined ? measure.quantity = 1.0 * measure.perimeter : measure.quantity = 0;
+    } else if (measure.cost_units == 'unit') {
+        measure.quantity = 1;
+    } else {
+        measure.quantity = 1;
+        measure.cost_units = 'unit';
+    }
+    if (measure.min_cost != undefined) {
+        measure.cost_total = 1.0 * measure.min_cost + 1.0 * measure.quantity * measure.cost;
+    } else {
+        measure.cost_total = 1.0 * measure.quantity * measure.cost;
+    }
+
+    measure.cost_total = 1.0 * measure.cost_total.toFixed(2);
+}
