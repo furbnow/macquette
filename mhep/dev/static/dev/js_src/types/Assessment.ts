@@ -153,7 +153,8 @@ export interface FabricElement {
 import { GenerationMeasure } from './Library';
 export interface Measures {
     PV_generation?: {
-        measure: GenerationMeasure;
+        measure: GenerationMeasure & { quantity: number; cost_total: number };
+        original_annual_generation: number | null;
     };
 }
 

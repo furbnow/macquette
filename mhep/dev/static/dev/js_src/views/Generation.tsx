@@ -2,7 +2,7 @@ import React, { useState, useContext, ReactElement } from 'react';
 
 import { AppContext } from '../context/AppContext';
 import { NewAssessment } from '../types/Assessment';
-import { Library, GenerationMeasuresLibrary, GenerationMeasure } from '../types/Library';
+import { Library, GenerationMeasuresLibrary } from '../types/Library';
 
 import { getScenario, scenarioIsBaseline } from '../lib/scenarios';
 
@@ -11,140 +11,8 @@ import FormRow from '../components/FormRow';
 import NumberField from '../components/NumberField';
 import Result from '../components/Result';
 import SelectField from '../components/SelectField';
-import Dialog from '../components/Dialog';
 
-interface GenerationMeasureSelectorProps {
-    onSelect: (tag: string, measure: GenerationMeasure) => void;
-    onClose: () => void;
-}
-
-const GenerationMeasureSelector = ({
-    onSelect,
-    onClose,
-}: GenerationMeasureSelectorProps): ReactElement => {
-    const { libraries } = useContext(AppContext);
-
-    const [generationLibs] = useState(
-        libraries.filter<GenerationMeasuresLibrary>(
-            (lib): lib is GenerationMeasuresLibrary => lib.type === 'generation_measures'
-        )
-    );
-    const [selectedLibIdx, setSelectedLibIdx] = useState(0);
-    const selectedLib = generationLibs[selectedLibIdx];
-    const [selectedItemTag, setSelectedItemTag] = useState(
-        Object.keys(selectedLib.data)[0]
-    );
-    const selectedItem = selectedLib.data[selectedItemTag];
-
-    const headings = [
-        { value: selectedItemTag, title: 'Tag' },
-        { value: selectedItem.name, title: 'Name' },
-        { value: selectedItem.description, title: 'Description' },
-        { value: `${selectedItem.kWp} kWp`, title: 'Peak power' },
-        { value: selectedItem.performance, title: 'Performance' },
-        { value: selectedItem.benefits, title: 'Benefits' },
-        { value: `£${selectedItem.cost} per ${selectedItem.cost_units}`, title: 'Cost' },
-        { value: selectedItem.who_by, title: 'Who by' },
-        { value: selectedItem.disruption, title: 'Disruption' },
-        { value: selectedItem.associated_work, title: 'Associated work' },
-        { value: selectedItem.key_risks, title: 'Key risks' },
-        { value: selectedItem.notes, title: 'Notes' },
-        { value: selectedItem.maintenance, title: 'Maintenance' },
-    ];
-
-    return (
-        <Dialog onClose={onClose} headerId="generation_measure_header">
-            <div className="dialog-header">
-                <h4 className="mt-0 mb-15" id="generation_measure_header">
-                    Select generation measure
-                </h4>
-
-                <div className="d-flex">
-                    <div>
-                        <label htmlFor="field_library_item" className="small-caps">
-                            Item
-                        </label>
-                        <SelectField
-                            id="library_item"
-                            options={Object.entries(selectedLib.data).map(
-                                ([tag, value]) => ({
-                                    value: tag,
-                                    display: value.name,
-                                })
-                            )}
-                            value={selectedItemTag}
-                            setValue={(tag) => {
-                                setSelectedItemTag(tag);
-                            }}
-                            updateModel={false}
-                            // WAI-ARIA-PRACTICES tells us to use autofocus here so...
-                            // https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html
-                            // eslint-disable-next-line jsx-a11y/no-autofocus
-                            autoFocus={true}
-                        />
-                    </div>
-                    <div className="ml-30">
-                        <label htmlFor="field_library_select" className="small-caps">
-                            From library
-                        </label>
-                        {generationLibs.length > 1 ? (
-                            <SelectField
-                                id="library_select"
-                                options={generationLibs.map((lib, i) => ({
-                                    value: i,
-                                    display: lib.name,
-                                }))}
-                                value={selectedLibIdx}
-                                setValue={(idx) => {
-                                    setSelectedLibIdx(idx);
-                                }}
-                                updateModel={false}
-                            />
-                        ) : (
-                            <div
-                                style={{
-                                    height: 30,
-                                    verticalAlign: 'middle',
-                                    display: 'table-cell',
-                                }}
-                            >
-                                {selectedLib.name}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            <div className="dialog-body">
-                <table className="table">
-                    <tbody>
-                        {headings.map((h, i) => (
-                            <tr key={i}>
-                                <th className="text-left">{h.title}</th>
-                                <td>{h.value}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            <div className="dialog-footer text-right">
-                <button className="btn mr-15" onClick={() => onClose()}>
-                    Cancel
-                </button>
-                <button
-                    className="btn btn-primary"
-                    onClick={() => {
-                        onSelect(selectedItemTag, selectedItem);
-                        onClose();
-                    }}
-                >
-                    Apply measure
-                </button>
-            </div>
-        </Dialog>
-    );
-};
+import { SelectGenerationMeasure } from '../components/SelectLibrary';
 
 /**
  * Check if there are any generation measures that can be applied.
@@ -237,14 +105,23 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
             )}
 
             {showMeasuresDialogue && (
-                <GenerationMeasureSelector
+                <SelectGenerationMeasure
+                    currentSelectedItemTag={null}
                     onSelect={(tag, measure) => {
-                        measure.tag = tag;
-                        measure.quantity = measure.kWp;
-                        measure.cost_total = measure.cost * measure.kWp;
-                        scenario.measures.PV_generation = { measure };
+                        scenario.measures.PV_generation = {
+                            measure: {
+                                ...measure,
+                                quantity: parseFloat(measure.kWp),
+                                cost_total:
+                                    parseFloat(measure.cost) * parseFloat(measure.kWp),
+                            },
+                            // TODO: this is unused.  Delete it.
+                            original_annual_generation: 0,
+                        };
 
-                        scenario.generation.solarpv_kwp_installed = measure.kWp;
+                        scenario.generation.solarpv_kwp_installed = parseFloat(
+                            measure.kWp
+                        );
                         scenario.generation.use_PV_calculator = true;
 
                         update();
