@@ -9,26 +9,22 @@ help:
 
 .PHONY: dev
 dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for changes)
-	npx concurrently -n "server,js    " -c green "make server" "make js"
+	./client/node_modules/.bin/concurrently -n "server,js    " -c green "make server" "make js"
 
 .PHONY: js
 js:  ## Compile JS (one off, for development)
-	npx esbuild \
-		mhep/dev/static/dev/js_src/exports.tsx \
-		--outdir=mhep/dev/static/dev/js_generated/ \
+	./client/node_modules/.bin/esbuild \
+		client/exports.tsx \
+		--outdir=../mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
 		--sourcemap --bundle --watch
 
-.PHONY: ts-check
-ts-check:
-	npx tsc --noEmit --allowJs -p mhep/dev/static/dev/tsconfig.json -w
-
 .PHONY: js-prod
 js-prod:  ## Compile JS (one off, for production)
-	npx esbuild \
-		mhep/dev/static/dev/js_src/exports.tsx \
-		--outdir=mhep/dev/static/dev/js_generated/ \
+	./client/node_modules/.bin/esbuild \
+		client/exports.tsx \
+		--outdir=../mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
 		--sourcemap --bundle
@@ -94,13 +90,32 @@ test-python:  ## Run Python tests
 	flake8 mhep
 
 .PHONY: test-js
-test-js:  ## Run non-browser JS tests
-	npx jest
-	npx tsc --noEmit --allowJs -p mhep/dev/static/dev/tsconfig.json
+test-js: check-types lint-js lint-js-legacy  ## Run non-browser JS tests
+	cd client && ./node_modules/.bin/jest
+
+.PHONY: check-types
+check-types:  ## Check types with tsc (without emitting)
+	./client/node_modules/.bin/tsc --noEmit --allowJs -p client/tsconfig.json
 
 .PHONY: test-js-watch
 test-js-watch:  ## Run non-browser JS tests (watch mode)
-	npx jest --watch
+	cd client && ./node_modules/.bin/jest --watch
+
+.PHONY: lint-js
+lint-js:  ## Runs eslint with a separate config in the 'client' directory
+	cd client && ./node_modules/.bin/eslint \
+		--fix \
+		--config .eslintrc.js \
+		--ignore-path .eslintignore \
+		.
+
+.PHONY: lint-js-legacy
+lint-js-legacy:  ## Runs eslint with a separate config on legacy (non-compiled) JS
+	./client/node_modules/.bin/eslint \
+		--fix \
+		--config mhep/v2/static/v2/js/.eslintrc.json \
+		--ignore-path mhep/v2/static/v2/js/.eslintignore \
+		mhep/v2/static/v2/
 
 .PHONY: docs
 docs:  ## Build HTML docs (for other options run make in docs/)

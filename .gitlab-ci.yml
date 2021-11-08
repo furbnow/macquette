@@ -6,7 +6,7 @@ stages:
 python-test:
     stage: test
     needs: []
-    image: python:3.7-buster
+    image: python:3.7-slim
     services:
         - postgres:11
     variables:
@@ -42,7 +42,7 @@ python-test:
 js-test:
     stage: test
     needs: []
-    image: carboncoop/python-plus-node:3.7-and-14.15
+    image: node:14
     cache:
         key: js-test
         when: 'always'
@@ -50,14 +50,14 @@ js-test:
             - ${CI_PROJECT_DIR}/node_modules
 
     before_script:
-        - npm install
+        - (cd client && yarn install)
     script:
         - make test-js
 
 pre-commit:
     stage: test
     needs: []
-    image: carboncoop/python-plus-node:3.7-and-14.15
+    image: python:3.7
     variables:
         PIP_CACHE_DIR: '$CI_PROJECT_DIR/.cache/pip'
         PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
@@ -69,8 +69,6 @@ pre-commit:
             - ${PRE_COMMIT_HOME}
             - ${CI_PROJECT_DIR}/node_modules
 
-    before_script:
-        - npm install
     script:
         - python -V
         - pip install pre-commit==2.11.1
