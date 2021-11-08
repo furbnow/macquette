@@ -2,9 +2,22 @@
 
 Date: 2021-11-02
 
+# Strategy
+
 - Fix abstraction boundaries as they currently are
   - Libraries <-> UI
   - UI <-> model (via global `p` object)
+
+# Plan
+
+- Come up with an acceptance testing framework
+  - Use existing live data to test against
+  - Avoid exposing customer data to public CI
+  - Fetch the data, chuck it in an S3 bucket with expected output
+  - Where they live?
+  - How we want them to run?
+
+
 - Write acceptance tests on those boundaries
 - Refactor modules internally
 - Use existing customer data in shadow CI system (which exists on the `p` object boundary)
@@ -35,3 +48,12 @@ for (const scenarioName of union(keys of data, keys of masters)) {
   expect(data[scenarioName]).to.equal(expected[scenarioName])
 }
 ```
+
+# Goals
+
+* Merge in smaller increments with confidence to main
+
+
+# Non-goals
+
+*
