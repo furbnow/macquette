@@ -15,7 +15,7 @@ dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for c
 js:  ## Compile JS (one off, for development)
 	./client/node_modules/.bin/esbuild \
 		client/exports.tsx \
-		--outdir=../mhep/dev/static/dev/js_generated/ \
+		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
 		--sourcemap --bundle --watch
@@ -24,7 +24,7 @@ js:  ## Compile JS (one off, for development)
 js-prod:  ## Compile JS (one off, for production)
 	./client/node_modules/.bin/esbuild \
 		client/exports.tsx \
-		--outdir=../mhep/dev/static/dev/js_generated/ \
+		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
 		--sourcemap --bundle
