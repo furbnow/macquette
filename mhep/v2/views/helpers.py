@@ -51,7 +51,7 @@ def find_app_static_files():
             # in production when Django loads up where there is a dotfile in the static
             # source directory, but collectstatic doesn't have it in its manifest
             if fn.startswith("."):
-                pass
+                continue
 
             full_filename = join(root, fn)
             start = len(static_dir) + 1
