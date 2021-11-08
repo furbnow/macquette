@@ -1,28 +1,28 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 
-import { AppContext } from './context/AppContext';
+import { AppContext } from './ui/context/AppContext';
 
-import Assessment from './Assessment';
+import Assessment from './ui/Assessment';
 
-import blank from './lib/blank';
-import { getScenarioList } from './lib/scenarios';
-import { getScenarioMeasures } from './lib/measures';
+import blank from './ui/lib/blank';
+import { getScenarioList } from './ui/lib/scenarios';
+import { getScenarioMeasures } from './ui/lib/measures';
 
-import Commentary from './views/Commentary';
-import CurrentEnergy from './views/CurrentEnergy';
-import DwellingData from './views/DwellingData';
-import Generation from './views/Generation';
-import PageHeader from './views/PageHeader';
-import Report from './views/Report';
-import ScopeOfWorks from './views/ScopeOfWorks';
-import Setup from './views/Setup';
-import Sidebar from './views/Sidebar';
-import SolarHotWater from './views/SolarHotWater';
-import ImageGallery from './views/ImageGallery';
+import Commentary from './ui/views/Commentary';
+import CurrentEnergy from './ui/views/CurrentEnergy';
+import DwellingData from './ui/views/DwellingData';
+import Generation from './ui/views/Generation';
+import PageHeader from './ui/views/PageHeader';
+import Report from './ui/views/Report';
+import ScopeOfWorks from './ui/views/ScopeOfWorks';
+import Setup from './ui/views/Setup';
+import Sidebar from './ui/views/Sidebar';
+import SolarHotWater from './ui/views/SolarHotWater';
+import ImageGallery from './ui/views/ImageGallery';
 
-import TargetBar from './components/TargetBar';
-import Graphics from './components/Graphics';
+import TargetBar from './ui/components/TargetBar';
+import Graphics from './ui/components/Graphics';
 
 declare global {
     interface Window {
