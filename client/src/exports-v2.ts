@@ -1,5 +1,5 @@
 import { datasets } from './model/datasets';
-import { calcRun } from './model/openBEM';
+import { calcRun } from './model/model';
 
 declare global {
     interface Window {

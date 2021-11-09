@@ -1,0 +1,1542 @@
+{
+    "master": {
+        "LAC": {
+            "L": 1,
+            "C1": 0.5,
+            "C2": 1.433,
+            "EA": 2096.4943207908623,
+            "EB": 603.1590565393709,
+            "EC": 1404.4117647058822,
+            "EL": 432.1634640104593,
+            "GC": 1404.4117647058822,
+            "LLE": 1,
+            "EC_monthly": 117.03431372549018,
+            "fuels_cooking": [
+                {
+                    "fuel": "Standard Tariff",
+                    "demand": 1404.4117647058822,
+                    "fraction": 1,
+                    "fuel_input": 1404.4117647058822,
+                    "system_efficiency": 1,
+                    "fuel_input_monthly": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ],
+            "fuels_lighting": [
+                {
+                    "fuel": "Standard Tariff",
+                    "demand": 431.53204018554743,
+                    "fraction": 1,
+                    "fuel_input": 431.53204018554743,
+                    "system_efficiency": 1,
+                    "fuel_input_monthly": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ],
+            "fuels_appliances": [
+                {
+                    "fuel": "Standard Tariff",
+                    "demand": 2096.4943207908623,
+                    "fraction": 1,
+                    "fuel_input": 2096.4943207908623,
+                    "system_efficiency": 1,
+                    "fuel_input_monthly": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ],
+            "energy_efficient_cooking": false,
+            "energy_efficient_appliances": false,
+            "reduced_heat_gains_lighting": false
+        },
+        "SHW": {
+            "Qs": 0,
+            "a": null,
+            "collector_performance_ratio": null,
+            "annual_solar": null,
+            "solar_energy_available": null,
+            "solar_load_ratio": null,
+            "utilisation_factor": 0,
+            "collector_performance_factor": null,
+            "volume_ratio": null,
+            "f2": null,
+            "Qs_monthly": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "fuels": {
+            "Bulk LPG": {
+                "SAP_code": 2,
+                "category": "Gas",
+                "fuelcost": 6.59,
+                "co2factor": 0.241,
+                "standingcharge": 58,
+                "primaryenergyfactor": 1.141
+            },
+            "Mains Gas": {
+                "SAP_code": 1,
+                "category": "Gas",
+                "fuelcost": 3.93,
+                "co2factor": 0.21,
+                "standingcharge": 88,
+                "primaryenergyfactor": 1.13
+            },
+            "Wood Logs": {
+                "SAP_code": 20,
+                "category": "Solid fuel",
+                "fuelcost": 4.65,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.046
+            },
+            "Anthracite": {
+                "SAP_code": 15,
+                "category": "Solid fuel",
+                "fuelcost": 4.14,
+                "co2factor": 0.395,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.064
+            },
+            "House Coal": {
+                "SAP_code": 11,
+                "category": "Solid fuel",
+                "fuelcost": 4.18,
+                "co2factor": 0.395,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.064
+            },
+            "Wood chips": {
+                "SAP_code": 21,
+                "category": "Solid fuel",
+                "fuelcost": 3.48,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.046
+            },
+            "generation": {
+                "SAP_code": 0,
+                "category": "Generation",
+                "fuelcost": 0,
+                "co2factor": 0.136,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.501
+            },
+            "Heating Oil": {
+                "SAP_code": 4,
+                "category": "Oil",
+                "fuelcost": 4.35,
+                "co2factor": 0.298,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.18
+            },
+            "Bottled LPG ": {
+                "SAP_code": 3,
+                "category": "Gas",
+                "fuelcost": 7.85,
+                "co2factor": 0.241,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.141
+            },
+            "Standard Tariff": {
+                "SAP_code": 30,
+                "category": "Electricity",
+                "fuelcost": 17.56,
+                "co2factor": 0.136,
+                "standingcharge": 72,
+                "primaryenergyfactor": 1.501
+            },
+            "Dual Fuel Appliance": {
+                "SAP_code": 10,
+                "category": "Solid fuel",
+                "fuelcost": 4.53,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.049
+            },
+            "24-hour heating tariff": {
+                "SAP_code": 35,
+                "category": "Electricity",
+                "fuelcost": 10.38,
+                "co2factor": 0.136,
+                "standingcharge": 31,
+                "primaryenergyfactor": 1.501
+            },
+            "7 Hour tariff - Low Rate": {
+                "SAP_code": 31,
+                "category": "Electricity",
+                "fuelcost": 8.13,
+                "co2factor": 0.136,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.501
+            },
+            "10-hour tariff - Low Rate": {
+                "SAP_code": 33,
+                "category": "Electricity",
+                "fuelcost": 10.68,
+                "co2factor": 0.136,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.501
+            },
+            "7-Hour tariff - High Rate": {
+                "SAP_code": 32,
+                "category": "Electricity",
+                "fuelcost": 20.72,
+                "co2factor": 0.136,
+                "standingcharge": 8,
+                "primaryenergyfactor": 1.501
+            },
+            "10-hour tariff - High Rate": {
+                "SAP_code": 34,
+                "category": "Electricity",
+                "fuelcost": 18.71,
+                "co2factor": 0.136,
+                "standingcharge": 7,
+                "primaryenergyfactor": 1.501
+            },
+            "Manufactured smokeless fuel": {
+                "SAP_code": 12,
+                "category": "Solid fuel",
+                "fuelcost": 5.17,
+                "co2factor": 0.366,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.261
+            },
+            "Wood pellets main heating bulk supply": {
+                "SAP_code": 23,
+                "category": "Solid fuel",
+                "fuelcost": 5.51,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.325
+            },
+            "Wood Pellets secondary heating in bags": {
+                "SAP_code": 22,
+                "category": "Solid fuel",
+                "fuelcost": 6.09,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.325
+            }
+        },
+        "fabric": {
+            "elements": [],
+            "global_TMP": false,
+            "global_TMP_value": 250,
+            "thermal_bridging_yvalue": 0.15,
+            "total_heat_loss_WK": 0,
+            "total_thermal_capacity": 0,
+            "total_floor_WK": 0,
+            "total_wall_WK": 0,
+            "total_roof_WK": 0,
+            "total_window_WK": 0,
+            "total_party_wall_WK": 0,
+            "annual_solar_gain": 0,
+            "total_external_area": 0,
+            "total_wall_area": 0,
+            "total_floor_area": 0,
+            "total_roof_area": 0,
+            "total_window_area": 0,
+            "total_party_wall_area": 0,
+            "thermal_bridging_heat_loss": 0,
+            "fabric_heat_loss_WK": 0,
+            "annual_solar_gain_kwh": 0
+        },
+        "floors": [
+            {
+                "area": 13,
+                "name": "Ground Floor",
+                "height": 2.5,
+                "volume": 32.5
+            },
+            {
+                "area": 32,
+                "name": "1st Floor",
+                "height": 3,
+                "volume": 96
+            }
+        ],
+        "region": 10,
+        "altitude": 0,
+        "generation": {
+            "systems": {},
+            "wind_FIT": 0,
+            "hydro_FIT": 0,
+            "solar_FIT": 0,
+            "total_CO2": 0,
+            "total_exported": 0,
+            "wind_annual_kwh": 0,
+            "wind_export_FIT": 0,
+            "hydro_annual_kwh": 0,
+            "hydro_export_FIT": 0,
+            "solar_annual_kwh": 0,
+            "solar_export_FIT": 0,
+            "total_generation": 0,
+            "total_used_onsite": 0,
+            "use_PV_calculator": false,
+            "solarpv_inclination": 35,
+            "solarpv_orientation": 4,
+            "solarpv_overshading": 1,
+            "total_energy_income": 0,
+            "total_primaryenergy": 0,
+            "solarpv_kwp_installed": 0,
+            "wind_fraction_used_onsite": 0.5,
+            "hydro_fraction_used_onsite": 0.5,
+            "solar_fraction_used_onsite": 0.5
+        },
+        "temperature": {
+            "target": 21,
+            "hours_off": {
+                "weekday": [
+                    7,
+                    8
+                ],
+                "weekend": [
+                    8
+                ]
+            },
+            "living_area": 0,
+            "responsiveness": 1,
+            "temperature_adjustment": 0
+        },
+        "ventilation": {
+            "CDF": [],
+            "EVP": [],
+            "IVF": [],
+            "draught_lobby": false,
+            "ventilation_name": "Natural ventilation",
+            "ventilation_type": "NV",
+            "air_permeability_test": false,
+            "dwelling_construction": "timberframe",
+            "air_permeability_value": 0,
+            "suspended_wooden_floor": 0,
+            "system_air_change_rate": 0.5,
+            "number_of_sides_sheltered": 0,
+            "system_specific_fan_power": 3,
+            "percentage_draught_proofed": 0,
+            "balanced_heat_recovery_efficiency": 65,
+            "structural_infiltration": 0.6499999999999999,
+            "infiltration_chimeneyes_fires_fans": 0,
+            "structural_infiltration_from_test": 0,
+            "infiltration_rate": 0.6499999999999999,
+            "EVP_air_changes": 0,
+            "infiltration_rate_incorp_shelter_factor": 0.6499999999999999,
+            "windfactor": [
+                1.325,
+                1.3,
+                1.25,
+                1.075,
+                1.05,
+                0.975,
+                0.9,
+                0.9,
+                1.025,
+                1.075,
+                1.15,
+                1.2
+            ],
+            "adjusted_infiltration": [
+                0.8612499999999998,
+                0.8449999999999999,
+                0.8124999999999999,
+                0.6987499999999999,
+                0.6824999999999999,
+                0.6337499999999999,
+                0.585,
+                0.585,
+                0.6662499999999999,
+                0.6987499999999999,
+                0.7474999999999998,
+                0.7799999999999999
+            ],
+            "adjusted_EVP_air_changes": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "average_WK": 30.376998437499996,
+            "average_infiltration_WK": 30.376998437499996,
+            "average_ventilation_WK": 0,
+            "effective_air_change_rate": [
+                0.8612499999999998,
+                0.8449999999999999,
+                0.8124999999999999,
+                0.6987499999999999,
+                0.6824999999999999,
+                0.6337499999999999,
+                0.585,
+                0.585,
+                0.6662499999999999,
+                0.6987499999999999,
+                0.7474999999999998,
+                0.7799999999999999
+            ],
+            "infiltration_WK": [
+                36.521306249999995,
+                35.832224999999994,
+                34.4540625,
+                29.630493749999996,
+                28.941412499999995,
+                26.87416875,
+                24.806925,
+                24.806925,
+                28.252331249999997,
+                29.630493749999996,
+                31.697737499999995,
+                33.0759
+            ],
+            "ventilation_WK": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "SAP_ventilation_WK": [
+                36.521306249999995,
+                35.832224999999994,
+                34.4540625,
+                29.630493749999996,
+                28.941412499999995,
+                26.87416875,
+                24.806925,
+                24.806925,
+                28.252331249999997,
+                29.630493749999996,
+                31.697737499999995,
+                33.0759
+            ]
+        },
+        "appliancelist": {
+            "list": [
+                {
+                    "fuel": "Standard Tariff",
+                    "name": "LED Light",
+                    "hours": 12,
+                    "power": 6,
+                    "category": "lighting",
+                    "efficiency": 1,
+                    "energy": 72,
+                    "fuel_input": 72
+                }
+            ],
+            "lighting": {
+                "totalwh": 72,
+                "total_fuel_input": 72,
+                "monthlykwh": [
+                    2.232,
+                    2.016,
+                    2.232,
+                    2.16,
+                    2.232,
+                    2.16,
+                    2.232,
+                    2.232,
+                    2.16,
+                    2.232,
+                    2.16,
+                    2.232
+                ],
+                "gains_W_monthly": [
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3,
+                    3
+                ],
+                "annualkwh": 26.28,
+                "annual_fuel_input_kwh": 26.28,
+                "gains_W": 3
+            },
+            "cooking": {
+                "totalwh": 0,
+                "total_fuel_input": 0,
+                "monthlykwh": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "gains_W_monthly": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "annualkwh": 0,
+                "annual_fuel_input_kwh": 0,
+                "gains_W": 0
+            },
+            "appliances": {
+                "totalwh": 0,
+                "total_fuel_input": 0,
+                "monthlykwh": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "gains_W_monthly": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "annualkwh": 0,
+                "annual_fuel_input_kwh": 0,
+                "gains_W": 0
+            }
+        },
+        "currentenergy": {
+            "generation": {
+                "annual_CO2": 0,
+                "primaryenergy": 0,
+                "annual_savings": 0,
+                "annual_FIT_income": 0,
+                "annual_generation": 0,
+                "fraction_used_onsite": 0.25
+            },
+            "use_by_fuel": {},
+            "primaryenergy_annual_kwh": 0,
+            "total_co2": 0,
+            "total_cost": 0,
+            "annual_net_cost": 0,
+            "primaryenergy_annual_kwhm2": 0,
+            "total_co2m2": 0,
+            "total_costm2": 0,
+            "energyuseperperson": 0,
+            "enduse_annual_kwh": 0,
+            "enduse_annual_kwhm2": 0
+        },
+        "scenario_name": "Baseline",
+        "space_heating": {
+            "heating_off_summer": true,
+            "use_utilfactor_forgains": true,
+            "delta_T": [
+                13.254151858551484,
+                12.857226857430591,
+                11.818323281040152,
+                10.382000037249423,
+                8.435918944931467,
+                6.246190989546516,
+                4.66924529795714,
+                4.842621002344137,
+                6.468528166879594,
+                9.043615601200623,
+                11.489257563800088,
+                13.517570378600496
+            ],
+            "total_losses": [
+                484.0589391101654,
+                460.7030456314958,
+                407.18924897016245,
+                307.6237872162188,
+                244.14741000182633,
+                0,
+                0,
+                0,
+                0,
+                267.9667955487775,
+                364.18347032722465,
+                447.1058060855521
+            ],
+            "total_gains": [
+                502.86138562459394,
+                497.23637560509326,
+                476.53468112588064,
+                445.93240133864083,
+                415.23583437756884,
+                0,
+                0,
+                0,
+                0,
+                433.3195979937848,
+                466.4194363611067,
+                490.83525810801257
+            ],
+            "utilisation_factor": [
+                0.490474182101195,
+                0.4809312953670908,
+                0.4607652174014012,
+                0.40822939513564965,
+                0.3702663241619242,
+                1,
+                1,
+                1,
+                1,
+                0.3821075072310407,
+                0.43845677351568857,
+                0.47668859307077843
+            ],
+            "useful_gains": [
+                246.6405268244963,
+                239.1365342233948,
+                219.5706059482738,
+                182.04271446986112,
+                153.74784605529197,
+                0,
+                0,
+                0,
+                0,
+                165.57467142376177,
+                204.5047611718969,
+                233.9755686170409
+            ],
+            "heat_demand": [
+                237.4184122856691,
+                221.566511408101,
+                187.61864302188866,
+                125.58107274635765,
+                90.39956394653436,
+                0,
+                0,
+                0,
+                0,
+                102.39212412501573,
+                159.67870915532777,
+                213.1302374685112
+            ],
+            "cooling_demand": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "heat_demand_kwh": [
+                176.6392987405378,
+                148.8926956662439,
+                139.58827040828515,
+                90.41837237737751,
+                67.25727557622157,
+                0,
+                0,
+                0,
+                0,
+                76.17974034901171,
+                114.96867059183599,
+                158.56889667657236
+            ],
+            "cooling_demand_kwh": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "annual_heating_demand": 972.513220386086,
+            "annual_cooling_demand": 0,
+            "annual_heating_demand_m2": 21.611404897468578,
+            "annual_cooling_demand_m2": 0
+        },
+        "water_heating": {
+            "Vc": 0,
+            "water_usage": [],
+            "pipework_insulation": "Fully insulated primary pipework",
+            "solar_water_heating": false,
+            "annual_energy_content": 1746.4622204333332,
+            "hot_water_control_type": "no_cylinder_thermostat",
+            "contains_dedicated_solar_storage_or_WWHRS": 0,
+            "combi_loss": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "Vd_average": 111,
+            "monthly_energy_content": [
+                181.07077266666667,
+                158.3656536,
+                163.4191691,
+                142.47279200000003,
+                136.7060361333333,
+                117.96691499999999,
+                109.313688,
+                125.4390551333333,
+                126.937195,
+                147.9330633,
+                161.48050600000002,
+                175.3573745
+            ],
+            "distribution_loss": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "energy_lost_from_water_storage": 0,
+            "monthly_storage_loss": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "primary_circuit_loss": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "total_heat_required": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "hot_water_heater_output": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "annual_waterheating_demand": 0,
+            "heat_gains_from_water_heating": [
+                38.477539191666665,
+                33.65270139,
+                34.72657343375,
+                30.275468300000004,
+                29.050032678333324,
+                25.067969437499997,
+                23.2291587,
+                26.655799215833326,
+                26.9741539375,
+                31.435775951249997,
+                34.31460752500001,
+                37.26344208125
+            ]
+        },
+        "use_generation": 1,
+        "heating_systems": [],
+        "custom_occupancy": 3,
+        "applianceCarbonCoop": {
+            "list": [],
+            "energy_demand_total": {
+                "appliances": 0,
+                "cooking": 0,
+                "total": 0
+            },
+            "energy_demand_monthly": {
+                "appliances": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "cooking": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "total": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "energy_demand_by_type_of_fuel": {
+                "cooking": {},
+                "appliances": {},
+                "total": {}
+            },
+            "gains_W": [],
+            "gains_W_monthly": {
+                "Appliances": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "Cooking": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "fuel_input_total": {
+                "appliances": 0,
+                "cooking": 0
+            }
+        },
+        "LAC_calculation_type": "SAP",
+        "use_custom_occupancy": 1,
+        "num_of_floors": 2,
+        "TFA": 45,
+        "volume": 128.5,
+        "occupancy": 3,
+        "internal_temperature": [
+            17.254151858551484,
+            17.45722685743059,
+            17.918323281040152,
+            18.682000037249423,
+            19.335918944931468,
+            20.046190989546517,
+            20.46924529795714,
+            20.442621002344136,
+            19.968528166879594,
+            19.143615601200622,
+            18.189257563800087,
+            17.317570378600497
+        ],
+        "external_temperature": [
+            4,
+            4.6,
+            6.1,
+            8.3,
+            10.9,
+            13.8,
+            15.8,
+            15.6,
+            13.5,
+            10.1,
+            6.7,
+            3.8
+        ],
+        "losses_WK": {
+            "fabric": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "ventilation": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "infiltration": [
+                36.521306249999995,
+                35.832224999999994,
+                34.4540625,
+                29.630493749999996,
+                28.941412499999995,
+                26.87416875,
+                24.806925,
+                24.806925,
+                28.252331249999997,
+                29.630493749999996,
+                31.697737499999995,
+                33.0759
+            ]
+        },
+        "gains_W": {
+            "solar": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "Lighting": [
+                61.087826078638734,
+                54.25766569258055,
+                44.125300466621226,
+                33.40568948047379,
+                24.97114384105219,
+                21.081693240962917,
+                22.779512827500636,
+                29.60967321355881,
+                39.74203843951812,
+                50.46164942566557,
+                58.89619506508717,
+                62.785645665176446
+            ],
+            "Appliances": [
+                274.0564369765108,
+                276.90028522501274,
+                269.73387873217604,
+                254.47745033038933,
+                235.21894768929454,
+                217.1186710390058,
+                205.02657489074772,
+                202.18272664224568,
+                209.34913313508244,
+                224.60556153686917,
+                243.8640641779639,
+                261.9643408282527
+            ],
+            "Cooking": [
+                56,
+                56,
+                56,
+                56,
+                56,
+                56,
+                56,
+                56,
+                56,
+                56,
+                56,
+                56
+            ],
+            "waterheating": [
+                51.71712256944444,
+                50.07842468749999,
+                46.67550192708333,
+                42.04926152777778,
+                39.04574284722221,
+                34.81662421874999,
+                31.2219875,
+                35.82768711805554,
+                37.46410269097222,
+                42.252387031249995,
+                47.65917711805557,
+                50.08527161458333
+            ],
+            "metabolic": [
+                180,
+                180,
+                180,
+                180,
+                180,
+                180,
+                180,
+                180,
+                180,
+                180,
+                180,
+                180
+            ],
+            "losses": [
+                -120,
+                -120,
+                -120,
+                -120,
+                -120,
+                -120,
+                -120,
+                -120,
+                -120,
+                -120,
+                -120,
+                -120
+            ],
+            "fans_and_pumps": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "annual_useful_gains_kWh_m2": {
+            "Internal": 26.611750939969387,
+            "Solar": 0
+        },
+        "annual_losses_kWh_m2": {
+            "fabric": 0,
+            "ventilation": 0,
+            "infiltration": 48.223155837437965
+        },
+        "energy_requirements": {
+            "lighting": {
+                "name": "Lighting",
+                "quantity": 431.53204018554743,
+                "monthly": [
+                    53.46981482647908,
+                    42.89547217107545,
+                    38.62261593784258,
+                    28.296584030518975,
+                    21.857095314991565,
+                    17.857434274698,
+                    19.938773580777028,
+                    25.91717278927971,
+                    33.66384432523888,
+                    44.168784909053166,
+                    49.88854170219149,
+                    54.95590632340151
+                ]
+            },
+            "appliances": {
+                "name": "Appliances",
+                "quantity": 2096.4943207908623,
+                "monthly": [
+                    203.897989110524,
+                    186.07699167120856,
+                    200.68200577673895,
+                    183.22376423788032,
+                    175.00289708083514,
+                    156.32544314808416,
+                    152.5397717187163,
+                    150.4239486218308,
+                    150.73137585725934,
+                    167.10653778343067,
+                    175.582126208134,
+                    194.90146957622002
+                ]
+            },
+            "cooking": {
+                "name": "Cooking",
+                "quantity": 1404.4117647058822,
+                "monthly": 117.03431372549018
+            },
+            "waterheating": {
+                "name": "Water Heating",
+                "quantity": 0,
+                "monthly": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "space_heating": {
+                "name": "Space Heating",
+                "quantity": 972.513220386086,
+                "monthly": [
+                    176.6392987405378,
+                    148.8926956662439,
+                    139.58827040828515,
+                    90.41837237737751,
+                    67.25727557622157,
+                    0,
+                    0,
+                    0,
+                    0,
+                    76.17974034901171,
+                    114.96867059183599,
+                    158.56889667657236
+                ]
+            }
+        },
+        "fuel_requirements": {
+            "lighting": {
+                "quantity": 431.53204018554743,
+                "list": [
+                    {
+                        "fuel": "Standard Tariff",
+                        "demand": 431.53204018554743,
+                        "fraction": 1,
+                        "fuel_input": 431.53204018554743,
+                        "system_efficiency": 1,
+                        "fuel_input_monthly": [
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ]
+            },
+            "cooking": {
+                "quantity": 1404.4117647058822,
+                "list": [
+                    {
+                        "fuel": "Standard Tariff",
+                        "demand": 1404.4117647058822,
+                        "fraction": 1,
+                        "fuel_input": 1404.4117647058822,
+                        "system_efficiency": 1,
+                        "fuel_input_monthly": [
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ]
+            },
+            "appliances": {
+                "quantity": 2096.4943207908623,
+                "list": [
+                    {
+                        "fuel": "Standard Tariff",
+                        "demand": 2096.4943207908623,
+                        "fraction": 1,
+                        "fuel_input": 2096.4943207908623,
+                        "system_efficiency": 1,
+                        "fuel_input_monthly": [
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ]
+            },
+            "waterheating": {
+                "quantity": 0,
+                "list": []
+            },
+            "space_heating": {
+                "quantity": 0,
+                "list": []
+            },
+            "fans_and_pumps": {
+                "quantity": 0,
+                "list": []
+            }
+        },
+        "fuel_totals": {
+            "Standard Tariff": {
+                "name": "Standard Tariff",
+                "quantity": 3932.4381256822917,
+                "annualcost": 762.5361348698103,
+                "primaryenergy": 5902.589626649119,
+                "annualco2": 534.8115850927917
+            },
+            "generation": {
+                "name": "generation",
+                "quantity": 0,
+                "annualco2": 0,
+                "primaryenergy": 0,
+                "annualcost": 0
+            }
+        },
+        "mean_internal_temperature": {
+            "u_factor_living_area": [
+                0.5525043808072354,
+                0.5416689892981537,
+                0.5186033147702906,
+                0.4576612916697289,
+                0.41313080917432154,
+                0.3321722915227738,
+                0.2559322340583203,
+                0.25881611880595734,
+                0.34485028449044947,
+                0.42704721287935443,
+                0.4928553713941219,
+                0.536834585679844
+            ],
+            "m_i_t_living_area": [
+                17.254151858551484,
+                17.45722685743059,
+                17.918323281040152,
+                18.682000037249423,
+                19.335918944931468,
+                20.046190989546517,
+                20.46924529795714,
+                20.442621002344136,
+                19.968528166879594,
+                19.143615601200622,
+                18.189257563800087,
+                17.317570378600497
+            ],
+            "t_heating_periods_rest_of_dwelling": [],
+            "u_factor_rest_of_dwelling": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "m_i_t_rest_of_dwelling": [
+                17.254151858551484,
+                17.45722685743059,
+                17.918323281040152,
+                18.682000037249423,
+                19.335918944931468,
+                20.046190989546517,
+                20.46924529795714,
+                20.442621002344136,
+                19.968528166879594,
+                19.143615601200622,
+                18.189257563800087,
+                17.317570378600497
+            ],
+            "fLA": 0,
+            "m_i_t_whole_dwelling": [
+                17.254151858551484,
+                17.45722685743059,
+                17.918323281040152,
+                18.682000037249423,
+                19.335918944931468,
+                20.046190989546517,
+                20.46924529795714,
+                20.442621002344136,
+                19.968528166879594,
+                19.143615601200622,
+                18.189257563800087,
+                17.317570378600497
+            ],
+            "m_i_t_whole_dwelling_adjusted": [
+                17.254151858551484,
+                17.45722685743059,
+                17.918323281040152,
+                18.682000037249423,
+                19.335918944931468,
+                20.046190989546517,
+                20.46924529795714,
+                20.442621002344136,
+                19.968528166879594,
+                19.143615601200622,
+                18.189257563800087,
+                17.317570378600497
+            ]
+        },
+        "total_cost": 762.5361348698103,
+        "total_income": 0,
+        "primary_energy_use": 5902.589626649119,
+        "kgco2perm2": 11.884701890950927,
+        "primary_energy_use_bills": 0,
+        "space_heating_demand_m2": 21.611404897468578,
+        "primary_energy_use_by_requirement": {},
+        "totalWK": 30.376998437499996,
+        "FEE": 25.299513479786484,
+        "fabric_total_heat_loss_WK": 0,
+        "TMP": 0,
+        "GL": 0,
+        "totalWK_monthly": [
+            36.521306249999995,
+            35.832224999999994,
+            34.4540625,
+            29.630493749999996,
+            28.941412499999995,
+            26.87416875,
+            24.806925,
+            24.806925,
+            28.252331249999997,
+            29.630493749999996,
+            31.697737499999995,
+            33.0759
+        ],
+        "HLP": [
+            0.8115845833333333,
+            0.7962716666666665,
+            0.7656458333333334,
+            0.6584554166666666,
+            0.6431424999999998,
+            0.59720375,
+            0.551265,
+            0.551265,
+            0.6278295833333333,
+            0.6584554166666666,
+            0.7043941666666665,
+            0.7350199999999999
+        ],
+        "total_internal_gains": [
+            502.86138562459394,
+            497.23637560509326,
+            476.53468112588064,
+            445.93240133864083,
+            415.23583437756884,
+            389.0169884987187,
+            375.0280752182484,
+            383.62008697386005,
+            402.55527426557273,
+            433.3195979937848,
+            466.4194363611067,
+            490.83525810801257
+        ],
+        "total_internal_and_solar_gains": [
+            502.86138562459394,
+            497.23637560509326,
+            476.53468112588064,
+            445.93240133864083,
+            415.23583437756884,
+            389.0169884987187,
+            375.0280752182484,
+            383.62008697386005,
+            402.55527426557273,
+            433.3195979937848,
+            466.4194363611067,
+            490.83525810801257
+        ],
+        "total_solar_gains": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "energy_use": 3932.4381256822917,
+        "annualco2": 534.8115850927917,
+        "energy_delivered": 3932.4381256822917,
+        "net_cost": 762.5361348698103,
+        "SAP": {
+            "total_costSAP": 147.77702625658213,
+            "annualco2SAP": 58.68835746523445,
+            "kgco2perm2SAP": 1.3041857214496546,
+            "energy_cost_deflator": 0.42,
+            "energy_cost_factor": 0.6896261225307165,
+            "primary_energy_useSAP": 647.7295923185067,
+            "primary_energy_use_m2SAP": 14.393990940411259,
+            "rating": 90.3797155906965,
+            "EI_rating": 99.12619556662874
+        },
+        "primary_energy_use_m2": 131.16865836998042,
+        "kwhdpp": 3.5912676946870246,
+        "primarykwhdpp": 5.390492809725223
+    }
+}
