@@ -1,4 +1,4 @@
-import React, { useState, useContext, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 export function RightCaret(props: any): ReactElement {
     return (

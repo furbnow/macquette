@@ -4,7 +4,7 @@ import { AppContext } from '../context/AppContext';
 
 function decimalise(s: string): string {
     // Remove everything that isn't allowed in a decimal fraction
-    const notAllowed = /([^0-9\.])/g;
+    const notAllowed = /([^0-9.])/g;
     return s.replace(notAllowed, '');
 }
 

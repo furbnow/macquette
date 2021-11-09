@@ -42,6 +42,16 @@ module.exports = {
       parser: '@typescript-eslint/parser',
     },
 
+    // dev ui work
+    {
+        files: ['ui/**/*.ts', 'ui/**/*.tsx', 'exports-dev.tsx'],
+        rules: {
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-non-null-assertion': 'off',
+            '@typescript-eslint/explicit-module-boundary-types': 'off',
+        }
+    },
+
     // tests
     {
       files: ['*.test.js', '*.test.ts', '*.test.tsx'],

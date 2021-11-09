@@ -1,6 +1,6 @@
-import React, { useState, useContext, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
-export function UploadFile(props: any): ReactElement {
+export function UploadFile(): ReactElement {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

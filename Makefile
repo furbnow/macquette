@@ -128,6 +128,7 @@ lint-js:  ## Runs eslint with a separate config in the 'client' directory
 		--fix \
 		--config .eslintrc.js \
 		--ignore-path .eslintignore \
+		--max-warnings 0 \
 		.
 
 .PHONY: lint-js-legacy
@@ -136,6 +137,7 @@ lint-js-legacy:  ## Runs eslint with a separate config on legacy (non-compiled) 
 		--fix \
 		--config mhep/v2/static/v2/js/.eslintrc.json \
 		--ignore-path mhep/v2/static/v2/js/.eslintignore \
+		--max-warnings 0 \
 		mhep/v2/static/v2/
 
 .PHONY: docs
