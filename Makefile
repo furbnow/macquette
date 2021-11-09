@@ -3,31 +3,52 @@
 
 .PHONY: help
 help:
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 # ----------------------------------------------------------------------------
 
 .PHONY: dev
 dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for changes)
-	./client/node_modules/.bin/concurrently -n "server,js    " -c green "make server" "make js"
+	./client/node_modules/.bin/concurrently -n "server,js-dev,js-v2 " -c green "make server" "make js-dev-watch" "make js-v2-watch"
 
-.PHONY: js
-js:  ## Compile JS (one off, for development)
+.PHONY: js-dev-watch
+js-dev-watch:  ## Compile dev JS (one off, for development)
 	./client/node_modules/.bin/esbuild \
-		client/exports.tsx \
+		client/exports-dev.tsx \
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
 		--sourcemap --bundle --watch
 
-.PHONY: js-prod
-js-prod:  ## Compile JS (one off, for production)
+.PHONY: js-dev-prod
+js-dev-prod:  ## Compile dev JS (one off, for production)
 	./client/node_modules/.bin/esbuild \
-		client/exports.tsx \
+		client/exports-dev.tsx \
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
 		--sourcemap --bundle
+
+.PHONY: js-v2-watch
+js-v2-watch:  ## Compile v2 JS (one off, for development)
+	./client/node_modules/.bin/esbuild \
+		client/exports-v2.ts \
+		--outdir=mhep/v2/static/v2/js_generated/ \
+		--loader:.js=jsx \
+		--define:process.env.NODE_ENV=\"dev\" \
+		--sourcemap --bundle --watch
+
+.PHONY: js-v2-prod
+js-v2-prod:  ## Compile v2 JS (one off, for production)
+	./client/node_modules/.bin/esbuild \
+		client/exports-v2.ts \
+		--outdir=mhep/v2/static/v2/js_generated/ \
+		--loader:.js=jsx \
+		--define:process.env.NODE_ENV=\"production\" \
+		--sourcemap --bundle
+
+.PHONY: js-prod
+js-prod: js-dev-prod js-v2-prod  ## Compile all JS (one off, for production)
 
 .PHONY: load-placeholder-library
 load-placeholder-library:
