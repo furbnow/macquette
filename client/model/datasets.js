@@ -1,4 +1,4 @@
-var datasets = {
+export const datasets = {
     /**********************************
      *  fuels
      *   Data from SAP 10.1
