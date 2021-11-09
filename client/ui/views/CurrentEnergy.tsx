@@ -1,5 +1,5 @@
 import React, { useState, ReactElement, useContext } from 'react';
-import { NewAssessment } from '../types/Assessment';
+import { NewAssessment, ScenarioString } from '../types/Assessment';
 import { AppContext } from '../context/AppContext';
 import { getScenario } from '../lib/scenarios';
 
@@ -13,7 +13,7 @@ import CheckboxField from '../components/CheckboxField';
 import targets from '../data/targets';
 interface CurrentEnergyProps {
     assessment: NewAssessment;
-    scenarioId: string;
+    scenarioId: ScenarioString;
 }
 
 function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactElement {
@@ -222,7 +222,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                 </td>
                                 <td>
                                     <Result
-                                        val={scenario.fuels[name].co2factor}
+                                        val={scenario.fuels[name]!.co2factor}
                                         units="× "
                                         unitsBefore
                                     />
@@ -232,7 +232,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                 </td>
                                 <td>
                                     <Result
-                                        val={scenario.fuels[name].primaryenergyfactor}
+                                        val={scenario.fuels[name]!.primaryenergyfactor}
                                         units="× "
                                         unitsBefore
                                     />
@@ -241,11 +241,11 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                     <Result val={fuel.primaryenergy} dp={2} />
                                 </td>
                                 <td>
-                                    <Result val={scenario.fuels[name].fuelcost} />
+                                    <Result val={scenario.fuels[name]!.fuelcost} />
                                 </td>
                                 <td>
                                     <Result
-                                        val={scenario.fuels[name].standingcharge}
+                                        val={scenario.fuels[name]!.standingcharge}
                                         units="£"
                                         unitsBefore
                                     />
@@ -494,7 +494,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
 
                             <td>
                                 <Result
-                                    val={scenario.fuels['generation'].co2factor}
+                                    val={scenario.fuels['generation']!.co2factor}
                                     units={'× '}
                                     unitsBefore
                                 />
@@ -506,7 +506,9 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                             </td>
                             <td>
                                 <Result
-                                    val={scenario.fuels['generation'].primaryenergyfactor}
+                                    val={
+                                        scenario.fuels['generation']!.primaryenergyfactor
+                                    }
                                     units={'× '}
                                     unitsBefore
                                 />
@@ -518,7 +520,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                 />
                             </td>
                             <td>
-                                <Result val={scenario.fuels['generation'].fuelcost} />
+                                <Result val={scenario.fuels['generation']!.fuelcost} />
                             </td>
                             <td>
                                 <NumberField

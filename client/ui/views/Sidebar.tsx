@@ -1,7 +1,7 @@
 import React, { useState, useContext, ReactElement } from 'react';
 import { AppContext } from '../context/AppContext';
 
-import { NewAssessment, Scenario } from '../types/Assessment';
+import { NewAssessment, Scenario, ScenarioString } from '../types/Assessment';
 import {
     getScenario,
     getScenarioList,
@@ -35,7 +35,7 @@ type ChangeSinceCreation = 'deleted' | 'changed' | 'none' | 'baseline';
 interface ScenarioBlockProps {
     assessment: NewAssessment;
     active: boolean;
-    id: string;
+    id: ScenarioString;
     title: string;
     isBaseline: boolean;
     createdFromChanges: ChangeSinceCreation;

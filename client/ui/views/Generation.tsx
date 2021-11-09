@@ -1,7 +1,7 @@
 import React, { useState, useContext, ReactElement } from 'react';
 
 import { AppContext } from '../context/AppContext';
-import { NewAssessment } from '../types/Assessment';
+import { NewAssessment, ScenarioString } from '../types/Assessment';
 import { Library, GenerationMeasuresLibrary } from '../types/Library';
 
 import { getScenario, scenarioIsBaseline } from '../lib/scenarios';
@@ -34,7 +34,7 @@ function haveGenerationMeasures(libraries: Library[]): boolean {
 
 interface GenerationProps {
     assessment: NewAssessment;
-    scenarioId: string;
+    scenarioId: ScenarioString;
 }
 
 function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {

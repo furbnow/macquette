@@ -1,7 +1,7 @@
 import React, { useContext, ReactElement } from 'react';
 import { AppContext } from '../context/AppContext';
 
-import { NewAssessment } from '../types/Assessment';
+import { NewAssessment, ScenarioString } from '../types/Assessment';
 import { getScenario } from '../lib/scenarios';
 import { deleteFloor, addFloor } from '../lib/dwellingdata';
 
@@ -14,7 +14,7 @@ import Tooltip from '../components/Tooltip';
 
 interface DwellingDataProps {
     assessment: NewAssessment;
-    scenarioId: string;
+    scenarioId: ScenarioString;
 }
 
 function DwellingData({ assessment, scenarioId }: DwellingDataProps): ReactElement {

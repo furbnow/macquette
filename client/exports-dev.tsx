@@ -55,12 +55,18 @@ window.Macquette = {
         TargetBar,
         Graphics,
     },
-    render: (view, props, root, update: () => void, libraries: [] = []) =>
+    render: (
+        view: any,
+        props: any,
+        root: HTMLElement,
+        update: () => void,
+        libraries: [] = []
+    ) =>
         render(
             <AppContext.Provider value={{ update, libraries }}>
                 {React.createElement(view, props)}
             </AppContext.Provider>,
             root || document.getElementById('content')
         ),
-    unmount: (element) => unmountComponentAtNode(element),
+    unmount: (element: HTMLElement) => unmountComponentAtNode(element),
 };

@@ -163,8 +163,8 @@ export default function PageHeader({
                             ) : (
                                 <>
                                     Scenario{' '}
-                                    {parseInt(scenarioId.replaceAll(/scenario/g, ''), 10)}
-                                    : {scenario.scenario_name}
+                                    {parseInt(scenarioId.replace(/scenario/g, ''), 10)}:{' '}
+                                    {scenario.scenario_name}
                                 </>
                             )}
                         </h4>

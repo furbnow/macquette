@@ -35,11 +35,21 @@ function SelectLibraryItem<T extends ItemBase>({
 }: SelectLibraryItemProps<T>): ReactElement {
     const [selectedLibIdx, setSelectedLibIdx] = useState(0);
     const selectedLib = libraries[selectedLibIdx];
+    if (selectedLib === undefined) {
+        throw new Error('No libraries to select from');
+    }
+    const selectedLibData = Object.keys(selectedLib.data)[0];
+    if (selectedLibData === undefined) {
+        throw new Error('No data in selected library');
+    }
 
     const [selectedItemTag, setSelectedItemTag] = useState(
-        currentSelectedItemTag ? currentSelectedItemTag : Object.keys(selectedLib.data)[0]
+        currentSelectedItemTag ? currentSelectedItemTag : selectedLibData
     );
     const selectedItem = selectedLib.data[selectedItemTag];
+    if (selectedItem === undefined) {
+        throw new Error('Selected library item does not exist');
+    }
 
     return (
         <Dialog onClose={onClose} headerId="select_library_item_header">

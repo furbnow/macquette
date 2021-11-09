@@ -64,7 +64,7 @@ type ElevationError = {
     error: string;
 };
 type ElevationResult = {
-    results: { elevation: number }[];
+    results: [{ elevation: number }, ...{ elevation: number }[]];
 };
 
 const getElevationData = async (
@@ -90,9 +90,9 @@ export default function Setup({ data }: SetupProps): ReactElement {
 
     const [waitingFor, setWaitingFor] = useState<'both' | 'elevation' | 'none'>('none');
 
-    const scenario = data.data.master;
+    const scenario = getScenario(data.data, 'master');
 
-    const getDeets = async (postcode) => {
+    const getDeets = async (postcode: string) => {
         /*
          * To avoid editing the schema right now we set every scenario's bit of data
          * individually.  Yes it's horrible.  TODO: Only hold this data in one place.

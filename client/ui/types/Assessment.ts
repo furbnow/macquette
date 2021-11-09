@@ -13,20 +13,22 @@ export interface AssessmentMeta {
     data: NewAssessment;
 }
 
-export interface NewAssessment {
+export type ScenarioString =
+    | 'scenario1'
+    | 'scenario2'
+    | 'scenario3'
+    | 'scenario4'
+    | 'scenario5'
+    | 'scenario6'
+    | 'scenario7'
+    | 'scenario8'
+    | 'scenario9'
+    | 'master';
+
+export type NewAssessment = {
     _commentary: Commentary;
     _report: Report;
-    master: Scenario;
-    scenario1?: Scenario;
-    scenario2?: Scenario;
-    scenario3?: Scenario;
-    scenario4?: Scenario;
-    scenario5?: Scenario;
-    scenario6?: Scenario;
-    scenario7?: Scenario;
-    scenario8?: Scenario;
-    scenario9?: Scenario;
-}
+} & Partial<Record<ScenarioString, Scenario>>;
 
 export interface Report {
     date: string;
@@ -50,7 +52,7 @@ export interface CommentaryScenarios {
 export type Scenario = {
     scenario_name: string;
     locked: boolean;
-    created_from?: string;
+    created_from?: ScenarioString;
     creation_hash: number | null;
 
     water_heating: WaterHeating;

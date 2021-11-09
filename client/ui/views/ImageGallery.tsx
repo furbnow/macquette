@@ -201,10 +201,9 @@ function reducer(state: State, msg: Message): State {
  * Upload any pending images, and let the UI know.
  */
 function upload(state: State, dispatch: Dispatcher) {
-    for (let i = 0; i < state.imagesToUpload.length; i++) {
-        const file = state.imagesToUpload[i];
+    state.imagesToUpload.forEach((file, i) => {
         if (file.uploaded) {
-            continue;
+            return;
         }
 
         mhep_helper
@@ -217,7 +216,7 @@ function upload(state: State, dispatch: Dispatcher) {
                 })
             )
             .catch(onError);
-    }
+    });
 }
 
 /**
@@ -273,7 +272,7 @@ function getNoteForId(state: State, id: number): string {
  * The right thing to do here is probably to log the error to Sentry.  Need to look
  * into all the callers of this function first though.
  */
-function onError(err) {
+function onError(err: unknown) {
     alert(err);
 }
 

@@ -5,6 +5,7 @@ import {
     SolarHotWaterPump,
     SolarHotWaterOvershading,
     SolarHotWaterOrientation,
+    ScenarioString,
 } from '../types/Assessment';
 import { getScenario } from '../lib/scenarios';
 import SelectField from '../components/SelectField';
@@ -20,7 +21,7 @@ import Tooltip from '../components/Tooltip';
 
 interface SolarHotWaterProps {
     assessment: NewAssessment;
-    scenarioId: string;
+    scenarioId: ScenarioString;
 }
 
 function SolarHotWater({ assessment, scenarioId }: SolarHotWaterProps): ReactElement {

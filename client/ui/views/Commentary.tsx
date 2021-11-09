@@ -29,8 +29,8 @@ export default function Commentary({ assessment }: CommentaryProps): ReactElemen
         getScenarioList(assessment, true).map(({ id }) => [
             id,
             {
-                houseData: houseData(assessment[id]),
-                targetData: targetData(400, assessment[id]),
+                houseData: houseData(assessment[id]!),
+                targetData: targetData(400, assessment[id]!),
                 cost: _cost_param(id),
             },
         ])
@@ -89,9 +89,9 @@ export default function Commentary({ assessment }: CommentaryProps): ReactElemen
                     </h3>
 
                     <Graphics
-                        houseData={overviewData[id].houseData}
-                        targetData={overviewData[id].targetData}
-                        cost={overviewData[id].cost}
+                        houseData={overviewData[id]!.houseData}
+                        targetData={overviewData[id]!.targetData}
+                        cost={overviewData[id]!.cost}
                     />
 
                     <label htmlFor={`field_commentary_for_${id}`}>
@@ -100,7 +100,7 @@ export default function Commentary({ assessment }: CommentaryProps): ReactElemen
 
                     <LongTextField
                         id={`field_commentary_for_${id}`}
-                        value={assessment._commentary.scenarios[id]}
+                        value={assessment._commentary.scenarios[id]!}
                         setValue={(val) => (assessment._commentary.scenarios[id] = val)}
                     />
                 </section>
@@ -114,7 +114,7 @@ export default function Commentary({ assessment }: CommentaryProps): ReactElemen
 
                     <LongTextField
                         id={`field_commentary_for_${id}`}
-                        value={assessment._commentary.scenarios[id]}
+                        value={assessment._commentary.scenarios[id]!}
                         setValue={(val) => (assessment._commentary.scenarios[id] = val)}
                     />
 

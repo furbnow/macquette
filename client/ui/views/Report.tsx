@@ -32,6 +32,9 @@ export default function Report({ assessment, template }: ReportProps): ReactElem
     const [includedScenarios, setIncludedScenarios] = useListState(initial);
 
     const baseline = scenarioList[0];
+    if (baseline === undefined) {
+        throw new Error('Could not find baseline scenario');
+    }
     const scenarios = scenarioList.filter((scenario) => scenario.num > 0);
 
     return (

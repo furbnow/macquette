@@ -1,6 +1,6 @@
 import { getScenarioList } from './scenarios';
 
-import { NewAssessment } from '../types/Assessment';
+import { NewAssessment, ScenarioString } from '../types/Assessment';
 
 // List scenario commentaries that for scenarios that don't exist in the assessment
 //
@@ -10,7 +10,9 @@ import { NewAssessment } from '../types/Assessment';
 // expected they are tightly bound to the actual scenarios.
 export function getOrphanedScenarioIds(assessment: NewAssessment): string[] {
     const allScenarioIds = getScenarioList(assessment, true).map(({ id }) => id);
-    const commentaryScenarioIds = Object.keys(assessment._commentary.scenarios);
+    const commentaryScenarioIds = Object.keys(
+        assessment._commentary.scenarios
+    ) as ScenarioString[];
 
     return commentaryScenarioIds.filter((id) => !allScenarioIds.includes(id));
 }

@@ -44,7 +44,8 @@ function calculateTargetBoxes(
         if (idx === targets.length - 1) {
             return [pos, width - pos - 0.5];
         } else {
-            return [pos, xPos[idx + 1] - pos];
+            const next = xPos[idx + 1]!; // guaranteed to exist as we are not at the end
+            return [pos, next - pos];
         }
     });
 }
@@ -179,7 +180,7 @@ export default function TargetBar({
                 ))*/}
 
                 {targets.map((target, idx) => {
-                    const x = targetBoxes[idx][0];
+                    const x = targetBoxes[idx]![0]; // targets.length === targetBoxes.length
                     const y = barsHeight + axisHeight;
                     const height = targetsHeight;
 

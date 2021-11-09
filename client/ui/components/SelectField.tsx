@@ -25,7 +25,7 @@ export default function SelectField<T>({
 
     function handleUpdate(value: string) {
         const idx = parseInt(value, 10);
-        setValue(options[idx].value);
+        setValue(options[idx]!.value);
         updateModel && update();
     }
 

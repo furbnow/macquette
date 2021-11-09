@@ -1,10 +1,13 @@
-import { NewAssessment, Scenario } from '../types/Assessment';
+import { NewAssessment, Scenario, ScenarioString } from '../types/Assessment';
 
 export function scenarioIsBaseline(scenarioId: string): boolean {
     return scenarioId === 'master';
 }
 
-export function getScenario(assessment: NewAssessment, scenarioId: string): Scenario {
+export function getScenario(
+    assessment: NewAssessment,
+    scenarioId: ScenarioString
+): Scenario {
     if (scenarioId in assessment) {
         return assessment[scenarioId] as Scenario;
     }
@@ -12,12 +15,12 @@ export function getScenario(assessment: NewAssessment, scenarioId: string): Scen
     throw new Error(`Scenario doesn't exist: ${scenarioId}`);
 }
 
-interface ScenarioList {
-    id: string;
+type ScenarioListItem = {
+    id: ScenarioString;
     title: string;
     isBaseline: boolean;
     num: number;
-}
+};
 
 // Get a list of scenarios: ids, titles, number (as in 'scenario 1') and whether
 // they are the baseline.
@@ -33,8 +36,10 @@ interface ScenarioList {
 export function getScenarioList(
     assessment: NewAssessment,
     excludeBase = false
-): ScenarioList[] {
-    let scenarioIds = Object.keys(assessment).filter((key) => !key.startsWith('_'));
+): ScenarioListItem[] {
+    let scenarioIds = Object.keys(assessment).filter(
+        (key) => !key.startsWith('_')
+    ) as ScenarioString[];
 
     if (excludeBase) {
         scenarioIds = scenarioIds.filter((id) => id !== 'master');
@@ -45,7 +50,7 @@ export function getScenarioList(
             id,
             title: (assessment[id] as Scenario).scenario_name,
             isBaseline: id === 'master',
-            num: id === 'master' ? 0 : parseInt(id.replaceAll(/scenario/g, ''), 10),
+            num: id === 'master' ? 0 : parseInt(id.replace(/scenario/g, ''), 10),
         }))
         .sort((a, b) => a.num - b.num);
 }
@@ -53,6 +58,9 @@ export function getScenarioList(
 function getNextEmptyId(existing: number[]): number {
     let idx = 0;
     const start = existing[0];
+    if (start === undefined) {
+        return 1;
+    }
     // eslint-disable-next-line no-constant-condition
     while (true) {
         if (existing[idx] === start + idx) {
@@ -70,12 +78,12 @@ export function deepCopy<T>(thing: T): T {
 
 export function duplicateScenario(
     assessment: NewAssessment,
-    id: string,
+    id: ScenarioString,
     title: string
 ): void {
     const nums = getScenarioList(assessment).map(({ num }) => num);
     const newNum = getNextEmptyId(nums);
-    const newId = `scenario${newNum}`;
+    const newId = `scenario${newNum}` as ScenarioString; // I promise...
 
     const oldScenario = getScenario(assessment, id);
 
