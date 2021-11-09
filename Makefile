@@ -14,7 +14,7 @@ dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for c
 .PHONY: js-dev-watch
 js-dev-watch:  ## Compile dev JS (one off, for development)
 	./client/node_modules/.bin/esbuild \
-		client/exports-dev.tsx \
+		client/src/exports-dev.tsx \
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
@@ -23,7 +23,7 @@ js-dev-watch:  ## Compile dev JS (one off, for development)
 .PHONY: js-dev-prod
 js-dev-prod:  ## Compile dev JS (one off, for production)
 	./client/node_modules/.bin/esbuild \
-		client/exports-dev.tsx \
+		client/src/exports-dev.tsx \
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
@@ -32,7 +32,7 @@ js-dev-prod:  ## Compile dev JS (one off, for production)
 .PHONY: js-v2-watch
 js-v2-watch:  ## Compile v2 JS (one off, for development)
 	./client/node_modules/.bin/esbuild \
-		client/exports-v2.ts \
+		client/src/exports-v2.ts \
 		--outdir=mhep/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
@@ -41,7 +41,7 @@ js-v2-watch:  ## Compile v2 JS (one off, for development)
 .PHONY: js-v2-prod
 js-v2-prod:  ## Compile v2 JS (one off, for production)
 	./client/node_modules/.bin/esbuild \
-		client/exports-v2.ts \
+		client/src/exports-v2.ts \
 		--outdir=mhep/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \

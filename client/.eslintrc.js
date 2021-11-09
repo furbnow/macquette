@@ -44,7 +44,7 @@ module.exports = {
 
     // dev ui work
     {
-        files: ['ui/**/*.ts', 'ui/**/*.tsx', 'exports-dev.tsx'],
+        files: ['src/ui/**/*.ts', 'src/ui/**/*.tsx', 'src/exports-dev.tsx'],
         rules: {
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-non-null-assertion': 'off',
