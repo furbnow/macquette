@@ -3,6 +3,7 @@ module.exports = {
     browser: true,
     es6: true,
     node: true,
+    jest: true,
   },
   extends: [
     "eslint:recommended",
@@ -54,11 +55,16 @@ module.exports = {
 
     // tests
     {
-      files: ['*.test.js', '*.test.ts', '*.test.tsx'],
-      extends: [
-        "plugin:jest/recommended",
-        "plugin:jest/style",
-      ],
+      files: ['**/*.test.ts'],
+        extends: [
+          "plugin:jest/recommended",
+          "plugin:jest/style",
+        ],
+        rules: {
+          '@typescript-eslint/no-explicit-any': 'off',
+          '@typescript-eslint/no-unsafe-assignment': 'off',
+          '@typescript-eslint/no-non-null-assertion': 'off',
+        }
     },
   ]
 };
