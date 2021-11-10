@@ -1,0 +1,366 @@
+{
+	"master": {
+		"altitude": 0,
+		"applianceCarbonCoop": {
+			"list": []
+		},
+		"appliancelist": {
+			"list": [
+				{
+					"category": "lighting",
+					"efficiency": 1,
+					"fuel": "Standard Tariff",
+					"hours": 12,
+					"name": "LED Light",
+					"power": 6
+				}
+			]
+		},
+		"currentenergy": {
+			"generation": {
+				"annual_CO2": 0,
+				"annual_FIT_income": 0,
+				"annual_generation": 0,
+				"annual_savings": 0,
+				"fraction_used_onsite": 0.25,
+				"primaryenergy": 0
+			},
+			"use_by_fuel": {}
+		},
+		"custom_occupancy": 3,
+		"fabric": {
+			"elements": [],
+			"global_TMP": false,
+			"global_TMP_value": 250,
+			"thermal_bridging_yvalue": 0.15
+		},
+		"floors": [
+			{
+				"area": 13,
+				"height": 2.5,
+				"name": "Ground Floor"
+			},
+			{
+				"area": 32,
+				"height": 3,
+				"name": "1st Floor"
+			}
+		],
+		"fuels": {
+			"10-hour tariff - High Rate": {
+				"category": "Electricity",
+				"co2factor": 0.136,
+				"fuelcost": 18.71,
+				"primaryenergyfactor": 1.501,
+				"SAP_code": 34,
+				"standingcharge": 7
+			},
+			"10-hour tariff - Low Rate": {
+				"category": "Electricity",
+				"co2factor": 0.136,
+				"fuelcost": 10.68,
+				"primaryenergyfactor": 1.501,
+				"SAP_code": 33,
+				"standingcharge": 0
+			},
+			"24-hour heating tariff": {
+				"category": "Electricity",
+				"co2factor": 0.136,
+				"fuelcost": 10.38,
+				"primaryenergyfactor": 1.501,
+				"SAP_code": 35,
+				"standingcharge": 31
+			},
+			"7 Hour tariff - Low Rate": {
+				"category": "Electricity",
+				"co2factor": 0.136,
+				"fuelcost": 8.13,
+				"primaryenergyfactor": 1.501,
+				"SAP_code": 31,
+				"standingcharge": 0
+			},
+			"7-Hour tariff - High Rate": {
+				"category": "Electricity",
+				"co2factor": 0.136,
+				"fuelcost": 20.72,
+				"primaryenergyfactor": 1.501,
+				"SAP_code": 32,
+				"standingcharge": 8
+			},
+			"Anthracite": {
+				"category": "Solid fuel",
+				"co2factor": 0.395,
+				"fuelcost": 4.14,
+				"primaryenergyfactor": 1.064,
+				"SAP_code": 15,
+				"standingcharge": 0
+			},
+			"Bottled LPG ": {
+				"category": "Gas",
+				"co2factor": 0.241,
+				"fuelcost": 7.85,
+				"primaryenergyfactor": 1.141,
+				"SAP_code": 3,
+				"standingcharge": 0
+			},
+			"Bulk LPG": {
+				"category": "Gas",
+				"co2factor": 0.241,
+				"fuelcost": 6.59,
+				"primaryenergyfactor": 1.141,
+				"SAP_code": 2,
+				"standingcharge": 58
+			},
+			"Dual Fuel Appliance": {
+				"category": "Solid fuel",
+				"co2factor": 0.39,
+				"fuelcost": 4.53,
+				"primaryenergyfactor": 1.049,
+				"SAP_code": 10,
+				"standingcharge": 0
+			},
+			"generation": {
+				"category": "Generation",
+				"co2factor": 0.136,
+				"fuelcost": 0,
+				"primaryenergyfactor": 1.501,
+				"SAP_code": 0,
+				"standingcharge": 0
+			},
+			"Heating Oil": {
+				"category": "Oil",
+				"co2factor": 0.298,
+				"fuelcost": 4.35,
+				"primaryenergyfactor": 1.18,
+				"SAP_code": 4,
+				"standingcharge": 0
+			},
+			"House Coal": {
+				"category": "Solid fuel",
+				"co2factor": 0.395,
+				"fuelcost": 4.18,
+				"primaryenergyfactor": 1.064,
+				"SAP_code": 11,
+				"standingcharge": 0
+			},
+			"Mains Gas": {
+				"category": "Gas",
+				"co2factor": 0.21,
+				"fuelcost": 3.93,
+				"primaryenergyfactor": 1.13,
+				"SAP_code": 1,
+				"standingcharge": 88
+			},
+			"Manufactured smokeless fuel": {
+				"category": "Solid fuel",
+				"co2factor": 0.366,
+				"fuelcost": 5.17,
+				"primaryenergyfactor": 1.261,
+				"SAP_code": 12,
+				"standingcharge": 0
+			},
+			"Standard Tariff": {
+				"category": "Electricity",
+				"co2factor": 0.136,
+				"fuelcost": 17.56,
+				"primaryenergyfactor": 1.501,
+				"SAP_code": 30,
+				"standingcharge": 72
+			},
+			"Wood chips": {
+				"category": "Solid fuel",
+				"co2factor": 0.39,
+				"fuelcost": 3.48,
+				"primaryenergyfactor": 1.046,
+				"SAP_code": 21,
+				"standingcharge": 0
+			},
+			"Wood Logs": {
+				"category": "Solid fuel",
+				"co2factor": 0.39,
+				"fuelcost": 4.65,
+				"primaryenergyfactor": 1.046,
+				"SAP_code": 20,
+				"standingcharge": 0
+			},
+			"Wood pellets main heating bulk supply": {
+				"category": "Solid fuel",
+				"co2factor": 0.39,
+				"fuelcost": 5.51,
+				"primaryenergyfactor": 1.325,
+				"SAP_code": 23,
+				"standingcharge": 0
+			},
+			"Wood Pellets secondary heating in bags": {
+				"category": "Solid fuel",
+				"co2factor": 0.39,
+				"fuelcost": 6.09,
+				"primaryenergyfactor": 1.325,
+				"SAP_code": 22,
+				"standingcharge": 0
+			}
+		},
+		"generation": {
+			"hydro_annual_kwh": 0,
+			"hydro_export_FIT": 0,
+			"hydro_FIT": 0,
+			"hydro_fraction_used_onsite": 0.5,
+			"solar_annual_kwh": 0,
+			"solar_export_FIT": 0,
+			"solar_FIT": 0,
+			"solar_fraction_used_onsite": 0.5,
+			"solarpv_inclination": 35,
+			"solarpv_kwp_installed": 0,
+			"solarpv_orientation": 4,
+			"solarpv_overshading": 1,
+			"systems": {},
+			"total_CO2": 0,
+			"total_energy_income": 0,
+			"total_exported": 0,
+			"total_generation": 0,
+			"total_primaryenergy": 0,
+			"total_used_onsite": 0,
+			"use_PV_calculator": false,
+			"wind_annual_kwh": 0,
+			"wind_export_FIT": 0,
+			"wind_FIT": 0,
+			"wind_fraction_used_onsite": 0.5
+		},
+		"heating_systems": [],
+		"LAC": {
+			"C1": 0.5,
+			"C2": 1.433,
+			"EA": 2096.4943207908623,
+			"EB": 603.1590565393709,
+			"EC": 1404.4117647058822,
+			"EC_monthly": 117.03431372549018,
+			"EL": 432.1634640104593,
+			"energy_efficient_appliances": false,
+			"energy_efficient_cooking": false,
+			"fuels_appliances": [
+				{
+					"demand": 2096.4943207908623,
+					"fraction": 1,
+					"fuel": "Standard Tariff",
+					"fuel_input": 2096.4943207908623,
+					"fuel_input_monthly": [
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0
+					],
+					"system_efficiency": 1
+				}
+			],
+			"fuels_cooking": [
+				{
+					"demand": 1404.4117647058822,
+					"fraction": 1,
+					"fuel": "Standard Tariff",
+					"fuel_input": 1404.4117647058822,
+					"fuel_input_monthly": [
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0
+					],
+					"system_efficiency": 1
+				}
+			],
+			"fuels_lighting": [
+				{
+					"demand": 431.53204018554743,
+					"fraction": 1,
+					"fuel": "Standard Tariff",
+					"fuel_input": 431.53204018554743,
+					"fuel_input_monthly": [
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0
+					],
+					"system_efficiency": 1
+				}
+			],
+			"GC": 1404.4117647058822,
+			"L": 1,
+			"LLE": 1,
+			"reduced_heat_gains_lighting": false
+		},
+		"LAC_calculation_type": "SAP",
+		"region": 10,
+		"scenario_name": "Baseline",
+		"SHW": {},
+		"space_heating": {
+			"heating_off_summer": true,
+			"use_utilfactor_forgains": true
+		},
+		"temperature": {
+			"hours_off": {
+				"weekday": [
+					7,
+					8
+				],
+				"weekend": [
+					8
+				]
+			},
+			"living_area": 0,
+			"responsiveness": 1,
+			"target": 21,
+			"temperature_adjustment": 0
+		},
+		"use_custom_occupancy": 1,
+		"use_generation": 1,
+		"ventilation": {
+			"air_permeability_test": false,
+			"air_permeability_value": 0,
+			"balanced_heat_recovery_efficiency": 65,
+			"CDF": [],
+			"draught_lobby": false,
+			"dwelling_construction": "timberframe",
+			"EVP": [],
+			"IVF": [],
+			"number_of_sides_sheltered": 0,
+			"percentage_draught_proofed": 0,
+			"suspended_wooden_floor": 0,
+			"system_air_change_rate": 0.5,
+			"system_specific_fan_power": 3,
+			"ventilation_name": "Natural ventilation",
+			"ventilation_type": "NV"
+		},
+		"water_heating": {
+			"annual_energy_content": 1746.4622204333332,
+			"contains_dedicated_solar_storage_or_WWHRS": 0,
+			"hot_water_control_type": "no_cylinder_thermostat",
+			"pipework_insulation": "Fully insulated primary pipework",
+			"solar_water_heating": false,
+			"Vc": 0,
+			"water_usage": []
+		}
+	}
+}

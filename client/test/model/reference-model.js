@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { datasets } from './datasets'
+import { datasets } from './reference-datasets'
 import { mapValues } from 'lodash';
 
 let a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z;
