@@ -24,7 +24,7 @@ module.exports = {
   plugins: ["react", "import", "jsx-a11y", "react-hooks"],
   rules: {
     "react/prop-types": 0,
-    "no-console": 1,
+    "no-console": 0,
     "react-hooks/rules-of-hooks": 2,
     "react-hooks/exhaustive-deps": 1,
     "no-var": 2,
