@@ -15,7 +15,12 @@ type Params = {
 };
 
 const getParams = async (): Promise<Params> => {
-    const { baseUrl, sessionid, dataDirectory } = await prompt([
+    type PromptResult = {
+        baseUrl: string;
+        sessionid: string;
+        dataDirectory: string;
+    };
+    const { baseUrl, sessionid, dataDirectory } = await prompt<PromptResult>([
         {
             type: 'input',
             name: 'baseUrl',
@@ -66,13 +71,12 @@ class AssessmentClient {
 
     private async get(endpoint: string): Promise<unknown> {
         const response = await this.bottleneck.schedule(() => this.axios.get(endpoint));
-        return response.data;
+        return response.data as unknown;
     }
 
     async listMetadata(): Promise<AssessmentMetadata[]> {
-        const data: { id: string; updated_at: string }[] = (await this.get(
-            `/v2/api/assessments/`
-        )) as any;
+        type DataFormat = { id: string; updated_at: string }[];
+        const data = (await this.get(`/v2/api/assessments/`)) as DataFormat;
         return data.map(({ id, updated_at }) => {
             return {
                 id,
@@ -135,17 +139,15 @@ const main = async () => {
     console.log(`${toFetch.length} new or updated items to fetch and save`);
 
     await Promise.all(
-        toFetch.map(
-            async ({ id, updatedAt }): Promise<void> => {
-                const data = await client.getAssessment(id);
-                const filePath = join(params.dataDirectory, `${id}.json`);
-                const handle = await open(filePath, 'w');
-                await handle.write(JSON.stringify(data, null, 4));
-                await handle.utimes(updatedAt, updatedAt);
-                await handle.close();
-                process.stdout.write('.');
-            }
-        )
+        toFetch.map(async ({ id, updatedAt }): Promise<void> => {
+            const data = await client.getAssessment(id);
+            const filePath = join(params.dataDirectory, `${id}.json`);
+            const handle = await open(filePath, 'w');
+            await handle.write(JSON.stringify(data, null, 4));
+            await handle.utimes(updatedAt, updatedAt);
+            await handle.close();
+            process.stdout.write('.');
+        })
     );
     console.log(' done 😻');
 };
