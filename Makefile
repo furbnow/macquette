@@ -76,9 +76,10 @@ pip-upgrade-all:  ## Compile new requirements files with latest possible version
 	pip-compile -qU --output-file=requirements/local.txt requirements/local.in
 	git diff requirements/
 
-.PHONY: pip-sync
-pip-sync:  ## Make the local installed packages reflect the ones in the local requirements
+.PHONY: sync
+sync:  ## Install dependencies
 	pip-sync requirements/local.txt
+	cd client && yarn install
 
 .PHONY: docker-up
 docker-up:  ## Bring up our local docker containers
