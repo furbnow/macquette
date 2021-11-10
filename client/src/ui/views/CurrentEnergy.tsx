@@ -487,7 +487,8 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                             .annual_generation
                                     }
                                     setValue={(val) =>
-                                        (scenario.currentenergy.generation.annual_generation = val)
+                                        (scenario.currentenergy.generation.annual_generation =
+                                            val)
                                     }
                                 />
                             </td>
@@ -530,7 +531,8 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                             .fraction_used_onsite
                                     }
                                     setValue={(val) =>
-                                        (scenario.currentenergy.generation.fraction_used_onsite = val)
+                                        (scenario.currentenergy.generation.fraction_used_onsite =
+                                            val)
                                     }
                                 />
                             </td>
@@ -549,7 +551,8 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                             .annual_FIT_income
                                     }
                                     setValue={(val) =>
-                                        (scenario.currentenergy.generation.annual_FIT_income = val)
+                                        (scenario.currentenergy.generation.annual_FIT_income =
+                                            val)
                                     }
                                 />
                             </td>
