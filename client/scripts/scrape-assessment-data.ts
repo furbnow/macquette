@@ -1,6 +1,6 @@
 import { prompt } from 'inquirer';
 import axios, { AxiosInstance } from 'axios';
-import { opendir, stat, writeFile, open } from 'fs/promises';
+import { opendir, stat, open } from 'fs/promises';
 import { join } from 'path';
 import Bottleneck from 'bottleneck';
 
@@ -49,18 +49,14 @@ type AssessmentMetadata = {
 };
 
 class AssessmentClient {
-    private cookie: string;
-    private baseUrl: string;
     private bottleneck: Bottleneck;
     private axios: AxiosInstance;
 
     constructor(params: Params) {
-        this.baseUrl = params.baseUrl;
-        this.cookie = `sessionid=${params.cookies.sessionid}`;
         this.axios = axios.create({
-            baseURL: this.baseUrl,
+            baseURL: params.baseUrl,
             headers: {
-                cookie: this.cookie,
+                cookie: `sessionid=${params.cookies.sessionid}`,
             },
         });
         this.bottleneck = new Bottleneck({
@@ -119,7 +115,7 @@ const main = async () => {
     const params = await getParams();
     const client = new AssessmentClient(params);
     const metadata = await client.listMetadata();
-    console.log(`${metadata.length} items on serverside`);
+    console.log(`${metadata.length} items serverside`);
     const existing = await listExistingScrapedData(params);
     console.log(`${existing.length} items locally`);
     const toFetch = metadata.filter((metadataItem) => {
@@ -128,7 +124,7 @@ const main = async () => {
                 existingItem.id === metadataItem.id &&
                 isSameSecond(existingItem.updatedAt, metadataItem.updatedAt)
             ) {
-                // We are the same, so we don't care to fetch again
+                // Items are the same, so we don't care to fetch again
                 return false;
             }
         }
@@ -136,7 +132,7 @@ const main = async () => {
         return true;
     });
 
-    console.log(`${toFetch.length} items to fetch and save`);
+    console.log(`${toFetch.length} new or updated items to fetch and save`);
 
     await Promise.all(
         toFetch.map(
