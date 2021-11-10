@@ -18,6 +18,7 @@ js-dev-watch:  ## Compile dev JS (one off, for development)
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
+		--target=es2019 \
 		--sourcemap --bundle --watch
 
 .PHONY: js-dev-prod
@@ -27,6 +28,7 @@ js-dev-prod:  ## Compile dev JS (one off, for production)
 		--outdir=mhep/dev/static/dev/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
+		--target=es2019 \
 		--sourcemap --bundle
 
 .PHONY: js-v2-watch
@@ -36,6 +38,7 @@ js-v2-watch:  ## Compile v2 JS (one off, for development)
 		--outdir=mhep/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"dev\" \
+		--target=es2019 \
 		--sourcemap --bundle --watch
 
 .PHONY: js-v2-prod
@@ -45,6 +48,7 @@ js-v2-prod:  ## Compile v2 JS (one off, for production)
 		--outdir=mhep/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
+		--target=es2019 \
 		--sourcemap --bundle
 
 .PHONY: js-prod
