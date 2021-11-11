@@ -59,7 +59,7 @@ load-placeholder-library:
 	python manage.py loaddata mhep/dev/fixtures/standard_library.json
 
 .PHONY: server
-server: docker-up ## Bring docker up and run the local server
+server: docker-local-up ## Bring docker up and run the local server
 	python manage.py runserver
 
 .PHONY: pip-compile
@@ -85,17 +85,17 @@ sync:  ## Install dependencies
 	pip-sync requirements/local.txt
 	cd client && yarn install
 
-.PHONY: docker-up
-docker-up:  ## Bring up our local docker containers
-	docker-compose -p macquette -f scripts/local.yml up --no-start
-	docker-compose -p macquette -f scripts/local.yml start
+.PHONY: docker-local-up
+docker-local-up:  ## Bring up our local docker containers
+	docker-compose -p macquette -f docker-compose/local.yml up --no-start
+	docker-compose -p macquette -f docker-compose/local.yml start
 
-.PHONY: docker-down
-docker-down:  ## Shut down our local docker containers
-	docker-compose -p macquette -f scripts/local.yml stop
+.PHONY: docker-local-down
+docker-local-down:  ## Shut down our local docker containers
+	docker-compose -p macquette -f docker-compose/local.yml stop
 
-.PHONY: docker-clean
-docker-clean:  ## Clean system volumes (helpful for resetting broken databases)
+.PHONY: docker-local-clean
+docker-local-clean:  ## Clean system volumes (helpful for resetting broken databases)
 	docker system prune --volumes -f
 
 .PHONY: coverage
