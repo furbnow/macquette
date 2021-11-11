@@ -71,11 +71,13 @@ class AssessmentClient {
 
     private async get(endpoint: string): Promise<unknown> {
         const response = await this.bottleneck.schedule(() => this.axios.get(endpoint));
-        return response.data as unknown;
+        const data: unknown = response.data;
+        return data;
     }
 
     async listMetadata(): Promise<AssessmentMetadata[]> {
         type DataFormat = { id: string; updated_at: string }[];
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const data = (await this.get(`/v2/api/assessments/`)) as DataFormat;
         return data.map(({ id, updated_at }) => {
             return {
