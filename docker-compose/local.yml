@@ -13,4 +13,4 @@ services:
             POSTGRES_PASSWORD: snapper-herald-gazumped-finesse
             POSTGRES_DB: macquette
         ports:
-            - "5400:5432"
+            - '5400:5432'

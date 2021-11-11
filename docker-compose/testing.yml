@@ -26,7 +26,7 @@ services:
             MAILGUN_API_KEY: test-mailgun-api-key
             MAILGUN_DOMAIN: test-mailgun-domain
         ports:
-            - "5000:5000"
+            - '5000:5000'
         command: sh -c '/app/scripts/run-migrations.sh &&
             (/app/manage.py createsuperuser --noinput || true) &&
             /app/scripts/run-service.sh'

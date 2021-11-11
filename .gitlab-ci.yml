@@ -16,7 +16,7 @@ python-test:
         POSTGRES_USER: 'postgres'
         POSTGRES_PASSWORD: 'postgres'
         POSTGRES_HOST_AUTH_METHOD: trust
-        DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+        DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB'
         DJANGO_SETTINGS_MODULE: config.settings.test
         PIP_CACHE_DIR: '$CI_PROJECT_DIR/.cache/pip'
 
@@ -91,7 +91,7 @@ pages:
     rules:
         - if: $CI_COMMIT_BRANCH == "main"
           changes:
-          - docs/**/*
+              - docs/**/*
 
     artifacts:
         paths:
