@@ -1,0 +1,16 @@
+version: '3'
+
+volumes:
+    macquette_postgres_data: {}
+
+services:
+    postgres:
+        image: postgres:11
+        volumes:
+            - macquette_postgres_data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: macquette
+            POSTGRES_PASSWORD: snapper-herald-gazumped-finesse
+            POSTGRES_DB: macquette
+        ports:
+            - "5400:5432"
