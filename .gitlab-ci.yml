@@ -1,4 +1,5 @@
 stages:
+    - build
     - test
     - deploy
     - docs
@@ -73,6 +74,15 @@ pre-commit:
         - python -V
         - pip install pre-commit==2.11.1
         - pre-commit run --all
+
+docker-build:
+    stage: build
+    needs: []
+    image: docker:latest
+    services:
+        - docker:dind
+    script:
+        - docker build .
 
 pages:
     stage: docs
