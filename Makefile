@@ -87,8 +87,7 @@ sync:  ## Install dependencies
 
 .PHONY: docker-local-up
 docker-local-up:  ## Bring up our local docker containers
-	docker-compose -p macquette -f docker-compose/local.yml up --no-start
-	docker-compose -p macquette -f docker-compose/local.yml start
+	docker-compose -p macquette -f docker-compose/local.yml up --detach
 
 .PHONY: docker-local-down
 docker-local-down:  ## Shut down our local docker containers
@@ -96,6 +95,7 @@ docker-local-down:  ## Shut down our local docker containers
 
 .PHONY: docker-local-clean
 docker-local-clean:  ## Clean system volumes (helpful for resetting broken databases)
+	docker-compose -p macquette -f docker-compose/local.yml rm
 	docker system prune --volumes -f
 
 .PHONY: coverage
@@ -144,6 +144,27 @@ lint-js-legacy:  ## Runs eslint with a separate config on legacy (non-compiled) 
 		--ignore-path mhep/v2/static/v2/js/.eslintignore \
 		--max-warnings 0 \
 		mhep/v2/static/v2/
+
+.PHONY: docker-build
+docker-build:  ## Build the service image
+	# If running in CI we have already built the image in the build stage
+	if [ "${CI}" != "true" ]; then \
+		docker build --tag $${SERVICE_IMAGE_TAG:-macquette:latest} . ; \
+	fi
+
+.PHONY: test-container
+test-container: docker-build  ## Run tests of the built service docker image in a docker-compose environment
+	docker-compose -p macquette-testing -f docker-compose/testing.yml build
+	cd test-container && docker build --tag test-container:latest .
+	docker-compose -p macquette-testing -f docker-compose/testing.yml up -d
+	docker run --rm -i \
+		--env BASE_URL='http://service:5000/' \
+		--env USERNAME='test-superuser' \
+		--env PASSWORD='test-superuser-password' \
+		--network macquette-testing_macquette-network \
+		test-container:latest
+	docker-compose -p macquette-testing -f docker-compose/testing.yml down
+	docker-compose -p macquette-testing -f docker-compose/testing.yml rm
 
 .PHONY: docs
 docs:  ## Build HTML docs (for other options run make in docs/)

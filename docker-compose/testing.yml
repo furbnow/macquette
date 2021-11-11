@@ -7,11 +7,13 @@ services:
             POSTGRES_USER: macquette
             POSTGRES_PASSWORD: test-password
             POSTGRES_DB: macquette
+        networks:
+            - macquette-network
 
     service:
-        build: ..
+        image: ${SERVICE_IMAGE_TAG:-macquette:latest}
         environment:
-            USE_AUTH_SERVICE: False
+            USE_AUTH_SERVICE: 'False'
             DATABASE_URL: postgres://macquette:test-password@postgres/macquette
             DJANGO_SECRET_KEY: test-secret-key
             DJANGO_AWS_ACCESS_KEY_ID: test-aws-access-key-id
@@ -25,8 +27,11 @@ services:
             DJANGO_SUPERUSER_PASSWORD: test-superuser-password
             MAILGUN_API_KEY: test-mailgun-api-key
             MAILGUN_DOMAIN: test-mailgun-domain
-        ports:
-            - '5000:5000'
         command: sh -c '/app/scripts/run-migrations.sh &&
             (/app/manage.py createsuperuser --noinput || true) &&
             /app/scripts/run-service.sh'
+        networks:
+            - macquette-network
+
+networks:
+    macquette-network: {}

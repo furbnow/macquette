@@ -2,14 +2,16 @@
 # Build client assets
 # ---------------------------------------------------------------------------
 
-FROM node:lts as js
+FROM node:lts-alpine as js
 
-COPY ./Makefile /app/
+RUN apk add make
 
 WORKDIR /app/client/
 COPY ./client/package.json ./client/yarn.lock /app/client/
 RUN yarn install --production
+
 COPY ./client/ /app/client/
+COPY ./Makefile /app/
 
 RUN make -C .. js-prod
 
@@ -37,16 +39,19 @@ COPY ./requirements /app/requirements
 WORKDIR /app
 RUN pip install --no-cache-dir -r ./requirements/production.txt
 
-# Copy in everything (except built assets)
-COPY ./ /app
+# Copy in Django app
+COPY ./config ./config
+COPY ./mhep ./mhep
+COPY ./scripts ./scripts
+COPY ./manage.py ./
 
 # Copy in built JS assets
 COPY --from=js /app/mhep/dev/static/dev/js_generated/ /app/mhep/dev/static/dev/js_generated/
 
 # Collect static files for faster serving and caching
 RUN DJANGO_SETTINGS_MODULE=config.settings.staticfiles \
-	DATABASE_URL='postgres://u:p@h/db' \
-	python manage.py collectstatic --noinput
+    DATABASE_URL='postgres://u:p@h/db' \
+    python manage.py collectstatic --noinput
 
 USER django
 

@@ -81,8 +81,44 @@ docker-build:
     image: docker:latest
     services:
         - docker:dind
+    variables:
+        SERVICE_IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+        SERVICE_IMAGE_TAG_REF: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+        SERVICE_ASSETBUILDER_IMAGE_TAG_REF: $CI_REGISTRY_IMAGE/assetbuilder:$CI_COMMIT_REF_SLUG
     script:
-        - docker build .
+        - docker login -u "$CI_REGISTRY_USER" -p "$CI_JOB_TOKEN" "$CI_REGISTRY"
+        - docker pull "$SERVICE_IMAGE_TAG_REF" || true
+        - docker pull "$SERVICE_ASSETBUILDER_IMAGE_TAG_REF" || true
+        - docker build
+          --cache-from="$SERVICE_ASSETBUILDER_IMAGE_TAG_REF"
+          --tag "$SERVICE_ASSETBUILDER_IMAGE_TAG_REF"
+          --target js
+          .
+        - docker build
+          --cache-from="$SERVICE_IMAGE_TAG_REF"
+          --cache-from="$SERVICE_ASSETBUILDER_IMAGE_TAG_REF"
+          --pull
+          --tag "$SERVICE_IMAGE_TAG"
+          --tag "$SERVICE_IMAGE_TAG_REF"
+          .
+        - docker push "$SERVICE_ASSETBUILDER_IMAGE_TAG_REF"
+        - docker push "$SERVICE_IMAGE_TAG_REF"
+        - docker push "$SERVICE_IMAGE_TAG"
+
+container-test:
+    stage: test
+    needs: ['docker-build']
+    image: docker:latest
+    services:
+        - docker:dind
+    variables:
+        SERVICE_IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    script:
+        - apk update
+        - apk add docker-compose make nodejs yarn
+        - docker login -u "$CI_REGISTRY_USER" -p "$CI_JOB_TOKEN" "$CI_REGISTRY"
+        - docker pull "$SERVICE_IMAGE_TAG"
+        - make test-container
 
 pages:
     stage: docs

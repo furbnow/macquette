@@ -1,5 +1,7 @@
 # Ignore private test fixtures
 client/test/model/fixtures/private/*
+mhep/media/
+js_generated
 
 ### Python template
 # Byte-compiled / optimized / DLL files
@@ -273,10 +275,8 @@ tags
 
 ### Project template
 
-mhep/media/
 .pytest_cache/
 .ipython/
 .env
 .envs/*
-js_generated
 *.sublime-*

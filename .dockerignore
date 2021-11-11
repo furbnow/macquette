@@ -1,1 +1,5 @@
-.gitignore
+client/test/model/fixtures/private/*
+mhep/media/
+**/js_generated
+**/node_modules
+venv
