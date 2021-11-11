@@ -1,26 +1,26 @@
 # ---------------------------------------------------------------------------
-# Build assets (Fancy JS->Boring JS)
+# Build client assets
 # ---------------------------------------------------------------------------
 
 FROM node:lts as js
 
-WORKDIR /app
+COPY ./Makefile /app/
 
-COPY ./package.json ./package-lock.json ./Makefile ./
-RUN npm ci --production
-COPY ./mhep/dev/static/dev/js_src/ ./mhep/dev/static/dev/js_src/
-RUN make js-prod
+WORKDIR /app/client/
+COPY ./client/package.json ./client/yarn.lock /app/client/
+RUN yarn install --production
+COPY ./client/ /app/client/
+
+RUN make -C .. js-prod
 
 # ---------------------------------------------------------------------------
-# Django container build
+# Build Django container
 # ---------------------------------------------------------------------------
 
 # We're using "slim" (which is a cut down Debian stable) because Debian is a
-# much more standard setup than Alpine with the potential for a lot less faff
+# much more standard setup than alpine with the potential for a lot less faff
 # later on if we need to install more obscure dependencies.
 FROM python:3.7-slim AS main
-
-WORKDIR /app
 
 # Don't buffer output - we should always get error messages this way
 ENV PYTHONUNBUFFERED 1
@@ -33,14 +33,15 @@ RUN addgroup --system django \
     && adduser --system --ingroup django django
 
 # Requirements are installed here to ensure they will be cached.
-COPY ./requirements ./requirements
+COPY ./requirements /app/requirements
+WORKDIR /app
 RUN pip install --no-cache-dir -r ./requirements/production.txt
 
-# Copy in everything else
-COPY ./ ./
+# Copy in everything (except built assets)
+COPY ./ /app
 
 # Copy in built JS assets
-COPY --from=js /app/mhep/dev/static/dev/js_generated/ ./mhep/dev/static/dev/js_generated/
+COPY --from=js /app/mhep/dev/static/dev/js_generated/ /app/mhep/dev/static/dev/js_generated/
 
 # Collect static files for faster serving and caching
 RUN DJANGO_SETTINGS_MODULE=config.settings.staticfiles \
@@ -50,5 +51,4 @@ RUN DJANGO_SETTINGS_MODULE=config.settings.staticfiles \
 USER django
 
 EXPOSE 5000
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
-CMD ["/usr/local/bin/gunicorn", "config.wsgi", "--bind=0.0.0.0:5000", "--chdir=/app"]
+CMD [ "/usr/local/bin/gunicorn", "config.wsgi", "--bind", "0.0.0.0:5000", "--chdir", "/app", "--timeout", "120", "--log-level", "debug" ]
