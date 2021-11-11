@@ -21,6 +21,10 @@ class ListCreateAssessments(AssessmentQuerySetMixin, generics.ListCreateAPIView)
     permission_classes = [IsAuthenticated]
     serializer_class = AssessmentMetadataSerializer
 
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        return queryset.select_related("owner", "organisation")
+
 
 class RetrieveUpdateDestroyAssessment(
     AssessmentQuerySetMixin, generics.RetrieveUpdateDestroyAPIView

@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from freezegun import freeze_time
 from rest_framework import exceptions
 from rest_framework import status
@@ -153,6 +155,22 @@ class TestListAssessments(APITestCase):
     def test_returns_forbidden_if_not_logged_in(self):
         response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_num_queries(self):
+        user = UserFactory.create()
+        organisation = OrganisationFactory.create()
+        organisation.members.add(user)
+        organisation.admins.add(user)
+
+        self.client.force_authenticate(user)
+
+        for n in range(30):
+            AssessmentFactory.create(organisation=organisation)
+
+        with CaptureQueriesContext(connection) as captured_queries:
+            self.client.get(f"/{VERSION}/api/assessments/")
+
+        assert len(captured_queries) < 6
 
 
 class TestGetAssessment(APITestCase):
