@@ -2,7 +2,7 @@
 
 import { datasets } from './datasets'
 
-let g, m, w, x, z; // Variables used in for-loops
+let g, m, w, x, z, fuel; // Variables used in for-loops
 
 /*
 
