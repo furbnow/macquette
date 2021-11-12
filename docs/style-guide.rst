@@ -8,12 +8,14 @@ Use Unicode characters when possible instead of HTML elements.
 
 For example, not this:
 
-..code::
+.. code::
+
     kgCO<sub>2</sub>/m<sup>2</sup>
 
 do this instead:
 
-..code::
+.. code::
+
     kgCO₂/m²
 
 

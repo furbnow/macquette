@@ -1,5 +1,5 @@
-Design decisions
-================
+001 Design decisions
+====================
 
 Here we document some decisions and principles we worked to while
 carrying out the port from emoncms.
@@ -73,7 +73,7 @@ organisation manager) we preferred the principle of cloning templates.
 
 Rather than outputting table rows like this:
 
-.. code:: javascript
+.. code-block:: javascript
 
    var myhtml = '<tr>';
    myhtml += 'something ';
@@ -82,15 +82,15 @@ Rather than outputting table rows like this:
 
 … we’d define a hidden template row in the HTML file:
 
-.. code:: html
+.. code-block:: html
 
-   <tr id="my-row-template" style: "display: none">
+   <tr id="my-row-template" style="display: none">
      something <button class="foo-button"></button>
    </tr>
 
 … then clone and manipulate it from Javascript:
 
-.. code:: javascript
+.. code-block:: javascript
 
    var newRow = $('#my-row-template').clone();
    newRow.removeAttr('id');

@@ -79,7 +79,7 @@ For example, given the following HTML:
 
 On page load, this equivalent JS is run:
 
-..code:: javascript
+.. code-block:: javascript
 
    if (data.fabric.element[1].uvalue) {
       input.value = data.fabric.element[1].uvalue;

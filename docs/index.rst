@@ -9,13 +9,14 @@ Macquette developer documentation
    key-concepts
    javascript-framework
    testing
-   design-decisions
+   design-docs/index.rst
    style-guide
    versions
    reports
    terms
    api-dev
    carbon-co-op-internal
+   playbooks/index.rst
 
 
 Indices & Tables
