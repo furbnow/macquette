@@ -47,6 +47,7 @@ COPY ./manage.py ./
 
 # Copy in built JS assets
 COPY --from=js /app/mhep/dev/static/dev/js_generated/ /app/mhep/dev/static/dev/js_generated/
+COPY --from=js /app/mhep/v2/static/v2/js_generated/ /app/mhep/v2/static/v2/js_generated/
 
 # Collect static files for faster serving and caching
 RUN DJANGO_SETTINGS_MODULE=config.settings.staticfiles \
