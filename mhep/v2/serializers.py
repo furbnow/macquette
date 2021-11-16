@@ -24,14 +24,59 @@ class MdateMixin:
         return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
 
 
-class OrganizationSerializer(serializers.ModelSerializer):
-    """An organisation's details."""
-
+class OrganisationSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
-    name = serializers.CharField()
+    permissions = serializers.SerializerMethodField()
+    assessments = serializers.SerializerMethodField()
+    members = serializers.SerializerMethodField()
 
     class Meta:
-        model = User
+        model = Organisation
+        fields = [
+            "id",
+            "name",
+            "assessments",
+            "members",
+            "permissions",
+            "report_template",
+        ]
+
+    def get_assessments(self, org):
+        user = self.context["request"].user
+        if user in org.admins.all():
+            return org.assessments.count()
+        else:
+            return org.assessments.filter(owner=user).count()
+
+    def get_members(self, org):
+        def userinfo(user):
+            return {
+                "id": f"{user.id}",
+                "name": user.username,
+                "last_login": user.last_login.isoformat()
+                if user.last_login
+                else "never",
+                "is_admin": user in org.admins.all(),
+                "is_librarian": user in org.librarians.all(),
+            }
+
+        return [userinfo(u) for u in org.members.all().order_by("id")]
+
+    def get_permissions(self, org):
+        user = self.context["request"].user
+        return {
+            "can_add_remove_members": user in org.admins.all(),
+            "can_promote_demote_librarians": user in org.admins.all(),
+        }
+
+
+class OrganisationMetadataSerializer(OrganisationSerializer):
+    """
+    OrganisationMetadataSerializer serializes the id and name of an organisation.
+    """
+
+    class Meta:
+        model = Organisation
         fields = ["id", "name"]
 
 
@@ -91,7 +136,7 @@ class AssessmentMetadataSerializer(
     userid = serializers.SerializerMethodField()
     id = serializers.CharField(read_only=True)
     mdate = serializers.SerializerMethodField()
-    organisation = OrganizationSerializer(read_only=True)
+    organisation = OrganisationMetadataSerializer(read_only=True)
 
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
@@ -203,62 +248,6 @@ class LibrarySerializer(serializers.ModelSerializer):
 class LibraryItemSerializer(serializers.Serializer):
     tag = serializers.CharField(max_length=100)
     item = serializers.DictField(allow_empty=False)
-
-
-class OrganisationSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(read_only=True)
-    permissions = serializers.SerializerMethodField()
-    assessments = serializers.SerializerMethodField()
-    members = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Organisation
-        fields = [
-            "id",
-            "name",
-            "assessments",
-            "members",
-            "permissions",
-            "report_template",
-        ]
-
-    def get_assessments(self, org):
-        user = self.context["request"].user
-        if user in org.admins.all():
-            return org.assessments.count()
-        else:
-            return org.assessments.filter(owner=user).count()
-
-    def get_members(self, org):
-        def userinfo(user):
-            return {
-                "id": f"{user.id}",
-                "name": user.username,
-                "last_login": user.last_login.isoformat()
-                if user.last_login
-                else "never",
-                "is_admin": user in org.admins.all(),
-                "is_librarian": user in org.librarians.all(),
-            }
-
-        return [userinfo(u) for u in org.members.all().order_by("id")]
-
-    def get_permissions(self, org):
-        user = self.context["request"].user
-        return {
-            "can_add_remove_members": user in org.admins.all(),
-            "can_promote_demote_librarians": user in org.admins.all(),
-        }
-
-
-class OrganisationMetadataSerializer(OrganisationSerializer):
-    """
-    OrganisationMetadataSerializer serializes the id and name of an organisation.
-    """
-
-    class Meta:
-        model = Organisation
-        fields = ["id", "name"]
 
 
 class UserSerializer(serializers.ModelSerializer):
