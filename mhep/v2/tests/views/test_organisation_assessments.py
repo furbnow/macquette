@@ -70,7 +70,6 @@ class TestListAssessmentsForOrganisation(APITestCase):
             "id": "{}".format(assessment.pk),
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
-            "mdate": "1559406934",
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description",
