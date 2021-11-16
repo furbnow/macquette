@@ -48,6 +48,7 @@ class OrganisationSerializer(serializers.ModelSerializer):
             return {
                 "id": f"{user.id}",
                 "name": user.username,
+                "email": user.email,
                 "last_login": user.last_login.isoformat()
                 if user.last_login
                 else "never",

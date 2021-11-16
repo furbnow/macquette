@@ -46,6 +46,7 @@ class TestListOrganisations(APITestCase):
                     {
                         "id": f"{me.id}",
                         "name": me.username,
+                        "email": me.email,
                         "is_admin": False,
                         "is_librarian": True,
                         "last_login": me.last_login.isoformat(),
@@ -53,6 +54,7 @@ class TestListOrganisations(APITestCase):
                     {
                         "id": f"{org_admin.id}",
                         "name": org_admin.username,
+                        "email": org_admin.email,
                         "is_admin": True,
                         "is_librarian": False,
                         "last_login": org_admin.last_login.isoformat(),
@@ -152,6 +154,7 @@ class TestListOrganisationsPermissions(APITestCase):
             {
                 "id": f"{self.member_1.id}",
                 "name": self.member_1.username,
+                "email": self.member_1.email,
                 "is_admin": False,
                 "is_librarian": False,
                 "last_login": self.member_1.last_login.isoformat(),
@@ -159,6 +162,7 @@ class TestListOrganisationsPermissions(APITestCase):
             {
                 "id": f"{self.org_admin.id}",
                 "name": self.org_admin.username,
+                "email": self.org_admin.email,
                 "is_admin": True,
                 "is_librarian": False,
                 "last_login": self.org_admin.last_login.isoformat(),
