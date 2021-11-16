@@ -29,7 +29,7 @@ js-dev-prod:  ## Compile dev JS (one off, for production)
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
 		--target=es2019 \
-		--sourcemap --bundle
+		--sourcemap --bundle --minify
 
 .PHONY: js-v2-watch
 js-v2-watch:  ## Compile v2 JS (one off, for development)
@@ -49,7 +49,7 @@ js-v2-prod:  ## Compile v2 JS (one off, for production)
 		--loader:.js=jsx \
 		--define:process.env.NODE_ENV=\"production\" \
 		--target=es2019 \
-		--sourcemap --bundle
+		--sourcemap --bundle --minify
 
 .PHONY: js-prod
 js-prod: js-dev-prod js-v2-prod  ## Compile all JS (one off, for production)
