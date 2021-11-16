@@ -11,18 +11,15 @@ admin.site.site_header = "Macquette"
 admin.site.site_title = "Backend admin"
 admin.site.index_title = "Macquette administration"
 
-if settings.ENV == "production":
-    DEFAULT_ROUTE = "v2:list-assessments"
-else:
-    DEFAULT_ROUTE = "dev:list-assessments"
-
 urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # Login stuff
     path("", include("mhep.users.urls")),
     # Your stuff: custom urls includes go here
-    path("", RedirectView.as_view(url=reverse_lazy(DEFAULT_ROUTE)), name="index"),
+    path(
+        "", RedirectView.as_view(url=reverse_lazy("v2:list-assessments")), name="index"
+    ),
     # Add app versions after this line
     path("v2/", include("mhep.v2.urls", namespace="v2")),
     path("dev/", include("mhep.dev.urls", namespace="dev")),
