@@ -40,7 +40,9 @@ class ListOrganisations(generics.ListAPIView):
 
     def get_queryset(self, *args, **kwargs):
         return (
-            getattr(self.request.user, f"{VERSION}_organisations").all().order_by("id")
+            getattr(self.request.user, f"{VERSION}_organisations")
+            .prefetch_related("admins", "librarians")
+            .order_by("id")
         )
 
 
