@@ -13,15 +13,12 @@ User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
-    name = serializers.SerializerMethodField()
-    email = serializers.CharField()
+    name = serializers.CharField(read_only=True)
+    email = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
         fields = ["id", "name", "email"]
-
-    def get_name(self, user):
-        return user.username
 
 
 class OrganisationSerializer(serializers.ModelSerializer):
@@ -52,7 +49,7 @@ class OrganisationSerializer(serializers.ModelSerializer):
         def userinfo(user):
             return {
                 "id": f"{user.id}",
-                "name": user.username,
+                "name": user.name,
                 "email": user.email,
                 "last_login": user.last_login.isoformat()
                 if user.last_login
@@ -142,7 +139,7 @@ class AssessmentMetadataSerializer(
         return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
 
     def get_author(self, obj):
-        return obj.owner.username
+        return obj.owner.name
 
     def get_userid(self, obj):
         return "{:d}".format(obj.owner.id)
@@ -242,7 +239,7 @@ class LibrarySerializer(serializers.ModelSerializer):
             return {
                 "type": "personal",
                 "id": f"{owner_user.id}",
-                "name": owner_user.username,
+                "name": owner_user.name,
             }
         else:
             return {"type": "global", "id": None, "name": "Global"}

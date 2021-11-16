@@ -339,9 +339,9 @@ const calc = {
     $("#project-title").html(p.name);
     $("#project-description").html(p.description);
     if (p.organisation) {
-        $("#project-author").html(`${p.author}, ${p.organisation.name}`);
+        $("#project-author").html(`${p.owner.name}, ${p.organisation.name}`);
     } else {
-        $("#project-author").html(`by ${p.author}`);
+        $("#project-author").html(`by ${p.owner.name}`);
     }
 
     //**********

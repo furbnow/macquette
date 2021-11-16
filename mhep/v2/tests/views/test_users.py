@@ -25,9 +25,9 @@ class TestListUsers(APITestCase):
 
         expected = sorted(
             [
-                {"id": f"{me.id}", "name": me.username, "email": me.email},
-                {"id": f"{user_1.id}", "name": user_1.username, "email": user_1.email},
-                {"id": f"{user_2.id}", "name": user_2.username, "email": user_2.email},
+                {"id": f"{me.id}", "name": me.name, "email": me.email},
+                {"id": f"{user_1.id}", "name": user_1.name, "email": user_1.email},
+                {"id": f"{user_2.id}", "name": user_2.name, "email": user_2.email},
             ],
             key=lambda row: row["id"],
         )

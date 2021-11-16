@@ -18,7 +18,7 @@ class TestLibrarySerializer:
         expected = {
             "type": "personal",
             "id": f"{person.id}",
-            "name": f"{person.username}",
+            "name": f"{person.name}",
         }
 
         assert expected == got

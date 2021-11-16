@@ -52,12 +52,12 @@ class TestListAssessments(APITestCase):
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description",
-            "author": user.username,
+            "author": user.name,
             "userid": f"{user.id}",
             "organisation": None,
             "owner": {
                 "id": f"{user.id}",
-                "name": user.username,
+                "name": user.name,
                 "email": user.email,
             },
         }
@@ -90,7 +90,7 @@ class TestListAssessments(APITestCase):
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description",
-            "author": user.username,
+            "author": user.name,
             "userid": f"{user.id}",
             "organisation": {
                 "id": f"{organisation.pk}",
@@ -98,7 +98,7 @@ class TestListAssessments(APITestCase):
             },
             "owner": {
                 "id": f"{user.id}",
-                "name": user.username,
+                "name": user.name,
                 "email": user.email,
             },
         }
@@ -215,11 +215,11 @@ class TestGetAssessment(APITestCase):
             "status": "In progress",
             "name": "test name",
             "description": "test description",
-            "author": self.me.username,
+            "author": self.me.name,
             "userid": f"{self.me.id}",
             "owner": {
                 "id": f"{self.me.id}",
-                "name": self.me.username,
+                "name": self.me.name,
                 "email": self.me.email,
             },
             "organisation": None,
@@ -261,10 +261,10 @@ class TestGetAssessment(APITestCase):
             "description": "",
             "owner": {
                 "id": f"{self.me.id}",
-                "name": self.me.username,
+                "name": self.me.name,
                 "email": self.me.email,
             },
-            "author": self.me.username,
+            "author": self.me.name,
             "userid": f"{self.me.id}",
             "status": "In progress",
             "images": [],

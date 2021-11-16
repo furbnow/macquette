@@ -40,7 +40,7 @@ class TestListLibraries(APITestCase):
             "data": l1.data,
             "owner": {
                 "id": f"{self.me.id}",
-                "name": f"{self.me.username}",
+                "name": f"{self.me.name}",
                 "type": "personal",
             },
         } == response.data[0]
@@ -55,7 +55,7 @@ class TestListLibraries(APITestCase):
             "data": l2.data,
             "owner": {
                 "id": f"{self.me.id}",
-                "name": f"{self.me.username}",
+                "name": f"{self.me.name}",
                 "type": "personal",
             },
         } == response.data[1]
@@ -240,7 +240,7 @@ class TestCreateLibraries(APITestCase):
                 "data": {"foo": "bar"},
                 "owner": {
                     "id": f"{self.me.id}",
-                    "name": f"{self.me.username}",
+                    "name": f"{self.me.name}",
                     "type": "personal",
                 },
             }
