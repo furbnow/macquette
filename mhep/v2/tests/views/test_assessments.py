@@ -55,6 +55,11 @@ class TestListAssessments(APITestCase):
             "author": user.username,
             "userid": f"{user.id}",
             "organisation": None,
+            "owner": {
+                "id": f"{user.id}",
+                "name": user.username,
+                "email": user.email,
+            },
         }
 
         assert expected_structure == response.data.pop()
@@ -90,6 +95,11 @@ class TestListAssessments(APITestCase):
             "organisation": {
                 "id": f"{organisation.pk}",
                 "name": organisation.name,
+            },
+            "owner": {
+                "id": f"{user.id}",
+                "name": user.username,
+                "email": user.email,
             },
         }
         assert expected_structure == response.data.pop()
@@ -207,6 +217,11 @@ class TestGetAssessment(APITestCase):
             "description": "test description",
             "author": self.me.username,
             "userid": f"{self.me.id}",
+            "owner": {
+                "id": f"{self.me.id}",
+                "name": self.me.username,
+                "email": self.me.email,
+            },
             "organisation": None,
             "images": [
                 {
@@ -244,6 +259,11 @@ class TestGetAssessment(APITestCase):
             "organisation": None,
             # defaults:
             "description": "",
+            "owner": {
+                "id": f"{self.me.id}",
+                "name": self.me.username,
+                "email": self.me.email,
+            },
             "author": self.me.username,
             "userid": f"{self.me.id}",
             "status": "In progress",

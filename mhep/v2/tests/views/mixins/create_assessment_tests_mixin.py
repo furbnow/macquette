@@ -37,6 +37,11 @@ class CreateAssessmentTestsMixin:
             "description": "test description 1",
             "author": self.user.username,
             "userid": f"{self.user.id}",
+            "owner": {
+                "id": f"{self.user.id}",
+                "name": self.user.username,
+                "email": self.user.email,
+            },
         }
 
         if hasattr(self, "organisation"):

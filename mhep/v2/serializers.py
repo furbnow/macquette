@@ -11,6 +11,19 @@ from .models import Organisation
 User = get_user_model()
 
 
+class UserSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+    name = serializers.SerializerMethodField()
+    email = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ["id", "name", "email"]
+
+    def get_name(self, user):
+        return user.username
+
+
 class OrganisationSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     permissions = serializers.SerializerMethodField()
@@ -123,6 +136,7 @@ class AssessmentMetadataSerializer(
     id = serializers.CharField(read_only=True)
     mdate = serializers.SerializerMethodField()
     organisation = OrganisationMetadataSerializer(read_only=True)
+    owner = UserSerializer(read_only=True)
 
     def get_mdate(self, obj):
         return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
@@ -147,6 +161,7 @@ class AssessmentMetadataSerializer(
             "status",
             "created_at",
             "updated_at",
+            "owner",
             "author",
             "userid",
             "organisation",
@@ -171,6 +186,7 @@ class AssessmentFullSerializer(ImagesMixin, AssessmentMetadataSerializer):
             "status",
             "created_at",
             "updated_at",
+            "owner",
             "author",
             "userid",
             "organisation",
@@ -243,19 +259,6 @@ class LibrarySerializer(serializers.ModelSerializer):
 class LibraryItemSerializer(serializers.Serializer):
     tag = serializers.CharField(max_length=100)
     item = serializers.DictField(allow_empty=False)
-
-
-class UserSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(read_only=True)
-    name = serializers.SerializerMethodField()
-    email = serializers.CharField()
-
-    class Meta:
-        model = User
-        fields = ["id", "name", "email"]
-
-    def get_name(self, user):
-        return user.username
 
 
 class OrganisationLibrarianSerializer(serializers.ModelSerializer):

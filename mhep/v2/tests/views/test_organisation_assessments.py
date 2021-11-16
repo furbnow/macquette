@@ -80,6 +80,11 @@ class TestListAssessmentsForOrganisation(APITestCase):
                 "id": f"{self.organisation.pk}",
                 "name": self.organisation.name,
             },
+            "owner": {
+                "id": f"{self.org_member.id}",
+                "name": self.org_member.username,
+                "email": self.org_member.email,
+            },
         }
 
         assert expected_result == response.data.pop()
