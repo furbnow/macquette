@@ -51,6 +51,8 @@ USE_L10N = True
 USE_TZ = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths
 LOCALE_PATHS = [ROOT_DIR.path("locale")]
+# https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # The externally-accessible URL of the site
 # This is used to tell external apps where we are. e.g. Auth0 post-login redirects
