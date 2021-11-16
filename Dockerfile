@@ -57,4 +57,4 @@ RUN DJANGO_SETTINGS_MODULE=config.settings.staticfiles \
 USER django
 
 EXPOSE 5000
-CMD [ "/usr/local/bin/gunicorn", "config.wsgi", "--bind", "0.0.0.0:5000", "--chdir", "/app", "--timeout", "120", "--log-level", "debug" ]
+CMD [ "/usr/local/bin/gunicorn", "config.wsgi", "--bind", "0.0.0.0:5000", "--chdir", "/app", "--timeout", "120", "--log-level", "debug", "--workers", "3" ]
