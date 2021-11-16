@@ -128,21 +128,13 @@ class ImageUpdateSerializer(serializers.Serializer):
 class AssessmentMetadataSerializer(
     serializers.ModelSerializer,
 ):
-    author = serializers.SerializerMethodField()
-    userid = serializers.SerializerMethodField()
     id = serializers.CharField(read_only=True)
     mdate = serializers.SerializerMethodField()
-    organisation = OrganisationMetadataSerializer(read_only=True)
     owner = UserSerializer(read_only=True)
+    organisation = OrganisationMetadataSerializer(read_only=True)
 
     def get_mdate(self, obj):
         return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
-
-    def get_author(self, obj):
-        return obj.owner.name
-
-    def get_userid(self, obj):
-        return "{:d}".format(obj.owner.id)
 
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
@@ -159,8 +151,6 @@ class AssessmentMetadataSerializer(
             "created_at",
             "updated_at",
             "owner",
-            "author",
-            "userid",
             "organisation",
             "mdate",
         ]
@@ -184,8 +174,6 @@ class AssessmentFullSerializer(ImagesMixin, AssessmentMetadataSerializer):
             "created_at",
             "updated_at",
             "owner",
-            "author",
-            "userid",
             "organisation",
             "mdate",
             "images",

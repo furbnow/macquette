@@ -35,8 +35,6 @@ class CreateAssessmentTestsMixin:
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description 1",
-            "author": self.user.name,
-            "userid": f"{self.user.id}",
             "owner": {
                 "id": f"{self.user.id}",
                 "name": self.user.name,

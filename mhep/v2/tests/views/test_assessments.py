@@ -52,8 +52,6 @@ class TestListAssessments(APITestCase):
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description",
-            "author": user.name,
-            "userid": f"{user.id}",
             "organisation": None,
             "owner": {
                 "id": f"{user.id}",
@@ -90,8 +88,6 @@ class TestListAssessments(APITestCase):
             "status": "In progress",
             "name": "test assessment 1",
             "description": "test description",
-            "author": user.name,
-            "userid": f"{user.id}",
             "organisation": {
                 "id": f"{organisation.pk}",
                 "name": organisation.name,
@@ -215,8 +211,6 @@ class TestGetAssessment(APITestCase):
             "status": "In progress",
             "name": "test name",
             "description": "test description",
-            "author": self.me.name,
-            "userid": f"{self.me.id}",
             "owner": {
                 "id": f"{self.me.id}",
                 "name": self.me.name,
@@ -264,8 +258,6 @@ class TestGetAssessment(APITestCase):
                 "name": self.me.name,
                 "email": self.me.email,
             },
-            "author": self.me.name,
-            "userid": f"{self.me.id}",
             "status": "In progress",
             "images": [],
             "data": {},
