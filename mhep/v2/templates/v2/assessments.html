@@ -382,8 +382,8 @@
             let assessmentURL = urlHelper.html.assessment(assessment.id);
 
             let owner = `${assessment.owner.name}`;
-            if (assessment.organisation) {
-                owner += `<br><small>(${assessment.organisation.name})</small>`
+            if (assessment.organisation && !orgid) {
+                owner += `<br><small>${assessment.organisation.name}</small>`
             }
 
             out +=
