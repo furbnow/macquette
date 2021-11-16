@@ -334,6 +334,7 @@ function get_context_data(scenarios) {
             report_version: hh['report_version'],
             mhep_version: VERSION,
             assessor_name: hh['assessor_name'],
+            signoff_name: hh['report_signoff'],
         },
         aims: {
             future: {
