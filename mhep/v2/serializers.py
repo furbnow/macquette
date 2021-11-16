@@ -19,11 +19,6 @@ class AuthorUserIDMixin:
         return "{:d}".format(obj.owner.id)
 
 
-class MdateMixin:
-    def get_mdate(self, obj):
-        return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
-
-
 class OrganisationSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     permissions = serializers.SerializerMethodField()
@@ -128,7 +123,6 @@ class ImageUpdateSerializer(serializers.Serializer):
 
 
 class AssessmentMetadataSerializer(
-    MdateMixin,
     AuthorUserIDMixin,
     serializers.ModelSerializer,
 ):
@@ -137,6 +131,9 @@ class AssessmentMetadataSerializer(
     id = serializers.CharField(read_only=True)
     mdate = serializers.SerializerMethodField()
     organisation = OrganisationMetadataSerializer(read_only=True)
+
+    def get_mdate(self, obj):
+        return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
 
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
