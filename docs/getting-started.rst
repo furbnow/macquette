@@ -12,9 +12,9 @@ You will need:
 
 -  Docker <https://www.docker.com/>, with Compose
    <https://docs.docker.com/compose/install/>
--  Python 3.7 and pip <https://pip.pypa.io/en/stable/installing/>
+-  Python 3.9 and pip <https://pip.pypa.io/en/stable/installing/>
 -  GNU make
--  Node (version 14+) with yarn
+-  Node (version 16+) with yarn
 
 There are many ways to get a functioning version of Node - we recommend
 `checking out the Node website <https://nodejs.org/en/download/package-manager/>`_
@@ -23,7 +23,7 @@ on this topic.
 Debian / Ubuntu
 ~~~~~~~~~~~~~~~
 
-``apt install docker.io docker-compose make python3.7 libpq-dev``
+``apt install docker.io docker-compose make python3.9 libpq-dev``
 
 Make sure your user is in the ``docker`` group, by running
 ``sudo usermod -a -G docker <username>``.
@@ -45,7 +45,7 @@ To create a new virtual environment, run:
 
 .. code:: bash
 
-   mkvirtualenv -a . -p /usr/bin/python3.7 cc-macquette
+   mkvirtualenv -a . -p /usr/bin/python3.9 cc-macquette
 
 Your new virtualenv will be activated. To reactivate later, use 'workon
 cc-macquette'.
