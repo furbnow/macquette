@@ -11,14 +11,6 @@ from .models import Organisation
 User = get_user_model()
 
 
-class AuthorUserIDMixin:
-    def get_author(self, obj):
-        return obj.owner.username
-
-    def get_userid(self, obj):
-        return "{:d}".format(obj.owner.id)
-
-
 class OrganisationSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     permissions = serializers.SerializerMethodField()
@@ -124,7 +116,6 @@ class ImageUpdateSerializer(serializers.Serializer):
 
 
 class AssessmentMetadataSerializer(
-    AuthorUserIDMixin,
     serializers.ModelSerializer,
 ):
     author = serializers.SerializerMethodField()
@@ -135,6 +126,12 @@ class AssessmentMetadataSerializer(
 
     def get_mdate(self, obj):
         return "{:d}".format(int(datetime.datetime.timestamp(obj.updated_at)))
+
+    def get_author(self, obj):
+        return obj.owner.username
+
+    def get_userid(self, obj):
+        return "{:d}".format(obj.owner.id)
 
     def create(self, validated_data):
         validated_data["owner"] = self.context["request"].user
