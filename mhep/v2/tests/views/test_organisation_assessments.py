@@ -77,7 +77,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
             "author": self.org_member.username,
             "userid": f"{self.org_member.id}",
             "organisation": {
-                "id": self.organisation.pk,
+                "id": f"{self.organisation.pk}",
                 "name": self.organisation.name,
             },
         }
