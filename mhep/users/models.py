@@ -19,3 +19,6 @@ class User(AbstractUser):
     def can_list_users(self) -> bool:
         """Only users that are admins of something can list users."""
         return self.organisations_where_admin.exists()
+
+    class Meta:
+        ordering = ["id"]
