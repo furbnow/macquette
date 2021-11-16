@@ -41,7 +41,6 @@ Returns:
                "name": "Local Admin",
                "email": "example@domain.net"
            },
-           "mdate": "1566384058"
        }
    ]
 
@@ -85,7 +84,6 @@ Returns:
                "name": "Local Admin",
                "email": "example@domain.net"
            },
-           "mdate": "1566384058",
        }
    ]
 
@@ -126,7 +124,6 @@ Returns:
            "name": "Local Admin",
            "email": "example@domain.net"
        },
-       "mdate": "1566384058",
        "images": [
            {
                "id": 7,
@@ -193,7 +190,6 @@ Returns:
        "status": "In progress",
        "created_at": "2019-06-01T16:35:34Z",
        "updated_at": "2019-06-01T16:35:34Z",
-       "mdate": "1559406934",
        "user": {
            "id": "1",
            "name": "Local Admin",
@@ -242,7 +238,6 @@ Returns:
        "status": "In progress",
        "created_at": "2019-06-01T16:35:34Z",
        "updated_at": "2019-06-01T16:35:34Z",
-       "mdate": "1559406934",
        "user": {
            "id": "1",
            "name": "Local Admin",
