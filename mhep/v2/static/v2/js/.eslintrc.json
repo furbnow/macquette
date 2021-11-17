@@ -15,7 +15,6 @@
         "indent": "off",
         "curly": ["error", "all"],
         "brace-style": ["error", "1tbs"],
-        "indent": ["error", 4, { "SwitchCase": 1 }],
         "array-callback-return": "error"
     }
 }
