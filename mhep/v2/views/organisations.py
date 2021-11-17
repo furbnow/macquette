@@ -4,6 +4,7 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .. import VERSION
 from ..models import Assessment
@@ -14,11 +15,13 @@ from ..permissions import IsLibrarianOfOrganisation
 from ..permissions import IsMemberOfOrganisation
 from ..serializers import AssessmentMetadataSerializer
 from ..serializers import LibrarySerializer
+from ..serializers import OrganisationInviteSerializer
 from ..serializers import OrganisationLibrarianSerializer
 from ..serializers import OrganisationMemberSerializer
 from ..serializers import OrganisationMetadataSerializer
 from ..serializers import OrganisationSerializer
 from .exceptions import BadRequest
+from mhep.users import services as user_services
 
 User = get_user_model()
 
@@ -109,6 +112,26 @@ class CreateDeleteOrganisationLibrarians(generics.UpdateAPIView):
 
         org.librarians.remove(user)
         return Response("", status=status.HTTP_204_NO_CONTENT)
+
+
+class InviteOrganisationMembers(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOfOrganisation]
+
+    def post(self, request, pk):
+        org = Organisation.objects.get(id=self.kwargs["pk"])
+
+        serializer = OrganisationInviteSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+
+        for row in serializer.data:
+            try:
+                user = User.objects.get(email=row["email"])
+            except User.DoesNotExist:
+                user = user_services.create_user(row["name"], row["email"])
+
+            org.members.add(user)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CreateDeleteOrganisationMembers(generics.UpdateAPIView):

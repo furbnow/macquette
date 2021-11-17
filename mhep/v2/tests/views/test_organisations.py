@@ -2,12 +2,14 @@ import datetime
 
 import pytest
 import pytz
+from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from ... import VERSION
 from ..factories import AssessmentFactory
 from ..factories import OrganisationFactory
+from mhep.users.models import User
 from mhep.users.tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db  # enable DB and run each test in transaction
@@ -171,3 +173,79 @@ class TestListOrganisationsPermissions(APITestCase):
 
         assert response.data[0]["members"] == expected_members
         assert response.data[0]["permissions"] == expected_permissions
+
+
+class TestInviteOrganisationMembers(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.org = OrganisationFactory.create()
+
+        cls.org_admin = UserFactory.create()
+        cls.org.members.add(cls.org_admin)
+        cls.org.admins.add(cls.org_admin)
+
+        cls.org_member = UserFactory()
+        cls.org.members.add(cls.org_member)
+
+        cls.non_member = UserFactory()
+
+    def test_nonexistent_organisation_should_404(self):
+        self.client.force_authenticate(self.org_member)
+
+        response = self.client.post(f"/{VERSION}/api/organisations/234/members/")
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_organisation_when_not_admin_should_403(self):
+        self.client.force_authenticate(self.org_member)
+
+        response = self.client.post(
+            f"/{VERSION}/api/organisations/{self.org.pk}/members/",
+            [{"name": "Fred Test", "email": "test@example.com"}],
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_invalid_input(self):
+        self.client.force_authenticate(self.org_admin)
+
+        response = self.client.post(
+            f"/{VERSION}/api/organisations/{self.org.pk}/members/",
+            [{"userid": self.org_member.id}],
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    @override_settings(USE_AUTH_SERVICE=False)
+    def test_invite_existing_user_adds_to_group(self):
+        self.client.force_authenticate(self.org_admin)
+        pre_count = User.objects.count()
+
+        response = self.client.post(
+            f"/{VERSION}/api/organisations/{self.org.pk}/members/",
+            [{"email": self.non_member.email, "name": self.non_member.name}],
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert self.non_member in self.org.members.all()
+        assert User.objects.count() == pre_count
+
+    @override_settings(USE_AUTH_SERVICE=False)
+    def test_invite_new_user_sends_email(self):
+        self.client.force_authenticate(self.org_admin)
+        pre_count = User.objects.count()
+
+        response = self.client.post(
+            f"/{VERSION}/api/organisations/{self.org.pk}/members/",
+            [{"email": "testing+email+44@gmail.com", "name": "Name Surname"}],
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert "testing+email+44@gmail.com" in self.org.members.values_list(
+            "email", flat=True
+        )
+        assert User.objects.count() == pre_count + 1

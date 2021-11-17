@@ -248,3 +248,8 @@ class OrganisationMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
         fields = []
+
+
+class OrganisationInviteSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    name = serializers.CharField()

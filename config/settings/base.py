@@ -60,6 +60,8 @@ SITE_URL = env.str("SITE_URL", "")
 
 APP_NAME = env.str("APP_NAME", "Macquette")
 
+FROM_EMAIL = env.str("FROM_EMAIL", "")
+
 
 # Sentry
 # ------------------------------------------------------------------------------
@@ -158,7 +160,8 @@ if USE_AUTH_SERVICE is True:
     SOCIAL_AUTH_AUTH0_KEY = env.str("AUTH0_CLIENT_ID")
     SOCIAL_AUTH_AUTH0_SECRET = env.str("AUTH0_CLIENT_SECRET")
     SOCIAL_AUTH_AUTH0_SCOPE = ["openid", "profile"]
-
+    AUTH0_ENDPOINT = env.str("AUTH0_API_DOMAIN")
+    AUTH0_DB_NAME = env.str("AUTH0_DB_NAME")
 else:
     # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
     AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]

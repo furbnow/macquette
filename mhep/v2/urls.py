@@ -9,6 +9,7 @@ from .views import CreateDeleteOrganisationMembers
 from .views import CreateOrganisationLibraries
 from .views import CreateUpdateDeleteLibraryItem
 from .views import DuplicateAssessment
+from .views import InviteOrganisationMembers
 from .views import ListAssessmentsHTMLView
 from .views import ListCreateAssessments
 from .views import ListCreateLibraries
@@ -98,6 +99,11 @@ urlpatterns = [
         "api/organisations/<int:pk>/libraries/<int:libraryid>/shares/",
         view=ListOrganisationLibraryShares.as_view(),
         name="list-organisation-library-shares",
+    ),
+    path(
+        "api/organisations/<int:pk>/members/",
+        view=InviteOrganisationMembers.as_view(),
+        name="create-delete-organisation-members",
     ),
     path(
         "api/organisations/<int:pk>/members/<int:userid>/",

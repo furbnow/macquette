@@ -1,3 +1,4 @@
+from datetime import timezone
 from typing import Any
 from typing import Sequence
 
@@ -12,6 +13,7 @@ class UserFactory(DjangoModelFactory):
     username = Faker("user_name")
     email = Faker("email")
     name = Faker("name")
+    last_login = Faker("date_time_between", start_date="-30d", tzinfo=timezone.utc)
 
     @post_generation
     def password(self, create: bool, extracted: Sequence[Any], **kwargs):

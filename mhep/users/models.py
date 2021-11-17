@@ -20,5 +20,8 @@ class User(AbstractUser):
         """Only users that are admins of something can list users."""
         return self.organisations_where_admin.exists()
 
+    def __str__(self):
+        return f'"{self.name}" <{self.email}> #{self.id}'
+
     class Meta:
         ordering = ["id"]

@@ -26,3 +26,4 @@ sentry-sdk            # https://github.com/getsentry/sentry-python
 # ------------------------------------------------------------------------------
 python-jose
 social-auth-app-django
+auth0-python

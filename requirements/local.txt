@@ -18,6 +18,8 @@ astroid==2.8.5
     # via pylint
 attrs==21.2.0
     # via pytest
+auth0-python==3.19.0
+    # via -r requirements/./production.txt
 babel==2.9.1
     # via sphinx
 backcall==0.2.0
@@ -77,6 +79,7 @@ coverage[toml]==6.1.2
 cryptography==35.0.0
     # via
     #   -r requirements/./production.txt
+    #   pyjwt
     #   social-auth-core
 decorator==5.1.0
     # via
@@ -283,9 +286,10 @@ pygments==2.10.0
     # via
     #   ipython
     #   sphinx
-pyjwt==2.3.0
+pyjwt[crypto]==2.3.0
     # via
     #   -r requirements/./production.txt
+    #   auth0-python
     #   social-auth-core
 pylint==2.11.1
     # via
@@ -331,6 +335,7 @@ pyyaml==6.0
 requests==2.26.0
     # via
     #   -r requirements/./production.txt
+    #   auth0-python
     #   coreapi
     #   django-anymail
     #   djangorestframework-stubs
