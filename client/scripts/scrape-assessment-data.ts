@@ -1,7 +1,7 @@
 import { prompt } from 'inquirer';
 import axios, { AxiosInstance } from 'axios';
 import { opendir, stat, open } from 'fs/promises';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import Bottleneck from 'bottleneck';
 
 const MAX_CONCURRENT_REQUESTS = 4;
@@ -31,10 +31,10 @@ const getParams = async (): Promise<Params> => {
             type: 'input',
             name: 'dataDirectory',
             message: 'Data directory',
-            default: './test/model/fixtures/private',
+            default: resolve(__dirname, '..', 'test', 'model', 'fixtures', 'private'),
         },
         {
-            type: 'input',
+            type: 'password',
             name: 'sessionid',
             message: 'Django sessionid cookie',
         },

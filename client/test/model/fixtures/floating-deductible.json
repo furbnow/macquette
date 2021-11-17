@@ -1,0 +1,522 @@
+{
+    "master": {
+        "LAC": {
+            "L": 1,
+            "C1": 0.5,
+            "C2": 1.2479313667232002,
+            "EA": 852.2360316402194,
+            "EB": 245.18734713245627,
+            "EC": 1051.4705882352941,
+            "EL": 152.98849060512092,
+            "GC": 1051.4705882352941,
+            "LLE": 1,
+            "EC_monthly": 87.62254901960785,
+            "fuels_cooking": [
+                {
+                    "fuel": "Standard Tariff",
+                    "demand": 1051.4705882352941,
+                    "fraction": 1,
+                    "fuel_input": 1051.4705882352941,
+                    "system_efficiency": 1,
+                    "fuel_input_monthly": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+            ],
+            "fuels_lighting": [
+                {
+                    "fuel": "Standard Tariff",
+                    "demand": 152.76496273673303,
+                    "fraction": 1,
+                    "fuel_input": 152.76496273673303,
+                    "system_efficiency": 1,
+                    "fuel_input_monthly": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+            ],
+            "fuels_appliances": [
+                {
+                    "fuel": "Standard Tariff",
+                    "demand": 852.2360316402194,
+                    "fraction": 1,
+                    "fuel_input": 852.2360316402194,
+                    "system_efficiency": 1,
+                    "fuel_input_monthly": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+            ],
+            "energy_efficient_cooking": false,
+            "energy_efficient_appliances": false,
+            "reduced_heat_gains_lighting": false
+        },
+        "SHW": {},
+        "fuels": {
+            "Bulk LPG": {
+                "SAP_code": 2,
+                "category": "Gas",
+                "fuelcost": 6.59,
+                "co2factor": 0.241,
+                "standingcharge": 58,
+                "primaryenergyfactor": 1.141
+            },
+            "Mains Gas": {
+                "SAP_code": 1,
+                "category": "Gas",
+                "fuelcost": 3.93,
+                "co2factor": 0.21,
+                "standingcharge": 88,
+                "primaryenergyfactor": 1.13
+            },
+            "Wood Logs": {
+                "SAP_code": 20,
+                "category": "Solid fuel",
+                "fuelcost": 4.65,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.046
+            },
+            "Anthracite": {
+                "SAP_code": 15,
+                "category": "Solid fuel",
+                "fuelcost": 4.14,
+                "co2factor": 0.395,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.064
+            },
+            "House Coal": {
+                "SAP_code": 11,
+                "category": "Solid fuel",
+                "fuelcost": 4.18,
+                "co2factor": 0.395,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.064
+            },
+            "Wood chips": {
+                "SAP_code": 21,
+                "category": "Solid fuel",
+                "fuelcost": 3.48,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.046
+            },
+            "generation": {
+                "SAP_code": 0,
+                "category": "Generation",
+                "fuelcost": 0,
+                "co2factor": 0.136,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.501
+            },
+            "Heating Oil": {
+                "SAP_code": 4,
+                "category": "Oil",
+                "fuelcost": 4.35,
+                "co2factor": 0.298,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.18
+            },
+            "Bottled LPG ": {
+                "SAP_code": 3,
+                "category": "Gas",
+                "fuelcost": 7.85,
+                "co2factor": 0.241,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.141
+            },
+            "Standard Tariff": {
+                "SAP_code": 30,
+                "category": "Electricity",
+                "fuelcost": 17.56,
+                "co2factor": 0.136,
+                "standingcharge": 72,
+                "primaryenergyfactor": 1.501
+            },
+            "Dual Fuel Appliance": {
+                "SAP_code": 10,
+                "category": "Solid fuel",
+                "fuelcost": 4.53,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.049
+            },
+            "24-hour heating tariff": {
+                "SAP_code": 35,
+                "category": "Electricity",
+                "fuelcost": 10.38,
+                "co2factor": 0.136,
+                "standingcharge": 31,
+                "primaryenergyfactor": 1.501
+            },
+            "7 Hour tariff - Low Rate": {
+                "SAP_code": 31,
+                "category": "Electricity",
+                "fuelcost": 8.13,
+                "co2factor": 0.136,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.501
+            },
+            "10-hour tariff - Low Rate": {
+                "SAP_code": 33,
+                "category": "Electricity",
+                "fuelcost": 10.68,
+                "co2factor": 0.136,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.501
+            },
+            "7-Hour tariff - High Rate": {
+                "SAP_code": 32,
+                "category": "Electricity",
+                "fuelcost": 20.72,
+                "co2factor": 0.136,
+                "standingcharge": 8,
+                "primaryenergyfactor": 1.501
+            },
+            "10-hour tariff - High Rate": {
+                "SAP_code": 34,
+                "category": "Electricity",
+                "fuelcost": 18.71,
+                "co2factor": 0.136,
+                "standingcharge": 7,
+                "primaryenergyfactor": 1.501
+            },
+            "Manufactured smokeless fuel": {
+                "SAP_code": 12,
+                "category": "Solid fuel",
+                "fuelcost": 5.17,
+                "co2factor": 0.366,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.261
+            },
+            "Wood pellets main heating bulk supply": {
+                "SAP_code": 23,
+                "category": "Solid fuel",
+                "fuelcost": 5.51,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.325
+            },
+            "Wood Pellets secondary heating in bags": {
+                "SAP_code": 22,
+                "category": "Solid fuel",
+                "fuelcost": 6.09,
+                "co2factor": 0.39,
+                "standingcharge": 0,
+                "primaryenergyfactor": 1.325
+            }
+        },
+        "fabric": {
+            "elements": [
+                {
+                    "g": "",
+                    "h": 3,
+                    "l": 5,
+                    "ff": "",
+                    "gL": "",
+                    "id": 1,
+                    "lib": "External",
+                    "area": 15,
+                    "cost": "",
+                    "name": "External Wall - Existing",
+                    "type": "Wall",
+                    "notes": "",
+                    "kvalue": 1,
+                    "uvalue": 0.5,
+                    "who_by": "",
+                    "benefits": "",
+                    "location": "walls ice cream",
+                    "disruption": "",
+                    "description": "",
+                    "maintenance": "",
+                    "performance": "",
+                    "associated_work": ""
+                },
+                {
+                    "g": "",
+                    "h": 3,
+                    "l": 3,
+                    "ff": "",
+                    "gL": "",
+                    "id": 2,
+                    "lib": "PW03",
+                    "area": 9,
+                    "cost": "",
+                    "name": "Uncapped and unfilled timber frame party wall",
+                    "type": "Party_wall",
+                    "notes": "",
+                    "kvalue": "18",
+                    "uvalue": 0.6,
+                    "who_by": "",
+                    "benefits": "",
+                    "location": "the party time wall",
+                    "disruption": "",
+                    "description": "",
+                    "maintenance": "",
+                    "performance": "",
+                    "associated_work": ""
+                },
+                {
+                    "g": "",
+                    "h": 10,
+                    "l": 10,
+                    "ff": "",
+                    "gL": "",
+                    "id": 3,
+                    "lib": "FR05",
+                    "area": 100,
+                    "cost": "",
+                    "name": "Flat roof, c.200mm insulation",
+                    "type": "Roof",
+                    "notes": "",
+                    "kvalue": "9",
+                    "uvalue": 0.25,
+                    "who_by": "",
+                    "benefits": "",
+                    "location": "put a roof on it",
+                    "disruption": "",
+                    "description": "",
+                    "maintenance": "",
+                    "performance": "",
+                    "associated_work": ""
+                },
+                {
+                    "g": "",
+                    "h": 0,
+                    "l": 0,
+                    "ff": "",
+                    "gL": "",
+                    "id": 4,
+                    "lib": "FL03",
+                    "area": 42,
+                    "cost": "",
+                    "name": "Uninsulated suspended timber ground floor",
+                    "type": "Floor",
+                    "notes": "",
+                    "kvalue": "9",
+                    "uvalue": 1,
+                    "who_by": "",
+                    "benefits": "",
+                    "location": "four to the floor",
+                    "perimeter": 14,
+                    "disruption": "",
+                    "description": "U-value to be calculated using floor U-value calculator",
+                    "maintenance": "",
+                    "performance": "",
+                    "associated_work": ""
+                },
+                {
+                    "g": "0",
+                    "h": 2,
+                    "l": 0.8,
+                    "ff": "0",
+                    "gL": "0",
+                    "id": 5,
+                    "lib": "DR03",
+                    "area": 1.6,
+                    "cost": "",
+                    "name": "Insulated Solid Door",
+                    "type": "Door",
+                    "notes": "",
+                    "kvalue": "0",
+                    "uvalue": 1.1,
+                    "who_by": "",
+                    "benefits": "",
+                    "location": "doorian gray",
+                    "disruption": "",
+                    "description": "",
+                    "maintenance": "",
+                    "orientation": 3,
+                    "overshading": 2,
+                    "performance": "",
+                    "subtractfrom": 1,
+                    "associated_work": ""
+                },
+                {
+                    "g": "0.72",
+                    "h": 1,
+                    "l": 1,
+                    "ff": "0.7",
+                    "gL": "0.8",
+                    "id": 6,
+                    "lib": "WD06",
+                    "area": 1,
+                    "cost": "",
+                    "name": "Double glazed window, newer (16mm cavity)",
+                    "type": "Window",
+                    "notes": "",
+                    "kvalue": "0",
+                    "uvalue": 2,
+                    "who_by": "",
+                    "benefits": "",
+                    "location": "sashay away",
+                    "disruption": "",
+                    "description": "Newer window with warm edge spacer, likely to have coatings and gas filled cavity. Most commonly installed after 2010. ",
+                    "maintenance": "",
+                    "orientation": 3,
+                    "overshading": 2,
+                    "performance": "",
+                    "subtractfrom": 1,
+                    "associated_work": ""
+                },
+                {
+                    "g": "",
+                    "h": 0,
+                    "l": 0,
+                    "ff": "",
+                    "gL": "",
+                    "id": 7,
+                    "lib": "LFT01",
+                    "area": 100,
+                    "cost": "",
+                    "name": "Uninsulated loft ",
+                    "type": "Loft",
+                    "notes": "",
+                    "kvalue": "9",
+                    "uvalue": 2.3,
+                    "who_by": "",
+                    "benefits": "",
+                    "location": "lofty heights",
+                    "disruption": "",
+                    "description": "",
+                    "maintenance": "",
+                    "performance": "",
+                    "associated_work": ""
+                },
+                {
+                    "g": "",
+                    "h": 0,
+                    "l": 0,
+                    "ff": "",
+                    "gL": "",
+                    "id": 8,
+                    "lib": "HT01",
+                    "area": 0,
+                    "cost": "",
+                    "name": "Uninsulated Loft Hatch ",
+                    "type": "Hatch",
+                    "notes": "",
+                    "kvalue": "9",
+                    "uvalue": 2.4,
+                    "who_by": "",
+                    "benefits": "",
+                    "location": "",
+                    "disruption": "",
+                    "description": "",
+                    "maintenance": "",
+                    "performance": "",
+                    "associated_work": ""
+                }
+            ],
+            "measures": {},
+            "global_TMP": false,
+            "global_TMP_value": 250,
+            "thermal_bridging_yvalue": 0.15
+        },
+        "floors": [
+            {
+                "area": 20,
+                "name": "Ground Floor",
+                "height": 3
+            }
+        ],
+        "region": 8,
+        "altitude": 100,
+        "measures": {
+            "ventilation": {}
+        },
+        "household": {},
+        "generation": {
+            "systems": {},
+            "wind_FIT": 0,
+            "hydro_FIT": 0,
+            "solar_FIT": 0,
+            "total_CO2": 0,
+            "total_exported": 0,
+            "wind_annual_kwh": 0,
+            "wind_export_FIT": 0,
+            "hydro_annual_kwh": 0,
+            "hydro_export_FIT": 0,
+            "solar_annual_kwh": 0,
+            "solar_export_FIT": 0,
+            "total_generation": 0,
+            "total_used_onsite": 0,
+            "use_PV_calculator": false,
+            "solarpv_inclination": 35,
+            "solarpv_orientation": 4,
+            "solarpv_overshading": 1,
+            "total_energy_income": 0,
+            "total_primaryenergy": 0,
+            "solarpv_kwp_installed": 0,
+            "wind_fraction_used_onsite": 0.5,
+            "hydro_fraction_used_onsite": 0.5,
+            "solar_fraction_used_onsite": 0.5
+        },
+        "temperature": {
+            "target": 21,
+            "hours_off": {
+                "weekday": [0],
+                "weekend": [0]
+            },
+            "living_area": 0,
+            "responsiveness": 1,
+            "temperature_adjustment": 0
+        },
+        "ventilation": {
+            "CDF": [],
+            "EVP": [],
+            "IVF": [],
+            "draught_lobby": false,
+            "ventilation_name": "Natural ventilation",
+            "ventilation_type": "NV",
+            "air_permeability_test": false,
+            "dwelling_construction": "masonry",
+            "air_permeability_value": 0,
+            "suspended_wooden_floor": 0,
+            "system_air_change_rate": 0.5,
+            "number_of_sides_sheltered": 0,
+            "system_specific_fan_power": 3,
+            "percentage_draught_proofed": 100,
+            "balanced_heat_recovery_efficiency": 65
+        },
+        "appliancelist": {
+            "list": [
+                {
+                    "fuel": "Standard Tariff",
+                    "name": "LED Light",
+                    "hours": 12,
+                    "power": 6,
+                    "category": "lighting",
+                    "efficiency": 1
+                }
+            ]
+        },
+        "currentenergy": {
+            "generation": {
+                "annual_CO2": 0,
+                "primaryenergy": 0,
+                "annual_savings": 0,
+                "annual_FIT_income": 0,
+                "annual_generation": 0,
+                "fraction_used_onsite": 0.25
+            },
+            "use_by_fuel": {}
+        },
+        "scenario_name": "Baseline",
+        "space_heating": {
+            "heating_off_summer": true,
+            "use_utilfactor_forgains": true
+        },
+        "water_heating": {
+            "Vc": 0,
+            "water_usage": [],
+            "pipework_insulation": "Fully insulated primary pipework",
+            "solar_water_heating": false,
+            "annual_energy_content": 959.7675265444443,
+            "hot_water_control_type": "no_cylinder_thermostat",
+            "contains_dedicated_solar_storage_or_WWHRS": 0
+        },
+        "use_generation": 1,
+        "heating_systems": [],
+        "custom_occupancy": 1,
+        "applianceCarbonCoop": {
+            "list": []
+        },
+        "LAC_calculation_type": "SAP",
+        "use_custom_occupancy": 1
+    }
+}

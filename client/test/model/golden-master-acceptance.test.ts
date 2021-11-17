@@ -11,26 +11,31 @@ const loadFixture = (...pathSegments: string[]): unknown => {
 };
 
 describe('golden master acceptance tests', () => {
-    test("one scenario that's empty", () => {
-        const input = loadFixture('empty.json') as any;
-        const expectedOutput = mapValues(input, (scenario) => {
-            const data = cloneDeep(scenario);
-            referenceCalcRun(data);
-            return data;
+    const publicFixtures = readdirSync(FIXTURES).filter((filename) =>
+        filename.endsWith('.json'),
+    );
+    for (const fixtureName of publicFixtures) {
+        test(`${fixtureName}`, () => {
+            const input = loadFixture(fixtureName) as any;
+            const expectedOutput = mapValues(input, (scenario) => {
+                const data = cloneDeep(scenario);
+                referenceCalcRun(data);
+                return data;
+            });
+            const computedOutput = mapValues(input, (scenario) => {
+                const data = cloneDeep(scenario);
+                calcRun(data);
+                return data;
+            });
+            expect(computedOutput).toEqualApproximately(expectedOutput);
         });
-        const computedOutput = mapValues(input, (scenario) => {
-            const data = cloneDeep(scenario);
-            calcRun(data);
-            return data;
-        });
-        expect(computedOutput).toEqual(expectedOutput);
-    });
+    }
 
     const privateFixtures = readdirSync(join(FIXTURES, 'private')).filter(
-        (filename) => filename[0] !== '.',
+        (filename) => !filename.startsWith('.'),
     );
     for (const fixtureName of privateFixtures) {
-        test(`${fixtureName}`, () => {
+        test(`private/${fixtureName}`, () => {
             const input = loadFixture(join('private', fixtureName)) as any;
             const expectedOutput = mapValues(input.data, (scenario) => {
                 const data = cloneDeep(scenario);
@@ -42,7 +47,7 @@ describe('golden master acceptance tests', () => {
                 calcRun(data);
                 return data;
             });
-            expect(computedOutput).toEqual(expectedOutput);
+            expect(computedOutput).toEqualApproximately(expectedOutput);
         });
     }
 });

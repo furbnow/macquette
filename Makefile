@@ -143,7 +143,7 @@ lint-js-legacy:  ## Runs eslint with a separate config on legacy (non-compiled) 
 		--config mhep/v2/static/v2/js/.eslintrc.json \
 		--ignore-path mhep/v2/static/v2/js/.eslintignore \
 		--max-warnings 0 \
-		mhep/v2/static/v2/
+		mhep/v2/static/v2/js/
 
 .PHONY: docker-build
 docker-build:  ## Build the service image
