@@ -33,8 +33,11 @@ def create_user(
             "email": email,
             "password": password,
             "blocked": False,
+            # The email is not verified and we don't want Auth0 sending their
+            # own verification email because the 'password change' email itself
+            # will do the verification.
             "email_verified": False,
-            "verify_email": verify_email,
+            "verify_email": False,
             "name": name,
         }
     )

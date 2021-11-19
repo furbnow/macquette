@@ -8,7 +8,7 @@ from . import auth0
 from .models import User
 
 
-def create_user(name: str, email: str, verify_email: bool = True) -> User:
+def create_user(name: str, email: str) -> User:
     """Create a user using whatever Auth system is in action."""
 
     # Generate a random password that will be immediately changed
@@ -22,7 +22,6 @@ def create_user(name: str, email: str, verify_email: bool = True) -> User:
             name,
             email,
             password,
-            verify_email,
         )
         UserSocialAuth.objects.get_or_create(
             user=user, uid=auth0_userid, provider="auth0"
@@ -51,20 +50,10 @@ def _create_django_user(name: str, email: str, password: str):
     )
 
 
-def _get_or_create_auth0_userid(
-    name: str,
-    email: str,
-    password: str,
-    verify_email: bool = True,
-):
+def _get_or_create_auth0_userid(name: str, email: str, password: str):
     """Get or create an Auth0 user with the given email."""
 
     if existing_user := auth0.find_user_by_email(email):
         return existing_user["user_id"]
 
-    return auth0.create_user(
-        name=name,
-        email=email,
-        verify_email=verify_email,
-        password=password,
-    )
+    return auth0.create_user(name=name, email=email, password=password)
