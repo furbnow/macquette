@@ -106,7 +106,6 @@ def _create_auth0_password_reset(auth0_userid: str) -> str:
     auth0 = get_client()
     response = auth0.tickets.create_pswd_change(
         {
-            "result_url": settings.SITE_URL,
             "user_id": auth0_userid,
             "mark_email_as_verified": True,
             "includeEmailInRedirect": False,
