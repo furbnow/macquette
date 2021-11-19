@@ -569,14 +569,44 @@ Returns:
        }
    ]
 
-Add member to organisation
---------------------------
+Add member to organisation (by email)
+-------------------------------------
+
+::
+
+   POST /organisations/:orgid/members/
+
+This endpoint adds members by email.  If the user doesn't already exist,
+they will be invited to the app.  Differs to the below endpoint because it
+doesn't require a pre-existing user.
+
+Example
+~~~~~~~
+
+::
+
+   > curl -v \
+       -X POST \
+       -H "Content-Type: application/json" \
+       http://localhost:9090/v2/api/organisations/1/members/ \
+       --data @- << EOF
+   [
+       {"name": "name", "email": "email@email.com"}
+   ]
+   EOF
+
+Returns:
+
+::
+
+   HTTP 204 No content
+
+Add member to organisation (by userid)
+--------------------------------------
 
 ::
 
    POST /organisations/:orgid/members/:userid/
-
-.. _example-12:
 
 Example
 ~~~~~~~
