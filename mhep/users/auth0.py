@@ -23,7 +23,6 @@ def create_user(
     *,
     name: str,
     email: str,
-    verify_email: bool,
     password: str,
 ) -> str:
     auth0 = get_client()
