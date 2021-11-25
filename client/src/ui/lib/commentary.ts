@@ -11,7 +11,7 @@ import { NewAssessment, ScenarioString } from '../types/Assessment';
 export function getOrphanedScenarioIds(assessment: NewAssessment): string[] {
     const allScenarioIds = getScenarioList(assessment, true).map(({ id }) => id);
     const commentaryScenarioIds = Object.keys(
-        assessment._commentary.scenarios
+        assessment._commentary.scenarios,
     ) as ScenarioString[];
 
     return commentaryScenarioIds.filter((id) => !allScenarioIds.includes(id));

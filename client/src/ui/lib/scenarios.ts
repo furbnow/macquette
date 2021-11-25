@@ -6,7 +6,7 @@ export function scenarioIsBaseline(scenarioId: string): boolean {
 
 export function getScenario(
     assessment: NewAssessment,
-    scenarioId: ScenarioString
+    scenarioId: ScenarioString,
 ): Scenario {
     if (scenarioId in assessment) {
         return assessment[scenarioId] as Scenario;
@@ -35,10 +35,10 @@ type ScenarioListItem = {
 // is currently hardcoded all over the code.
 export function getScenarioList(
     assessment: NewAssessment,
-    excludeBase = false
+    excludeBase = false,
 ): ScenarioListItem[] {
     let scenarioIds = Object.keys(assessment).filter(
-        (key) => !key.startsWith('_')
+        (key) => !key.startsWith('_'),
     ) as ScenarioString[];
 
     if (excludeBase) {
@@ -79,7 +79,7 @@ export function deepCopy<T>(thing: T): T {
 export function duplicateScenario(
     assessment: NewAssessment,
     id: ScenarioString,
-    title: string
+    title: string,
 ): void {
     const nums = getScenarioList(assessment).map(({ num }) => num);
     const newNum = getNextEmptyId(nums);
@@ -105,7 +105,7 @@ export function duplicateScenario(
 
 export function scenarioHasChanged(
     baseScenario: Scenario,
-    cmpScenario: Scenario
+    cmpScenario: Scenario,
 ): boolean {
     const creation_hash = cmpScenario.creation_hash;
     if (!creation_hash) {

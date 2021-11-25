@@ -23,7 +23,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
     const scenario = getScenario(assessment, scenarioId);
 
     const fuelNamesInUse = Object.entries(scenario.currentenergy.use_by_fuel).map(
-        ([name]) => name
+        ([name]) => name,
     );
 
     const availableFuels = Object.entries(scenario.fuels)
@@ -271,7 +271,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                     </button>
                                 </td>
                             </tr>
-                        )
+                        ),
                     )}
                 </tbody>
                 <tbody>
@@ -296,7 +296,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                                 {availableFuels
                                                     .filter(
                                                         ([, fuels]) =>
-                                                            fuels.category === category
+                                                            fuels.category === category,
                                                     )
                                                     .map(([name], j) => (
                                                         <option key={j} value={name}>
@@ -304,7 +304,7 @@ function CurrentEnergy({ assessment, scenarioId }: CurrentEnergyProps): ReactEle
                                                         </option>
                                                     ))}
                                             </optgroup>
-                                        )
+                                        ),
                                     )}
                                 </select>
 

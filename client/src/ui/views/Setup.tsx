@@ -44,7 +44,7 @@ type PostcodeDataResult = {
 };
 
 const getPostcodeData = async (
-    postcode: string
+    postcode: string,
 ): Promise<PostcodeDataResult | PostcodeDataError> => {
     const response = await fetch(`https://api.postcodes.io/postcodes/${postcode}`);
     if (response.ok) {
@@ -69,10 +69,10 @@ type ElevationResult = {
 
 const getElevationData = async (
     lat: number,
-    long: number
+    long: number,
 ): Promise<ElevationResult | ElevationError> => {
     const response = await fetch(
-        `https://api.open-elevation.com/api/v1/lookup?locations=${lat},${long}`
+        `https://api.open-elevation.com/api/v1/lookup?locations=${lat},${long}`,
     );
     if (response.ok) {
         const result = (await response.json()) as ElevationResult | ElevationError;
@@ -128,7 +128,7 @@ export default function Setup({ data }: SetupProps): ReactElement {
 
         const elevationData = await getElevationData(
             postcodeData.result.latitude,
-            postcodeData.result.longitude
+            postcodeData.result.longitude,
         );
         if ('results' in elevationData) {
             for (const { id } of scenarioList) {

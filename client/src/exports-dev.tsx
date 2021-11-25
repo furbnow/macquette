@@ -64,13 +64,13 @@ window.Macquette = {
         props: any,
         root: HTMLElement,
         update: () => void,
-        libraries: [] = []
+        libraries: [] = [],
     ) =>
         render(
             <AppContext.Provider value={{ update, libraries }}>
                 {React.createElement(view, props)}
             </AppContext.Provider>,
-            root || document.getElementById('content')
+            root || document.getElementById('content'),
         ),
     unmount: (element: HTMLElement) => unmountComponentAtNode(element),
 };

@@ -149,7 +149,7 @@ const main = async () => {
             await handle.utimes(updatedAt, updatedAt);
             await handle.close();
             process.stdout.write('.');
-        })
+        }),
     );
     console.log(' done 😻');
 };

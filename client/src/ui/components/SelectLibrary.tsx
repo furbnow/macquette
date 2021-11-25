@@ -58,7 +58,7 @@ function SelectLibraryItem<T extends ItemBase>({
     }
 
     const [selectedItemTag, setSelectedItemTag] = useState(
-        currentSelectedItemTag ? currentSelectedItemTag : selectedLibData
+        currentSelectedItemTag ? currentSelectedItemTag : selectedLibData,
     );
     const selectedItem = selectedLib.data[selectedItemTag];
     if (selectedItem === undefined) {
@@ -83,7 +83,7 @@ function SelectLibraryItem<T extends ItemBase>({
                                 ([tag, value]) => ({
                                     value: tag,
                                     display: value.name,
-                                })
+                                }),
                             )}
                             value={selectedItemTag}
                             setValue={(tag) => {
@@ -214,7 +214,7 @@ export const SelectVentilationSystem = ({
     const { libraries } = useContext(AppContext);
 
     const filteredLibraries = libraries.filter(
-        (lib): lib is VentilationSystemsLibrary => lib.type === 'ventilation_systems'
+        (lib): lib is VentilationSystemsLibrary => lib.type === 'ventilation_systems',
     );
 
     return SelectLibraryItem({
@@ -241,7 +241,7 @@ export const SelectVentilationSystemMeasure = ({
 
     const filteredLibraries = libraries.filter(
         (lib): lib is VentilationSystemsMeasuresLibrary =>
-            lib.type === 'ventilation_systems_measures'
+            lib.type === 'ventilation_systems_measures',
     );
 
     return SelectLibraryItem({
@@ -274,7 +274,7 @@ export const SelectExtractVentilationMeasure = ({
 
     const filteredLibraries = libraries.filter(
         (lib): lib is ExtractVentilationPointsLibrary =>
-            lib.type === 'ventilation_systems_measures'
+            lib.type === 'ventilation_systems_measures',
     );
 
     return SelectLibraryItem({
@@ -307,7 +307,7 @@ export const SelectIntentionalVent = ({
 
     const filteredLibraries = libraries.filter(
         (lib): lib is IntentionalVentsAndFluesLibrary =>
-            lib.type === 'intentional_vents_and_flues'
+            lib.type === 'intentional_vents_and_flues',
     );
 
     return SelectLibraryItem({
@@ -334,7 +334,7 @@ export const SelectIntentionalVentMeasure = ({
 
     const filteredLibraries = libraries.filter(
         (lib): lib is IntentionalVentsAndFluesMeasuresLibrary =>
-            lib.type === 'intentional_vents_and_flues_measures'
+            lib.type === 'intentional_vents_and_flues_measures',
     );
 
     return SelectLibraryItem({
@@ -363,7 +363,7 @@ export const SelectClothesDryingItem = ({
 
     const filteredLibraries = libraries.filter(
         (lib): lib is ClothesDryingFacilitiesLibrary =>
-            lib.type === 'clothes_drying_facilities'
+            lib.type === 'clothes_drying_facilities',
     );
 
     return SelectLibraryItem({
@@ -392,7 +392,7 @@ export const SelectDraughtProofingMeasure = ({
 
     const filteredLibraries = libraries.filter(
         (lib): lib is DraughtProofingMeasuresLibrary =>
-            lib.type === 'draught_proofing_measures'
+            lib.type === 'draught_proofing_measures',
     );
 
     return SelectLibraryItem({
@@ -420,7 +420,7 @@ export const SelectGenerationMeasure = ({
     const { libraries } = useContext(AppContext);
 
     const filteredLibraries = libraries.filter(
-        (lib): lib is GenerationMeasuresLibrary => lib.type === 'generation_measures'
+        (lib): lib is GenerationMeasuresLibrary => lib.type === 'generation_measures',
     );
 
     return SelectLibraryItem({

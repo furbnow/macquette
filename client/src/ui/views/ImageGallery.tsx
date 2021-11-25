@@ -184,7 +184,7 @@ function reducer(state: State, msg: Message): State {
                 return {
                     ...state,
                     selectedImageIds: state.selectedImageIds.filter(
-                        (id) => id !== msg.id
+                        (id) => id !== msg.id,
                     ),
                 };
             } else {
@@ -213,7 +213,7 @@ function upload(state: State, dispatch: Dispatcher) {
                     type: 'imageUploaded',
                     index: i,
                     image: img,
-                })
+                }),
             )
             .catch(onError);
     });
@@ -310,7 +310,7 @@ function DisplayImage({
                         onClick={() => {
                             if (
                                 window.confirm(
-                                    'Are you sure you want to delete this image?'
+                                    'Are you sure you want to delete this image?',
                                 )
                             ) {
                                 deleteImage(dispatch, image.id);
@@ -472,7 +472,7 @@ function GallerySection({ state, dispatch }: GallerySectionProps): ReactElement 
                     const n = state.selectedImageIds.length;
                     if (
                         window.confirm(
-                            `Are you sure you want to delete these ${n} images?`
+                            `Are you sure you want to delete these ${n} images?`,
                         )
                     ) {
                         for (const id of state.selectedImageIds) {

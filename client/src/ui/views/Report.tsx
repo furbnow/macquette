@@ -12,7 +12,7 @@ import TextField from '../components/TextField';
 declare function report_show(
     greeting: HTMLElement,
     template: string,
-    included: string[]
+    included: string[],
 ): void;
 
 interface ReportProps {

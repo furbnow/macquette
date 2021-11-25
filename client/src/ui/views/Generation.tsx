@@ -19,7 +19,7 @@ import { SelectGenerationMeasure } from '../components/SelectLibrary';
  */
 function haveGenerationMeasures(libraries: Library[]): boolean {
     const generationLibs = libraries.filter<GenerationMeasuresLibrary>(
-        (lib): lib is GenerationMeasuresLibrary => lib.type === 'generation_measures'
+        (lib): lib is GenerationMeasuresLibrary => lib.type === 'generation_measures',
     );
 
     /* For this to return true, at least one library must have one item */
@@ -120,7 +120,7 @@ function Generation({ assessment, scenarioId }: GenerationProps): ReactElement {
                         };
 
                         scenario.generation.solarpv_kwp_installed = parseFloat(
-                            measure.kWp
+                            measure.kWp,
                         );
                         scenario.generation.use_PV_calculator = true;
 

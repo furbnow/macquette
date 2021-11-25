@@ -27,7 +27,7 @@ describe('golden master acceptance tests', () => {
     });
 
     const privateFixtures = readdirSync(join(FIXTURES, 'private')).filter(
-        (filename) => filename[0] !== '.'
+        (filename) => filename[0] !== '.',
     );
     for (const fixtureName of privateFixtures) {
         test(`${fixtureName}`, () => {

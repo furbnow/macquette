@@ -33,7 +33,7 @@ export default function Commentary({ assessment }: CommentaryProps): ReactElemen
                 targetData: targetData(400, assessment[id]!),
                 cost: _cost_param(id),
             },
-        ])
+        ]),
     );
 
     return (

@@ -118,7 +118,7 @@ function ScenarioBlock({
                             onClick={() => {
                                 const newTitle = window.prompt(
                                     'What do you want the call the new scenario?',
-                                    `Copy of ${title}`
+                                    `Copy of ${title}`,
                                 );
                                 if (newTitle) {
                                     duplicateScenario(assessment, id, newTitle);
@@ -155,7 +155,7 @@ function ScenarioBlock({
                                 className="btn mr-7"
                                 onClick={() => {
                                     const confirm = window.confirm(
-                                        'Are you sure you want to delete this scenario?'
+                                        'Are you sure you want to delete this scenario?',
                                     );
                                     if (confirm) {
                                         delete assessment[id];
@@ -236,7 +236,7 @@ function getCreatedFromName(from: string | undefined): string {
 
 function getCreatedChanges(
     assessment: NewAssessment,
-    scenario: Scenario
+    scenario: Scenario,
 ): ChangeSinceCreation {
     if (!scenario.created_from) {
         return 'baseline';

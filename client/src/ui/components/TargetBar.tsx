@@ -31,7 +31,7 @@ interface Target {
 function calculateTargetBoxes(
     targets: Target[],
     xscale: number,
-    width: number
+    width: number,
 ): [number, number][] {
     /* Special case length === 1 for clarity */
     if (targets.length === 1) {

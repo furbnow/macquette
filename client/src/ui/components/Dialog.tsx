@@ -20,7 +20,7 @@ export default function Dialog({
                 onClose();
             }
         },
-        [onClose]
+        [onClose],
     );
 
     useEffect(() => {

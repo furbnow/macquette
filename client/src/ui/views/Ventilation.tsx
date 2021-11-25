@@ -159,7 +159,7 @@ function Ventilation({ assessment, scenarioId }: VentilationProps): ReactElement
                     <span>Heat recovery efficiency allowing for in-use factor</span>
                     <Result
                         val={parseFloat(
-                            scenario.ventilation.balanced_heat_recovery_efficiency
+                            scenario.ventilation.balanced_heat_recovery_efficiency,
                         )}
                         units="%"
                         dp={1}
@@ -269,7 +269,7 @@ function Ventilation({ assessment, scenarioId }: VentilationProps): ReactElement
                                                 .extract_ventilation_points
                                         ) {
                                             scenario.measures.ventilation.extract_ventilation_points.push(
-                                                measure
+                                                measure,
                                             );
                                         } else {
                                             scenario.measures.ventilation.extract_ventilation_points =
@@ -308,7 +308,7 @@ function Ventilation({ assessment, scenarioId }: VentilationProps): ReactElement
                                                     isAlsoMeasure(
                                                         EVP.id,
                                                         scenario.measures.ventilation
-                                                            ?.extract_ventilation_points
+                                                            ?.extract_ventilation_points,
                                                     ) && <b> (Measure Applied)</b>}
                                             </td>
                                             <td>
@@ -330,7 +330,7 @@ function Ventilation({ assessment, scenarioId }: VentilationProps): ReactElement
                                                             scenario.ventilation.EVP.filter(
                                                                 (filteredEVP) =>
                                                                     filteredEVP.id !==
-                                                                    EVP.id
+                                                                    EVP.id,
                                                             );
                                                         if (
                                                             !isBaseline &&
@@ -664,7 +664,7 @@ function Ventilation({ assessment, scenarioId }: VentilationProps): ReactElement
                                             isAlsoMeasure(
                                                 IVF.id,
                                                 scenario.measures.ventilation
-                                                    ?.intentional_vents_and_flues_measures
+                                                    ?.intentional_vents_and_flues_measures,
                                             ) && <b> (Measure Applied)</b>}
                                     </td>
                                     <td>
@@ -685,7 +685,7 @@ function Ventilation({ assessment, scenarioId }: VentilationProps): ReactElement
                                                 scenario.ventilation.IVF =
                                                     scenario.ventilation.IVF.filter(
                                                         (filteredIVF) =>
-                                                            filteredIVF.id !== IVF.id
+                                                            filteredIVF.id !== IVF.id,
                                                     );
                                                 if (
                                                     !isBaseline &&
@@ -763,7 +763,7 @@ function Ventilation({ assessment, scenarioId }: VentilationProps): ReactElement
                                 onClick={() => {
                                     scenario.ventilation.CDF =
                                         scenario.ventilation.CDF.filter(
-                                            (filteredCDF) => filteredCDF.id !== CDF.id
+                                            (filteredCDF) => filteredCDF.id !== CDF.id,
                                         );
                                     if (!isBaseline) {
                                         if (
@@ -785,7 +785,7 @@ function Ventilation({ assessment, scenarioId }: VentilationProps): ReactElement
                         {!isBaseline &&
                             isAlsoMeasure(
                                 CDF.id,
-                                scenario.measures.ventilation.clothes_drying_facilities
+                                scenario.measures.ventilation.clothes_drying_facilities,
                             ) && <b> (Measure Applied)</b>}
                     </FormRow>
                 ))}

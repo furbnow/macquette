@@ -25,7 +25,7 @@ export default function NumberField({
 }: NumberFieldProps): ReactElement {
     const { update } = useContext(AppContext);
     const [current, monitor, setCurrent] = useExternalState(
-        value === null ? '' : value.toString()
+        value === null ? '' : value.toString(),
     );
 
     return (

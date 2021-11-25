@@ -48,7 +48,7 @@ export function houseData(scenario: Scenario): HouseProps {
 
 export function targetData(
     width: number,
-    scenario: Scenario
+    scenario: Scenario,
 ): {
     width: number;
     space_heating_demand: number;

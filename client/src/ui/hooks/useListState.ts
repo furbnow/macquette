@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export default function useListState<T>(
-    initial: T[]
+    initial: T[],
 ): [T[], (item: T, present: boolean) => void] {
     const [list, setState] = useState(initial);
 
