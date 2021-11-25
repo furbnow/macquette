@@ -40,3 +40,96 @@ Plan for the model
 
   - Use existing live data, with a reference model to test against, but don’t expose to CI
   - Write unit tests as we go on the nicely-factored island
+
+Current architecture
+--------------------
+
+.. graphviz::
+
+    digraph G {
+        State [shape=box];
+
+        Frontend -> State
+        State -> Frontend
+
+        Model -> State
+        State -> Model
+    }
+
+Future architecture
+-------------------
+
+This is horrendously rendered, but hopefully you get the idea...
+
+\...which is that we still use the global blob to maintain state, we save it to the
+server etc, but we develop the code into a series of well-architected and discrete
+islands.  Eventually we can dispense of the global blog - we end up with a global
+piece of app state which is only written by the UI, and a global results state which
+is only written by the model.
+
+We start modelling the app as a series of data transformations: the global app state
+is transformed into the input required for the model.  The output from the model is
+used directly.  Each individual UI module is responsible for both its own state and
+syncing its state out into a global application state.
+
+This suggests one approach to reworking the UI modules is to do them as and when the
+calculations that feed into them are refactored in the model, as then they can skip
+over reading from the legacy global blob entirely and instead read directly from
+results, i.e. have a unidirectional data flow.
+
+.. graphviz::
+
+    digraph G {
+        rankdir = LR;
+
+        subgraph cluster_0 {
+
+            subgraph cluster_1 {
+                InternalState1 [shape=box];
+                style=filled;
+                color=lightgrey;
+                node [style=filled,color=white];
+                init1 -> InternalState1 -> update1 -> InternalState1;
+                InternalState1 -> sync1;
+                label = "UI module";
+            }
+
+            subgraph cluster_2 {
+                label = "UI module";
+                InternalState2 [shape=box];
+                style=filled;
+                color=lightgrey;
+                node [style=filled,color=white];
+                init2 -> InternalState2 -> update2 -> InternalState2;
+                InternalState2 -> sync2;
+            }
+        }
+
+        sync1 -> GlobalState;
+        sync2 -> GlobalState;
+        GlobalState -> sync1;
+        GlobalState -> sync2;
+
+        GlobalState [shape=box];
+
+        GlobalState -> shim_in;
+        old_calculator -> GlobalState;
+
+        subgraph cluster_3 {
+            label = "Model"
+            style=filled;
+            color=lightgrey;
+            node [style=filled,color=white];
+            shim_in -> new_calculator;
+            new_calculator -> shim_out;
+            shim_out -> old_calculator;
+
+            {rank=same; shim_in; new_calculator; shim_out; old_calculator; }
+        }
+    }
+
+Stuff to figure out in future
+-----------------------------
+
+* How to do undo/redo better
+* How to base scenarios on one another
