@@ -203,7 +203,6 @@ function formatMeasures(measures) {
         key_risks: measure.key_risks,
         maintenance: measure.maintenance,
         associated_work: measure.associated_work,
-        notes: measure.notes,
     }));
     const header = {
         scenario: 'Scenario',
@@ -215,7 +214,6 @@ function formatMeasures(measures) {
         key_risks: 'Key risks',
         maintenance: 'Maintenance',
         associated_work: 'Associated work',
-        notes: 'Special and other considerations',
     };
     formatted.unshift(header); // prepend header row
     return formatted;
