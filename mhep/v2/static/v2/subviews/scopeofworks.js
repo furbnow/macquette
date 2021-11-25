@@ -69,10 +69,15 @@ function scopeofworks_initUI() {
 function cleanCSVcell(csvCell) {
     let csvCellCleaned = csvCell
         .toString()
+        .replace(/\s+/g, ' ')
         .replace(/"/g, '""')
         .trim();
     return `"${csvCellCleaned}"`;
 }
+
+// cleanCSVcell('This  has    many  spaces') === '"This has many spaces"'
+// cleanCSVcell('\n') === '""'
+// cleanCSVcell('"Right said Fred"') === '"""Right said Fred"""'
 
 function convertObjectArrayToCSV(objArray) {
     let csv = '';
