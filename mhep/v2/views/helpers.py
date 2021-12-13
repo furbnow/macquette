@@ -79,7 +79,7 @@ def check_library_write_permissions(library, original_request):
     This should be used as a *hint* rather than as actual access control.
     """
 
-    from ..views import UpdateDestroyLibrary  # avoid circular import
+    from ..views.libraries import UpdateDestroyLibrary  # avoid circular import
 
     original_method = original_request.method
 
@@ -105,7 +105,9 @@ def check_library_share_permissions(library, original_request):
     if the current user (based on original_request) is allowed to share / unshare this library.
     """
 
-    from ..views import ShareUnshareOrganisationLibraries  # avoid circular import
+    from ..views.organisations import (
+        ShareUnshareOrganisationLibraries,
+    )  # avoid circular import
 
     owner_organisation = library.owner_organisation
     if owner_organisation is None:

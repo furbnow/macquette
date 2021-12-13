@@ -3,26 +3,27 @@ from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
 
 from . import VERSION
-from .views import AssessmentHTMLView
-from .views import CreateDeleteOrganisationLibrarians
-from .views import CreateDeleteOrganisationMembers
-from .views import CreateOrganisationLibraries
-from .views import CreateUpdateDeleteLibraryItem
-from .views import DuplicateAssessment
-from .views import InviteOrganisationMembers
-from .views import ListAssessmentsHTMLView
-from .views import ListCreateAssessments
-from .views import ListCreateLibraries
-from .views import ListCreateOrganisationAssessments
-from .views import ListOrganisationLibraryShares
-from .views import ListOrganisations
-from .views import ListUsers
-from .views import RetrieveUpdateDestroyAssessment
-from .views import SetFeaturedImage
-from .views import ShareUnshareOrganisationLibraries
-from .views import UpdateDestroyImage
-from .views import UpdateDestroyLibrary
-from .views import UploadAssessmentImage
+from .views.assessments import DuplicateAssessment
+from .views.assessments import ListCreateAssessments
+from .views.assessments import RetrieveUpdateDestroyAssessment
+from .views.assessments import SetFeaturedImage
+from .views.assessments import UploadAssessmentImage
+from .views.html import AssessmentHTMLView
+from .views.html import ListAssessmentsHTMLView
+from .views.images import UpdateDestroyImage
+from .views.libraries import CreateUpdateDeleteLibraryItem
+from .views.libraries import ListCreateLibraries
+from .views.libraries import UpdateDestroyLibrary
+from .views.organisations import CreateDeleteOrganisationLibrarians
+from .views.organisations import CreateDeleteOrganisationMembers
+from .views.organisations import CreateOrganisationLibraries
+from .views.organisations import InviteOrganisationMembers
+from .views.organisations import ListCreateOrganisationAssessments
+from .views.organisations import ListOrganisationLibraryShares
+from .views.organisations import ListOrganisations
+from .views.organisations import ShareUnshareOrganisationLibraries
+from .views.users import ListUsers
+
 
 app_name = "assessments"
 urlpatterns = [
