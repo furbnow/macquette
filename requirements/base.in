@@ -14,6 +14,7 @@ django-crispy-forms   # https://github.com/django-crispy-forms/django-crispy-for
 django-cors-headers   # https://pypi.org/project/django-cors-headers/
 django-import-export  # https://django-import-export.readthedocs.io/
 nplusone              # https://github.com/jmcarp/nplusone
+django-waffle         # https://github.com/django-waffle/django-waffle
 
 # Django REST Framework
 djangorestframework   # https://github.com/encode/django-rest-framework

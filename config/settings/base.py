@@ -122,6 +122,7 @@ THIRD_PARTY_APPS = [
     "social_django",
     "rest_framework",
     "nplusone.ext.django",
+    "waffle",
 ]
 LOCAL_APPS = [
     "mhep.users.apps.UsersConfig",
@@ -211,6 +212,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "nplusone.ext.django.NPlusOneMiddleware",
+    "waffle.middleware.WaffleMiddleware",
     "mhep.users.backends.ExceptionMiddleware",
 ]
 

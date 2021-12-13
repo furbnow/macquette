@@ -75,6 +75,8 @@ django-storages[boto3]==1.12.3
     # via
     #   -r requirements/production.in
     #   collectfast
+django-waffle==2.2.1
+    # via -r requirements/./base.in
 djangorestframework==3.12.4
     # via -r requirements/./base.in
 ecdsa==0.17.0
