@@ -88,3 +88,8 @@ export const monthlyHotWaterUseFactor = (month: Month): number => {
 export const monthlyHotWaterTemperatureRise = (month: Month): number => {
     return wrapDataset('table_1d', [month.index0], { month });
 };
+
+/** datasets.table_u2 */
+export const windSpeed = (region: Region, month: Month): number => {
+    return wrapDataset('table_u2', [region.index0, month.index0], { month });
+};

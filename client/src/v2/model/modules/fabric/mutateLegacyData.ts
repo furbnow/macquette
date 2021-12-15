@@ -3,7 +3,7 @@
 import { sum } from '../../../helpers/sum';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
-import { area, netArea, Fabric, WallLike, WindowLike, Hatch } from '../fabric';
+import { grossArea, netArea, Fabric, WallLike, WindowLike, Hatch } from '../fabric';
 
 /* eslint-disable
    @typescript-eslint/no-explicit-any,
@@ -53,7 +53,7 @@ export const mutateLegacyData = (fabric: Fabric, data: any) => {
             legacyElement.l !== '' &&
             legacyElement.l !== 0;
         if (legacyModelWouldCalculateArea) {
-            legacyElement.area = area(newStyleElement);
+            legacyElement.area = grossArea(newStyleElement);
         }
         legacyElement.netarea = netArea(newStyleElement);
         if (
@@ -74,18 +74,17 @@ export const mutateLegacyData = (fabric: Fabric, data: any) => {
         }
         legacyElement.wk = newStyleElement.heatLoss;
     }
-    const totals = computeTotals(fabric);
-    data.fabric.total_floor_WK = totals.floor.heatLoss;
-    data.fabric.total_wall_WK = totals.externalWall.heatLoss;
-    data.fabric.total_roof_WK = totals.roof.heatLoss;
-    data.fabric.total_window_WK = totals.windowLike.heatLoss;
-    data.fabric.total_party_wall_WK = totals.partyWall.heatLoss;
+    data.fabric.total_floor_WK = fabric.heatLossTotals.floor;
+    data.fabric.total_wall_WK = fabric.heatLossTotals.externalWall;
+    data.fabric.total_roof_WK = fabric.heatLossTotals.roof;
+    data.fabric.total_window_WK = fabric.heatLossTotals.windowLike;
+    data.fabric.total_party_wall_WK = fabric.heatLossTotals.partyWall;
     data.fabric.total_external_area = fabric.externalArea;
-    data.fabric.total_wall_area = totals.externalWall.area;
-    data.fabric.total_floor_area = totals.floor.area;
-    data.fabric.total_roof_area = totals.roof.area;
-    data.fabric.total_window_area = totals.windowLike.area;
-    data.fabric.total_party_wall_area = totals.partyWall.area;
+    data.fabric.total_wall_area = fabric.areaTotals.externalWall;
+    data.fabric.total_floor_area = fabric.areaTotals.floor;
+    data.fabric.total_roof_area = fabric.areaTotals.roof;
+    data.fabric.total_window_area = fabric.areaTotals.windowLike;
+    data.fabric.total_party_wall_area = fabric.areaTotals.partyWall;
 
     data.fabric.total_external_area = fabric.externalArea;
     data.fabric.total_thermal_capacity = fabric.fabricElementsThermalCapacity;
@@ -99,67 +98,3 @@ export const mutateLegacyData = (fabric: Fabric, data: any) => {
     data.GL = fabric.naturalLight;
 };
 /* eslint-enable */
-
-type Totals = {
-    floor: { heatLoss: number; area: number };
-    externalWall: { heatLoss: number; area: number };
-    roof: { heatLoss: number; area: number };
-    windowLike: { heatLoss: number; area: number };
-    partyWall: { heatLoss: number; area: number };
-};
-
-// This will eventually go in the view layer, since this grouping of element
-// types is particular to the view
-const computeTotals = (fabric: Fabric): Totals => {
-    const initialTotals: Totals = {
-        floor: { heatLoss: 0, area: 0 },
-        externalWall: { heatLoss: 0, area: 0 },
-        roof: { heatLoss: 0, area: 0 },
-        windowLike: { heatLoss: 0, area: 0 },
-        partyWall: { heatLoss: 0, area: 0 },
-    };
-    return fabric.flatElements.reduce((runningTotals, element) => {
-        const out = { ...runningTotals };
-        switch (element.type) {
-            case 'floor': {
-                out.floor = {
-                    heatLoss: out.floor.heatLoss + element.heatLoss,
-                    area: out.floor.area + element.spec.area,
-                };
-                return out;
-            }
-            case 'external wall': {
-                out.externalWall = {
-                    heatLoss: out.externalWall.heatLoss + element.heatLoss,
-                    area: out.externalWall.area + element.netArea,
-                };
-                return out;
-            }
-            case 'roof':
-            case 'loft': {
-                out.roof = {
-                    heatLoss: out.roof.heatLoss + element.heatLoss,
-                    area: out.roof.area + element.netArea,
-                };
-                return out;
-            }
-            case 'window':
-            case 'door':
-            case 'hatch':
-            case 'roof light': {
-                out.windowLike = {
-                    heatLoss: out.windowLike.heatLoss + element.heatLoss,
-                    area: out.windowLike.area + element.spec.area,
-                };
-                return out;
-            }
-            case 'party wall': {
-                out.partyWall = {
-                    heatLoss: out.partyWall.heatLoss + element.heatLoss,
-                    area: out.partyWall.area + element.netArea,
-                };
-                return out;
-            }
-        }
-    }, initialTotals);
-};

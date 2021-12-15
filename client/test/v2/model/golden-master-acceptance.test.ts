@@ -65,6 +65,14 @@ const isValidStringyFloat = (value: unknown) => {
 };
 
 const hasNoKnownBugs = (legacyScenario: any) => {
+    const noFabricBugs =
+        isValidStringyFloat(legacyScenario.fabric.total_external_area) &&
+        isValidStringyFloat(legacyScenario.fabric.total_floor_area) &&
+        isValidStringyFloat(legacyScenario.fabric.total_party_wall_area) &&
+        isValidStringyFloat(legacyScenario.fabric.total_roof_area) &&
+        isValidStringyFloat(legacyScenario.fabric.total_wall_area) &&
+        isValidStringyFloat(legacyScenario.fabric.total_window_area) &&
+        isValidStringyFloat(legacyScenario.TFA);
     const noStringConcatenationBugs =
         // Wide spectrum
         !Number.isNaN(1.0 * legacyScenario.total_cost) &&
@@ -74,16 +82,12 @@ const hasNoKnownBugs = (legacyScenario: any) => {
             legacyScenario.SHW.a1 === '' ||
             typeof legacyScenario.SHW.a1 === 'number');
 
-    return (
-        isValidStringyFloat(legacyScenario.fabric.total_external_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_floor_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_party_wall_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_roof_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_wall_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_window_area) &&
-        isValidStringyFloat(legacyScenario.TFA) &&
-        noStringConcatenationBugs
-    );
+    const noVentilationBugs =
+        // if num_of_floors_override is 0, legacy treats it as undefined
+        legacyScenario.num_of_floors_override !== 0 &&
+        !Number.isNaN(legacyScenario.ventilation.average_WK);
+
+    return noFabricBugs && noStringConcatenationBugs && noVentilationBugs;
 };
 
 const modelValueComparer =
@@ -101,12 +105,14 @@ const modelValueComparer =
         }
         if (typeof expectedLegacy === 'string' && typeof receivedLive === 'string') {
             // Check if values were numbers encoded as strings and if so
-            // compare them as floats. Use 1.0 * x to convert to float because
-            // it is less tolerant to string concatenation bugs than
-            // parseFloat()
-            const expectedLegacyFloat = 1.0 * (expectedLegacy as any);
-            const receivedLiveFloat = 1.0 * (receivedLive as any);
-            if (!Number.isNaN(expectedLegacyFloat) && !Number.isNaN(receivedLiveFloat)) {
+            // compare them as floats.
+            const expectedLegacyFloat = stricterParseFloat(expectedLegacy);
+            const receivedLiveFloat = stricterParseFloat(receivedLive);
+            if (Number.isNaN(expectedLegacyFloat)) {
+                return true;
+            } else if (Number.isNaN(receivedLiveFloat)) {
+                return false;
+            } else {
                 return compareFloats(compareFloatParams)(
                     receivedLiveFloat,
                     expectedLegacyFloat,
@@ -117,10 +123,11 @@ const modelValueComparer =
             return true;
         }
         if (typeof expectedLegacy === 'string' && typeof receivedLive === 'number') {
-            return compareFloats(compareFloatParams)(
-                receivedLive,
-                parseFloat(expectedLegacy),
-            );
+            const expectedLegacyParsed = stricterParseFloat(expectedLegacy);
+            if (Number.isNaN(expectedLegacyParsed)) {
+                return true;
+            }
+            return compareFloats(compareFloatParams)(receivedLive, expectedLegacyParsed);
         }
         if (receivedLive === true && expectedLegacy === 1) {
             return true;
@@ -168,5 +175,22 @@ const normaliseScenario = (scenario: any) => {
     // Legacy property added by removed LAC "detailedlist" module
     delete scenario.appliancelist;
 
+    // Ventilation
+    const { ventilation } = scenario;
+    if (ventilation !== undefined) {
+        // Ignore certain values depending on whether infiltration was
+        // calculated from a pressure test or not
+        if (ventilation.air_permeability_test) {
+            delete ventilation.structural_infiltration;
+        } else {
+            delete ventilation.structural_infiltration_from_test;
+        }
+    }
+
     return scenario;
+};
+
+const stricterParseFloat = (s: string): number => {
+    // Returns NaN in more cases than parseFloat
+    return 1.0 * (s as any);
 };

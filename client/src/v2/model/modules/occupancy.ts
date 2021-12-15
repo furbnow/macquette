@@ -2,7 +2,7 @@ import { cache } from '../../helpers/cache-decorators';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { ModelError } from '../error';
 
-type OccupancyInput = {
+export type OccupancyInput = {
     customOccupancy: number | null;
 };
 

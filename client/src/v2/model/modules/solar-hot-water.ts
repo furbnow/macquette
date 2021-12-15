@@ -100,23 +100,10 @@ export type SolarHotWaterDependencies = {
     };
 };
 
-export type ISolarHotWater = {
-    mutateLegacyData(data: unknown): void;
-};
+export type SolarHotWater = SolarHotWaterEnabled | SolarHotWaterNoop;
 
-export class SolarHotWater implements ISolarHotWater {
-    static optionalNew(
-        input: SolarHotWaterInput,
-        dependencies: SolarHotWaterDependencies,
-    ): SolarHotWater | SolarHotWaterDisabled {
-        if (input === 'module disabled' || input === 'incomplete input') {
-            return new SolarHotWaterDisabled();
-        } else {
-            return new SolarHotWater(input, dependencies);
-        }
-    }
-
-    private constructor(
+class SolarHotWaterEnabled {
+    constructor(
         private input: Exclude<
             SolarHotWaterInput,
             'module disabled' | 'incomplete input'
@@ -305,7 +292,7 @@ export class SolarHotWater implements ISolarHotWater {
     /* eslint-enable */
 }
 
-export class SolarHotWaterDisabled implements ISolarHotWater {
+class SolarHotWaterNoop {
     /* eslint-disable
        @typescript-eslint/no-explicit-any,
        @typescript-eslint/no-unsafe-assignment,
@@ -316,3 +303,14 @@ export class SolarHotWaterDisabled implements ISolarHotWater {
     }
     /* eslint-enable */
 }
+
+export const constructSolarHotWater = (
+    input: SolarHotWaterInput,
+    dependencies: SolarHotWaterDependencies,
+): SolarHotWaterEnabled | SolarHotWaterNoop => {
+    if (input === 'module disabled' || input === 'incomplete input') {
+        return new SolarHotWaterNoop();
+    } else {
+        return new SolarHotWaterEnabled(input, dependencies);
+    }
+};

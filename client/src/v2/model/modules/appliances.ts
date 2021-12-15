@@ -34,10 +34,11 @@ export const extractAppliancesInputFromLegacy = (
 
 export type AppliancesDependencies = AppliancesSAPDependencies & unknown;
 
+export type Appliances = AppliancesSAP | AppliancesNoop;
 export const constructAppliances = (
     input: AppliancesInput,
     dependencies: AppliancesDependencies,
-): AppliancesSAP | AppliancesNoop => {
+): Appliances => {
     switch (input.type) {
         case 'sap':
             return new AppliancesSAP(input.input, dependencies);

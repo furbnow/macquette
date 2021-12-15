@@ -26,6 +26,7 @@ import { lightAccessFactor, solarAccessFactor } from '../datasets';
 import { calculateSolarRadiationMonthly } from '../solar-flux';
 import { assertNever } from '../../helpers/assertNever';
 import { mutateLegacyData } from './fabric/mutateLegacyData';
+import { mapValues } from 'lodash';
 
 export { extractFabricInputFromLegacy } from './fabric/extractFromLegacy';
 
@@ -226,6 +227,7 @@ export type FabricDependencies = {
     floors: { totalFloorArea: number };
 };
 
+type ElementCategory = 'floor' | 'externalWall' | 'roof' | 'windowLike' | 'partyWall';
 export class Fabric {
     public elements: {
         main: Array<WallLike | Floor>;
@@ -275,11 +277,51 @@ export class Fabric {
     @cache
     get externalArea(): number {
         // We include floatingDeductibles here - is this correct?
+
+        // We also include the areas of deductible elements which may be being
+        // deducted from party walls (e.g. a fire door to a neighbouring
+        // building). This is almost certainly not correct but is the legacy
+        // behaviour.
         const areas = this.flatElements
             .filter((e) => e.type !== 'party wall')
             .filter((e) => e.spec.uValue !== 0) // Legacy
             .map(netArea);
         return sum(areas);
+    }
+
+    @cache
+    get envelopeArea(): number {
+        return this.externalArea + this.areaTotals.partyWall;
+    }
+
+    @cache
+    get elementsByCategory(): Record<ElementCategory, Array<FabricElement>> {
+        // We could do this in a single pass through flatElements, but this
+        // reads better. Fix it if it becomes a problem.
+        const elemsOfType = (types: Array<FabricElement['type']>) =>
+            this.flatElements.filter((element) => types.includes(element.type));
+        return {
+            floor: elemsOfType(['floor']),
+            externalWall: elemsOfType(['external wall']),
+            roof: elemsOfType(['roof', 'loft']),
+            windowLike: elemsOfType(['window', 'door', 'roof light', 'hatch']),
+            partyWall: elemsOfType(['party wall']),
+        };
+    }
+
+    /** Net areas */
+    @cache
+    get areaTotals(): Record<ElementCategory, number> {
+        return mapValues(this.elementsByCategory, (elements) =>
+            sum(elements.map(netArea)),
+        );
+    }
+
+    @cache
+    get heatLossTotals(): Record<ElementCategory, number> {
+        return mapValues(this.elementsByCategory, (elements) =>
+            sum(elements.map((elements) => elements.heatLoss)),
+        );
     }
 
     @cache
@@ -357,7 +399,7 @@ export class Fabric {
     }
 }
 
-export const area = (element: FabricElement): number => {
+export const grossArea = (element: FabricElement): number => {
     if (element instanceof WindowLike) {
         return element.spec.area;
     } else if (element instanceof Hatch) {

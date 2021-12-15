@@ -100,6 +100,45 @@ export const legacyScenarioSchema = z
         ),
         LAC_calculation_type: z.enum(['SAP', 'carboncoop_SAPlighting']),
         LAC,
+        ventilation: z
+            .object({
+                // Inputs
+                IVF: z.array(
+                    z.object({
+                        ventilation_rate: stringyFloatSchema,
+                    }),
+                ),
+                air_permeability_test: legacyBoolean,
+                air_permeability_value: stringyFloatSchema,
+                dwelling_construction: z.enum(['timberframe', 'masonry']),
+                suspended_wooden_floor: z.union([
+                    z.literal(0),
+                    z.enum(['sealed', 'unsealed']),
+                ]),
+                percentage_draught_proofed: z.number(),
+                draught_lobby: legacyBoolean,
+                number_of_sides_sheltered: z.number(),
+                ventilation_type: z.enum(['NV', 'IE', 'MEV', 'PS', 'MVHR', 'MV', 'DEV']),
+                EVP: z.array(z.object({ ventilation_rate: stringyFloatSchema })),
+                system_air_change_rate: z.union([
+                    z.literal('na').transform(() => null),
+                    z.literal('n/a').transform(() => null),
+                    stringyFloatSchema,
+                ]),
+                balanced_heat_recovery_efficiency: z.union([
+                    z.literal('na').transform(() => null),
+                    z.literal('n/a').transform(() => null),
+                    stringyFloatSchema,
+                ]),
+
+                // Outputs
+                // Only one of the structural_infiltration values is relevant,
+                // depending on the value of air_permeability_test
+                structural_infiltration_from_test: numberWithNaN.nullable(),
+                structural_infiltration: numberWithNaN.nullable(),
+            })
+            .partial(),
+        num_of_floors_override: z.number(), // Used only in ventilation
     })
     .partial();
 

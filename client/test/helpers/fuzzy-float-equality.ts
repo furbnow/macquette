@@ -14,9 +14,12 @@ export const compareFloats =
         if (!Number.isFinite(expected)) {
             return Object.is(received, expected);
         }
+        const absoluteToleranceAroundZero = params?.absoluteToleranceAroundZero ?? 0.0001;
         if (Object.is(expected, 0) || Object.is(expected, -0)) {
-            const tolerance = params?.absoluteToleranceAroundZero ?? 0;
-            return Math.abs(received) <= tolerance;
+            return Math.abs(received) <= absoluteToleranceAroundZero;
+        }
+        if (Object.is(received, 0) || Object.is(received, -0)) {
+            return Math.abs(expected) <= absoluteToleranceAroundZero;
         }
 
         // Non-zero rational numbers

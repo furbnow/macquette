@@ -27,6 +27,7 @@ export const extractCookingInputFromLegacy = (scenario: LegacyScenario): Cooking
 
 export type CookingDependencies = CookingSAPDependencies & unknown;
 
+export type Cooking = CookingSAP | CookingNoop;
 export const constructCooking = (
     input: CookingInput,
     dependencies: CookingDependencies,

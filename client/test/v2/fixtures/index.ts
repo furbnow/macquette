@@ -18,9 +18,16 @@ const fixturePaths = [
 const safeJsonParse = (...args: Parameters<typeof JSON.parse>): unknown =>
     JSON.parse(...args);
 
-export type Scenario = { name: string; data: unknown };
-export const fixtures: Array<Scenario> = fixturePaths.map((path) => ({
-    name: relative(fixturesRoot, path),
+export class Scenario {
+    public name: string;
+    constructor(public path: string, public scenario: string, public data: unknown) {
+        this.name = `${this.path} - ${this.scenario}`;
+    }
+}
+
+export type Fixture = { path: string; data: unknown };
+export const fixtures: Array<Fixture> = fixturePaths.map((path) => ({
+    path: relative(fixturesRoot, path),
     data: safeJsonParse(readFileSync(path, 'utf-8')),
 }));
 
@@ -32,13 +39,10 @@ export const scenarios = fixtures.flatMap((fixture) => {
     const parseResult = fixtureSchema.safeParse(fixture.data);
     if (parseResult.success) {
         return Object.entries(parseResult.data.data).map(
-            ([scenarioName, scenarioData]) => ({
-                name: `${fixture.name} - ${scenarioName}`,
-                data: scenarioData,
-            }),
+            ([name, data]) => new Scenario(fixture.path, name, data),
         );
     } else {
-        console.warn(`Scenario parse failure for fixture ${fixture.name}`);
+        console.warn(`Scenario parse failure for fixture ${fixture.path}`);
         return [];
     }
 });

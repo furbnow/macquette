@@ -5,7 +5,7 @@ import { monthlyHotWaterTemperatureRise, monthlyHotWaterUseFactor } from '../dat
 import { Month } from '../enums/month';
 import { ModelError } from '../error';
 
-type WaterCommonInput = {
+export type WaterCommonInput = {
     lowWaterUseDesign: boolean;
     annualEnergyContentOverride: false | number;
 };

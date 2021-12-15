@@ -79,6 +79,36 @@ const arbLAC = (fuelNames: string[]) =>
         fuels_cooking: arbLACFuels(fuelNames),
     });
 
+const arbVentilation = () =>
+    fcPartialRecord({
+        IVF: fc.array(fc.record({ ventilation_rate: stringySensibleFloat() })),
+        air_permeability_test: legacyBoolean(),
+        air_permeability_value: stringySensibleFloat(),
+        dwelling_construction: fc.oneof(
+            ...(['timberframe', 'masonry'] as const).map(fc.constant),
+        ),
+        suspended_wooden_floor: fc.oneof(
+            ...([0, 'sealed', 'unsealed'] as const).map(fc.constant),
+        ),
+        percentage_draught_proofed: sensibleFloat,
+        draught_lobby: legacyBoolean(),
+        number_of_sides_sheltered: sensibleFloat,
+        ventilation_type: fc.oneof(
+            ...(['NV', 'IE', 'MEV', 'PS', 'MVHR', 'MV', 'DEV'] as const).map(fc.constant),
+        ),
+        EVP: fc.array(fc.record({ ventilation_rate: stringySensibleFloat() })),
+        system_air_change_rate: fc.oneof(
+            fc.constant('na'),
+            fc.constant('n/a'),
+            stringySensibleFloat(),
+        ),
+        balanced_heat_recovery_efficiency: fc.oneof(
+            fc.constant('na'),
+            fc.constant('n/a'),
+            stringySensibleFloat(),
+        ),
+    });
+
 export const arbScenario = () =>
     arbFuels()
         .chain((fuels) =>
@@ -98,7 +128,7 @@ export const arbScenario = () =>
                     ),
                     solar_water_heating: fc.oneof(fc.boolean(), fc.constant(1)),
                 }),
-                SHW: fc.record({
+                SHW: fcPartialRecord({
                     pump: fc.oneof(fc.constant('PV'), fc.constant('electric')),
                     A: sensibleFloat,
                     n0: sensibleFloat,
@@ -116,6 +146,8 @@ export const arbScenario = () =>
                 use_SHW: fc.oneof(fc.boolean(), fc.constant(1)),
                 LAC_calculation_type: arbLAC_calculation_type(),
                 LAC: arbLAC(Object.keys(fuels)),
+                ventilation: arbVentilation(),
+                num_of_floors_override: sensibleFloat,
             }),
         )
         .filter((scenario) => {

@@ -3,7 +3,7 @@ import { sum } from '../../helpers/sum';
 import { zip } from '../../helpers/zip';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
 
-type FloorsInput = {
+export type FloorsInput = {
     floors: Array<FloorSpec>;
 };
 
@@ -36,6 +36,11 @@ export class Floors {
     @cache
     get totalVolume(): number {
         return sum(this.floors.map((f) => f.volume));
+    }
+
+    @cache
+    get numberOfFloors(): number {
+        return this.floors.length;
     }
 
     /* eslint-disable
