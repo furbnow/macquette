@@ -3,14 +3,8 @@
  * through the refactor, but at some point we should fix them. The ones I have
  * noticed are as follows:
  *
- * - We miss the solar access factor (Z) and the solar flux (S) off
- *   completely for calculating the lighting.
- *
  * - We assume all windows are vertical (90-degree incline), even if they
  *   are roof windows.
- *
- * - We mis-apply SAP 6.5 (assume curtains are used in winter) all year
- *   round.
  *
  * - We use the gross area, not the net area of walls etc. in the calculation
  *   of their heat capacity.
@@ -167,7 +161,7 @@ export class WindowLike {
                 90,
                 month,
             );
-            const season = 'winter'; // For heating, use winter values all year round
+            const season = 'winter'; // For heating, use winter values all year round (as per note in Table 6d)
             const accessFactor = solarAccessFactor(this.spec.overshading, season);
             const gain =
                 0.9 *
