@@ -56,6 +56,7 @@ class DuplicateAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):
 
         assessment.pk = None
         assessment.name = f"Copy of {assessment.name}"
+        assessment.owner = request.user
         assessment.save()
 
         response = AssessmentMetadataSerializer(assessment).data

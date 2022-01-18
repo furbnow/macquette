@@ -440,10 +440,13 @@ class TestDuplicateAssessment(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.me = UserFactory.create()
+        cls.other = UserFactory.create()
 
     def setUp(self):
         with freeze_time("2019-06-01T16:35:34Z"):
-            self.assessment = AssessmentFactory.create(owner=self.me)
+            self.assessment = AssessmentFactory.create(
+                owner=self.me, shared_with=[self.other]
+            )
 
     def test_returns_200_if_user_is_owner(self):
         assessment_count = Assessment.objects.count()
@@ -455,6 +458,15 @@ class TestDuplicateAssessment(APITestCase):
 
         assert status.HTTP_200_OK == response.status_code
         assert (assessment_count + 1) == Assessment.objects.count()
+
+    def test_new_owner(self):
+        self.client.force_authenticate(self.other)
+        response = self.client.post(
+            f"/{VERSION}/api/assessments/{self.assessment.pk}/duplicate/"
+        )
+
+        assert status.HTTP_200_OK == response.status_code
+        assert response.data["owner"]["id"] == str(self.other.id)
 
     def test_returns_404_if_user_is_not_owner(self):
         other_user = UserFactory.create()
