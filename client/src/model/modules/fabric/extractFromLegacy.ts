@@ -106,7 +106,7 @@ const legacyInputSchema = z.object({
                     z.literal(0).transform(() => false),
                 ])
                 .optional(),
-            global_TMP_value: z.number().optional(),
+            global_TMP_value: z.union([z.number(), z.null()]).optional(),
         })
         .optional(),
 });
