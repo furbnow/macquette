@@ -376,6 +376,12 @@ const calc = {
             if (input_type == 'textarea')
                 val = $(this).html();
 
+            // Number fields should never end up with the empty string, but should
+            // be 0 instead
+            if (input_type === "number" && val === "") {
+                val = 0;
+            }
+
             if (!isNaN(val) && val != "")
                 val *= 1;
 
