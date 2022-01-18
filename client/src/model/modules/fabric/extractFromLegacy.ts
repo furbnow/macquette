@@ -47,7 +47,7 @@ const commonElementSchema = z.object({
     id: z.number(),
     uvalue: z.number(),
     kvalue: stringyFloatSchema,
-    area: z.number(),
+    area: stringyFloatSchema,
 });
 const legacyWallLikeSchema = commonElementSchema.extend({
     type: z.union([
@@ -139,7 +139,7 @@ export const extractFabricInputFromLegacy = (
                 ) {
                     area = element.l * element.h;
                 } else {
-                    area = element.area;
+                    area = element.area ?? 0;
                 }
                 return {
                     type: element.type,
@@ -178,7 +178,7 @@ export const extractFabricInputFromLegacy = (
                 ) {
                     grossArea = element.l * element.h;
                 } else {
-                    grossArea = element.area;
+                    grossArea = element.area ?? 0;
                 }
                 return {
                     type: element.type,
@@ -196,7 +196,7 @@ export const extractFabricInputFromLegacy = (
                     uValue: element.uvalue,
                     kValue: element.kvalue ?? 0,
                     dimensions: {
-                        area: element.area,
+                        area: element.area ?? 0,
                     },
                 };
             }
