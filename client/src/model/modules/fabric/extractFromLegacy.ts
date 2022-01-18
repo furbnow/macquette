@@ -156,13 +156,24 @@ export const extractFabricInputFromLegacy = (
                 };
             }
             case 'hatch': {
+                let area: number;
+                if (
+                    element.l !== null &&
+                    element.l !== 0 &&
+                    element.h !== null &&
+                    element.h !== 0
+                ) {
+                    area = element.l * element.h;
+                } else {
+                    area = element.area ?? 0;
+                }
                 return {
                     type: element.type,
                     id: element.id,
                     uValue: element.uvalue,
                     kValue: element.kvalue ?? 0,
                     subtractFrom: element.subtractfrom,
-                    area: (element.l ?? 0) * (element.h ?? 0),
+                    area,
                 };
             }
             case 'external wall':
