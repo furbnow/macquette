@@ -45,7 +45,7 @@ const subtractFromSchema = z.union([
 ]);
 const commonElementSchema = z.object({
     id: z.number(),
-    uvalue: z.number(),
+    uvalue: stringyFloatSchema,
     kvalue: stringyFloatSchema,
     area: stringyFloatSchema,
 });
@@ -144,7 +144,7 @@ export const extractFabricInputFromLegacy = (
                 return {
                     type: element.type,
                     id: element.id,
-                    uValue: element.uvalue,
+                    uValue: element.uvalue ?? 0,
                     kValue: element.kvalue ?? 0,
                     subtractFrom: element.subtractfrom,
                     gHeat: element.g ?? 0,
@@ -170,7 +170,7 @@ export const extractFabricInputFromLegacy = (
                 return {
                     type: element.type,
                     id: element.id,
-                    uValue: element.uvalue,
+                    uValue: element.uvalue ?? 0,
                     kValue: element.kvalue ?? 0,
                     subtractFrom: element.subtractfrom,
                     area,
@@ -194,7 +194,7 @@ export const extractFabricInputFromLegacy = (
                 return {
                     type: element.type,
                     id: element.id,
-                    uValue: element.uvalue,
+                    uValue: element.uvalue ?? 0,
                     kValue: element.kvalue ?? 0,
                     grossArea,
                     deductions: [],
@@ -204,7 +204,7 @@ export const extractFabricInputFromLegacy = (
                 return {
                     type: element.type,
                     id: element.id,
-                    uValue: element.uvalue,
+                    uValue: element.uvalue ?? 0,
                     kValue: element.kvalue ?? 0,
                     dimensions: {
                         area: element.area ?? 0,
