@@ -733,7 +733,7 @@ const calc = {
 
         // Unload previous view
         if (oldPage && oldScenario) {
-            UnloadUI();
+            UnloadUI(oldPage);
         }
 
         data = project[scenario];

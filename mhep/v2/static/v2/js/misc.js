@@ -208,9 +208,9 @@ function InitUI() {
     }
 }
 
-function UnloadUI() {
+function UnloadUI(oldPage) {
     // Call page specific updateui function
-    var functionname = page + '_UnloadUI';
+    var functionname = oldPage + '_UnloadUI';
     if (window[functionname] != undefined) {
         window[functionname]();
     }
