@@ -1,10 +1,10 @@
 import fc from 'fast-check';
-import { mean } from '../../src/helpers/mean';
-import { sum } from '../../src/helpers/sum';
-import { Month } from '../../src/model/enums/month';
-import { Orientation } from '../../src/model/enums/orientation';
-import { Overshading } from '../../src/model/enums/overshading';
-import { Region } from '../../src/model/enums/region';
+import { mean } from '../../../src/v2/helpers/mean';
+import { sum } from '../../../src/v2/helpers/sum';
+import { Month } from '../../../src/v2/model/enums/month';
+import { Orientation } from '../../../src/v2/model/enums/orientation';
+import { Overshading } from '../../../src/v2/model/enums/overshading';
+import { Region } from '../../../src/v2/model/enums/region';
 import {
     CommonSpec,
     DeductibleSpec,
@@ -17,8 +17,8 @@ import {
     WallLikeSpec,
     WindowLike,
     WindowLikeSpec,
-} from '../../src/model/modules/fabric';
-import { arbFloat, merge } from '../helpers/arbitraries';
+} from '../../../src/v2/model/modules/fabric';
+import { arbFloat, merge } from '../../helpers/arbitraries';
 
 const arbitraryCommonSpec = (): fc.Arbitrary<CommonSpec> =>
     fc.record({

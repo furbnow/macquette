@@ -1,5 +1,5 @@
-import Assessment from '../../../src/ui/Assessment';
-import { getMeasures, formatMeasures } from '../../../src/ui/lib/measures';
+import Assessment from '../../../../src/dev/ui/Assessment';
+import { getMeasures, formatMeasures } from '../../../../src/dev/ui/lib/measures';
 
 const p = {
     id: '1',

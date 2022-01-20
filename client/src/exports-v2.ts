@@ -1,5 +1,5 @@
-import { datasets } from './model/datasets';
-import { calcRun } from './model/model';
+import { datasets } from './v2/model/datasets';
+import { calcRun } from './v2/model/model';
 
 declare global {
     interface Window {

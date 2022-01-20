@@ -1,3 +1,5 @@
+/* eslint-disable import/no-cycle */
+
 /* There are a number of problems with the legacy implementation of these
  * calculations. We reproduce them here for the sake of keeping fidelity
  * through the refactor, but at some point we should fix them. The ones I have

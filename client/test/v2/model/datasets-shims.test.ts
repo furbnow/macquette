@@ -4,11 +4,11 @@ import {
     solarAccessFactor,
     solarDeclinationRadians,
     solarFluxK,
-} from '../../src/model/datasets-shims';
-import { Month } from '../../src/model/enums/month';
-import { Orientation } from '../../src/model/enums/orientation';
-import { Overshading } from '../../src/model/enums/overshading';
-import { Region } from '../../src/model/enums/region';
+} from '../../../src/v2/model/datasets-shims';
+import { Month } from '../../../src/v2/model/enums/month';
+import { Orientation } from '../../../src/v2/model/enums/orientation';
+import { Overshading } from '../../../src/v2/model/enums/overshading';
+import { Region } from '../../../src/v2/model/enums/region';
 
 describe('datasets shims', () => {
     describe('solarFluxK', () => {

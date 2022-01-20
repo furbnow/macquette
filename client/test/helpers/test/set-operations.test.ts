@@ -1,4 +1,4 @@
-import { compareSets } from './set-operations';
+import { compareSets } from '../set-operations';
 import * as fc from 'fast-check';
 
 describe('set operations', () => {

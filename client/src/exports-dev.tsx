@@ -1,30 +1,30 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 
-import { AppContext } from './ui/context/AppContext';
+import { AppContext } from './dev/ui/context/AppContext';
 
-import Assessment from './ui/Assessment';
+import Assessment from './dev/ui/Assessment';
 
-import blank from './ui/lib/blank';
-import { getScenarioList } from './ui/lib/scenarios';
-import { getScenarioMeasures } from './ui/lib/measures';
+import blank from './dev/ui/lib/blank';
+import { getScenarioList } from './dev/ui/lib/scenarios';
+import { getScenarioMeasures } from './dev/ui/lib/measures';
 
-import Commentary from './ui/views/Commentary';
-import CurrentEnergy from './ui/views/CurrentEnergy';
-import DwellingData from './ui/views/DwellingData';
-import FloorUValueCalculator from './ui/views/FloorUValueCalculator/FloorUValueCalculator';
-import Generation from './ui/views/Generation';
-import ImageGallery from './ui/views/ImageGallery';
-import PageHeader from './ui/views/PageHeader';
-import Report from './ui/views/Report';
-import ScopeOfWorks from './ui/views/ScopeOfWorks';
-import Setup from './ui/views/Setup';
-import Sidebar from './ui/views/Sidebar';
-import SolarHotWater from './ui/views/SolarHotWater';
-import Ventilation from './ui/views/Ventilation';
+import Commentary from './dev/ui/views/Commentary';
+import CurrentEnergy from './dev/ui/views/CurrentEnergy';
+import DwellingData from './dev/ui/views/DwellingData';
+import FloorUValueCalculator from './dev/ui/views/FloorUValueCalculator/FloorUValueCalculator';
+import Generation from './dev/ui/views/Generation';
+import ImageGallery from './dev/ui/views/ImageGallery';
+import PageHeader from './dev/ui/views/PageHeader';
+import Report from './dev/ui/views/Report';
+import ScopeOfWorks from './dev/ui/views/ScopeOfWorks';
+import Setup from './dev/ui/views/Setup';
+import Sidebar from './dev/ui/views/Sidebar';
+import SolarHotWater from './dev/ui/views/SolarHotWater';
+import Ventilation from './dev/ui/views/Ventilation';
 
-import TargetBar from './ui/components/TargetBar';
-import Graphics from './ui/components/Graphics';
+import TargetBar from './dev/ui/components/TargetBar';
+import Graphics from './dev/ui/components/Graphics';
 
 declare global {
     interface Window {

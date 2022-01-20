@@ -1,6 +1,6 @@
 import convertObjectArrayToCSV, {
     cleanCSVcell,
-} from '../../../src/ui/lib/convertObjectArrayToCSV';
+} from '../../../../src/dev/ui/lib/convertObjectArrayToCSV';
 
 describe('cleanCSVcell', () => {
     test('string with leading/trailing spaces', () => {

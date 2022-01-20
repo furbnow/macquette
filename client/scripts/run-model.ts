@@ -9,7 +9,7 @@
 // ./node_modules/.bin/ts-node run-model <stdin >stdout
 
 import { readFileSync } from 'fs';
-import { calcRun } from '../src/model/model';
+import { calcRun } from '../src/v2/model/model';
 import { cloneDeep, mapValues } from 'lodash';
 
 const modelInputs: any = JSON.parse(readFileSync(0, 'utf-8')); // STDIN_FILENO = 0

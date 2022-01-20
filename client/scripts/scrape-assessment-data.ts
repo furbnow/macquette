@@ -31,7 +31,7 @@ const getParams = async (): Promise<Params> => {
             type: 'input',
             name: 'dataDirectory',
             message: 'Data directory',
-            default: resolve(__dirname, '..', 'test', 'model', 'fixtures', 'private'),
+            default: resolve(__dirname, '..', 'test', 'v2', 'fixtures', 'private'),
         },
         {
             type: 'password',

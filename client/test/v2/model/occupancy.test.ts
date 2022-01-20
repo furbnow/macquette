@@ -1,5 +1,5 @@
 import fc from 'fast-check';
-import { Occupancy } from '../../src/model/modules/occupancy';
+import { Occupancy } from '../../../src/v2/model/modules/occupancy';
 
 const arbOccupancyInput = () =>
     fc.record({

@@ -1,4 +1,4 @@
-import { flatten } from './object-flattening';
+import { flatten } from '../object-flattening';
 
 describe('object flattening', () => {
     test('empty object', () => {

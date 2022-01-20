@@ -23,11 +23,12 @@ module.exports = {
     },
     plugins: ["react", "import", "jsx-a11y", "react-hooks"],
     rules: {
-        "react/prop-types": 0,
-        "no-console": 0,
-        "react-hooks/rules-of-hooks": 2,
-        "react-hooks/exhaustive-deps": 1,
-        "no-var": 2,
+        "react/prop-types": "off",
+        "no-console": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "no-var": "error",
+        "import/no-cycle": ["error", { "ignoreExternal": true }],
     },
     settings: { react: { version: "detect" } },
     overrides: [
@@ -48,7 +49,7 @@ module.exports = {
 
         // dev ui work
         {
-            files: ['src/ui/**/*.ts', 'src/ui/**/*.tsx', 'src/exports-dev.tsx'],
+            files: ['src/dev/ui/**/*.ts', 'src/dev/ui/**/*.tsx', 'src/exports-dev.tsx'],
             rules: {
                 '@typescript-eslint/consistent-type-assertions': 'off',
                 '@typescript-eslint/no-explicit-any': 'off',
@@ -68,6 +69,7 @@ module.exports = {
                 '@typescript-eslint/consistent-type-assertions': 'off',
                 '@typescript-eslint/no-explicit-any': 'off',
                 '@typescript-eslint/no-non-null-assertion': 'off',
+                '@typescript-eslint/no-unsafe-argument': 'off',
                 '@typescript-eslint/no-unsafe-assignment': 'off',
                 '@typescript-eslint/no-unsafe-call': 'off',
                 '@typescript-eslint/no-unsafe-member-access': 'off',

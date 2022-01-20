@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { Floor, Floors } from '../../src/model/modules/floors';
+import { Floor, Floors } from '../../../src/v2/model/modules/floors';
 
 const positiveRationalFloat = () =>
     fc
