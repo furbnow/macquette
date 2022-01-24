@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+import { legacyScenarioSchema } from '../legacy-state-validators/scenario';
 import { datasets } from './datasets'
 import { Fabric, extractFabricInputFromLegacy } from './modules/fabric';
 import { Floors, extractFloorsInputFromLegacy } from './modules/floors'
@@ -56,10 +57,11 @@ calc.run = function (datain) {
     calc.data = calc.start(datain);
     calc.start(calc.data);
 
-    const floors = new Floors(extractFloorsInputFromLegacy(datain))
-    const occupancy = new Occupancy(extractOccupancyInputFromLegacy(datain), { floors })
-    const region = extractRegionFromLegacy(datain)
-    const fabric = new Fabric(extractFabricInputFromLegacy(datain), { region, floors })
+    const validatedScenario = legacyScenarioSchema.parse(datain)
+    const floors = new Floors(extractFloorsInputFromLegacy(validatedScenario))
+    const occupancy = new Occupancy(extractOccupancyInputFromLegacy(validatedScenario), { floors })
+    const region = extractRegionFromLegacy(validatedScenario)
+    const fabric = new Fabric(extractFabricInputFromLegacy(validatedScenario), { region, floors })
 
     floors.mutateLegacyData(calc.data)
     occupancy.mutateLegacyData(calc.data)
@@ -2460,11 +2462,12 @@ calc.fabric_energy_efficiency = function (data) {
 
     // Run the model
     calc.start(data_FEE);
+    const validatedScenarioFEE = legacyScenarioSchema.parse(data_FEE)
 
-    const floors = new Floors(extractFloorsInputFromLegacy(data_FEE))
-    const occupancy = new Occupancy(extractOccupancyInputFromLegacy(data_FEE), { floors })
-    const region = extractRegionFromLegacy(data_FEE)
-    const fabric = new Fabric(extractFabricInputFromLegacy(data_FEE), { region, floors })
+    const floors = new Floors(extractFloorsInputFromLegacy(validatedScenarioFEE))
+    const occupancy = new Occupancy(extractOccupancyInputFromLegacy(validatedScenarioFEE), { floors })
+    const region = extractRegionFromLegacy(validatedScenarioFEE)
+    const fabric = new Fabric(extractFabricInputFromLegacy(validatedScenarioFEE), { region, floors })
 
     floors.mutateLegacyData(data_FEE)
     occupancy.mutateLegacyData(data_FEE)

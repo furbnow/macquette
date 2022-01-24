@@ -1,6 +1,6 @@
-import * as z from 'zod';
 import { findWithRest } from '../../../helpers/findWithRest';
 import { partition } from '../../../helpers/partition';
+import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Orientation } from '../../enums/orientation';
 import { Overshading } from '../../enums/overshading';
 import { ModelError } from '../../error';
@@ -23,98 +23,7 @@ const isDeductibleSpec = (
     return ['door', 'hatch', 'roof light', 'window'].includes(element.type);
 };
 
-const stringyIntegerSchema = z.union([
-    z.number(),
-    z
-        .string()
-        .transform((s) => (s === '' ? null : parseInt(s)))
-        .refine((n) => n === null || Number.isSafeInteger(n)),
-]);
-const stringyFloatSchema = z.union([
-    z.number(),
-    z
-        .string()
-        .transform((s) => (s === '' ? null : parseFloat(s)))
-        .refine((n) => n === null || Number.isFinite(n)),
-]);
-const subtractFromSchema = z.union([
-    z.number(),
-    z.literal('no').transform(() => null),
-    z.literal(undefined).transform(() => null),
-    z.string().transform((s) => parseInt(s)),
-]);
-const commonElementSchema = z.object({
-    id: z.number(),
-    uvalue: stringyFloatSchema,
-    kvalue: stringyFloatSchema,
-    area: stringyFloatSchema,
-});
-const legacyWallLikeSchema = commonElementSchema.extend({
-    type: z.union([
-        z.literal('Wall').transform(() => 'external wall' as const),
-        z.literal('Party_wall').transform(() => 'party wall' as const),
-        z.literal('Loft').transform(() => 'loft' as const),
-        z.literal('Roof').transform(() => 'roof' as const),
-    ]),
-    l: stringyFloatSchema,
-    h: stringyFloatSchema,
-});
-const legacyWindowLikeSchema = commonElementSchema.extend({
-    type: z.union([
-        z.literal('Door').transform(() => 'door' as const),
-        z.literal('Roof_light').transform(() => 'roof light' as const),
-        z.literal('window').transform(() => 'window' as const),
-        z.literal('Window').transform(() => 'window' as const),
-    ]),
-    subtractfrom: subtractFromSchema,
-    g: stringyFloatSchema,
-    gL: stringyFloatSchema,
-    ff: stringyFloatSchema,
-    l: stringyFloatSchema,
-    h: stringyFloatSchema,
-    orientation: stringyIntegerSchema,
-    overshading: stringyIntegerSchema,
-});
-const legacyHatchSchema = commonElementSchema.extend({
-    type: z.literal('Hatch').transform(() => 'hatch' as const),
-    subtractfrom: subtractFromSchema,
-    l: stringyFloatSchema,
-    h: stringyFloatSchema,
-});
-const legacyFloorSchema = commonElementSchema.extend({
-    type: z.literal('Floor').transform(() => 'floor' as const),
-});
-
-const legacyInputSchema = z.object({
-    fabric: z
-        .object({
-            elements: z
-                .array(
-                    z.union([
-                        legacyWallLikeSchema,
-                        legacyWindowLikeSchema,
-                        legacyHatchSchema,
-                        legacyFloorSchema,
-                    ]),
-                )
-                .optional(),
-            thermal_bridging_yvalue: stringyFloatSchema,
-            global_TMP: z
-                .union([
-                    z.boolean(),
-                    z.literal(1).transform(() => true),
-                    z.literal(0).transform(() => false),
-                ])
-                .optional(),
-            global_TMP_value: z.union([z.number(), z.null()]).optional(),
-        })
-        .optional(),
-});
-
-export const extractFabricInputFromLegacy = (
-    data: Record<string, unknown>,
-): FabricInput => {
-    const { fabric } = legacyInputSchema.parse(data);
+export const extractFabricInputFromLegacy = ({ fabric }: LegacyScenario): FabricInput => {
     let thermalMassParameterOverride: number | null = null;
     if (fabric?.global_TMP === true) {
         if (typeof fabric.global_TMP_value !== 'number') {

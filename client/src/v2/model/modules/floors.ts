@@ -1,27 +1,13 @@
-import * as z from 'zod';
 import { cache } from '../../helpers/cacheGetter';
 import { sum } from '../../helpers/sum';
 import { zip } from '../../helpers/zip';
+import { LegacyScenario } from '../../legacy-state-validators/scenario';
 
 type FloorsInput = {
     floors: Array<FloorSpec>;
 };
 
-const legacyInputSchema = z.object({
-    floors: z
-        .array(
-            z.object({
-                area: z.union([z.number(), z.literal('').transform(() => 0)]),
-                height: z.union([z.number(), z.literal('').transform(() => 0)]),
-                name: z.string(),
-            }),
-        )
-        .optional(),
-});
-export const extractFloorsInputFromLegacy = (
-    data: Record<string, unknown>,
-): FloorsInput => {
-    const { floors } = legacyInputSchema.parse(data);
+export const extractFloorsInputFromLegacy = ({ floors }: LegacyScenario): FloorsInput => {
     return { floors: floors ?? [] };
 };
 

@@ -1,10 +1,10 @@
-import { scenarioSchema } from '../../../src/v2/legacy-state-validators/scenario';
+import { legacyScenarioSchema } from '../../../src/v2/legacy-state-validators/scenario';
 import { scenarios } from '../fixtures';
 
 describe('legacy scenario validator', () => {
     for (const scenario of scenarios) {
         test(`${scenario.name}`, () => {
-            expect(() => scenarioSchema.parse(scenario.data)).not.toThrow();
+            expect(() => legacyScenarioSchema.parse(scenario.data)).not.toThrow();
         });
     }
 });

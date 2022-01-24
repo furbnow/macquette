@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from 'fs';
 import { join, relative } from 'path';
+import { z } from 'zod';
 
 const fixturesRoot = join(__filename, '..');
 
@@ -24,14 +25,21 @@ export const fixtures: Array<{ name: string; data: unknown }> = fixturePaths.map
     }),
 );
 
-export const scenarios = fixtures.flatMap(
-    (fixture) =>
-        /* eslint-disable */
-        Object.entries((fixture.data as any).data).map(
+const fixtureSchema = z.object({
+    data: z.record(z.unknown()),
+});
+
+export const scenarios = fixtures.flatMap((fixture) => {
+    const parseResult = fixtureSchema.safeParse(fixture.data);
+    if (parseResult.success) {
+        return Object.entries(parseResult.data.data).map(
             ([scenarioName, scenarioData]) => ({
-                name: `${fixture.name} ; ${scenarioName}`,
+                name: `${fixture.name} - ${scenarioName}`,
                 data: scenarioData,
             }),
-        ),
-    /* eslint-enable */
-);
+        );
+    } else {
+        console.warn(`Scenario parse failure for fixture ${fixture.name}`);
+        return [];
+    }
+});

@@ -1,8 +1,7 @@
-import * as z from 'zod';
+import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { Region } from '../enums/region';
 
-export const extractRegionFromLegacy = (data: Record<string, unknown>) => {
-    const { region: code } = z.object({ region: z.number().optional() }).parse(data);
+export const extractRegionFromLegacy = ({ region: code }: LegacyScenario) => {
     if (code === undefined) {
         return new Region('UK average');
     }

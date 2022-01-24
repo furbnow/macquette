@@ -1,20 +1,15 @@
-import * as z from 'zod';
 import { cache } from '../../helpers/cacheGetter';
+import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { ModelError } from '../error';
 
 type OccupancyInput = {
     customOccupancy: number | null;
 };
 
-const legacyInputSchema = z.object({
-    use_custom_occupancy: z.union([z.number(), z.boolean()]).optional(),
-    custom_occupancy: z.union([z.number(), z.literal('')]).optional(),
-});
-export const extractOccupancyInputFromLegacy = (
-    data: Record<string, unknown>,
-): OccupancyInput => {
-    const parsed = legacyInputSchema.parse(data);
-    const { use_custom_occupancy, custom_occupancy } = parsed;
+export const extractOccupancyInputFromLegacy = ({
+    use_custom_occupancy,
+    custom_occupancy,
+}: LegacyScenario): OccupancyInput => {
     if (use_custom_occupancy === 1 || use_custom_occupancy === true) {
         if (custom_occupancy === undefined || custom_occupancy === '') {
             throw new ModelError(
