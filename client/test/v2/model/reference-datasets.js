@@ -13,16 +13,16 @@ export const datasets = {
     fuels: {
         'Mains Gas': {
             category: 'Gas',
-            standingcharge: 88,
-            fuelcost: 3.93,
+            standingcharge: 95,
+            fuelcost: 3.63,
             co2factor: 0.21,
             primaryenergyfactor: 1.13,
             SAP_code: 1,
         },
         'Bulk LPG': {
             category: 'Gas',
-            standingcharge: 58,
-            fuelcost: 6.59,
+            standingcharge: 63,
+            fuelcost: 6.79,
             co2factor: 0.241,
             primaryenergyfactor: 1.141,
             SAP_code: 2,
@@ -30,7 +30,7 @@ export const datasets = {
         'Bottled LPG ': {
             category: 'Gas',
             standingcharge: 0,
-            fuelcost: 7.85,
+            fuelcost: 11.33,
             co2factor: 0.241,
             primaryenergyfactor: 1.141,
             SAP_code: 3,
@@ -38,7 +38,7 @@ export const datasets = {
         'Heating Oil': {
             category: 'Oil',
             standingcharge: 0,
-            fuelcost: 4.35,
+            fuelcost: 4.06,
             co2factor: 0.298,
             primaryenergyfactor: 1.18,
             SAP_code: 4,
@@ -46,15 +46,15 @@ export const datasets = {
         'House Coal': {
             category: 'Solid fuel',
             standingcharge: 0,
-            fuelcost: 4.18,
+            fuelcost: 4.48,
             co2factor: 0.395,
             primaryenergyfactor: 1.064,
             SAP_code: 11,
         },
-        Anthracite: {
+        'Anthracite': {
             category: 'Solid fuel',
             standingcharge: 0,
-            fuelcost: 4.14,
+            fuelcost: 4.38,
             co2factor: 0.395,
             primaryenergyfactor: 1.064,
             SAP_code: 15,
@@ -62,7 +62,7 @@ export const datasets = {
         'Manufactured smokeless fuel': {
             category: 'Solid fuel',
             standingcharge: 0,
-            fuelcost: 5.17,
+            fuelcost: 5.13,
             co2factor: 0.366,
             primaryenergyfactor: 1.261,
             SAP_code: 12,
@@ -70,7 +70,7 @@ export const datasets = {
         'Wood Logs': {
             category: 'Solid fuel',
             standingcharge: 0,
-            fuelcost: 4.65,
+            fuelcost: 5.16,
             co2factor: 0.39,
             primaryenergyfactor: 1.046,
             SAP_code: 20,
@@ -94,7 +94,7 @@ export const datasets = {
         'Wood chips': {
             category: 'Solid fuel',
             standingcharge: 0,
-            fuelcost: 3.48,
+            fuelcost: 3.75,
             co2factor: 0.39,
             primaryenergyfactor: 1.046,
             SAP_code: 21,
@@ -102,15 +102,15 @@ export const datasets = {
         'Dual Fuel Appliance': {
             category: 'Solid fuel',
             standingcharge: 0,
-            fuelcost: 4.53,
+            fuelcost: 4.81,
             co2factor: 0.39,
             primaryenergyfactor: 1.049,
             SAP_code: 10,
         },
         '7-Hour tariff - High Rate': {
             category: 'Electricity',
-            standingcharge: 8,
-            fuelcost: 20.72,
+            standingcharge: 0,
+            fuelcost: 22.68,
             co2factor: 0.136,
             primaryenergyfactor: 1.501,
             SAP_code: 32,
@@ -118,15 +118,15 @@ export const datasets = {
         '7 Hour tariff - Low Rate': {
             category: 'Electricity',
             standingcharge: 0,
-            fuelcost: 8.13,
+            fuelcost: 9.15,
             co2factor: 0.136,
             primaryenergyfactor: 1.501,
             SAP_code: 31,
         },
         '10-hour tariff - High Rate': {
             category: 'Electricity',
-            standingcharge: 7,
-            fuelcost: 18.71,
+            standingcharge: 1,
+            fuelcost: 20.4,
             co2factor: 0.136,
             primaryenergyfactor: 1.501,
             SAP_code: 34,
@@ -134,15 +134,15 @@ export const datasets = {
         '10-hour tariff - Low Rate': {
             category: 'Electricity',
             standingcharge: 0,
-            fuelcost: 10.68,
+            fuelcost: 11.74,
             co2factor: 0.136,
             primaryenergyfactor: 1.501,
             SAP_code: 33,
         },
         '24-hour heating tariff': {
             category: 'Electricity',
-            standingcharge: 31,
-            fuelcost: 10.38,
+            standingcharge: 8,
+            fuelcost: 13.23,
             co2factor: 0.136,
             primaryenergyfactor: 1.501,
             SAP_code: 35,
@@ -150,20 +150,20 @@ export const datasets = {
         // Do not remove the following fuels from the datasets, they are required by the model
         'Standard Tariff': {
             category: 'Electricity',
-            standingcharge: 72,
-            fuelcost: 17.56,
+            standingcharge: 97,
+            fuelcost: 19.44,
             co2factor: 0.136,
             primaryenergyfactor: 1.501,
             SAP_code: 30,
         },
-        generation: {
+        'generation': {
             category: 'Generation',
             standingcharge: 0,
             fuelcost: 0,
             co2factor: 0.136,
             primaryenergyfactor: 1.501,
-            SAP_code: 0
-        }
+            SAP_code: 0,
+        },
     },
 
 
