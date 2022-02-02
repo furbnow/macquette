@@ -284,7 +284,7 @@ export class Fabric {
         const areas = this.flatElements
             .filter((e) => e.type !== 'party wall')
             .filter((e) => e.spec.uValue !== 0) // Legacy
-            .map(area);
+            .map(netArea);
         return sum(areas);
     }
 
@@ -370,6 +370,19 @@ export class Fabric {
 }
 
 export const area = (element: FabricElement): number => {
+    if (element instanceof WindowLike) {
+        return element.spec.area;
+    } else if (element instanceof Hatch) {
+        return element.spec.area;
+    } else if (element instanceof Floor) {
+        return element.spec.dimensions.area;
+    } else if (element instanceof WallLike) {
+        return element.spec.grossArea;
+    }
+    return assertNever(element);
+};
+
+export const netArea = (element: FabricElement): number => {
     if (element instanceof WindowLike) {
         return element.spec.area;
     } else if (element instanceof Hatch) {

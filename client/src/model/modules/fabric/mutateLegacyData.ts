@@ -1,7 +1,7 @@
 import { sum } from '../../../helpers/sum';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
-import { area, Fabric, WallLike, WindowLike, Hatch } from '../fabric';
+import { area, netArea, Fabric, WallLike, WindowLike, Hatch } from '../fabric';
 
 /* eslint-disable
    @typescript-eslint/no-explicit-any,
@@ -52,10 +52,15 @@ export const mutateLegacyData = (fabric: Fabric, data: any) => {
                 { legacyElement, fabric },
             );
         }
-        if (legacyElement.area === undefined) {
+        if (
+            legacyElement.h !== undefined &&
+            legacyElement.h !== '' &&
+            legacyElement.l !== undefined &&
+            legacyElement.l !== ''
+        ) {
             legacyElement.area = area(newStyleElement);
         }
-        legacyElement.netarea = area(newStyleElement);
+        legacyElement.netarea = netArea(newStyleElement);
         if (
             !(newStyleElement instanceof WindowLike) &&
             !(newStyleElement instanceof Hatch)

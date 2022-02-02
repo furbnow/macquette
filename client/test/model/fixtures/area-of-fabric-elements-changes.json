@@ -1,0 +1,18 @@
+{
+    "master": {
+        "fabric": {
+            "elements": [
+                {
+                    "type": "Wall",
+                    "id": 0,
+                    "kvalue": 0,
+                    "uvalue": 0,
+                    "h": 10,
+                    "l": 10,
+                    "area": 60
+                }
+            ],
+            "thermal_bridging_yvalue": 0.15
+        }
+    }
+}
