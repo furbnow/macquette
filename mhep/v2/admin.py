@@ -17,7 +17,8 @@ class ImageAdmin(admin.ModelAdmin):
 
 @admin.register(Assessment)
 class AssessmentAdmin(admin.ModelAdmin):
-    list_display = ["name", "status", "owner", "organisation"]
+    list_display = ["id", "name", "status", "updated_at", "organisation", "owner"]
+    list_filter = ["organisation", "status", "owner", "updated_at"]
     search_fields = ["name", "description"]
 
 
