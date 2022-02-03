@@ -22,7 +22,7 @@ import { Overshading } from '../enums/overshading';
 import { Month, MonthName } from '../enums/month';
 import { mean } from '../../helpers/mean';
 import { Region } from '../enums/region';
-import { lightAccessFactor, solarAccessFactor } from '../datasets-shims';
+import { lightAccessFactor, solarAccessFactor } from '../datasets';
 import { calculateSolarFlux } from '../solar-flux';
 import { assertNever } from '../../helpers/assertNever';
 import { mutateLegacyData } from './fabric/mutateLegacyData';

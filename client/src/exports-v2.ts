@@ -1,4 +1,4 @@
-import { datasets } from './v2/model/datasets';
+import { datasets } from './v2/model/datasets/legacy';
 import { calcRun } from './v2/model/model';
 import { mount } from './v2/ui/module-management';
 

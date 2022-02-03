@@ -1,29 +1,50 @@
 import { mapValues } from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {
+    LegacyScenario,
+    legacyScenarioSchema,
+} from '../../legacy-state-validators/scenario';
+import { CommonState, commonStateReducer, initialCommonState } from '../common-state';
 import { ModuleAction, ModuleName, modules, ModuleStates } from '../modules';
 import { externals } from './shim';
 import { Store } from './store';
 
+type ModuleStateView<StateT> = {
+    commonState: CommonState;
+    moduleState: StateT;
+};
+const moduleStateView = (
+    appState: AppState,
+    moduleName: ModuleName,
+): ModuleStateView<unknown> => {
+    const { moduleStates, commonState } = appState;
+    return { commonState, moduleState: moduleStates[moduleName] };
+};
 export type UiModule<StateT> = {
     initialState: StateT;
     reducer: (state: StateT, action: AppAction) => StateT;
-    dataMutator: (data: unknown, state: AppState) => void;
+    dataMutator: (data: unknown, state: ModuleStateView<StateT>) => void;
     rootComponent: React.FunctionComponent<{
-        state: StateT;
+        state: ModuleStateView<StateT>;
         dispatch: (action: AppAction) => void;
     }>;
 };
 
-export type ExternalDataUpdateAction = { type: 'external data update'; data: unknown };
+export type ExternalDataUpdateAction = {
+    type: 'external data update';
+    data: LegacyScenario;
+};
 export type AppState = {
     dirty: boolean;
     moduleStates: ModuleStates;
+    commonState: CommonState;
 };
 export type AppAction = ExternalDataUpdateAction | ModuleAction;
 
 const mainReducer = (state: AppState, action: AppAction): AppState => {
     state.dirty = action.type !== 'external data update';
+    state.commonState = commonStateReducer(state.commonState, action);
     for (const moduleName of Object.keys(modules)) {
         // TypeScript is not clever enough to match up the types between
         // modules[moduleName].reducer and state.moduleStates[moduleName], so
@@ -51,18 +72,19 @@ const mainReducer = (state: AppState, action: AppAction): AppState => {
 
 const initialState: AppState = {
     dirty: false,
-    moduleStates: mapValues(modules, (mod) => mod.initialState),
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    moduleStates: mapValues(modules, (mod) => mod.initialState) as ModuleStates,
+    commonState: initialCommonState,
 };
 const store = new Store(mainReducer, initialState);
 
 export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
-    const { rootComponent } = modules[moduleName];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rootComponent: any = modules[moduleName].rootComponent;
     const dispatch = (action: AppAction) => store.dispatch(action);
     const render = (appState: AppState) => {
-        console.log('in render', { moduleName, mountPoint });
-        const moduleState = appState.moduleStates[moduleName];
         const element = React.createElement(rootComponent, {
-            state: moduleState,
+            state: moduleStateView(appState, moduleName),
             dispatch,
         });
         ReactDOM.render(element, mountPoint);
@@ -71,11 +93,18 @@ export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
     store.subscribe(render);
     return {
         update: () => {
-            console.log('in update', { moduleName, mountPoint });
-            store.dispatch({
-                type: 'external data update',
-                data: externals().data,
-            });
+            const parsedData = legacyScenarioSchema.safeParse(externals().data);
+            if (!parsedData.success) {
+                console.error(
+                    'Scenario validation failed! Refusing to dispatch external data update action',
+                    parsedData.error,
+                );
+            } else {
+                store.dispatch({
+                    type: 'external data update',
+                    data: parsedData.data,
+                });
+            }
         },
         unload: () => {
             console.log('in unload', { moduleName, mountPoint });
@@ -93,7 +122,19 @@ store.subscribe((state) => {
 });
 
 export const runDataMutators = (appState: AppState) => {
-    for (const mod of Object.values(modules)) {
-        mod.dataMutator(externals().data, appState);
+    for (const [modName, mod] of Object.entries(modules)) {
+        /* eslint-disable
+           @typescript-eslint/no-explicit-any,
+           @typescript-eslint/no-unsafe-member-access,
+           @typescript-eslint/no-unsafe-assignment,
+           @typescript-eslint/no-unsafe-argument,
+           @typescript-eslint/consistent-type-assertions,
+        */
+        const view: ModuleStateView<any> = moduleStateView(
+            appState,
+            modName as ModuleName,
+        );
+        mod.dataMutator(externals().data, view);
+        /* eslint-enable */
     }
 };

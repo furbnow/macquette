@@ -7,6 +7,8 @@
     "license": "AGPL-3.0-or-later",
     "dependencies": {
         "esbuild": "^0.13.14",
+        "lodash": "^4.17.21",
+        "object-inspect": "^1.12.0",
         "prettier": "^2.4.1",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
@@ -17,6 +19,7 @@
         "@types/jest": "^27.0.2",
         "@types/lodash": "^4.14.176",
         "@types/node": "16.11.7",
+        "@types/object-inspect": "^1.8.1",
         "@types/react": "^17.0.3",
         "@types/react-dom": "^17.0.3",
         "@typescript-eslint/eslint-plugin": "^5.4.0",
@@ -27,7 +30,6 @@
         "concurrently": "^6.0.2",
         "eslint": "^8.2.0",
         "eslint-config-prettier": "^8.1.0",
-        "eslint-config-standard": "^16.0.2",
         "eslint-plugin-import": "^2.22.1",
         "eslint-plugin-jest": "^25.2.4",
         "eslint-plugin-jsx-a11y": "^6.4.1",
@@ -38,7 +40,6 @@
         "fast-check": "^2.19.0",
         "inquirer": "^8.2.0",
         "jest": "^27.0.0-next.8",
-        "lodash": "^4.17.21",
         "ts-jest": "^27.0.0-next.10",
         "ts-node": "^10.4.0",
         "typescript": "^4.2.4"

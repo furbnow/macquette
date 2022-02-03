@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import { legacyScenarioSchema } from '../legacy-state-validators/scenario';
-import { datasets } from './datasets'
+import { datasets } from './datasets/legacy'
 import { Fabric, extractFabricInputFromLegacy } from './modules/fabric';
 import { Floors, extractFloorsInputFromLegacy } from './modules/floors'
 import { Occupancy, extractOccupancyInputFromLegacy } from './modules/occupancy'

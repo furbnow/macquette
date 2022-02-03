@@ -26,4 +26,18 @@ export class Overshading {
     get index0(): number {
         return Overshading.names.indexOf(this.name);
     }
+
+    @cache
+    get display(): string {
+        switch (this.name) {
+            case '>80%':
+                return 'Heavy: more than 80%';
+            case '60-80%':
+                return 'Significant: 60% - 80%';
+            case '20-60%':
+                return 'Modest: 20% - 60%';
+            case '<20%':
+                return 'None or very little: less than 20%';
+        }
+    }
 }

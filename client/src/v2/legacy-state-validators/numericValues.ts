@@ -1,3 +1,4 @@
+import inspect from 'object-inspect';
 import { z } from 'zod';
 
 export const stringyIntegerSchema = z.union([
@@ -26,3 +27,8 @@ export const stringyFloatSchema = z.union([
             }),
         ),
 ]);
+
+export const numberWithNaN = z.custom<number>(
+    (val) => typeof val === 'number',
+    (val) => ({ message: `Expected number (including NaN), received ${inspect(val)}` }),
+);

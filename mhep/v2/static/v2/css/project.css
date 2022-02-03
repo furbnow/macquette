@@ -1,10 +1,12 @@
 :root {
-    --app-color: #ff2712;;
+    --app-color: #ff2712;
 
     --brown-1: #897A67;
     --brown-2: rgba(215, 210, 201, 0.9);
     --brown-3: #EEECE5;
     --brown-4: rgb(242, 242, 242);
+
+    --warning-yellow: #fcf8e3;
 }
 
 html, body {
@@ -424,4 +426,15 @@ label input[type=radio] {
 
 tr.item {
     vertical-align: top;
+}
+
+
+.scenario-locked-warning {
+    background-color: var(--warning-yellow);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+svg.bi { /* Bootstrap Icon SVG */
+    vertical-align: text-top;
 }

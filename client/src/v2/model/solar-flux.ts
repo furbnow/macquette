@@ -3,7 +3,7 @@ import {
     latitudeRadians,
     meanGlobalSolarIrradianceHorizontal,
     solarDeclinationRadians,
-} from './datasets-shims';
+} from './datasets';
 import { Month } from './enums/month';
 import { Orientation } from './enums/orientation';
 import { Region } from './enums/region';

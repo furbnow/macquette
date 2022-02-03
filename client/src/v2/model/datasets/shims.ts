@@ -1,9 +1,9 @@
-import { datasets } from './datasets';
-import { Month } from './enums/month';
-import { Orientation } from './enums/orientation';
-import { Overshading } from './enums/overshading';
-import { Region } from './enums/region';
-import { ModelError } from './error';
+import { datasets } from './legacy';
+import { Month } from '../enums/month';
+import { Orientation } from '../enums/orientation';
+import { Overshading } from '../enums/overshading';
+import { Region } from '../enums/region';
+import { ModelError } from '../error';
 
 const isIndexable = (val: unknown): val is Record<string | number, unknown> =>
     typeof val === 'object' && val !== null;

@@ -4,7 +4,7 @@ import {
     solarAccessFactor,
     solarDeclinationRadians,
     solarFluxK,
-} from '../../../src/v2/model/datasets-shims';
+} from '../../../src/v2/model/datasets';
 import { Month } from '../../../src/v2/model/enums/month';
 import { Orientation } from '../../../src/v2/model/enums/orientation';
 import { Overshading } from '../../../src/v2/model/enums/overshading';

@@ -17,11 +17,12 @@ export const sandboxModule: UiModule<SandboxState> = {
         return state;
     },
     rootComponent: ({ state, dispatch }) => {
+        const { donks } = state.moduleState;
         let display: string;
-        if (state.donks === 0) {
+        if (donks === 0) {
             display = 'hello world';
         } else {
-            display = 'hello ' + new Array(state.donks).fill('donk').join(' ');
+            display = 'hello ' + new Array(donks).fill('donk').join(' ');
         }
         return (
             <div>
