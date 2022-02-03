@@ -116,7 +116,7 @@ container-test:
         SERVICE_IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     script:
         - apk update
-        - apk add docker-compose make nodejs yarn
+        - apk add docker-compose make
         - docker login -u "$CI_REGISTRY_USER" -p "$CI_JOB_TOKEN" "$CI_REGISTRY"
         - docker pull "$SERVICE_IMAGE_TAG"
         - make test-container
