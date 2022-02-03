@@ -115,9 +115,7 @@ export const extractFabricInputFromLegacy = ({ fabric }: LegacyScenario): Fabric
                     id: element.id,
                     uValue: element.uvalue ?? 0,
                     kValue: element.kvalue ?? 0,
-                    dimensions: {
-                        area: element.area ?? 0,
-                    },
+                    area: element.area ?? 0,
                 };
             }
         }

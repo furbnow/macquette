@@ -70,12 +70,10 @@ export class WallLike {
 
 export type FloorSpec = CommonSpec & {
     type: 'floor';
-    dimensions: {
-        area: number;
-    };
+    area: number;
 };
 
-class Floor {
+export class Floor {
     constructor(public spec: FloorSpec) {}
 
     get type(): Floor['spec']['type'] {
@@ -83,11 +81,11 @@ class Floor {
     }
 
     get thermalCapacity(): number {
-        return this.spec.kValue * this.spec.dimensions.area;
+        return this.spec.kValue * this.spec.area;
     }
 
     get heatLoss(): number {
-        return this.spec.uValue * this.spec.dimensions.area;
+        return this.spec.uValue * this.spec.area;
     }
 }
 
@@ -377,7 +375,7 @@ export const area = (element: FabricElement): number => {
     } else if (element instanceof Hatch) {
         return element.spec.area;
     } else if (element instanceof Floor) {
-        return element.spec.dimensions.area;
+        return element.spec.area;
     } else if (element instanceof WallLike) {
         return element.spec.grossArea;
     }
@@ -390,7 +388,7 @@ export const netArea = (element: FabricElement): number => {
     } else if (element instanceof Hatch) {
         return element.spec.area;
     } else if (element instanceof Floor) {
-        return element.spec.dimensions.area;
+        return element.spec.area;
     } else if (element instanceof WallLike) {
         return element.netArea;
     }

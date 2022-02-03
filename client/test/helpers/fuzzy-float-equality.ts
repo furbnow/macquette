@@ -8,22 +8,19 @@ export type CompareFloatParams = {
     absoluteToleranceAroundZero?: number;
 };
 
-export const compareFloats = (
-    received: number,
-    expected: number,
-    params?: CompareFloatParams,
-) => {
-    // Edge cases
-    if (!Number.isFinite(expected)) {
-        return Object.is(received, expected);
-    }
-    if (Object.is(expected, 0) || Object.is(expected, -0)) {
-        const tolerance = params?.absoluteToleranceAroundZero ?? 0;
-        return Math.abs(received) <= tolerance;
-    }
+export const compareFloats =
+    (params?: CompareFloatParams) => (received: number, expected: number) => {
+        // Edge cases
+        if (!Number.isFinite(expected)) {
+            return Object.is(received, expected);
+        }
+        if (Object.is(expected, 0) || Object.is(expected, -0)) {
+            const tolerance = params?.absoluteToleranceAroundZero ?? 0;
+            return Math.abs(received) <= tolerance;
+        }
 
-    // Non-zero rational numbers
-    const tolerance = params?.tolerance ?? 0.0001;
-    const normalisedDifference = Math.abs((expected - received) / expected);
-    return normalisedDifference < tolerance;
-};
+        // Non-zero rational numbers
+        const tolerance = params?.tolerance ?? 0.0001;
+        const normalisedDifference = Math.abs((expected - received) / expected);
+        return normalisedDifference < tolerance;
+    };

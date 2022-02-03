@@ -28,34 +28,29 @@ const arbitraryCommonSpec = (): fc.Arbitrary<CommonSpec> =>
     });
 
 const arbitraryFloorSpec = (): fc.Arbitrary<FloorSpec> =>
-    arbitraryCommonSpec().chain(
-        merge(
-            fc.record({
-                type: fc.constant('floor' as const),
-                dimensions: fc.record({
-                    exposedPerimeter: arbFloat(),
-                    area: arbFloat(),
-                }),
-            }),
-        ),
+    merge(
+        arbitraryCommonSpec(),
+        fc.record({
+            type: fc.constant('floor' as const),
+            area: arbFloat(),
+        }),
     );
 
 const arbitraryWallLikeSpec = <T>(
     deductibleSpec: fc.Arbitrary<T>,
 ): fc.Arbitrary<WallLikeSpec<T>> =>
-    arbitraryCommonSpec().chain(
-        merge(
-            fc.record({
-                type: fc.oneof(
-                    fc.constant('external wall' as const),
-                    fc.constant('party wall' as const),
-                    fc.constant('roof' as const),
-                    fc.constant('loft' as const),
-                ),
-                grossArea: arbFloat(),
-                deductions: fc.array(deductibleSpec),
-            }),
-        ),
+    merge(
+        arbitraryCommonSpec(),
+        fc.record({
+            type: fc.oneof(
+                fc.constant('external wall' as const),
+                fc.constant('party wall' as const),
+                fc.constant('roof' as const),
+                fc.constant('loft' as const),
+            ),
+            grossArea: arbFloat(),
+            deductions: fc.array(deductibleSpec),
+        }),
     );
 
 const arbitraryOrientation = fc.oneof(...Orientation.all.map(fc.constant));
@@ -63,32 +58,30 @@ const arbitraryOvershading = fc.oneof(...Overshading.all.map(fc.constant));
 const arbitraryRegion = fc.oneof(...Region.all.map(fc.constant));
 
 const arbitraryWindowLikeSpec = (): fc.Arbitrary<WindowLikeSpec> =>
-    arbitraryCommonSpec().chain(
-        merge(
-            fc.record({
-                type: fc.oneof(
-                    fc.constant('window' as const),
-                    fc.constant('door' as const),
-                    fc.constant('roof light' as const),
-                ),
-                area: arbFloat(),
-                orientation: arbitraryOrientation,
-                overshading: arbitraryOvershading,
-                gHeat: arbFloat(),
-                gLight: arbFloat(),
-                frameFactor: arbFloat(),
-            }),
-        ),
+    merge(
+        arbitraryCommonSpec(),
+        fc.record({
+            type: fc.oneof(
+                fc.constant('window' as const),
+                fc.constant('door' as const),
+                fc.constant('roof light' as const),
+            ),
+            area: arbFloat(),
+            orientation: arbitraryOrientation,
+            overshading: arbitraryOvershading,
+            gHeat: arbFloat(),
+            gLight: arbFloat(),
+            frameFactor: arbFloat(),
+        }),
     );
 
 const arbitraryHatchSpec = (): fc.Arbitrary<HatchSpec> =>
-    arbitraryCommonSpec().chain(
-        merge(
-            fc.record({
-                type: fc.constant('hatch' as const),
-                area: arbFloat(),
-            }),
-        ),
+    merge(
+        arbitraryCommonSpec(),
+        fc.record({
+            type: fc.constant('hatch' as const),
+            area: arbFloat(),
+        }),
     );
 
 const arbitraryDeductibleSpec = (): fc.Arbitrary<DeductibleSpec> =>

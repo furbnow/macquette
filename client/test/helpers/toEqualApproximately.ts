@@ -15,6 +15,10 @@ declare global {
                 expected: unknown,
                 params?: CompareFloatParams,
             ) => CustomMatcherResult;
+            toEqualBy: (
+                expected: unknown,
+                compare: (a: unknown, b: unknown) => boolean,
+            ) => CustomMatcherResult;
         }
     }
 }
@@ -24,6 +28,31 @@ expect.extend({
         received: unknown,
         expected: unknown,
         params?: CompareFloatParams,
+    ) {
+        const compareAnythingWithApproximateFloats = (
+            received: unknown,
+            expected: unknown,
+        ) => {
+            if (typeof received === 'number' && typeof expected === 'number') {
+                return compareFloats(params)(received, expected);
+            } else {
+                return Object.is(received, expected);
+            }
+        };
+        if (this.isNot) {
+            expect(received).not.toEqualBy(
+                expected,
+                compareAnythingWithApproximateFloats,
+            );
+        } else {
+            expect(received).toEqualBy(expected, compareAnythingWithApproximateFloats);
+        }
+        return { pass: !this.isNot, message: () => '' };
+    },
+    toEqualBy(
+        received: unknown,
+        expected: unknown,
+        compare: (received: unknown, expected: unknown) => boolean,
     ) {
         const flatReceived = flatten(received);
         const flatExpected = flatten(expected);
@@ -48,13 +77,7 @@ expect.extend({
         const failures = [...keysComparisonResult.intersection].flatMap((keySequence) => {
             const receivedValue = flatReceived.get(keySequence);
             const expectedValue = flatExpected.get(keySequence);
-            let thisValuePass: boolean;
-            if (typeof receivedValue === 'number' && typeof expectedValue === 'number') {
-                thisValuePass = compareFloats(receivedValue, expectedValue, params);
-            } else {
-                thisValuePass = Object.is(receivedValue, expectedValue);
-            }
-            if (thisValuePass) {
+            if (compare(receivedValue, expectedValue)) {
                 return [];
             } else {
                 return [

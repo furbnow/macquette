@@ -74,7 +74,7 @@ export class Occupancy {
     */
     mutateLegacyData(data: any) {
         if (data.custom_occupancy === undefined) {
-            data.custom_occupancy = this.occupancy;
+            data.custom_occupancy = 1;
         }
         if (data.use_custom_occupancy === undefined) {
             data.use_custom_occupancy = this.occupancySource === 'custom';

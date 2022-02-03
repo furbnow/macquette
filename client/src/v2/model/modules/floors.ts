@@ -41,6 +41,7 @@ export class Floors {
     /* eslint-disable
        @typescript-eslint/no-explicit-any,
        @typescript-eslint/no-unsafe-argument,
+       @typescript-eslint/no-unsafe-assignment,
        @typescript-eslint/no-unsafe-member-access,
        @typescript-eslint/consistent-type-assertions,
     */
@@ -54,12 +55,18 @@ export class Floors {
             data.floors as any[],
         )) {
             legacyFloor.volume = newStyleFloor.volume;
-            if (legacyFloor.height === '') {
+            if (legacyFloor.area === '') {
                 legacyStrings = true;
             }
         }
+        let out_TFA: string | number;
+        if (legacyStrings) {
+            out_TFA = this.totalFloorArea.toString(10);
+        } else {
+            out_TFA = this.totalFloorArea;
+        }
         data.volume = this.totalVolume;
-        data.TFA = legacyStrings && this.totalFloorArea === 0 ? '0' : this.totalFloorArea;
+        data.TFA = out_TFA;
         data.num_of_floors = this.floors.length;
     }
     /* eslint-enable */

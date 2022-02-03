@@ -33,18 +33,6 @@ export const mutateLegacyData = (fabric: Fabric, data: any) => {
     data.fabric.total_thermal_capacity = sum(
         fabric.flatElements.map((e) => e.thermalCapacity),
     );
-    const totals = computeTotals(fabric);
-    data.fabric.total_floor_WK = totals.floor.heatLoss;
-    data.fabric.total_wall_WK = totals.externalWall.heatLoss;
-    data.fabric.total_roof_WK = totals.roof.heatLoss;
-    data.fabric.total_window_WK = totals.windowLike.heatLoss;
-    data.fabric.total_party_wall_WK = totals.partyWall.heatLoss;
-    data.fabric.total_external_area = fabric.externalArea;
-    data.fabric.total_wall_area = totals.externalWall.area;
-    data.fabric.total_floor_area = totals.floor.area;
-    data.fabric.total_roof_area = totals.roof.area;
-    data.fabric.total_window_area = totals.windowLike.area;
-    data.fabric.total_party_wall_area = totals.partyWall.area;
 
     for (const legacyElement of data.fabric.elements) {
         const newStyleElement = fabric.getElementById(legacyElement.id);
@@ -54,17 +42,20 @@ export const mutateLegacyData = (fabric: Fabric, data: any) => {
                 { legacyElement, fabric },
             );
         }
-        if (
+        const legacyModelWouldCalculateArea =
             legacyElement.h !== undefined &&
             legacyElement.h !== '' &&
+            legacyElement.h !== 0 &&
             legacyElement.l !== undefined &&
-            legacyElement.l !== ''
-        ) {
+            legacyElement.l !== '' &&
+            legacyElement.l !== 0;
+        if (legacyModelWouldCalculateArea) {
             legacyElement.area = area(newStyleElement);
         }
         legacyElement.netarea = netArea(newStyleElement);
         if (
             !(newStyleElement instanceof WindowLike) &&
+            !(newStyleElement instanceof WallLike) &&
             !(newStyleElement instanceof Hatch)
         ) {
             legacyElement.windowarea = 0;
@@ -80,6 +71,19 @@ export const mutateLegacyData = (fabric: Fabric, data: any) => {
         }
         legacyElement.wk = newStyleElement.heatLoss;
     }
+    const totals = computeTotals(fabric);
+    data.fabric.total_floor_WK = totals.floor.heatLoss;
+    data.fabric.total_wall_WK = totals.externalWall.heatLoss;
+    data.fabric.total_roof_WK = totals.roof.heatLoss;
+    data.fabric.total_window_WK = totals.windowLike.heatLoss;
+    data.fabric.total_party_wall_WK = totals.partyWall.heatLoss;
+    data.fabric.total_external_area = fabric.externalArea;
+    data.fabric.total_wall_area = totals.externalWall.area;
+    data.fabric.total_floor_area = totals.floor.area;
+    data.fabric.total_roof_area = totals.roof.area;
+    data.fabric.total_window_area = totals.windowLike.area;
+    data.fabric.total_party_wall_area = totals.partyWall.area;
+
     data.fabric.total_external_area = fabric.externalArea;
     data.fabric.total_thermal_capacity = fabric.fabricElementsThermalCapacity;
     data.fabric.annual_solar_gain = fabric.solarGainMeanAnnual;
@@ -117,7 +121,7 @@ const computeTotals = (fabric: Fabric): Totals => {
             case 'floor': {
                 out.floor = {
                     heatLoss: out.floor.heatLoss + element.heatLoss,
-                    area: out.floor.area + element.spec.dimensions.area,
+                    area: out.floor.area + element.spec.area,
                 };
                 return out;
             }

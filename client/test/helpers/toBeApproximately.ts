@@ -18,7 +18,7 @@ expect.extend({
         expected: number,
         params?: CompareFloatParams,
     ) => {
-        const pass = compareFloats(received, expected, params);
+        const pass = compareFloats(params)(received, expected);
         const message = () =>
             pass
                 ? `expected ${received} to not be approximately ${expected}`

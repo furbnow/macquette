@@ -5,7 +5,7 @@ const subtractFrom = z.union([
     z.number(),
     z.literal('no').transform(() => null),
     z.literal(undefined).transform(() => null),
-    z.string().transform((s) => parseInt(s)),
+    z.string().transform((s) => parseFloat(s)),
 ]);
 const commonElement = z.object({
     id: z.number(),
@@ -52,7 +52,10 @@ const floor = commonElement.extend({
 export const fabric = z
     .object({
         elements: z.array(z.union([wallLike, windowLike, hatch, floor])).optional(),
-        thermal_bridging_yvalue: stringyFloatSchema,
+        thermal_bridging_yvalue: stringyFloatSchema
+            .refine((v) => v !== null, 'null/empty string is not allowed here')
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            .transform((v) => v!),
         global_TMP: z
             .union([
                 z.boolean(),
@@ -60,6 +63,6 @@ export const fabric = z
                 z.literal(0).transform(() => false),
             ])
             .optional(),
-        global_TMP_value: z.union([z.number(), z.null()]).optional(),
+        global_TMP_value: z.number().optional(),
     })
     .optional();
