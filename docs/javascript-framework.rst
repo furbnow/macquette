@@ -1,16 +1,23 @@
+====================
 JavaScript framework
 ====================
 
-Macquette has a small single page app JS framework.  It handles
-navigation between separate views stored as pairs of HTML+JS files
-and maps text inputs to model inputs and vice versa using the
-nonstandard ``key`` HTML attribute.
+Macquette is undergoing a migration from a legacy DIY JS framework to
+TypeScript + React. The way this is currently happening is a bottom-up
+view-by-view migration, with both legacy and React views synchronising on the
+shared state in the legacy global variables and ``update()`` function.
+
+In the current navigation system, a view is a pair of HTML+JS files, with a
+legacy view written directly in these files, and a React view consisting of a
+shim pair of files which call into transpiled and bundled TSX code.
 
 .. note::
 
-    We plan to phase this out and use React instead.
+   We plan to refactor the navigation/view orchestration system into the new
+   TypeScript + React order at some point as well.
 
 
+----------------
 Global variables
 ----------------
 
@@ -35,6 +42,7 @@ The following global variables are present and available for use.
     don't add to the above list.
 
 
+-------------------------
 The ``update()`` function
 -------------------------
 
@@ -47,19 +55,70 @@ It's called after the value of any input is changed, and in various
 other places after data inserted into the assessment structure.
 
 
+-----
 Views
 -----
 
-Every view must have at least the 2 following functions:
+Every view or view shim must have at least the 2 following functions:
 
 *  ``[viewname]_initUI()``
 *  ``[viewname]_UpdateUI()``
+*  ``[viewname]_UnloadUI()``
 
 ``initUI`` is called when the view is loaded for the first time, and
 ``UpdateUI`` is called after user input when the model has run but before
 the data is saved back to the server.
 
+``UnloadUI`` is called when the view is unloaded in preparation for loading a
+different view.
+
 In many views, ``xxx_initUI`` also calls the ``xxx_UpdateUI`` function.
+
+
+React Views
+===========
+
+React views are built in components called "modules" (after Elm), which
+encapsulate the pure React view, an initial state, and a reducer.
+
+The module consists of an object of type ``UiModule<StateT>``, where ``StateT``
+is the internal state for the view. Each module's state should be added to the
+``ModuleStates`` dictionary. Modules also expose a discriminated union type of
+actions, which should be added to the ``ModuleActions`` type.
+
+Interaction with the legacy framework
+-------------------------------------
+
+External updates to the ``data`` object, e.g. from the model, come into the
+reducers with a special action of type ``ExternalDataUpdate``. This contains a
+somewhat-validated form of the ``data`` object, which the reducer must
+interpret and change the module state accordingly.
+
+Modules expose a ``dataMutator`` function, which mutates the global ``data``
+object based on the view state.
+
+Calling ``update()`` is handled by the module management system and happens
+after every internal state change.
+
+View mounting, unmounting, and state reducing is handled by functions in files
+in the ``module-management`` directory.
+
+Shims
+-----
+
+The legacy view's ``initUI`` function should call the module management
+``mount`` function, which takes the name of a module to mount and an element to
+mount it at. It sets up plumbing to bridge the new and old frameworks, and
+returns an object with hooks for ``update`` and ``unload``, which should be
+called in the ``UpdateUI`` and ``UnloadUI`` functions respectively.
+
+
+Legacy Views
+============
+
+The legacy framework uses the JS+HTML pair of files directly, and maps text
+inputs to model inputs and vice versa using the nonstandard ``key`` HTML
+attribute.
 
 
 The ``key`` HTML attribute
@@ -101,11 +160,21 @@ This attribute limits the output of a field that has ``key`` set to the
 specified number of decimal places.
 
 
+------------------
 JS + HTML file map
 ------------------
 
-Each version of Macquette has its own Django app, which is a directory
-inside ``mhep``.  The JS + HTML bits look like:
+Each version of Macquette has its own Django app, which is a directory inside
+``mhep/``. There are three versions, ``v1``, ``v2``, and ``dev``, of which only
+``v2`` is considered "live". This version structure is a historical artifact
+and is deprecated in favour of a rolling-release incremental system. Most work
+should only happen on ``v2``.
+
+The ``client/`` top-level directory contains all non-legacy client-side
+TypeScript and dependencies, which is transpiled and bundled by ``esbuild`` and
+the resulting bundle and sourcemaps are placed in ``<django
+app>/static/js_generated``. Different exports files are bundled for the
+different Django apps which make up the versions of Macquette.
 
 .. code::
 
@@ -119,6 +188,7 @@ inside ``mhep``.  The JS + HTML bits look like:
     css/               # CSS for Bootstrap 2 and Macuqette-specific stuff
     img/               # Low-res icons we want to replace with SVG
 
+    js_generated/      # Transpiled and bundled JS from the client/ directory
     js/
       vendor/           # Contains vendored (imported) JS libraries
       api.js            # API communication module
@@ -126,8 +196,6 @@ inside ``mhep``.  The JS + HTML bits look like:
       graphics.js       # Draws the house and some bar graphs
       library-helper.js # UI functions related to using or editing libraries
       misc.js           # Some of the JS framework; other bits in templates/VERSION/view.html
-      model-datasets.js # Various sets of data used in the model and elsewhere
-      model.js          # The building model
       openfuvc-ui-helper.js  # UI functions related to the floor u-value calculator
       openfuvc.js       # Floor u-value calculation model
 
