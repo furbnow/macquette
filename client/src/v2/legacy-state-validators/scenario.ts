@@ -24,7 +24,6 @@ const solarHotWater = z
         utilisation_factor: z.number(),
         collector_performance_factor: numberWithNaN.nullable(),
         Veff: numberWithNaN.nullable(),
-        Vd_average: z.number(),
         volume_ratio: numberWithNaN.nullable(),
         f2: numberWithNaN.nullable(),
         Qs: z.number(),
@@ -47,6 +46,8 @@ const waterHeating = z
     .object({
         annual_energy_content: z.number(),
         Vd_average: z.number(),
+        low_water_use_design: z.union([z.literal(1), z.boolean()]),
+        override_annual_energy_content: z.union([z.literal(1), z.boolean()]),
     })
     .partial();
 

@@ -13,6 +13,7 @@ const arbFloors = () =>
         }),
     );
 
+// Only model input values
 export const arbScenario = () =>
     fcPartialRecord({
         floors: arbFloors(),
@@ -20,6 +21,11 @@ export const arbScenario = () =>
         custom_occupancy: fc.oneof(sensibleFloat, fc.constant('')),
         region: fc.integer({ min: 0, max: Region.names.length - 1 }),
         fabric: arbFabric(),
+        water_heating: fcPartialRecord({
+            low_water_use_design: fc.oneof(fc.boolean(), fc.constant(1)),
+            annual_energy_content: sensibleFloat,
+            override_annual_energy_content: fc.oneof(fc.boolean(), fc.constant(1)),
+        }),
     }).filter((scenario) => {
         // Custom occupancy invariant:
         if (
@@ -28,6 +34,14 @@ export const arbScenario = () =>
             (scenario.custom_occupancy === undefined || scenario.custom_occupancy === '')
         ) {
             return false; // Throws ModelError in new model
+        }
+
+        // Custom water annual energy content invariant
+        if (
+            scenario.water_heating?.override_annual_energy_content &&
+            scenario.water_heating.annual_energy_content === undefined
+        ) {
+            return false;
         }
 
         return true;

@@ -6,6 +6,7 @@ import { Fabric, extractFabricInputFromLegacy } from './modules/fabric';
 import { Floors, extractFloorsInputFromLegacy } from './modules/floors'
 import { Occupancy, extractOccupancyInputFromLegacy } from './modules/occupancy'
 import { extractRegionFromLegacy} from './modules/region';
+import { extractWaterCommonInputFromLegacy, WaterCommon } from './modules/water-common';
 
 let g, m, w, x, z, fuel; // Variables used in for-loops
 
@@ -62,10 +63,12 @@ calc.run = function (datain) {
     const occupancy = new Occupancy(extractOccupancyInputFromLegacy(validatedScenario), { floors })
     const region = extractRegionFromLegacy(validatedScenario)
     const fabric = new Fabric(extractFabricInputFromLegacy(validatedScenario), { region, floors })
+    const waterCommon = new WaterCommon(extractWaterCommonInputFromLegacy(validatedScenario), { occupancy })
 
     floors.mutateLegacyData(calc.data)
     occupancy.mutateLegacyData(calc.data)
     fabric.mutateLegacyData(calc.data)
+    waterCommon.mutateLegacyData(calc.data)
 
     calc.ventilation(calc.data);
     calc.LAC_SAP(calc.data);
@@ -1436,15 +1439,11 @@ calc.water_heating = function (data) {
     if (data.water_heating.contains_dedicated_solar_storage_or_WWHRS == undefined) {
         data.water_heating.contains_dedicated_solar_storage_or_WWHRS = 0;
     }
-    data.water_heating.Vd_average = (25 * data.occupancy) + 36;
-    if (data.water_heating.low_water_use_design) {
-        data.water_heating.Vd_average *= 0.95;
-    }
     if (data.heating_systems == undefined) {
         data.heating_systems = [];
     }
     let Vd_m = [];
-    let monthly_energy_content = [];
+    let monthly_energy_content = data.water_heating.monthly_energy_content;
     let total_distribution_loss = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let energy_lost_from_water_storage = 0;
     let total_primary_circuit_loss = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1453,21 +1452,11 @@ calc.water_heating = function (data) {
     let hot_water_heater_output = [];
     let heat_gains_from_water_heating = [];
 
-    //////////////////////
-    //  Energy content  //
-    //////////////////////
-    if (data.water_heating.override_annual_energy_content == 1) {
-        // We don't need to calculate data.water_heating.annual_energy_content as it has been inputed in waterheating.html
-        for (var m = 0; m < 12; m++) {
-            monthly_energy_content[m] = datasets.table_1c[m] * data.water_heating.annual_energy_content / 12;
-        }
-    } else {
-        data.water_heating.annual_energy_content = 0;
-        for (var m = 0; m < 12; m++) {
-            Vd_m[m] = datasets.table_1c[m] * data.water_heating.Vd_average;
-            monthly_energy_content[m] = (4.180 * Vd_m[m] * datasets.table_1a[m] * datasets.table_1d[m]) / 3600;
-            data.water_heating.annual_energy_content += monthly_energy_content[m];
-        }
+    // Residual calculation of Vd_m which cannot be pulled in from common water
+    // module because it never gets put into `data`.
+    // To be factored out eventually.
+    for (let m = 0; m < 12; m++) {
+        Vd_m[m] = datasets.table_1c[m] * data.water_heating.Vd_average;
     }
 
     //////////////////////////////////////
@@ -1596,7 +1585,6 @@ calc.water_heating = function (data) {
         }
     }
 
-    data.water_heating.monthly_energy_content = monthly_energy_content;
     data.water_heating.distribution_loss = total_distribution_loss;
     data.water_heating.energy_lost_from_water_storage = energy_lost_from_water_storage;
     data.water_heating.monthly_storage_loss = monthly_storage_loss;
@@ -2468,10 +2456,12 @@ calc.fabric_energy_efficiency = function (data) {
     const occupancy = new Occupancy(extractOccupancyInputFromLegacy(validatedScenarioFEE), { floors })
     const region = extractRegionFromLegacy(validatedScenarioFEE)
     const fabric = new Fabric(extractFabricInputFromLegacy(validatedScenarioFEE), { region, floors })
+    const waterCommon = new WaterCommon(extractWaterCommonInputFromLegacy(validatedScenarioFEE), { occupancy })
 
     floors.mutateLegacyData(data_FEE)
     occupancy.mutateLegacyData(data_FEE)
     fabric.mutateLegacyData(data_FEE)
+    waterCommon.mutateLegacyData(data_FEE)
 
     calc.ventilation(data_FEE);
     calc.LAC_SAP(data_FEE);

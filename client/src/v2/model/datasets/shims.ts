@@ -78,3 +78,13 @@ export const lightAccessFactor = (overshading: Overshading): number => {
         overshading,
     });
 };
+
+/** datasets.table_1c */
+export const monthlyHotWaterUseFactor = (month: Month): number => {
+    return wrapDataset('table_1c', [month.index0], { month });
+};
+
+/** datasets.table_1d */
+export const monthlyHotWaterTemperatureRise = (month: Month): number => {
+    return wrapDataset('table_1d', [month.index0], { month });
+};

@@ -1,6 +1,8 @@
 import {
     latitudeRadians,
     meanGlobalSolarIrradianceHorizontal,
+    monthlyHotWaterTemperatureRise,
+    monthlyHotWaterUseFactor,
     solarAccessFactor,
     solarDeclinationRadians,
     solarFluxK,
@@ -43,6 +45,18 @@ describe('datasets shims', () => {
     describe('solarAccessFactor', () => {
         it('gets an expected value', () => {
             expect(solarAccessFactor(new Overshading('>80%'), 'winter')).toBe(0.3);
+        });
+    });
+
+    describe('monthlyHotWaterUsefactor', () => {
+        it('gets an expected value', () => {
+            expect(monthlyHotWaterUseFactor(new Month('December'))).toBe(1.1);
+        });
+    });
+
+    describe('monthlyHotWaterTemperatureRise', () => {
+        it('gets an expected value', () => {
+            expect(monthlyHotWaterTemperatureRise(new Month('December'))).toBe(39.9);
         });
     });
 });
