@@ -1,3 +1,4 @@
+import { sum } from '../helpers/sum';
 import {
     solarFluxK,
     latitudeRadians,
@@ -8,9 +9,9 @@ import { Month } from './enums/month';
 import { Orientation } from './enums/orientation';
 import { Region } from './enums/region';
 
-/// Calculate the solar flux on an inclined surface of unit area, according to
-/// SAP Appendix U section U3.2
-export const calculateSolarFlux = (
+/** Calculate the solar radiation on an inclined surface of unit area,
+    according to SAP Appendix U section U3.2 */
+export const calculateSolarRadiationMonthly = (
     region: Region,
     orientation: Orientation,
     tiltDegrees: number,
@@ -40,4 +41,26 @@ export const calculateSolarFlux = (
     const R_h_inc = A * cos2 + B * cos1 + C;
     const irradiance = meanGlobalSolarIrradianceHorizontal(region, month);
     return irradiance * R_h_inc;
+};
+
+export const calculateSolarRadiationAnnual = (
+    region: Region,
+    orientation: Orientation,
+    tiltDegrees: number,
+): number => {
+    return (
+        0.024 *
+        sum(
+            Month.all.map(
+                (month) =>
+                    month.days *
+                    calculateSolarRadiationMonthly(
+                        region,
+                        orientation,
+                        tiltDegrees,
+                        month,
+                    ),
+            ),
+        )
+    );
 };

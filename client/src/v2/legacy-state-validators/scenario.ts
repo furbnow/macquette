@@ -26,7 +26,7 @@ const solarHotWater = z
         Veff: numberWithNaN.nullable(),
         volume_ratio: numberWithNaN.nullable(),
         f2: numberWithNaN.nullable(),
-        Qs: z.number(),
+        Qs: z.number().nullable(),
 
         // Model inputs
         pump: z.enum(['PV', 'electric']),
@@ -48,6 +48,7 @@ const waterHeating = z
         Vd_average: z.number(),
         low_water_use_design: z.union([z.literal(1), z.boolean()]),
         override_annual_energy_content: z.union([z.literal(1), z.boolean()]),
+        solar_water_heating: z.union([z.literal(1), z.boolean()]),
     })
     .partial();
 

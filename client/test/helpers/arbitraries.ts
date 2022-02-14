@@ -1,6 +1,10 @@
 import fc from 'fast-check';
 
-export type FcInfer<ArbT> = ArbT extends fc.Arbitrary<infer T> ? T : unknown;
+export type FcInfer<ArbT> = ArbT extends fc.Arbitrary<infer T>
+    ? T
+    : ArbT extends (...args: unknown[]) => fc.Arbitrary<infer T>
+    ? T
+    : unknown;
 
 export const merge = <
     U extends Record<string, unknown>,

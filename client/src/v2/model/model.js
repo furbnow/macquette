@@ -6,6 +6,7 @@ import { Fabric, extractFabricInputFromLegacy } from './modules/fabric';
 import { Floors, extractFloorsInputFromLegacy } from './modules/floors'
 import { Occupancy, extractOccupancyInputFromLegacy } from './modules/occupancy'
 import { extractRegionFromLegacy} from './modules/region';
+import { extractSolarHotWaterInputFromLegacy, SolarHotWater } from './modules/solar-hot-water';
 import { extractWaterCommonInputFromLegacy, WaterCommon } from './modules/water-common';
 
 let g, m, w, x, z, fuel; // Variables used in for-loops
@@ -64,16 +65,17 @@ calc.run = function (datain) {
     const region = extractRegionFromLegacy(validatedScenario)
     const fabric = new Fabric(extractFabricInputFromLegacy(validatedScenario), { region, floors })
     const waterCommon = new WaterCommon(extractWaterCommonInputFromLegacy(validatedScenario), { occupancy })
+    const solarHotWater = SolarHotWater.optionalNew(extractSolarHotWaterInputFromLegacy(validatedScenario), { region, waterCommon })
 
     floors.mutateLegacyData(calc.data)
     occupancy.mutateLegacyData(calc.data)
     fabric.mutateLegacyData(calc.data)
     waterCommon.mutateLegacyData(calc.data)
+    solarHotWater.mutateLegacyData(calc.data)
 
     calc.ventilation(calc.data);
     calc.LAC_SAP(calc.data);
     calc.water_heating(calc.data);
-    calc.SHW(calc.data);
     calc.applianceCarbonCoop(calc.data);
     calc.appliancelist(calc.data);
     calc.generation(calc.data);
@@ -1259,116 +1261,6 @@ calc.LAC_SAP = function (data) {
 };
 
 /*---------------------------------------------------------------------------------------------
- // SHW  -   Solar Hot Water
- // Calculates annual solar input Q (kWh) from a specific SHW system
- //
- // Inputs from user:
- //      - data.SHW.a1	// Collector linear heat loss coefficient, a1, from test certificate
- //	- data.SHW.a2	// Collector 2nd order heat loss coefficient, a2, from test certificate
- //	- data.SHW.n0	// Zero-loss collector efficiency, η0, from test certificate or Table H1
- //	- data.SHW.orientation
- //	- data.SHW.inclination
- //	- data.SHW.A	// Aperture area of solar collector, m2
- //	- data.SHW.combined_cylinder_volume	// In litres
- //	- data.SHW.Vs	//Dedicated solar storage volume, Vs, (litres)
- //	- data.SHW.volume_ratio	// Volume ratio Veff/Vd,average
- //
- // Inputs from other modules:
- //	- data.region
- //	- data.water_heating.annual_energy_content
- //	- data.water_heating.Vd_average
- //
- // Global Outputs:
- //	- data.SHW.Qs
- //	- data.SHW.Qs_monthly
- //
- // Module Variables:
- //	- data.SHW.a
- //	- data.SHW.collector_performance_ratio
- //	- data.SHW.annual_solar
- //	- data.SHW.solar_energy_available
- //	- data.SHW.solar_load_ratio
- //	- data.SHW.utilisation_factor
- //	- data.SHW.collector_performance_factor
- //	- data.SHW.Veff
- //	- data.SHW.f2
- //
- // Datasets:
- //      - datasets.table_1a
- //
- // Uses external function:
- //      - annual_solar_rad
- //	- solar_rad
- //
- //--------------------------------------------------------------------------------------------*/
-calc.SHW = function (data) {
-    if (data.SHW == undefined) {
-        data.SHW = {};
-    }
-    /*
-     if (data.SHW.A==undefined) data.SHW.A = 1.25;
-     if (data.SHW.n0==undefined) data.SHW.n0 = 0.599;
-     if (data.SHW.a1==undefined) data.SHW.a1 = 2.772;
-     if (data.SHW.a2==undefined) data.SHW.a2 = 0.009;
-     if (data.SHW.inclination==undefined) data.SHW.inclination = 35;
-     if (data.SHW.orientation==undefined) data.SHW.orientation = 4;
-     if (data.SHW.overshading==undefined) data.SHW.overshading = 1.0;
-     */
-    data.SHW.Qs = 0;
-    data.SHW.a = 0.892 * (data.SHW.a1 + 45 * data.SHW.a2);
-    data.SHW.collector_performance_ratio = data.SHW.a / data.SHW.n0;
-    data.SHW.annual_solar = annual_solar_rad(data.region, data.SHW.orientation, data.SHW.inclination);
-    data.SHW.solar_energy_available = data.SHW.A * data.SHW.n0 * data.SHW.annual_solar * data.SHW.overshading;
-    data.SHW.solar_load_ratio = data.SHW.solar_energy_available / data.water_heating.annual_energy_content;
-    data.SHW.utilisation_factor = 0;
-    if (data.SHW.solar_load_ratio > 0) {
-        data.SHW.utilisation_factor = 1 - Math.exp(-1 / (data.SHW.solar_load_ratio));
-    }
-    data.SHW.collector_performance_factor = 0;
-    if (data.SHW.collector_performance_ratio < 20) {
-        data.SHW.collector_performance_factor = 0.97 - 0.0367 * data.SHW.collector_performance_ratio + 0.0006 * Math.pow(data.SHW.collector_performance_ratio, 2);
-    } else {
-        data.SHW.collector_performance_factor = 0.693 - 0.0108 * data.SHW.collector_performance_ratio;
-    }
-    if (data.SHW.collector_performance_factor < 0) {
-        data.SHW.collector_performance_factor = 0;
-    }
-    data.SHW.Veff = 0;
-    if (data.SHW.combined_cylinder_volume > 0) {
-        data.SHW.Veff = data.SHW.Vs + 0.3 * (data.SHW.combined_cylinder_volume - data.SHW.Vs);
-    } else {
-        data.SHW.Veff = data.SHW.Vs;
-    }
-
-    data.SHW.volume_ratio = data.SHW.Veff / data.water_heating.Vd_average;
-    data.SHW.f2 = 1 + 0.2 * Math.log(data.SHW.volume_ratio);
-    if (data.SHW.f2 > 1) {
-        data.SHW.f2 = 1;
-    }
-    data.SHW.Qs = data.SHW.solar_energy_available * data.SHW.utilisation_factor * data.SHW.collector_performance_factor * data.SHW.f2;
-    if (isNaN(data.SHW.Qs) === true) {
-        data.SHW.Qs = 0;
-    }
-    // The solar input (in kWh) for month m is
-
-    let sum = 0;
-    for (var m = 0; m < 12; m++) {
-        sum += solar_rad(data.region, data.SHW.orientation, data.SHW.inclination, m);
-    }
-    let annualAverageSolarIrradiance = sum / 12;
-    data.SHW.Qs_monthly = [];
-    for (m = 0; m < 12; m++) {
-        let fm = solar_rad(data.region, data.SHW.orientation, data.SHW.inclination, m) / annualAverageSolarIrradiance;
-        data.SHW.Qs_monthly[m] = -data.SHW.Qs * fm * datasets.table_1a[m] / 365;
-        if (isNaN(data.SHW.Qs_monthly[m]) === true) {
-            data.SHW.Qs_monthly[m] = 0;
-        }
-    }
-
-    return data;
-};
-
-/*---------------------------------------------------------------------------------------------
  // water_heating
  // Calculates:
  //   - Gains from: primary circuit loses, storage loses, combi loses and distribution loses
@@ -2457,16 +2349,17 @@ calc.fabric_energy_efficiency = function (data) {
     const region = extractRegionFromLegacy(validatedScenarioFEE)
     const fabric = new Fabric(extractFabricInputFromLegacy(validatedScenarioFEE), { region, floors })
     const waterCommon = new WaterCommon(extractWaterCommonInputFromLegacy(validatedScenarioFEE), { occupancy })
+    const solarHotWater = SolarHotWater.optionalNew(extractSolarHotWaterInputFromLegacy(validatedScenarioFEE), { region, waterCommon })
 
     floors.mutateLegacyData(data_FEE)
     occupancy.mutateLegacyData(data_FEE)
     fabric.mutateLegacyData(data_FEE)
     waterCommon.mutateLegacyData(data_FEE)
+    solarHotWater.mutateLegacyData(data_FEE)
 
     calc.ventilation(data_FEE);
     calc.LAC_SAP(data_FEE);
     calc.water_heating(data_FEE);
-    calc.SHW(data_FEE);
     calc.applianceCarbonCoop(data_FEE);
     calc.appliancelist(data_FEE);
     calc.generation(data_FEE);

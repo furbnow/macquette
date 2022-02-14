@@ -1,8 +1,15 @@
 import fc from 'fast-check';
+import { solarHotWaterOvershadingFactor } from '../../../../src/v2/model/datasets';
+import { Orientation } from '../../../../src/v2/model/enums/orientation';
+import { Overshading } from '../../../../src/v2/model/enums/overshading';
 import { Region } from '../../../../src/v2/model/enums/region';
 import { fcPartialRecord } from '../../../helpers/arbitraries';
+import { legacyBoolean, sensibleFloat, stringySensibleFloat } from './values';
 import { arbFabric } from './fabric';
-import { legacyBoolean, sensibleFloat } from './values';
+
+const arbOvershading = fc
+    .oneof(...Overshading.names.map((n) => fc.constant(n)))
+    .map((n) => new Overshading(n));
 
 const arbFloors = () =>
     fc.array(
@@ -25,7 +32,24 @@ export const arbScenario = () =>
             low_water_use_design: fc.oneof(fc.boolean(), fc.constant(1)),
             annual_energy_content: sensibleFloat,
             override_annual_energy_content: fc.oneof(fc.boolean(), fc.constant(1)),
+            solar_water_heating: fc.oneof(fc.boolean(), fc.constant(1)),
         }),
+        SHW: fc.record({
+            pump: fc.oneof(fc.constant('PV'), fc.constant('electric')),
+            A: sensibleFloat,
+            n0: sensibleFloat,
+            a1: stringySensibleFloat(),
+            a2: stringySensibleFloat(),
+            orientation: fc.integer({
+                min: 0,
+                max: Orientation.names.length - 1,
+            }),
+            inclination: sensibleFloat,
+            overshading: arbOvershading.map(solarHotWaterOvershadingFactor),
+            Vs: sensibleFloat,
+            combined_cylinder_volume: sensibleFloat,
+        }),
+        use_SHW: fc.oneof(fc.boolean(), fc.constant(1)),
     }).filter((scenario) => {
         // Custom occupancy invariant:
         if (

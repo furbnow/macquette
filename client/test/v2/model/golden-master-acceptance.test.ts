@@ -1,5 +1,5 @@
 import { calcRun } from '../../../src/v2/model/model';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, pick } from 'lodash';
 import { calcRun as referenceCalcRun } from './reference-model';
 import { scenarios } from '../fixtures';
 import fc from 'fast-check';
@@ -110,6 +110,37 @@ const modelValueComparer =
 
 // Mutate the scenario rather than deep-cloning it, for performance
 const normaliseScenario = (scenario: LegacyScenario) => {
-    // TODO
+    // SHW normalisation
+    if (scenario.SHW !== undefined) {
+        const inputKeys = [
+            'pump',
+            'A',
+            'n0',
+            'a1',
+            'a2',
+            'orientation',
+            'inclination',
+            'overshading',
+            'Vs',
+            'combined_cylinder_volume',
+        ] as const;
+        const inputs = pick(scenario.SHW, ...inputKeys);
+        const moduleIsDisabled = !(
+            scenario.use_SHW || scenario.water_heating?.solar_water_heating
+        );
+        const inputIsIncomplete = inputKeys.reduce(
+            (someInputWasUndefined, key) =>
+                someInputWasUndefined || inputs[key] === undefined,
+            false,
+        );
+        if (moduleIsDisabled || inputIsIncomplete) {
+            // SHW module is disabled or input is incomplete, so we disregard
+            // all its outputs. This is because the legacy model will partially
+            // compute them, whereas it is more convenient for the new model to
+            // simply skip the whole calculation. We preserve the inputs just
+            // to make sure nothing untoward is happening with them.
+            scenario.SHW = inputs;
+        }
+    }
     return scenario;
 };

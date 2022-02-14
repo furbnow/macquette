@@ -23,7 +23,7 @@ import { Month } from '../enums/month';
 import { mean } from '../../helpers/mean';
 import { Region } from '../enums/region';
 import { lightAccessFactor, solarAccessFactor } from '../datasets';
-import { calculateSolarFlux } from '../solar-flux';
+import { calculateSolarRadiationMonthly } from '../solar-flux';
 import { assertNever } from '../../helpers/assertNever';
 import { mutateLegacyData } from './fabric/mutateLegacyData';
 
@@ -151,7 +151,7 @@ export class WindowLike {
 
     @cacheMonth
     solarGainByMonth(month: Month): number {
-        const solarFlux = calculateSolarFlux(
+        const solarFlux = calculateSolarRadiationMonthly(
             this.dependencies.region,
             this.spec.orientation,
             90,
