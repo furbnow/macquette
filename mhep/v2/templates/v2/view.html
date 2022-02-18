@@ -382,11 +382,13 @@ const calc = {
                 val = 0;
             }
 
-            if (!isNaN(val) && val != "")
+            if (!isNaN(val) && val != "") {
                 val *= 1;
+            }
 
-            if (key == 'data.use_SHW')
-                data.water_heating.solar_water_heating = !data.use_SHW; // I don't know why but only works properly coping the negative
+            if (key == 'data.use_SHW') {
+                data.water_heating.solar_water_heating = val;
+            }
             var lastval = varset(key, val);
 
             $("#openbem").trigger("onKeyChange", {key: key, value: val});

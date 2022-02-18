@@ -79,7 +79,7 @@ function heating_initUI() {
 
 
 $('#openbem').on('click', '[key="data.water_heating.solar_water_heating"]', function () {
-    data.use_SHW = !data.water_heating.solar_water_heating; // I don't know why but only works properly coping the negative
+    data.use_SHW = !data.water_heating.solar_water_heating; // Copy the negative because data.water_heating.solar_water_heating is not yet updated to the value of the checkbox
 });
 $('#openbem').on('click', '.add-water-efficiency-from-lib', function () {
     library_helper.init();
