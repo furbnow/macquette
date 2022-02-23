@@ -1,4 +1,4 @@
-import { cache } from '../../helpers/cacheGetter';
+import { cache } from '../../helpers/cache-decorators';
 import { sum } from '../../helpers/sum';
 import { zip } from '../../helpers/zip';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';

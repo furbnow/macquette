@@ -1,4 +1,4 @@
-import { cache } from '../../helpers/cacheGetter';
+import { cache } from '../../helpers/cache-decorators';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { ModelError } from '../error';
 

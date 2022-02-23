@@ -1,4 +1,4 @@
-import { cache } from '../../helpers/cacheGetter';
+import { cache } from '../../helpers/cache-decorators';
 import { ModelError } from '../error';
 
 export type RegionName = typeof Region.names extends Array<infer N> ? N : never;

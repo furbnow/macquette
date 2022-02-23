@@ -15,11 +15,11 @@
  *   external element.
  */
 
-import { cache } from '../../helpers/cacheGetter';
+import { cache, cacheMonth } from '../../helpers/cache-decorators';
 import { sum } from '../../helpers/sum';
 import { Orientation } from '../enums/orientation';
 import { Overshading } from '../enums/overshading';
-import { Month, MonthName } from '../enums/month';
+import { Month } from '../enums/month';
 import { mean } from '../../helpers/mean';
 import { Region } from '../enums/region';
 import { lightAccessFactor, solarAccessFactor } from '../datasets';
@@ -149,30 +149,24 @@ export class WindowLike {
         return this.spec.kValue * this.spec.area;
     }
 
-    private solarGainsCache: Partial<Record<MonthName, number>> = {};
+    @cacheMonth
     solarGainByMonth(month: Month): number {
-        const cachedValue = this.solarGainsCache[month.name];
-        if (cachedValue !== undefined) {
-            return cachedValue;
-        } else {
-            const solarFlux = calculateSolarFlux(
-                this.dependencies.region,
-                this.spec.orientation,
-                90,
-                month,
-            );
-            const season = 'winter'; // For heating, use winter values all year round (as per note in Table 6d)
-            const accessFactor = solarAccessFactor(this.spec.overshading, season);
-            const gain =
-                0.9 *
-                this.spec.area *
-                solarFlux *
-                this.spec.gHeat *
-                this.spec.frameFactor *
-                accessFactor;
-            this.solarGainsCache[month.name] = gain;
-            return gain;
-        }
+        const solarFlux = calculateSolarFlux(
+            this.dependencies.region,
+            this.spec.orientation,
+            90,
+            month,
+        );
+        const season = 'winter'; // For heating, use winter values all year round (as per note in Table 6d)
+        const accessFactor = solarAccessFactor(this.spec.overshading, season);
+        const gain =
+            0.9 *
+            this.spec.area *
+            solarFlux *
+            this.spec.gHeat *
+            this.spec.frameFactor *
+            accessFactor;
+        return gain;
     }
 
     get meanSolarGain(): number {
@@ -318,20 +312,14 @@ export class Fabric {
         }
     }
 
-    private solarGainByMonthCache: Partial<Record<MonthName, number>> = {};
+    @cacheMonth
     solarGainByMonth(month: Month): number {
-        const cachedValue = this.solarGainByMonthCache[month.name];
-        if (cachedValue !== undefined) {
-            return cachedValue;
-        } else {
-            const gain = sum(
-                this.flatElements
-                    .filter(WindowLike.isWindowLike)
-                    .map((w) => w.solarGainByMonth(month)),
-            );
-            this.solarGainByMonthCache[month.name] = gain;
-            return gain;
-        }
+        const gain = sum(
+            this.flatElements
+                .filter(WindowLike.isWindowLike)
+                .map((w) => w.solarGainByMonth(month)),
+        );
+        return gain;
     }
 
     @cache

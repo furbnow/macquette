@@ -1,4 +1,4 @@
-import { cache } from '../../helpers/cacheGetter';
+import { cache } from '../../helpers/cache-decorators';
 import { ModelError } from '../error';
 
 export type MonthName = typeof Month.names extends Array<infer N> ? N : never;
@@ -47,8 +47,21 @@ export class Month {
         return Month.names.indexOf(this.name);
     }
 
-    @cache
     get index1(): number {
         return this.index0 + 1;
+    }
+
+    get days(): number {
+        switch (this.name) {
+            case 'September':
+            case 'April':
+            case 'June':
+            case 'November':
+                return 30;
+            case 'February':
+                return 28; // SAP ignores leap years
+            default:
+                return 31;
+        }
     }
 }
