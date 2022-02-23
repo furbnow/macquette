@@ -4,5 +4,6 @@ module.exports = {
     setupFilesAfterEnv: [
         '<rootDir>/test/helpers/toBeApproximately.ts',
         '<rootDir>/test/helpers/toEqualApproximately.ts',
+        '<rootDir>/test/helpers/enum-fast-check-stringify.ts',
     ],
 };

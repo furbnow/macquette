@@ -3,10 +3,19 @@ import { cloneDeep, pick } from 'lodash';
 import { calcRun as referenceCalcRun } from './reference-model';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import fc from 'fast-check';
-import { arbScenarioInputs, SHWInputKeys } from './arbitraries/scenario';
+import { arbScenarioInputs } from './arbitraries/scenario';
 import { legacyScenarioSchema } from '../../../src/v2/legacy-state-validators/scenario';
 import { FcInfer } from '../../helpers/arbitraries';
 import { CompareFloatParams, compareFloats } from '../../helpers/fuzzy-float-equality';
+import {
+    shwLegacyInputKeys,
+    shwIsLegacy,
+    shwInputIsComplete,
+    shwInputs,
+} from './arbitraries/solar-hot-water';
+import { assertNever } from '../../../src/v2/helpers/assertNever';
+import { SolarHotWaterV1 } from '../../../src/v2/legacy-state-validators/solar-hot-water';
+import { isTruthy } from '../../../src/v2/helpers/is-truthy';
 
 const runModel = (data: any, calcRun: (data: any) => any) => {
     // Clone the input because calcRun will modify it in-place
@@ -25,6 +34,10 @@ describe('golden master acceptance tests', () => {
         if (shouldSkipScenario(scenario)) {
             return;
         }
+        if (hasNewBehaviour(scenario.data as any)) {
+            console.warn(`Skipping scenario for new behaviour: ${scenario.displayName}`);
+            return;
+        }
         const legacyReference = runLegacyModel(cloneDeep(scenario.data));
         expect(hasNoKnownBugs(legacyReference)).toEqual(
             expect.objectContaining({
@@ -41,16 +54,22 @@ describe('golden master acceptance tests', () => {
     test('fast-check data', () => {
         const examples: Array<[FcInfer<typeof arbScenarioInputs>]> = [];
         fc.assert(
-            fc.property(arbScenarioInputs(), (scenario) => {
-                const legacyReference = runLegacyModel(scenario);
-                fc.pre(!hasNoKnownBugs(legacyReference).bugs);
-                const actual = runLiveModel(scenario);
-                expect(normaliseScenario(actual)).toEqualBy(
-                    normaliseScenario(legacyReference),
-                    modelValueComparer(),
-                );
-            }),
+            fc.property(
+                arbScenarioInputs().filter((inputs) => !hasNewBehaviour(inputs)),
+                (scenario) => {
+                    const legacyReference = runLegacyModel(scenario);
+                    fc.pre(!hasNoKnownBugs(legacyReference).bugs);
+                    const actual = runLiveModel(scenario);
+                    const actualNormalised = normaliseScenario(actual);
+                    const legacyReferenceNormalised = normaliseScenario(legacyReference);
+                    expect(actualNormalised).toEqualBy(
+                        legacyReferenceNormalised,
+                        modelValueComparer(),
+                    );
+                },
+            ),
             {
+                ...(isTruthy(process.env['CI']) ? { numRuns: 1000 } : {}),
                 examples,
             },
         );
@@ -132,6 +151,17 @@ const hasNoKnownBugs = (legacyScenario: any) => {
     }
     return { bugs: false };
 };
+
+function hasNewBehaviour(inputs: FcInfer<typeof arbScenarioInputs>): boolean {
+    // SHW from estimate
+    const shwIsFromEstimate =
+        inputs.SHW !== undefined &&
+        isTruthy(inputs.use_SHW || inputs.water_heating?.solar_water_heating) &&
+        !shwIsLegacy(inputs.SHW) &&
+        inputs.SHW.input.collector.parameterSource === 'estimate';
+
+    return shwIsFromEstimate;
+}
 
 const heuristicTypeOf = (value: unknown) => {
     if (typeof value === 'number') {
@@ -247,31 +277,51 @@ const modelValueComparer =
 
 // Mutate the scenario rather than deep-cloning it, for performance
 const normaliseScenario = (scenario: any) => {
+    type SHWOutputs = Omit<SolarHotWaterV1, 'input' | 'pump' | 'version'>;
+    const castScenario = scenario as {
+        SHW: FcInfer<typeof shwInputs> & SHWOutputs;
+        LAC_calculation_type: string;
+        LAC: any;
+        appliancelist?: unknown;
+        ventilation?: any;
+    };
+
     // SHW normalisation
-    if (scenario.SHW !== undefined) {
-        const inputs = pick(scenario.SHW, ...SHWInputKeys);
+    if (castScenario.SHW !== undefined) {
         const moduleIsDisabled = !(
             scenario.use_SHW || scenario.water_heating?.solar_water_heating
         );
-        const inputIsIncomplete = SHWInputKeys.reduce(
-            (someInputWasUndefined, key) =>
-                someInputWasUndefined || inputs[key] === undefined,
-            false,
-        );
-        if (moduleIsDisabled || inputIsIncomplete) {
+        if (moduleIsDisabled || !shwInputIsComplete(castScenario.SHW)) {
             // SHW module is disabled or input is incomplete, so we disregard
             // all its outputs. This is because the legacy model will partially
             // compute them, whereas it is more convenient for the new model to
             // simply skip the whole calculation. We preserve the inputs just
             // to make sure nothing untoward is happening with them.
-            scenario.SHW = inputs;
+
+            if (shwIsLegacy(castScenario.SHW)) {
+                castScenario.SHW = pick(castScenario.SHW, ...shwLegacyInputKeys);
+            } else {
+                switch (castScenario.SHW.version) {
+                    case 1: {
+                        castScenario.SHW = pick(castScenario.SHW, [
+                            'version',
+                            'pump',
+                            'input',
+                        ]);
+                        break;
+                    }
+                    default: {
+                        assertNever(castScenario.SHW.version);
+                    }
+                }
+            }
         }
     }
 
     // If using carbon coop mode for the appliances and cooking modules, remove
     // variables that are added by legacy but never used
-    if (scenario.LAC_calculation_type === 'carboncoop_SAPlighting') {
-        const { LAC } = scenario;
+    if (castScenario.LAC_calculation_type === 'carboncoop_SAPlighting') {
+        const { LAC } = castScenario;
         delete LAC.EA;
         delete LAC.energy_efficient_appliances;
         delete LAC.fuels_appliances;
@@ -283,10 +333,10 @@ const normaliseScenario = (scenario: any) => {
     }
 
     // Legacy property added by removed LAC "detailedlist" module
-    delete scenario.appliancelist;
+    delete castScenario.appliancelist;
 
     // Ventilation
-    const { ventilation } = scenario;
+    const { ventilation } = castScenario;
     if (ventilation !== undefined) {
         // Ignore certain values depending on whether infiltration was
         // calculated from a pressure test or not
@@ -297,7 +347,7 @@ const normaliseScenario = (scenario: any) => {
         }
     }
 
-    return scenario;
+    return castScenario;
 };
 
 const stricterParseFloat = (s: string): number => {

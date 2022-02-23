@@ -3,6 +3,7 @@ import { stringyFloatSchema, stringyIntegerSchema } from './numericValues';
 
 const subtractFrom = z.union([
     z.number(),
+    z.literal(null),
     z.literal('no').transform(() => null),
     z.literal(undefined).transform(() => null),
     z.string().transform((s) => parseFloat(s)),
@@ -14,22 +15,49 @@ const commonElement = z.object({
     area: stringyFloatSchema,
 });
 const wallLike = commonElement.extend({
-    type: z.union([
-        z.literal('Wall').transform(() => 'external wall' as const),
-        z.literal('Party_wall').transform(() => 'party wall' as const),
-        z.literal('Loft').transform(() => 'loft' as const),
-        z.literal('Roof').transform(() => 'roof' as const),
-    ]),
+    type: z
+        .enum([
+            'external wall',
+            'party wall',
+            'loft',
+            'roof',
+            'Wall',
+            'Party_wall',
+            'Loft',
+            'Roof',
+        ])
+        .transform((val) => {
+            switch (val) {
+                case 'Wall':
+                    return 'external wall';
+                case 'Party_wall':
+                    return 'party wall';
+                case 'Loft':
+                    return 'loft';
+                case 'Roof':
+                    return 'roof';
+                default:
+                    return val;
+            }
+        }),
     l: stringyFloatSchema,
     h: stringyFloatSchema,
 });
 const windowLike = commonElement.extend({
-    type: z.union([
-        z.literal('Door').transform(() => 'door' as const),
-        z.literal('Roof_light').transform(() => 'roof light' as const),
-        z.literal('window').transform(() => 'window' as const),
-        z.literal('Window').transform(() => 'window' as const),
-    ]),
+    type: z
+        .enum(['door', 'roof light', 'window', 'Door', 'Roof_light', 'window', 'Window'])
+        .transform((val) => {
+            switch (val) {
+                case 'Door':
+                    return 'door';
+                case 'Roof_light':
+                    return 'roof light';
+                case 'Window':
+                    return 'window';
+                default:
+                    return val;
+            }
+        }),
     subtractfrom: subtractFrom,
     g: stringyFloatSchema,
     gL: stringyFloatSchema,
@@ -40,13 +68,13 @@ const windowLike = commonElement.extend({
     overshading: stringyIntegerSchema,
 });
 const hatch = commonElement.extend({
-    type: z.literal('Hatch').transform(() => 'hatch' as const),
+    type: z.enum(['hatch', 'Hatch']).transform(() => 'hatch' as const),
     subtractfrom: subtractFrom,
     l: stringyFloatSchema,
     h: stringyFloatSchema,
 });
 const floor = commonElement.extend({
-    type: z.literal('Floor').transform(() => 'floor' as const),
+    type: z.enum(['floor', 'Floor']).transform(() => 'floor' as const),
 });
 
 export const fabric = z.object({

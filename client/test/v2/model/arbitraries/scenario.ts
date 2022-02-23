@@ -1,7 +1,4 @@
 import fc from 'fast-check';
-import { solarHotWaterOvershadingFactor } from '../../../../src/v2/model/datasets';
-import { Orientation } from '../../../../src/v2/model/enums/orientation';
-import { Overshading } from '../../../../src/v2/model/enums/overshading';
 import { Region } from '../../../../src/v2/model/enums/region';
 import { fcPartialRecord } from '../../../helpers/arbitraries';
 import {
@@ -11,11 +8,7 @@ import {
     stringySensibleFloat,
 } from './values';
 import { arbFabric } from './fabric';
-import { pick } from 'lodash';
-
-const arbOvershading = fc
-    .oneof(...Overshading.names.map((n) => fc.constant(n)))
-    .map((n) => new Overshading(n));
+import { shwInputIsComplete, shwInputs } from './solar-hot-water';
 
 const arbFloors = () =>
     fc.array(
@@ -129,21 +122,7 @@ export const arbScenarioInputs = () =>
                     ),
                     solar_water_heating: fc.oneof(fc.boolean(), fc.constant(1)),
                 }),
-                SHW: fcPartialRecord({
-                    pump: fc.oneof(fc.constant('PV'), fc.constant('electric')),
-                    A: sensibleFloat,
-                    n0: sensibleFloat,
-                    a1: stringySensibleFloat(),
-                    a2: stringySensibleFloat(),
-                    orientation: fc.integer({
-                        min: 0,
-                        max: Orientation.names.length - 1,
-                    }),
-                    inclination: sensibleFloat,
-                    overshading: arbOvershading.map(solarHotWaterOvershadingFactor),
-                    Vs: sensibleFloat,
-                    combined_cylinder_volume: sensibleFloat,
-                }),
+                SHW: shwInputs,
                 use_SHW: fc.oneof(fc.boolean(), fc.constant(1)),
                 LAC_calculation_type: arbLAC_calculation_type(),
                 LAC: arbLAC(Object.keys(fuels)),
@@ -152,7 +131,7 @@ export const arbScenarioInputs = () =>
             }),
         )
         .filter((scenario) => {
-            // Custom occupancy invariant:
+            // If a custom occupancy is configured, make sure a value is given
             if (
                 (scenario.use_custom_occupancy === true ||
                     scenario.use_custom_occupancy === 1) &&
@@ -162,7 +141,8 @@ export const arbScenarioInputs = () =>
                 return false; // Throws ModelError in new model
             }
 
-            // Custom water annual energy content invariant
+            // If a water heating override is configured, make sure a value is
+            // given
             if (
                 scenario.water_heating?.override_annual_energy_content &&
                 scenario.water_heating.annual_energy_content === undefined
@@ -183,31 +163,12 @@ export const arbScenarioInputs = () =>
 
             // If SHW is enabled make sure input is complete
             if (scenario.SHW !== undefined) {
-                const inputs = pick(scenario.SHW, ...SHWInputKeys);
                 const moduleIsEnabled =
                     scenario.use_SHW || scenario.water_heating?.solar_water_heating;
-                const inputIsComplete = SHWInputKeys.reduce(
-                    (allInputsWerePresent, key) =>
-                        allInputsWerePresent && inputs[key] !== undefined,
-                    true,
-                );
                 if (moduleIsEnabled) {
-                    return inputIsComplete;
+                    return shwInputIsComplete(scenario.SHW);
                 }
             }
 
             return true;
         });
-
-export const SHWInputKeys = [
-    'pump',
-    'A',
-    'n0',
-    'a1',
-    'a2',
-    'orientation',
-    'inclination',
-    'overshading',
-    'Vs',
-    'combined_cylinder_volume',
-] as const;

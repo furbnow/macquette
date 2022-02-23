@@ -878,18 +878,26 @@ function _extract_scenario_inputs(data) {
     };
     inputdata.fans_and_pumps = data.fans_and_pumps;
     inputdata.use_SHW = data.use_SHW;
-    inputdata.SHW = {
-        A: data.SHW.A,
-        n0: data.SHW.n0,
-        a1: data.SHW.a1,
-        a2: data.SHW.a2,
-        inclination: data.SHW.inclination,
-        orientation: data.SHW.orientation,
-        overshading: data.SHW.overshading,
-        Vs: data.SHW.Vs,
-        combined_cylinder_volume: data.SHW.combined_cylinder_volume,
-        pump: data.SHW.pump
-    };
+    if (data.SHW.version === 1) {
+        inputdata.SHW = {
+            version: data.SHW.version,
+            pump: data.SHW.pump,
+            input: data.SHW.input
+        };
+    } else {
+        inputdata.SHW = {
+            A: data.SHW.A,
+            n0: data.SHW.n0,
+            a1: data.SHW.a1,
+            a2: data.SHW.a2,
+            inclination: data.SHW.inclination,
+            orientation: data.SHW.orientation,
+            overshading: data.SHW.overshading,
+            Vs: data.SHW.Vs,
+            combined_cylinder_volume: data.SHW.combined_cylinder_volume,
+            pump: data.SHW.pump
+        };
+    }
 
     inputdata.appliancelist = {list: []};
     if ('appliancelist' in data && 'list' in data.appliancelist) {

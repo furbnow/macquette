@@ -1,17 +1,13 @@
 import React from 'react';
-import { set, unset } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
-import { Orientation, OrientationName } from '../../model/enums/orientation';
-import { Overshading, OvershadingName } from '../../model/enums/overshading';
+import { Orientation } from '../../model/enums/orientation';
+import { Overshading } from '../../model/enums/overshading';
 import { NumericInput, NumericInputProps } from '../input-components/numeric';
 import { CheckboxInput } from '../input-components/checkbox';
 import { Select, SelectProps } from '../input-components/select';
 import type { UiModule } from '../module-management';
-import {
-    solarHotWaterOvershadingFactor,
-    solarHotWaterOvershadingFactorReverse,
-} from '../../model/datasets';
-import { nanToNull, orNullish, throwForNull } from '../../helpers/null-wrapping';
+import { nanToNull, orNullish } from '../../helpers/null-wrapping';
 import {
     loading,
     noOutput,
@@ -20,21 +16,9 @@ import {
 } from '../output-components/numeric';
 import { LockedWarning } from '../output-components/locked-warning';
 import { PropsOf } from '../../helpers/props-of';
-import { safeMerge } from '../../helpers/safe-merge';
+import { DeepPartial, safeMerge, DeepWith } from '../../helpers/safe-merge';
 import { Shadow } from '../../helpers/shadow-object-type';
-import { coalesceEmptyString } from '../../legacy-state-validators/numericValues';
-
-type DeepWith<U, T> = T extends object
-    ? {
-          [K in keyof T]: DeepWith<U, T[K]>;
-      }
-    : T | U;
-
-type DeepPartial<T> = T extends object
-    ? {
-          [K in keyof T]?: DeepPartial<T[K]>;
-      }
-    : T;
+import { SolarHotWaterV1 } from '../../legacy-state-validators/solar-hot-water';
 
 type ModelOutputs = {
     aStar: number;
@@ -54,28 +38,21 @@ type ModelOutputs = {
     };
 };
 
-type ModelInputs = {
+type RefactoredScenarioInputs = SolarHotWaterV1['input'];
+type Inputs = {
     moduleEnabled: boolean;
-    pumpType: 'PV' | 'electric';
-    solarCollectorApertureArea: number;
-    zeroLossCollectorEfficiency: number;
-    collectorLinearHeatLossCoefficient: number;
-    collectorSecondOrderHeatLossCoefficient: number;
-    collectorOrientation: OrientationName;
-    collectorInclination: number;
-    overshading: OvershadingName;
-    dedicatedSolarStorageVolume: number;
-    combinedCylinderVolume: number;
-};
+    pumpType: 'PV' | 'electric' | null;
+} & RefactoredScenarioInputs;
 
 export type SolarHotWaterState = {
     outputs: null | DeepWith<typeof noOutput, ModelOutputs>;
-    inputs: DeepWith<null, ModelInputs>;
+    inputs: Inputs;
+    doneFirstRun: boolean;
 };
 
 type MergeInputAction = {
     type: 'solar hot water/merge input';
-    input: DeepPartial<SolarHotWaterState['inputs']>;
+    input: DeepPartial<Inputs>;
 };
 export type SolarHotWaterAction = MergeInputAction;
 
@@ -104,33 +81,19 @@ const extractOutputsFromLegacy = ({
     };
 };
 
-const orientationFromIndex0 = orNullish(Orientation.fromIndex0.bind(Orientation));
-const orientationNew = orNullish((o: OrientationName) => new Orientation(o));
-const overshadingFromFactor = orNullish(
-    throwForNull(
-        solarHotWaterOvershadingFactorReverse,
-        (factor) => new Error(`Bad overshading factor for lookup: ${factor}`),
-    ),
-);
-
 const extractInputsFromLegacy = ({
     SHW,
     use_SHW,
 }: LegacyScenario): SolarHotWaterState['inputs'] => {
+    const refactoredScenarioInputs: RefactoredScenarioInputs =
+        SHW?.input ?? solarHotWaterModule.initialState.inputs;
+    const moduleEnabled =
+        orNullish((v: 1 | boolean) => v === 1 || v === true)(use_SHW) ?? false;
+    const pumpType = SHW?.pump ?? null;
     return {
-        moduleEnabled:
-            orNullish((v: 1 | boolean) => v === 1 || v === true)(use_SHW) ?? null,
-        pumpType: SHW?.pump ?? null,
-        solarCollectorApertureArea: SHW?.A ?? null,
-        zeroLossCollectorEfficiency: SHW?.n0 ?? null,
-        collectorLinearHeatLossCoefficient: coalesceEmptyString(SHW?.a1, null) ?? null,
-        collectorSecondOrderHeatLossCoefficient:
-            coalesceEmptyString(SHW?.a2, null) ?? null,
-        collectorOrientation: orientationFromIndex0(SHW?.orientation)?.name ?? null,
-        collectorInclination: SHW?.inclination ?? null,
-        overshading: overshadingFromFactor(SHW?.overshading)?.name ?? null,
-        dedicatedSolarStorageVolume: SHW?.Vs ?? null,
-        combinedCylinderVolume: SHW?.combined_cylinder_volume ?? null,
+        ...cloneDeep(refactoredScenarioInputs),
+        moduleEnabled,
+        pumpType,
     };
 };
 
@@ -138,24 +101,37 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
     initialState: {
         outputs: null,
         inputs: {
-            moduleEnabled: null,
+            moduleEnabled: false,
             pumpType: null,
-            solarCollectorApertureArea: null,
-            zeroLossCollectorEfficiency: null,
-            collectorLinearHeatLossCoefficient: null,
-            collectorSecondOrderHeatLossCoefficient: null,
-            collectorOrientation: null,
-            collectorInclination: null,
-            overshading: null,
+            collector: {
+                parameterSource: null,
+                apertureArea: null,
+                testCertificate: {
+                    zeroLossEfficiency: null,
+                    linearHeatLossCoefficient: null,
+                    secondOrderHeatLossCoefficient: null,
+                },
+                estimate: {
+                    collectorType: null,
+                    apertureAreaType: null,
+                },
+                orientation: null,
+                inclination: null,
+                overshading: null,
+            },
             dedicatedSolarStorageVolume: null,
             combinedCylinderVolume: null,
         },
+        doneFirstRun: false,
     },
     reducer: (state, action) => {
         switch (action.type) {
             case 'external data update': {
                 state.outputs = extractOutputsFromLegacy(action.data);
-                state.inputs = extractInputsFromLegacy(action.data);
+                if (!state.doneFirstRun) {
+                    state.inputs = extractInputsFromLegacy(action.data);
+                    state.doneFirstRun = true;
+                }
                 return state;
             }
             case 'solar hot water/merge input': {
@@ -172,46 +148,25 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
     },
     dataMutator: (data, state) => {
         const { inputs } = state.moduleState;
-        const setData = (
-            path: string[],
-            stateInputValue: undefined | null | string | number | boolean,
-        ) => {
-            /* eslint-disable
-               @typescript-eslint/consistent-type-assertions,
-               @typescript-eslint/no-explicit-any,
-               @typescript-eslint/no-unsafe-assignment,
-               @typescript-eslint/no-unsafe-member-access,
-            */
-            const dataAny: any = data;
-            if (stateInputValue !== undefined) {
-                if (stateInputValue === null) {
-                    unset(dataAny, path);
-                } else {
-                    set(dataAny, path, stateInputValue);
-                }
-            }
-            /* eslint-enable */
+        const { moduleEnabled, pumpType, ...copiableInputs } = inputs;
+
+        const newSHW: SolarHotWaterV1 = {
+            version: 1,
+            input: copiableInputs,
+            pump: pumpType ?? undefined,
         };
-        setData(
-            ['use_SHW'],
-            orNullish((e: boolean) => (e ? 1 : false))(inputs.moduleEnabled),
-        );
-        setData(['SHW', 'pump'], inputs.pumpType);
-        setData(['SHW', 'A'], inputs.solarCollectorApertureArea);
-        setData(['SHW', 'n0'], inputs.zeroLossCollectorEfficiency);
-        setData(['SHW', 'a1'], inputs.collectorLinearHeatLossCoefficient);
-        setData(['SHW', 'a2'], inputs.collectorSecondOrderHeatLossCoefficient);
-        setData(
-            ['SHW', 'orientation'],
-            orientationNew(inputs.collectorOrientation)?.index0 ?? null,
-        );
-        setData(['SHW', 'inclination'], inputs.collectorInclination);
-        setData(
-            ['SHW', 'overshading'],
-            orNullish(solarHotWaterOvershadingFactor)(inputs.overshading),
-        );
-        setData(['SHW', 'Vs'], inputs.dedicatedSolarStorageVolume);
-        setData(['SHW', 'combined_cylinder_volume'], inputs.combinedCylinderVolume);
+        /* eslint-disable
+           @typescript-eslint/consistent-type-assertions,
+           @typescript-eslint/no-explicit-any,
+           @typescript-eslint/no-unsafe-assignment,
+           @typescript-eslint/no-unsafe-member-access,
+        */
+        const dataAny = data as any;
+        dataAny.SHW = newSHW;
+        dataAny.use_SHW = moduleEnabled;
+        dataAny.water_heating = dataAny.water_heating ?? {};
+        dataAny.water_heating.solar_water_heating = moduleEnabled;
+        /* eslint-enable */
     },
     rootComponent: ({ state, dispatch }) => {
         const { commonState, moduleState } = state;
@@ -249,6 +204,164 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
         const MyTd = (props: Omit<PropsOf<'td'>, 'style'>) => (
             <td {...props} style={{ verticalAlign: 'middle' }} />
         );
+        const TestCertificateParameters = () => {
+            if (
+                inputs.collector === undefined ||
+                inputs.collector.parameterSource !== 'test certificate'
+            ) {
+                return <></>;
+            }
+            return (
+                <>
+                    <tr>
+                        <MyTd>Aperture area of solar collector</MyTd>
+                        <MyTd>
+                            <MyNumericInput
+                                value={inputs.collector.apertureArea}
+                                callback={(value) =>
+                                    dispatchInput({
+                                        collector: {
+                                            apertureArea: value,
+                                        },
+                                    })
+                                }
+                            />{' '}
+                            m<sup>2</sup>
+                        </MyTd>
+                    </tr>
+                    <tr>
+                        <MyTd>
+                            Zero-loss collector efficiency, η<sub>0</sub>
+                        </MyTd>
+                        <MyTd>
+                            <MyNumericInput
+                                value={
+                                    inputs.collector.testCertificate.zeroLossEfficiency
+                                }
+                                callback={(value) =>
+                                    dispatchInput({
+                                        collector: {
+                                            testCertificate: {
+                                                zeroLossEfficiency: value,
+                                            },
+                                        },
+                                    })
+                                }
+                            />
+                        </MyTd>
+                    </tr>
+
+                    <tr>
+                        <MyTd>
+                            Collector linear heat loss coefficient, a<sub>1</sub>
+                        </MyTd>
+                        <MyTd>
+                            <MyNumericInput
+                                value={
+                                    inputs.collector.testCertificate
+                                        .linearHeatLossCoefficient
+                                }
+                                callback={(value) =>
+                                    dispatchInput({
+                                        collector: {
+                                            testCertificate: {
+                                                linearHeatLossCoefficient: value,
+                                            },
+                                        },
+                                    })
+                                }
+                            />
+                        </MyTd>
+                    </tr>
+
+                    <tr>
+                        <MyTd>
+                            Collector 2nd order heat loss coefficient, a<sub>2</sub>
+                        </MyTd>
+                        <MyTd>
+                            <MyNumericInput
+                                value={
+                                    inputs.collector.testCertificate
+                                        .secondOrderHeatLossCoefficient
+                                }
+                                callback={(value) =>
+                                    dispatchInput({
+                                        collector: {
+                                            testCertificate: {
+                                                secondOrderHeatLossCoefficient: value,
+                                            },
+                                        },
+                                    })
+                                }
+                            />
+                        </MyTd>
+                    </tr>
+                </>
+            );
+        };
+        const EstimatedParameters = () => {
+            if (inputs.collector.parameterSource !== 'estimate') {
+                return <></>;
+            }
+            return (
+                <>
+                    <tr>
+                        <MyTd>Collector type</MyTd>
+                        <MyTd>
+                            <MySelect
+                                options={[
+                                    {
+                                        value: 'evacuated tube',
+                                        display: 'Evacuated tube',
+                                    },
+                                    {
+                                        value: 'flat plate, glazed',
+                                        display: 'Flat plate, glazed',
+                                    },
+                                    { value: 'unglazed', display: 'Unglazed' },
+                                ]}
+                                selected={inputs.collector.estimate.collectorType}
+                                callback={(value) =>
+                                    dispatchInput({
+                                        collector: { estimate: { collectorType: value } },
+                                    })
+                                }
+                            />
+                        </MyTd>
+                    </tr>
+                    <tr>
+                        <MyTd>Aperture area of solar collector</MyTd>
+                        <MyTd>
+                            <MyNumericInput
+                                value={inputs.collector.apertureArea}
+                                callback={(value) =>
+                                    dispatchInput({
+                                        collector: {
+                                            apertureArea: value,
+                                        },
+                                    })
+                                }
+                            />{' '}
+                            m<sup>2</sup>{' '}
+                            <MySelect
+                                options={[
+                                    { value: 'exact', display: 'exact' },
+                                    { value: 'gross', display: 'gross' },
+                                ]}
+                                selected={inputs.collector.estimate.apertureAreaType}
+                                callback={(value) =>
+                                    dispatchInput({
+                                        collector: {
+                                            estimate: { apertureAreaType: value },
+                                        },
+                                    })
+                                }
+                            />
+                        </MyTd>
+                    </tr>
+                </>
+            );
+        };
         return (
             <>
                 <LockedWarning locked={commonState.locked} />
@@ -290,76 +403,29 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                 />
                             </MyTd>
                         </tr>
-
                         <tr>
-                            <MyTd>Aperture area of solar collector</MyTd>
+                            <MyTd>Parameter source</MyTd>
                             <MyTd>
-                                <MyNumericInput
-                                    value={inputs.solarCollectorApertureArea}
+                                <MySelect
+                                    options={[
+                                        {
+                                            value: 'test certificate',
+                                            display: 'Test Certificate',
+                                        },
+                                        { value: 'estimate', display: 'Estimated' },
+                                    ]}
+                                    selected={inputs.collector.parameterSource}
                                     callback={(value) =>
                                         dispatchInput({
-                                            solarCollectorApertureArea: value,
-                                        })
-                                    }
-                                />{' '}
-                                m<sup>2</sup>
-                            </MyTd>
-                        </tr>
-
-                        <tr>
-                            <MyTd>
-                                Zero-loss collector efficiency, η<sub>0</sub>
-                                <br />
-                                from test certificate or Table H1
-                            </MyTd>
-                            <MyTd>
-                                <MyNumericInput
-                                    value={inputs.zeroLossCollectorEfficiency}
-                                    callback={(value) =>
-                                        dispatchInput({
-                                            zeroLossCollectorEfficiency: value,
+                                            collector: { parameterSource: value },
                                         })
                                     }
                                 />
                             </MyTd>
                         </tr>
 
-                        <tr>
-                            <MyTd>
-                                Collector linear heat loss coefficient, a<sub>1</sub>
-                                <br />
-                                from test certificate
-                            </MyTd>
-                            <MyTd>
-                                <MyNumericInput
-                                    value={inputs.collectorLinearHeatLossCoefficient}
-                                    callback={(value) =>
-                                        dispatchInput({
-                                            collectorLinearHeatLossCoefficient: value,
-                                        })
-                                    }
-                                />
-                            </MyTd>
-                        </tr>
-
-                        <tr>
-                            <MyTd>
-                                Collector 2nd order heat loss coefficient, a<sub>2</sub>
-                                <br />
-                                from test certificate
-                            </MyTd>
-                            <MyTd>
-                                <MyNumericInput
-                                    value={inputs.collectorSecondOrderHeatLossCoefficient}
-                                    callback={(value) =>
-                                        dispatchInput({
-                                            collectorSecondOrderHeatLossCoefficient:
-                                                value,
-                                        })
-                                    }
-                                />
-                            </MyTd>
-                        </tr>
+                        <TestCertificateParameters />
+                        <EstimatedParameters />
 
                         <tr>
                             <MyTd>
@@ -389,10 +455,10 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                         value: orientationName,
                                         display: orientationName,
                                     }))}
-                                    selected={inputs.collectorOrientation}
+                                    selected={inputs.collector.orientation}
                                     callback={(value) =>
                                         dispatchInput({
-                                            collectorOrientation: value,
+                                            collector: { orientation: value },
                                         })
                                     }
                                 />
@@ -403,10 +469,10 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             <MyTd>Collector inclination (e.g. 35 degrees)</MyTd>
                             <MyTd>
                                 <MyNumericInput
-                                    value={inputs.collectorInclination}
+                                    value={inputs.collector.inclination}
                                     callback={(value) =>
                                         dispatchInput({
-                                            collectorInclination: value,
+                                            collector: { inclination: value },
                                         })
                                     }
                                 />{' '}
@@ -437,9 +503,11 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                         value: name,
                                         display,
                                     }))}
-                                    selected={inputs.overshading}
+                                    selected={inputs.collector.overshading}
                                     callback={(value) =>
-                                        dispatchInput({ overshading: value })
+                                        dispatchInput({
+                                            collector: { overshading: value },
+                                        })
                                     }
                                 />
                             </MyTd>

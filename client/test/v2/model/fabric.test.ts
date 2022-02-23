@@ -1,10 +1,7 @@
-import fc, { toStringMethod } from 'fast-check';
+import fc from 'fast-check';
 import { mean } from '../../../src/v2/helpers/mean';
 import { sum } from '../../../src/v2/helpers/sum';
 import { Month } from '../../../src/v2/model/enums/month';
-import { Orientation } from '../../../src/v2/model/enums/orientation';
-import { Overshading } from '../../../src/v2/model/enums/overshading';
-import { Region } from '../../../src/v2/model/enums/region';
 import {
     CommonSpec,
     DeductibleSpec,
@@ -20,22 +17,12 @@ import {
     WindowLikeSpec,
 } from '../../../src/v2/model/modules/fabric';
 import { FcInfer, merge } from '../../helpers/arbitraries';
+import {
+    arbitraryOrientation,
+    arbitraryOvershading,
+    arbitraryRegion,
+} from '../../helpers/arbitrary-enums';
 import { sensibleFloat } from './arbitraries/values';
-
-(Overshading.prototype as any)[toStringMethod] = function () {
-    const input = fc.stringify((this as Overshading).name);
-    return `new Overshading(${input})`;
-};
-
-(Orientation.prototype as any)[toStringMethod] = function () {
-    const input = fc.stringify((this as Orientation).name);
-    return `new Orientation(${input})`;
-};
-
-(Region.prototype as any)[toStringMethod] = function () {
-    const input = fc.stringify((this as Region).name);
-    return `new Region(${input})`;
-};
 
 const arbitraryCommonSpec = (): fc.Arbitrary<CommonSpec> =>
     fc.record({
@@ -69,10 +56,6 @@ const arbitraryWallLikeSpec = <T>(
             deductions: fc.array(deductibleSpec),
         }),
     );
-
-const arbitraryOrientation = fc.oneof(...Orientation.all.map(fc.constant));
-const arbitraryOvershading = fc.oneof(...Overshading.all.map(fc.constant));
-const arbitraryRegion = fc.oneof(...Region.all.map(fc.constant));
 
 const arbitraryWindowLikeSpec = (): fc.Arbitrary<WindowLikeSpec> =>
     merge(

@@ -3,7 +3,7 @@
  * This function behaves the same way as JSON.parse(JSON.stringify(value)), but
  * is much faster.
  *
- * e.g., NaN and Infinity become 'null', -0 becomes 0, undefined object
+ * e.g., NaN and Infinity become null, -0 becomes 0, undefined object
  * properties are dropped, undefined array elements become null.
  */
 export const emulateJsonRoundTrip = (data: unknown): unknown => {

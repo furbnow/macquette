@@ -1,33 +1,40 @@
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
-import { throwForNull } from '../../helpers/null-wrapping';
 import { sum } from '../../helpers/sum';
-import { coalesceEmptyString } from '../../legacy-state-validators/numericValues';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
-import {
-    solarHotWaterOvershadingFactor,
-    solarHotWaterOvershadingFactorReverse,
-} from '../datasets';
+import { solarHotWaterOvershadingFactor } from '../datasets';
 import { Month } from '../enums/month';
 import { Orientation } from '../enums/orientation';
 import { Overshading } from '../enums/overshading';
 import { Region } from '../enums/region';
-import { ModelError } from '../error';
 import {
     calculateSolarRadiationAnnual,
     calculateSolarRadiationMonthly,
 } from '../solar-flux';
 
+type CollectorParameters =
+    | {
+          source: 'test certificate';
+          zeroLossEfficiency: number;
+          linearHeatLossCoefficient: number;
+          secondOrderHeatLossCoefficient: number;
+      }
+    | {
+          source: 'estimate';
+          collectorType: 'evacuated tube' | 'flat plate, glazed' | 'unglazed';
+          apertureAreaType: 'exact' | 'gross';
+      };
+
 export type SolarHotWaterInput =
     | 'module disabled'
     | 'incomplete input'
     | {
-          solarCollectorApertureArea: number;
-          zeroLossCollectorEfficiency: number;
-          collectorLinearHeatLossCoefficient: number;
-          collectorSecondOrderHeatLossCoefficient: number;
-          collectorOrientation: Orientation;
-          collectorInclination: number;
-          overshading: Overshading;
+          collector: {
+              apertureArea: number;
+              parameters: CollectorParameters;
+              orientation: Orientation;
+              inclination: number;
+              overshading: Overshading;
+          };
           dedicatedSolarStorageVolume: number;
           combinedCylinderVolume: number;
       };
@@ -38,56 +45,91 @@ export const extractSolarHotWaterInputFromLegacy = (
     if (!(data.use_SHW || data.water_heating?.solar_water_heating)) {
         return 'module disabled';
     }
-    const {
-        a1,
-        a2,
-        n0,
-        orientation: orientationInput,
-        overshading: overshadingInput,
-        inclination,
-        A,
-        combined_cylinder_volume,
-        Vs,
-    } = data.SHW ?? {};
-    let overshading: Overshading;
-    if (overshadingInput === undefined) {
+    if (data.SHW === undefined) {
         return 'incomplete input';
-    } else {
-        overshading = throwForNull(
-            solarHotWaterOvershadingFactorReverse,
-            () =>
-                new ModelError(
-                    `Factor ${overshadingInput} was not a valid overshading factor for SHW`,
-                ),
-        )(overshadingInput);
     }
-    let collectorOrientation: Orientation;
-    if (orientationInput === undefined) {
+    const { collector, combinedCylinderVolume, dedicatedSolarStorageVolume } =
+        data.SHW.input;
+    const {
+        apertureArea,
+        parameterSource,
+        testCertificate,
+        estimate,
+        orientation: orientationName,
+        inclination,
+        overshading: overshadingName,
+    } = collector;
+    let overshading: Overshading;
+    if (overshadingName === null) {
         return 'incomplete input';
     } else {
-        collectorOrientation = Orientation.fromIndex0(orientationInput);
+        overshading = new Overshading(overshadingName);
+    }
+    let orientation: Orientation;
+    if (orientationName === null) {
+        return 'incomplete input';
+    } else {
+        orientation = new Orientation(orientationName);
     }
     if (
-        inclination === undefined ||
-        a1 === undefined ||
-        a2 === undefined ||
-        combined_cylinder_volume === undefined ||
-        Vs === undefined ||
-        A === undefined ||
-        n0 === undefined
+        apertureArea === null ||
+        parameterSource === null ||
+        inclination === null ||
+        dedicatedSolarStorageVolume === null ||
+        combinedCylinderVolume === null
     ) {
         return 'incomplete input';
     }
+
+    let collectorParameters: CollectorParameters;
+    switch (parameterSource) {
+        case 'test certificate': {
+            const {
+                zeroLossEfficiency,
+                linearHeatLossCoefficient,
+                secondOrderHeatLossCoefficient,
+            } = testCertificate;
+            if (
+                zeroLossEfficiency === null ||
+                linearHeatLossCoefficient === null ||
+                secondOrderHeatLossCoefficient === null
+            ) {
+                return 'incomplete input';
+            }
+            collectorParameters = {
+                source: 'test certificate',
+                zeroLossEfficiency,
+                linearHeatLossCoefficient,
+                secondOrderHeatLossCoefficient,
+            };
+            break;
+        }
+        case 'estimate': {
+            const { collectorType, apertureAreaType } = estimate;
+            if (collectorType === null || apertureAreaType === null) {
+                return 'incomplete input';
+            }
+            collectorParameters = {
+                source: 'estimate',
+                collectorType,
+                apertureAreaType,
+            };
+            break;
+        }
+        case undefined: {
+            return 'incomplete input';
+        }
+    }
     return {
-        collectorInclination: inclination,
-        collectorLinearHeatLossCoefficient: coalesceEmptyString(a1, 0),
-        collectorOrientation,
-        collectorSecondOrderHeatLossCoefficient: coalesceEmptyString(a2, 0),
-        combinedCylinderVolume: combined_cylinder_volume,
-        dedicatedSolarStorageVolume: Vs,
-        overshading,
-        solarCollectorApertureArea: A,
-        zeroLossCollectorEfficiency: n0,
+        collector: {
+            apertureArea,
+            parameters: collectorParameters,
+            inclination,
+            orientation,
+            overshading,
+        },
+        combinedCylinderVolume,
+        dedicatedSolarStorageVolume,
     };
 };
 
@@ -111,44 +153,89 @@ class SolarHotWaterEnabled {
         private dependencies: SolarHotWaterDependencies,
     ) {}
 
+    private get resolvedApertureArea(): number {
+        const { apertureArea, parameters } = this.input.collector;
+        if (parameters.source === 'estimate' && parameters.apertureAreaType === 'gross') {
+            switch (parameters.collectorType) {
+                case 'evacuated tube':
+                    return 0.72 * apertureArea;
+                case 'flat plate, glazed':
+                    return 0.9 * apertureArea;
+                case 'unglazed':
+                    return apertureArea;
+            }
+        } else {
+            return apertureArea;
+        }
+    }
+
     get aStar(): number {
-        const {
-            collectorLinearHeatLossCoefficient,
-            collectorSecondOrderHeatLossCoefficient,
-        } = this.input;
-        return (
-            0.892 *
-            (collectorLinearHeatLossCoefficient +
-                45 * collectorSecondOrderHeatLossCoefficient)
-        );
+        const { parameters } = this.input.collector;
+        switch (parameters.source) {
+            case 'test certificate': {
+                return (
+                    0.892 *
+                    (parameters.linearHeatLossCoefficient +
+                        45 * parameters.secondOrderHeatLossCoefficient)
+                );
+            }
+            case 'estimate': {
+                switch (parameters.collectorType) {
+                    case 'evacuated tube':
+                        return 3;
+                    case 'flat plate, glazed':
+                        return 6;
+                    case 'unglazed':
+                        return 20;
+                }
+            }
+        }
+    }
+
+    private get zeroLossEfficiency(): number {
+        const { parameters } = this.input.collector;
+        switch (parameters.source) {
+            case 'test certificate': {
+                return parameters.zeroLossEfficiency;
+            }
+            case 'estimate': {
+                switch (parameters.collectorType) {
+                    case 'evacuated tube':
+                        return 0.6;
+                    case 'flat plate, glazed':
+                        return 0.75;
+                    case 'unglazed':
+                        return 0.9;
+                }
+            }
+        }
     }
 
     get collectorPerformanceRatio(): number {
-        return this.aStar / this.input.zeroLossCollectorEfficiency;
+        return this.aStar / this.zeroLossEfficiency;
     }
 
     @cache
     get solarRadiationAnnual(): number {
-        const { collectorOrientation, collectorInclination } = this.input;
-        if (collectorOrientation === null || collectorInclination === null) {
+        const { orientation, inclination } = this.input.collector;
+        if (orientation === null || inclination === null) {
             return NaN;
         }
         return calculateSolarRadiationAnnual(
             this.dependencies.region,
-            collectorOrientation,
-            collectorInclination,
+            orientation,
+            inclination,
         );
     }
 
     get solarEnergyAvailable(): number {
-        const { solarCollectorApertureArea, zeroLossCollectorEfficiency, overshading } =
-            this.input;
+        const { overshading } = this.input.collector;
         if (overshading === null) {
             return 0;
         }
         return (
-            solarCollectorApertureArea *
-            zeroLossCollectorEfficiency *
+            this.resolvedApertureArea *
+            this.zeroLossEfficiency *
             this.solarRadiationAnnual *
             solarHotWaterOvershadingFactor(overshading)
         );
@@ -232,19 +319,14 @@ class SolarHotWaterEnabled {
         // function we already have? Also what's with the 0.024 in that
         // function anyway...
         const { region } = this.dependencies;
-        const { collectorOrientation, collectorInclination } = this.input;
-        if (collectorOrientation === null) {
+        const { orientation, inclination } = this.input.collector;
+        if (orientation === null) {
             return NaN;
         }
         return (
             sum(
                 Month.all.map((m) =>
-                    calculateSolarRadiationMonthly(
-                        region,
-                        collectorOrientation,
-                        collectorInclination,
-                        m,
-                    ),
+                    calculateSolarRadiationMonthly(region, orientation, inclination, m),
                 ),
             ) / 12
         );
@@ -253,17 +335,13 @@ class SolarHotWaterEnabled {
     @cacheMonth
     solarInputMonthly(month: Month): number | null {
         const { region } = this.dependencies;
-        const { collectorOrientation, collectorInclination } = this.input;
-        if (collectorOrientation === null) {
+        const { orientation, inclination } = this.input.collector;
+        if (orientation === null) {
             return 0;
         }
         const monthSolarRadiationWeight =
-            calculateSolarRadiationMonthly(
-                region,
-                collectorOrientation,
-                collectorInclination,
-                month,
-            ) / this.averageSolarRadiationAnnual;
+            calculateSolarRadiationMonthly(region, orientation, inclination, month) /
+            this.averageSolarRadiationAnnual;
         return -this.solarInputAnnual * monthSolarRadiationWeight * (month.days / 365);
     }
 
@@ -293,6 +371,8 @@ class SolarHotWaterEnabled {
 }
 
 class SolarHotWaterNoop {
+    solarInputAnnual = 0;
+
     /* eslint-disable
        @typescript-eslint/no-explicit-any,
        @typescript-eslint/no-unsafe-assignment,

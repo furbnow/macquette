@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { Orientation } from '../model/enums/orientation';
 import { fabric } from './fabric';
 import { numberWithNaN, stringyFloatSchema, stringyIntegerSchema } from './numericValues';
+import { solarHotWater } from './solar-hot-water';
 
 const legacyBoolean = z.union([z.literal(1).transform(() => true), z.boolean()]);
 
@@ -12,35 +12,6 @@ const floors = z.array(
         name: z.string(),
     }),
 );
-
-const solarHotWater = z
-    .object({
-        // Model outputs
-        a: numberWithNaN.nullable(),
-        collector_performance_ratio: numberWithNaN.nullable(),
-        annual_solar: numberWithNaN.nullable(),
-        solar_energy_available: numberWithNaN.nullable(),
-        solar_load_ratio: numberWithNaN.nullable(),
-        utilisation_factor: z.number(),
-        collector_performance_factor: numberWithNaN.nullable(),
-        Veff: numberWithNaN.nullable(),
-        volume_ratio: numberWithNaN.nullable(),
-        f2: numberWithNaN.nullable(),
-        Qs: z.number().nullable(),
-
-        // Model inputs
-        pump: z.enum(['PV', 'electric']),
-        A: z.number(),
-        n0: z.number(), // η != n 😠
-        a1: stringyFloatSchema,
-        a2: stringyFloatSchema,
-        orientation: z.number().int().gte(0).lt(Orientation.names.length),
-        inclination: z.number(),
-        overshading: z.number(),
-        Vs: z.number(),
-        combined_cylinder_volume: z.number(),
-    })
-    .partial();
 
 const waterHeating = z
     .object({
@@ -121,11 +92,13 @@ export const legacyScenarioSchema = z
                 ventilation_type: z.enum(['NV', 'IE', 'MEV', 'PS', 'MVHR', 'MV', 'DEV']),
                 EVP: z.array(z.object({ ventilation_rate: stringyFloatSchema })),
                 system_air_change_rate: z.union([
+                    z.literal(null),
                     z.literal('na').transform(() => null),
                     z.literal('n/a').transform(() => null),
                     stringyFloatSchema,
                 ]),
                 balanced_heat_recovery_efficiency: z.union([
+                    z.literal(null),
                     z.literal('na').transform(() => null),
                     z.literal('n/a').transform(() => null),
                     stringyFloatSchema,

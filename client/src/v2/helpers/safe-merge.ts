@@ -1,9 +1,21 @@
-import { merge } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 
-/** Lodash merge with type checking that ensures Source extends Destination */
-export const safeMerge = <Source extends Dest, Dest extends object>(
-    dest: Dest,
-    source: Partial<Source>,
-): Dest & Partial<Source> => {
-    return merge(dest, source);
-};
+export type DeepPartial<T> = T extends object
+    ? {
+          [K in keyof T]?: DeepPartial<T[K]>;
+      }
+    : T;
+
+export type DeepWith<U, T> = T extends object
+    ? {
+          [K in keyof T]: DeepWith<U, T[K]>;
+      }
+    : T | U;
+
+/** Lodash merge, but with stricter type checking and does not mutate its inputs */
+export function safeMerge<
+    Source extends Dest,
+    Dest extends Record<string | symbol, unknown>,
+>(dest: Dest, source: DeepPartial<Source>): Dest {
+    return merge(cloneDeep(dest), source);
+}
