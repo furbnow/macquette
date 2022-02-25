@@ -25,7 +25,10 @@ export const mutateLegacyData = (fabric: Fabric, data: any) => {
     if (data.fabric.global_TMP === undefined) {
         data.fabric.global_TMP = fabric.input.overrides.thermalMassParameter !== null;
     }
-    if (data.fabric.global_TMP_value === undefined) {
+    if (
+        data.fabric.global_TMP_value === undefined ||
+        data.fabric.global_TMP_value === null
+    ) {
         data.fabric.global_TMP_value = fabric.input.overrides.thermalMassParameter ?? 250;
     }
     data.fabric_total_heat_loss_WK = fabric.heatLoss;

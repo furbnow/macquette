@@ -63,6 +63,6 @@ export const fabric = z
                 z.literal(0).transform(() => false),
             ])
             .optional(),
-        global_TMP_value: z.number().optional(),
+        global_TMP_value: z.number().nullable().optional(),
     })
     .optional();

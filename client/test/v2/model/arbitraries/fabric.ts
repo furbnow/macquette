@@ -146,12 +146,12 @@ export const arbFabric = () =>
             global_TMP: fcOptional(
                 fc.oneof(fc.boolean(), fc.integer({ min: 0, max: 1 })),
             ),
-            global_TMP_value: fcOptional(sensibleFloat),
+            global_TMP_value: fcOptional(fc.option(sensibleFloat, { nil: null })),
         })
         .filter(({ global_TMP, global_TMP_value }) => {
             // Make sure that if global_TMP is truthy then global_TMP_value is set to something
-            return !(
-                (global_TMP === true || global_TMP === 1) &&
-                global_TMP_value === undefined
+            return (
+                !global_TMP ||
+                (global_TMP_value !== null && global_TMP_value !== undefined)
             );
         });
