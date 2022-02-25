@@ -2,20 +2,20 @@ import { coalesceEmptyString } from '../../legacy-state-validators/numericValues
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { ModelError } from '../error';
 
-type FuelsInput = {
-    [Name: string]: {
-        category: 'gas' | 'solid fuel' | 'generation' | 'oil' | 'electricity';
-        standingCharge: number; // £ per year
-        unitPrice: number; // p per kWh
-        emissions: number; // kg CO_2 per kWh
-        primaryEnergyFactor: number;
-    };
+export type Fuel = {
+    category: 'gas' | 'solid fuel' | 'generation' | 'oil' | 'electricity';
+    standingCharge: number; // £ per year
+    unitPrice: number; // p per kWh
+    emissions: number; // kg CO_2 per kWh
+    primaryEnergyFactor: number;
 };
 
-export const extractFuelsInputFromLegacy = (scenario: LegacyScenario): FuelsInput => {
+export type FuelsDict = Record<string, Fuel>;
+
+export const extractFuelsInputFromLegacy = (scenario: LegacyScenario): FuelsDict => {
     const legacyFuels = scenario.fuels ?? {};
     type LegacyFuelData = typeof legacyFuels[''];
-    type FuelData = FuelsInput[''];
+    type FuelData = FuelsDict[''];
     const legacyEntries = Object.entries(scenario.fuels ?? {});
     const sanitiseCategory = (
         legacyCategory: LegacyFuelData['category'],
@@ -55,7 +55,7 @@ export const extractFuelsInputFromLegacy = (scenario: LegacyScenario): FuelsInpu
 export class Fuels {
     public static STANDARD_TARIFF = 'Standard Tariff';
 
-    constructor(private input: FuelsInput) {
+    constructor(private input: FuelsDict) {
         if (!(Fuels.STANDARD_TARIFF in input)) {
             throw new ModelError('fuels must contain standard tariff');
         }
@@ -63,5 +63,11 @@ export class Fuels {
 
     get names(): string[] {
         return Object.keys(this.input);
+    }
+
+    get standardTariff(): Fuel {
+        // SAFETY: Presence of this key is checked by constructor
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.input[Fuels.STANDARD_TARIFF]!;
     }
 }

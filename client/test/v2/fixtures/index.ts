@@ -18,12 +18,11 @@ const fixturePaths = [
 const safeJsonParse = (...args: Parameters<typeof JSON.parse>): unknown =>
     JSON.parse(...args);
 
-export const fixtures: Array<{ name: string; data: unknown }> = fixturePaths.map(
-    (path) => ({
-        name: relative(fixturesRoot, path),
-        data: safeJsonParse(readFileSync(path, 'utf-8')),
-    }),
-);
+export type Scenario = { name: string; data: unknown };
+export const fixtures: Array<Scenario> = fixturePaths.map((path) => ({
+    name: relative(fixturesRoot, path),
+    data: safeJsonParse(readFileSync(path, 'utf-8')),
+}));
 
 const fixtureSchema = z.object({
     data: z.record(z.unknown()),
@@ -43,3 +42,14 @@ export const scenarios = fixtures.flatMap((fixture) => {
         return [];
     }
 });
+
+export const shouldSkipScenario = (scenario: Scenario): boolean => {
+    // eslint-disable-next-line
+    if ((scenario.data as any).LAC_calculation_type === 'detailedlist') {
+        console.warn(
+            `Skipping fixed data test "${scenario.name}" for detailedlist LAC mode`,
+        );
+        return true;
+    }
+    return false;
+};

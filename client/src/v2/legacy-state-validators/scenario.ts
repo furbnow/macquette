@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Orientation } from '../model/enums/orientation';
 import { fabric } from './fabric';
-import { numberWithNaN, stringyFloatSchema } from './numericValues';
+import { numberWithNaN, stringyFloatSchema, stringyIntegerSchema } from './numericValues';
 
 const legacyBoolean = z.union([z.literal(1).transform(() => true), z.boolean()]);
 
@@ -52,6 +52,25 @@ const waterHeating = z
     })
     .partial();
 
+const lacFuels = z.array(
+    z.object({
+        fuel: z.string(),
+        fraction: z.number(),
+    }),
+);
+const LAC = z
+    .object({
+        L: stringyIntegerSchema,
+        LLE: stringyIntegerSchema,
+        reduced_heat_gains_lighting: legacyBoolean,
+        energy_efficient_appliances: legacyBoolean,
+        energy_efficient_cooking: legacyBoolean,
+        fuels_lighting: lacFuels,
+        fuels_appliances: lacFuels,
+        fuels_cooking: lacFuels,
+    })
+    .partial();
+
 export const legacyScenarioSchema = z
     .object({
         floors,
@@ -79,6 +98,8 @@ export const legacyScenarioSchema = z
                 primaryenergyfactor: stringyFloatSchema,
             }),
         ),
+        LAC_calculation_type: z.enum(['SAP', 'carboncoop_SAPlighting']),
+        LAC,
     })
     .partial();
 

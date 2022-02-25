@@ -1,7 +1,7 @@
 import { calcRun } from '../../../src/v2/model/model';
 import { cloneDeep, pick } from 'lodash';
 import { calcRun as referenceCalcRun } from './reference-model';
-import { scenarios } from '../fixtures';
+import { scenarios, shouldSkipScenario } from '../fixtures';
 import fc from 'fast-check';
 import { arbScenario } from './arbitraries/scenario';
 import {
@@ -25,14 +25,15 @@ const runLegacyModel = (data: any) => runModel(data, referenceCalcRun);
 const runLiveModel = (data: any) => runModel(data, calcRun);
 
 describe('golden master acceptance tests', () => {
-    for (const scenario of scenarios) {
-        test(`fixed data: ${scenario.name}`, () => {
-            const legacyReference = runLegacyModel(scenario.data);
-            expect(hasNoKnownBugs(legacyReference)).toBe(true);
-            const actual = runLiveModel(scenario.data);
-            expect(actual).toEqualBy(legacyReference, modelValueComparer());
-        });
-    }
+    test.each(scenarios)('fixed data: $name', (scenario) => {
+        if (shouldSkipScenario(scenario)) {
+            return;
+        }
+        const legacyReference = runLegacyModel(cloneDeep(scenario.data));
+        expect(hasNoKnownBugs(legacyReference)).toBe(true);
+        const actual = runLiveModel(cloneDeep(scenario.data));
+        expect(actual).toEqualBy(legacyReference, modelValueComparer());
+    });
 
     test('fast-check data', () => {
         const examples: Array<[FcInfer<typeof arbScenario>]> = [];
@@ -66,6 +67,10 @@ const isValidStringyFloat = (value: unknown) => {
     );
 };
 
+const willTriggerStringConcatenationBugs = (val: unknown) => {
+    return typeof val === 'string' && val !== '';
+};
+
 const hasNoKnownBugs = (legacyScenario: any) => {
     return (
         isValidStringyFloat(legacyScenario.fabric.total_external_area) &&
@@ -82,7 +87,11 @@ const hasNoKnownBugs = (legacyScenario: any) => {
             (legacyScenario.SHW.a1 === '0' && legacyScenario.a2 >= 0) ||
             legacyScenario.SHW.a1 === '' ||
             typeof legacyScenario.SHW.a1 === 'number') &&
-        // Bad strings in fuels cause concatenation problems
+        // L + LLE is calculated in legacy (which is actually a bug anyway), so
+        // if one is a string, that becomes string concatenation
+        !willTriggerStringConcatenationBugs(legacyScenario.LAC.LLE) &&
+        !willTriggerStringConcatenationBugs(legacyScenario.LAC.L) &&
+        // Bad strings in fuels cause concatenation problems as well
         Object.values<any>(legacyScenario.fuels)
             .slice(0, legacyScenario.fuels.length - 1)
             .every(
@@ -95,30 +104,32 @@ const hasNoKnownBugs = (legacyScenario: any) => {
     );
 };
 
-const willTriggerStringConcatenationBugs = (val: unknown) => {
-    return typeof val === 'string' && val !== '';
-};
-
 const modelValueComparer =
     (compareFloatParams?: CompareFloatParams) =>
-    (received: unknown, expected: unknown): boolean => {
+    (receivedLive: unknown, expectedLegacy: unknown): boolean => {
         if (
-            Number.isNaN(expected) &&
-            (typeof received === 'number' || received === null)
+            Number.isNaN(expectedLegacy) &&
+            (typeof receivedLive === 'number' || receivedLive === null)
         ) {
             // If legacy gives us NaN, allow any numeric or null value in the new code
             return true;
         }
-        if (typeof received === 'number' && typeof expected === 'number') {
-            return compareFloats(compareFloatParams)(received, expected);
+        if (typeof receivedLive === 'number' && typeof expectedLegacy === 'number') {
+            return compareFloats(compareFloatParams)(receivedLive, expectedLegacy);
         }
-        if (expected === '' && received === 0) {
+        if (expectedLegacy === '' && receivedLive === 0) {
             return true;
         }
-        if (typeof expected === 'string' && typeof received === 'number') {
-            return compareFloats(compareFloatParams)(received, parseFloat(expected));
+        if (typeof expectedLegacy === 'string' && typeof receivedLive === 'number') {
+            return compareFloats(compareFloatParams)(
+                receivedLive,
+                parseFloat(expectedLegacy),
+            );
         }
-        return Object.is(received, expected);
+        if (receivedLive === true && expectedLegacy === 1) {
+            return true;
+        }
+        return Object.is(receivedLive, expectedLegacy);
     };
 
 // Mutate the scenario rather than deep-cloning it, for performance
@@ -155,5 +166,23 @@ const normaliseScenario = (scenario: LegacyScenario) => {
             scenario.SHW = inputs;
         }
     }
+
+    // If using carbon coop mode for the appliances and cooking modules, remove
+    // variables that are added by legacy but never used
+    if (scenario.LAC_calculation_type === 'carboncoop_SAPlighting') {
+        const { LAC } = scenario as any;
+        delete LAC.EA;
+        delete LAC.energy_efficient_appliances;
+        delete LAC.fuels_appliances;
+        delete LAC.EC;
+        delete LAC.EC_monthly;
+        delete LAC.GC;
+        delete LAC.energy_efficient_cooking;
+        delete LAC.fuels_cooking;
+    }
+
+    // Legacy property added by removed LAC "detailedlist" module
+    delete (scenario as any).appliancelist;
+
     return scenario;
 };

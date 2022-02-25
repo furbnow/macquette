@@ -4,7 +4,12 @@ import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import { Overshading } from '../../../../src/v2/model/enums/overshading';
 import { Region } from '../../../../src/v2/model/enums/region';
 import { fcPartialRecord } from '../../../helpers/arbitraries';
-import { legacyBoolean, sensibleFloat, stringySensibleFloat } from './values';
+import {
+    legacyBoolean,
+    sensibleFloat,
+    stringyInteger,
+    stringySensibleFloat,
+} from './values';
 import { arbFabric } from './fabric';
 
 const arbOvershading = fc
@@ -43,6 +48,38 @@ const arbFuels = () =>
         }),
     );
 
+const arbLAC_calculation_type = () =>
+    fc.oneof(...(['SAP', 'carboncoop_SAPlighting'] as const).map(fc.constant));
+
+const arbLACFuels = (fuelNames: string[]) =>
+    fc.subarray(fuelNames).chain((sub) =>
+        fc.tuple(
+            ...sub.map((fuelName) =>
+                fc.record({
+                    fuel: fc.constant(fuelName),
+                    fraction: fc.double({
+                        next: true,
+                        noNaN: true,
+                        min: 1e-7,
+                        max: 1,
+                    }),
+                }),
+            ),
+        ),
+    );
+
+const arbLAC = (fuelNames: string[]) =>
+    fcPartialRecord({
+        L: stringyInteger(),
+        LLE: stringyInteger(),
+        reduced_heat_gains_lighting: legacyBoolean(),
+        energy_efficient_appliances: legacyBoolean(),
+        energy_efficient_cooking: legacyBoolean(),
+        fuels_lighting: arbLACFuels(fuelNames),
+        fuels_appliances: arbLACFuels(fuelNames),
+        fuels_cooking: arbLACFuels(fuelNames),
+    });
+
 export const arbScenario = () =>
     arbFuels()
         .chain((fuels) =>
@@ -78,6 +115,8 @@ export const arbScenario = () =>
                     combined_cylinder_volume: sensibleFloat,
                 }),
                 use_SHW: fc.oneof(fc.boolean(), fc.constant(1)),
+                LAC_calculation_type: arbLAC_calculation_type(),
+                LAC: arbLAC(Object.keys(fuels)),
             }),
         )
         .filter((scenario) => {
@@ -97,6 +136,17 @@ export const arbScenario = () =>
                 scenario.water_heating.annual_energy_content === undefined
             ) {
                 return false;
+            }
+
+            // If no top-level fuels then no LAC fuels
+            if (scenario.fuels === undefined) {
+                if (
+                    scenario.LAC?.fuels_lighting !== undefined ||
+                    scenario.LAC?.fuels_appliances !== undefined ||
+                    scenario.LAC?.fuels_cooking !== undefined
+                ) {
+                    return false;
+                }
             }
 
             return true;
