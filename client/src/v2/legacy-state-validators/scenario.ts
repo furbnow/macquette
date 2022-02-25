@@ -3,15 +3,15 @@ import { Orientation } from '../model/enums/orientation';
 import { fabric } from './fabric';
 import { numberWithNaN, stringyFloatSchema } from './numericValues';
 
-const floors = z
-    .array(
-        z.object({
-            area: z.union([z.number(), z.literal('').transform(() => 0)]),
-            height: z.union([z.number(), z.literal('').transform(() => 0)]),
-            name: z.string(),
-        }),
-    )
-    .optional();
+const legacyBoolean = z.union([z.literal(1).transform(() => true), z.boolean()]);
+
+const floors = z.array(
+    z.object({
+        area: z.union([z.number(), z.literal('').transform(() => 0)]),
+        height: z.union([z.number(), z.literal('').transform(() => 0)]),
+        name: z.string(),
+    }),
+);
 
 const solarHotWater = z
     .object({
@@ -50,16 +50,18 @@ const waterHeating = z
     })
     .partial();
 
-export const legacyScenarioSchema = z.object({
-    floors,
-    use_custom_occupancy: z.union([z.number(), z.boolean()]).optional(),
-    custom_occupancy: z.union([z.number(), z.literal('')]).optional(),
-    region: z.number().optional(),
-    fabric,
-    water_heating: waterHeating.optional(),
-    SHW: solarHotWater.optional(),
-    use_SHW: z.union([z.literal(1), z.boolean()]).optional(),
-    locked: z.boolean().optional(),
-});
+export const legacyScenarioSchema = z
+    .object({
+        floors,
+        use_custom_occupancy: legacyBoolean,
+        custom_occupancy: z.union([z.number(), z.literal('')]),
+        region: z.number(),
+        fabric,
+        water_heating: waterHeating,
+        SHW: solarHotWater,
+        use_SHW: legacyBoolean,
+        locked: z.boolean(),
+    })
+    .partial();
 
 export type LegacyScenario = z.infer<typeof legacyScenarioSchema>;

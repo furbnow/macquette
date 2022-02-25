@@ -49,20 +49,18 @@ const floor = commonElement.extend({
     type: z.literal('Floor').transform(() => 'floor' as const),
 });
 
-export const fabric = z
-    .object({
-        elements: z.array(z.union([wallLike, windowLike, hatch, floor])).optional(),
-        thermal_bridging_yvalue: stringyFloatSchema
-            .refine((v) => v !== null, 'null/empty string is not allowed here')
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            .transform((v) => v!),
-        global_TMP: z
-            .union([
-                z.boolean(),
-                z.literal(1).transform(() => true),
-                z.literal(0).transform(() => false),
-            ])
-            .optional(),
-        global_TMP_value: z.number().nullable().optional(),
-    })
-    .optional();
+export const fabric = z.object({
+    elements: z.array(z.union([wallLike, windowLike, hatch, floor])).optional(),
+    thermal_bridging_yvalue: stringyFloatSchema
+        .refine((v) => v !== '', 'empty string is not allowed here')
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        .transform((v) => v as Exclude<typeof v, ''>),
+    global_TMP: z
+        .union([
+            z.boolean(),
+            z.literal(1).transform(() => true),
+            z.literal(0).transform(() => false),
+        ])
+        .optional(),
+    global_TMP_value: z.number().nullable().optional(),
+});

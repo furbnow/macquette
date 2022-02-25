@@ -19,10 +19,10 @@ export const sensibleFloat = arbFloat({ noDefaultInfinity: true, noNaN: true }).
 
 export const stringySensibleFloat = () => stringyNumber(sensibleFloat);
 export const stringyInteger = () => stringyNumber(fc.integer());
-
 export const stringyNumber = (number: fc.Arbitrary<number>) =>
     fc.oneof(
         number,
         number.map((f) => f.toString(10)),
         fc.constant(''),
     );
+export const legacyBoolean = () => fc.oneof(fc.constant(1), fc.boolean());

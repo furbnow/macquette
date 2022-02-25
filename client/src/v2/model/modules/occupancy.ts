@@ -10,7 +10,7 @@ export const extractOccupancyInputFromLegacy = ({
     use_custom_occupancy,
     custom_occupancy,
 }: LegacyScenario): OccupancyInput => {
-    if (use_custom_occupancy === 1 || use_custom_occupancy === true) {
+    if (use_custom_occupancy === true) {
         if (custom_occupancy === undefined || custom_occupancy === '') {
             throw new ModelError(
                 'Data specified use_custom_occupancy = true but provided custom_occupancy was invalid',

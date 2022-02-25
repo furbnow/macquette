@@ -21,6 +21,7 @@ import {
 import { LockedWarning } from '../output-components/locked-warning';
 import { PropsOf } from '../../helpers/props-of';
 import { Shadow } from '../../helpers/shadow-object-type';
+import { coalesceEmptyString } from '../../legacy-state-validators/numericValues';
 
 type DeepWith<U, T> = T extends object
     ? {
@@ -121,8 +122,9 @@ const extractInputsFromLegacy = ({
         pumpType: SHW?.pump ?? null,
         solarCollectorApertureArea: SHW?.A ?? null,
         zeroLossCollectorEfficiency: SHW?.n0 ?? null,
-        collectorLinearHeatLossCoefficient: SHW?.a1 ?? null,
-        collectorSecondOrderHeatLossCoefficient: SHW?.a2 ?? null,
+        collectorLinearHeatLossCoefficient: coalesceEmptyString(SHW?.a1, null) ?? null,
+        collectorSecondOrderHeatLossCoefficient:
+            coalesceEmptyString(SHW?.a2, null) ?? null,
         collectorOrientation: orientationFromIndex0(SHW?.orientation)?.name ?? null,
         collectorInclination: SHW?.inclination ?? null,
         overshading: overshadingFromFactor(SHW?.overshading)?.name ?? null,

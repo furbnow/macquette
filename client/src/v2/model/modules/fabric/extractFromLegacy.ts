@@ -1,5 +1,6 @@
 import { findWithRest } from '../../../helpers/findWithRest';
 import { partition } from '../../../helpers/partition';
+import { coalesceEmptyString } from '../../../legacy-state-validators/numericValues';
 import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Orientation } from '../../enums/orientation';
 import { Overshading } from '../../enums/overshading';
@@ -41,46 +42,50 @@ export const extractFabricInputFromLegacy = ({ fabric }: LegacyScenario): Fabric
             case 'window': {
                 let area: number;
                 if (
-                    element.l !== null &&
+                    element.l !== '' &&
                     element.l !== 0 &&
-                    element.h !== null &&
+                    element.h !== '' &&
                     element.h !== 0
                 ) {
                     area = element.l * element.h;
                 } else {
-                    area = element.area ?? 0;
+                    area = coalesceEmptyString(element.area, 0);
                 }
                 return {
                     type: element.type,
                     id: element.id,
-                    uValue: element.uvalue ?? 0,
-                    kValue: element.kvalue ?? 0,
+                    uValue: coalesceEmptyString(element.uvalue, 0),
+                    kValue: coalesceEmptyString(element.kvalue, 0),
                     subtractFrom: element.subtractfrom,
-                    gHeat: element.g ?? 0,
-                    gLight: element.gL ?? 0,
-                    frameFactor: element.ff ?? 0,
+                    gHeat: coalesceEmptyString(element.g, 0),
+                    gLight: coalesceEmptyString(element.gL, 0),
+                    frameFactor: coalesceEmptyString(element.ff, 0),
                     area,
-                    overshading: Overshading.fromIndex0(element.overshading ?? 0),
-                    orientation: Orientation.fromIndex0(element.orientation ?? 0),
+                    overshading: Overshading.fromIndex0(
+                        coalesceEmptyString(element.overshading, 0),
+                    ),
+                    orientation: Orientation.fromIndex0(
+                        coalesceEmptyString(element.orientation, 0),
+                    ),
                 };
             }
             case 'hatch': {
                 let area: number;
                 if (
-                    element.l !== null &&
+                    element.l !== '' &&
                     element.l !== 0 &&
-                    element.h !== null &&
+                    element.h !== '' &&
                     element.h !== 0
                 ) {
                     area = element.l * element.h;
                 } else {
-                    area = element.area ?? 0;
+                    area = coalesceEmptyString(element.area, 0);
                 }
                 return {
                     type: element.type,
                     id: element.id,
-                    uValue: element.uvalue ?? 0,
-                    kValue: element.kvalue ?? 0,
+                    uValue: coalesceEmptyString(element.uvalue, 0),
+                    kValue: coalesceEmptyString(element.kvalue, 0),
                     subtractFrom: element.subtractfrom,
                     area,
                 };
@@ -91,20 +96,20 @@ export const extractFabricInputFromLegacy = ({ fabric }: LegacyScenario): Fabric
             case 'loft': {
                 let grossArea: number;
                 if (
-                    element.l !== null &&
+                    element.l !== '' &&
                     element.l !== 0 &&
-                    element.h !== null &&
+                    element.h !== '' &&
                     element.h !== 0
                 ) {
                     grossArea = element.l * element.h;
                 } else {
-                    grossArea = element.area ?? 0;
+                    grossArea = coalesceEmptyString(element.area, 0);
                 }
                 return {
                     type: element.type,
                     id: element.id,
-                    uValue: element.uvalue ?? 0,
-                    kValue: element.kvalue ?? 0,
+                    uValue: coalesceEmptyString(element.uvalue, 0),
+                    kValue: coalesceEmptyString(element.kvalue, 0),
                     grossArea,
                     deductions: [],
                 };
@@ -113,9 +118,9 @@ export const extractFabricInputFromLegacy = ({ fabric }: LegacyScenario): Fabric
                 return {
                     type: element.type,
                     id: element.id,
-                    uValue: element.uvalue ?? 0,
-                    kValue: element.kvalue ?? 0,
-                    area: element.area ?? 0,
+                    uValue: coalesceEmptyString(element.uvalue, 0),
+                    kValue: coalesceEmptyString(element.kvalue, 0),
+                    area: coalesceEmptyString(element.area, 0),
                 };
             }
         }
@@ -159,7 +164,7 @@ export const extractFabricInputFromLegacy = ({ fabric }: LegacyScenario): Fabric
     return {
         elements: stitchedUpElements,
         overrides: {
-            yValue: fabric?.thermal_bridging_yvalue ?? null,
+            yValue: coalesceEmptyString(fabric?.thermal_bridging_yvalue, null) ?? null,
             thermalMassParameter: thermalMassParameterOverride,
         },
     };

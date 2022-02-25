@@ -19,3 +19,7 @@ export const arbFloat = (options: fc.FloatNextConstraints = {}) =>
 
 export const fcOptional = <T>(arb: fc.Arbitrary<T>) => fc.option(arb, { nil: undefined });
 export const fcNullable = <T>(arb: fc.Arbitrary<T>) => fc.option(arb, { nil: null });
+
+export const fcPartialRecord = <T>(record: { [K in keyof T]: fc.Arbitrary<T[K]> }) => {
+    return fc.record<T, { withDeletedKeys: true }>(record, { withDeletedKeys: true });
+};

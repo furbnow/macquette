@@ -5,12 +5,12 @@ export const stringyIntegerSchema = z.union([
     z.number(),
     z
         .string()
-        .transform((s) => (s === '' ? null : parseFloat(s)))
+        .transform((s) => (s === '' ? ('' as const) : parseFloat(s)))
         .refine(
-            (n) => n === null || Number.isSafeInteger(n),
+            (n) => n === '' || Number.isSafeInteger(n),
 
             (n) => ({
-                message: `${n?.toString(10) ?? 'null'} was not a safe integer`,
+                message: `${n?.toString(10) ?? 'empty string'} was not a safe integer`,
             }),
         ),
 ]);
@@ -19,11 +19,11 @@ export const stringyFloatSchema = z.union([
     z.number(),
     z
         .string()
-        .transform((s) => (s === '' ? null : parseFloat(s)))
+        .transform((s) => (s === '' ? ('' as const) : parseFloat(s)))
         .refine(
-            (n) => n === null || Number.isFinite(n),
+            (n) => n === '' || Number.isFinite(n),
             (n) => ({
-                message: `${n?.toString(10) ?? 'null'} was not finite`,
+                message: `${n?.toString(10) ?? 'empty string'} was not finite`,
             }),
         ),
 ]);
@@ -32,3 +32,6 @@ export const numberWithNaN = z.custom<number>(
     (val) => typeof val === 'number',
     (val) => ({ message: `Expected number (including NaN), received ${inspect(val)}` }),
 );
+
+export const coalesceEmptyString = <T, U>(val: T | '', default_: U) =>
+    val === '' ? default_ : val;

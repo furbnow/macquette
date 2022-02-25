@@ -2,7 +2,7 @@ import fc from 'fast-check';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import { Overshading } from '../../../../src/v2/model/enums/overshading';
 import { fcOptional, merge } from '../../../helpers/arbitraries';
-import { sensibleFloat, stringySensibleFloat, stringyNumber } from './numeric-values';
+import { sensibleFloat, stringySensibleFloat, stringyNumber } from './values';
 
 const stringyDimension = stringySensibleFloat().filter((v) => v !== '0');
 
