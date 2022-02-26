@@ -1,0 +1,16 @@
+{
+    "areas": [
+        { "interval": [3, 6], "label": "Small" },
+        { "interval": [6, 10], "label": "Medium" },
+        { "interval": [10, 15], "label": "Large" },
+        { "interval": [15, 21], "label": "Very large" }
+    ],
+    "bins": [
+        { "data": [11], "label": "Baseline" },
+        { "data": [8], "label": "Scenario 1" },
+        { "data": [8], "label": "Scenario 2" },
+        { "data": [4], "label": "Scenario 3" }
+    ],
+    "type": "bar",
+    "units": "kW"
+}

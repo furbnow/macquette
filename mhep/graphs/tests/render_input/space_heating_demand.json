@@ -1,0 +1,16 @@
+{
+    "areas": [{ "interval": [12, 75], "label": "Target" }],
+    "bins": [
+        { "data": [194, 160], "label": "Baseline" },
+        { "data": [151, 126], "label": "Scenario 1" },
+        { "data": [141, 112], "label": "Scenario 2" },
+        { "data": [72, 58], "label": "Scenario 3" }
+    ],
+    "categoryLabels": [
+        "Space heating demand with standardised heating pattern",
+        "Space heating demand with your current heating pattern"
+    ],
+    "lines": [{ "label": "Estimated UK average", "value": 130 }],
+    "type": "bar",
+    "units": "kWh per m² per year"
+}

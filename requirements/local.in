@@ -12,6 +12,7 @@ pytest                  # https://github.com/pytest-dev/pytest
 freezegun               # https://github.com/spulec/freezegun
 pytest-cov              # https://pypi.org/project/pytest-cov/
 pytest-django           # https://github.com/pytest-dev/pytest-django
+pytest-mpl              # https://github.com/matplotlib/pytest-mpl
 coverage                # https://github.com/nedbat/coveragepy
 
 # Code quality

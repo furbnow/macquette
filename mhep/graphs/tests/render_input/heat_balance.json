@@ -1,0 +1,30 @@
+{
+    "bins": [
+        {
+            "data": [18, 21, 156, -166, -30],
+            "label": "Baseline"
+        },
+        {
+            "data": [19, 13, 126, -129, -29],
+            "label": "Scenario 1"
+        },
+        {
+            "data": [19, 16, 121, -131, -25],
+            "label": "Scenario 2"
+        },
+        {
+            "data": [19, 13, 60, -83, -8],
+            "label": "Scenario 3"
+        }
+    ],
+    "categoryLabels": [
+        "Solar gains",
+        "Internal gains",
+        "Space heating requirement",
+        "Fabric losses",
+        "Ventilation and infiltration losses"
+    ],
+    "stacked": true,
+    "type": "bar",
+    "units": "kWh per m² per year"
+}

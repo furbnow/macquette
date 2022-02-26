@@ -1,0 +1,35 @@
+{
+    "areas": [{ "interval": [0, 35], "label": "Target" }],
+    "bins": [
+        { "data": [0, 0, 0, 0, 0, 0, 222, 22], "label": "Bills data" },
+        {
+            "data": [94, 233, 5, 4, 6, 1, 0, 0],
+            "label": "Baseline"
+        },
+        {
+            "data": [20, 145, 5, 6, 4, 1, 0, 0],
+            "label": "Scenario 1"
+        },
+        {
+            "data": [17, 134, 5, 6, 4, 7, 0, 0],
+            "label": "Scenario 2"
+        },
+        {
+            "data": [13, 68, 5, 6, 4, 5, 0, 0],
+            "label": "Scenario 3"
+        }
+    ],
+    "categoryLabels": [
+        "Water Heating",
+        "Space Heating",
+        "Cooking",
+        "Appliances",
+        "Lighting",
+        "Fans and Pumps",
+        "Bills data",
+        "Assumed consumption"
+    ],
+    "stacked": true,
+    "type": "bar",
+    "units": "kWh per m² per year"
+}

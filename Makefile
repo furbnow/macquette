@@ -99,8 +99,7 @@ docker-local-clean:  ## Clean system volumes (helpful for resetting broken datab
 	docker system prune --volumes -f
 
 .PHONY: coverage
-coverage:  ## Run tests & generate line-by-line coverage
-	pytest --cov=mhep
+coverage:  test-python ## Run tests & generate line-by-line coverage
 	coverage html
 
 .PHONY: upversion
@@ -112,7 +111,7 @@ test: test-python test-js  ## Run all tests
 
 .PHONY: test-python
 test-python:  ## Run Python tests
-	pytest --cov=mhep
+	pytest --cov=mhep --mpl --mpl-generate-summary=html --mpl-results-path=graph_results
 	flake8 mhep
 
 .PHONY: test-js

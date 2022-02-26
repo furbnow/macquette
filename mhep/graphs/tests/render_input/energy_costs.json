@@ -1,0 +1,12 @@
+{
+    "bins": [
+        { "data": [0], "label": "Bills data" },
+        { "data": [1902], "label": "Baseline" },
+        { "data": [1149], "label": "Scenario 1" },
+        { "data": [1100], "label": "Scenario 2" },
+        { "data": [865], "label": "Scenario 3" }
+    ],
+    "stacked": true,
+    "type": "bar",
+    "units": "£ per year"
+}

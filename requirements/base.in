@@ -4,6 +4,7 @@ requests
 pillow
 psycopg2-binary       # https://github.com/psycopg/psycopg2
 ssm_parameter_store
+pydantic
 
 # Django
 # ------------------------------------------------------------------------------
@@ -22,6 +23,12 @@ coreapi               # https://github.com/core-api/python-client
 
 whitenoise[brotli]
 sentry-sdk            # https://github.com/getsentry/sentry-python
+
+# PDF generation
+# ------------------------------------------------------------------------------
+Jinja2
+weasyprint
+matplotlib
 
 # Auth0 integration
 # ------------------------------------------------------------------------------

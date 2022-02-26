@@ -1,0 +1,25 @@
+{
+    "bins": [
+        { "data": [0, 0, 0, 0], "label": "Bills data" },
+        {
+            "data": [1816, 31140, 0, 2515],
+            "label": "Baseline"
+        },
+        {
+            "data": [1578, 15694, 0, 2021],
+            "label": "Scenario 1"
+        },
+        {
+            "data": [2145, 16163, 0, 0],
+            "label": "Scenario 2"
+        },
+        {
+            "data": [1989, 9045, 0, 0],
+            "label": "Scenario 3"
+        }
+    ],
+    "categoryLabels": ["Electricity", "Gas", "Oil", "Solid fuels"],
+    "stacked": true,
+    "type": "bar",
+    "units": "kWh per year"
+}
