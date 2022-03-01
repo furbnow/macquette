@@ -42,12 +42,6 @@ function LAC_initUI() {
         $('#lighting-measure-applied').show();
     }
 
-    // Detailed list
-    $('#appliancelist').html('');
-    for (z in data.appliancelist.list) {
-        add_applianceDetailedList(z);
-    }
-
     // Carbon Coop
     $('.carbonCoop-appliance').remove();
     $('.appliances-Carbon-Coop-category').hide();
@@ -84,14 +78,6 @@ $('#openbem').on('click', '.add-CarbonCoop-from-lib', function () {
     library_helper.init();
     library_helper.type = 'appliances_and_cooking';
     library_helper.onAddItemFromLib();
-});
-$('#openbem').on('click', '#add-item-detailedlist', function () {
-    var size = data.appliancelist.list.length;
-    var name = 'Item ' + (size + 1);
-    data.appliancelist.list.push({name: name, category: 'lighting', power: 0, hours: 0, energy: 0, fuel: 'Standard Tariff', efficiency: 1, fuel_input: 0});
-    add_applianceDetailedList(size);
-
-    update();
 });
 $('#openbem').on('click', '.add-item-CarbonCoop', function () {
     var tag = $(this).attr('tag');
@@ -145,9 +131,6 @@ $('#openbem').on('click', '#apply-measure-lighting', function () {
 function show_LAC_divs(type_of_calc) {
     $('#LAC-container .to-be-hidden').hide();
     switch (type_of_calc) {
-        case 'detailedlist':
-            $('#detailed-list').show();
-            break;
         case 'SAP':
             $('#lighting-SAP').show();
             $('#appliances-SAP').show();
@@ -158,17 +141,6 @@ function show_LAC_divs(type_of_calc) {
             $('#CarbonCoop').show();
             break;
     }
-}
-function add_applianceDetailedList(z) {
-    $('#appliancelist').append($('#template-detailedlist').html());
-    $("#appliancelist [key='data.appliancelist.list.z.name']").attr('key', 'data.appliancelist.list.' + z + '.name');
-    $("#appliancelist [key='data.appliancelist.list.z.category']").attr('key', 'data.appliancelist.list.' + z + '.category');
-    $("#appliancelist [key='data.appliancelist.list.z.power']").attr('key', 'data.appliancelist.list.' + z + '.power');
-    $("#appliancelist [key='data.appliancelist.list.z.hours']").attr('key', 'data.appliancelist.list.' + z + '.hours');
-    $("#appliancelist [key='data.appliancelist.list.z.fuel']").attr('key', 'data.appliancelist.list.' + z + '.fuel');
-    $("#appliancelist [key='data.appliancelist.list.z.efficiency']").attr('key', 'data.appliancelist.list.' + z + '.efficiency');
-    $("#appliancelist [key='data.appliancelist.list.z.energy']").attr('key', 'data.appliancelist.list.' + z + '.energy');
-    $("#appliancelist [key='data.appliancelist.list.z.fuel_input']").attr('key', 'data.appliancelist.list.' + z + '.fuel_input');
 }
 function add_applianceCarbonCoop(z) {
     var category = data.applianceCarbonCoop.list[z].category;
