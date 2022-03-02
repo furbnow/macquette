@@ -67,11 +67,16 @@ const isValidStringyFloat = (value: unknown) => {
     );
 };
 
-const willTriggerStringConcatenationBugs = (val: unknown) => {
-    return typeof val === 'string' && val !== '';
-};
-
 const hasNoKnownBugs = (legacyScenario: any) => {
+    const noStringConcatenationBugs =
+        // Wide spectrum
+        !Number.isNaN(1.0 * legacyScenario.total_cost) &&
+        // Catch a specific SHW string concatenation bug
+        (legacyScenario.SHW.a1 === undefined ||
+            (legacyScenario.SHW.a1 === '0' && legacyScenario.a2 >= 0) ||
+            legacyScenario.SHW.a1 === '' ||
+            typeof legacyScenario.SHW.a1 === 'number');
+
     return (
         isValidStringyFloat(legacyScenario.fabric.total_external_area) &&
         isValidStringyFloat(legacyScenario.fabric.total_floor_area) &&
@@ -80,27 +85,7 @@ const hasNoKnownBugs = (legacyScenario: any) => {
         isValidStringyFloat(legacyScenario.fabric.total_wall_area) &&
         isValidStringyFloat(legacyScenario.fabric.total_window_area) &&
         isValidStringyFloat(legacyScenario.TFA) &&
-        // If a1 is a stringified number other than '' or '0' then bad things
-        // happen in the legacy model. Also if a1 is '0' and a2 is negative.
-        // Go on, try it. I dare you.
-        (legacyScenario.SHW.a1 === undefined ||
-            (legacyScenario.SHW.a1 === '0' && legacyScenario.a2 >= 0) ||
-            legacyScenario.SHW.a1 === '' ||
-            typeof legacyScenario.SHW.a1 === 'number') &&
-        // L + LLE is calculated in legacy (which is actually a bug anyway), so
-        // if one is a string, that becomes string concatenation
-        !willTriggerStringConcatenationBugs(legacyScenario.LAC.LLE) &&
-        !willTriggerStringConcatenationBugs(legacyScenario.LAC.L) &&
-        // Bad strings in fuels cause concatenation problems as well
-        Object.values<any>(legacyScenario.fuels)
-            .slice(0, legacyScenario.fuels.length - 1)
-            .every(
-                ({ standingcharge, fuelcost, co2factor, primaryenergyfactor }) =>
-                    !willTriggerStringConcatenationBugs(standingcharge) &&
-                    !willTriggerStringConcatenationBugs(fuelcost) &&
-                    !willTriggerStringConcatenationBugs(co2factor) &&
-                    !willTriggerStringConcatenationBugs(primaryenergyfactor),
-            )
+        noStringConcatenationBugs
     );
 };
 
@@ -116,6 +101,20 @@ const modelValueComparer =
         }
         if (typeof receivedLive === 'number' && typeof expectedLegacy === 'number') {
             return compareFloats(compareFloatParams)(receivedLive, expectedLegacy);
+        }
+        if (typeof expectedLegacy === 'string' && typeof receivedLive === 'string') {
+            // Check if values were numbers encoded as strings and if so
+            // compare them as floats. Use 1.0 * x to convert to float because
+            // it is less tolerant to string concatenation bugs than
+            // parseFloat()
+            const expectedLegacyFloat = 1.0 * (expectedLegacy as any);
+            const receivedLiveFloat = 1.0 * (receivedLive as any);
+            if (!Number.isNaN(expectedLegacyFloat) && !Number.isNaN(receivedLiveFloat)) {
+                return compareFloats(compareFloatParams)(
+                    receivedLiveFloat,
+                    expectedLegacyFloat,
+                );
+            }
         }
         if (expectedLegacy === '' && receivedLive === 0) {
             return true;

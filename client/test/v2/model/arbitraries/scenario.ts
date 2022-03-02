@@ -39,12 +39,10 @@ const arbFuels = () =>
                     'Electricity',
                 ].map(fc.constant),
             ),
-            // Numeric strings in these values cause string concatenation bugs
-            // with + in the legacy model
-            standingcharge: sensibleFloat,
-            fuelcost: sensibleFloat,
-            co2factor: sensibleFloat,
-            primaryenergyfactor: sensibleFloat,
+            standingcharge: stringySensibleFloat(),
+            fuelcost: stringySensibleFloat(),
+            co2factor: stringySensibleFloat(),
+            primaryenergyfactor: stringySensibleFloat(),
         }),
     );
 
