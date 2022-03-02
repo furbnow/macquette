@@ -82,8 +82,21 @@ const hasNoKnownBugs = (legacyScenario: any) => {
             (legacyScenario.SHW.a1 === '0' && legacyScenario.a2 >= 0) ||
             legacyScenario.SHW.a1 === '' ||
             typeof legacyScenario.SHW.a1 === 'number') &&
-        true
+        // Bad strings in fuels cause concatenation problems
+        Object.values<any>(legacyScenario.fuels)
+            .slice(0, legacyScenario.fuels.length - 1)
+            .every(
+                ({ standingcharge, fuelcost, co2factor, primaryenergyfactor }) =>
+                    !willTriggerStringConcatenationBugs(standingcharge) &&
+                    !willTriggerStringConcatenationBugs(fuelcost) &&
+                    !willTriggerStringConcatenationBugs(co2factor) &&
+                    !willTriggerStringConcatenationBugs(primaryenergyfactor),
+            )
     );
+};
+
+const willTriggerStringConcatenationBugs = (val: unknown) => {
+    return typeof val === 'string' && val !== '';
 };
 
 const modelValueComparer =

@@ -63,6 +63,22 @@ export const legacyScenarioSchema = z
         SHW: solarHotWater,
         use_SHW: legacyBoolean,
         locked: z.boolean(),
+        fuels: z.record(
+            z.object({
+                category: z.enum([
+                    'Gas',
+                    'Solid fuel',
+                    'Generation',
+                    'generation',
+                    'Oil',
+                    'Electricity',
+                ]),
+                standingcharge: stringyFloatSchema,
+                fuelcost: stringyFloatSchema,
+                co2factor: stringyFloatSchema,
+                primaryenergyfactor: stringyFloatSchema,
+            }),
+        ),
     })
     .partial();
 

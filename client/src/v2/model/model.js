@@ -4,6 +4,7 @@ import { legacyScenarioSchema } from '../legacy-state-validators/scenario';
 import { datasets } from './datasets/legacy'
 import { Fabric, extractFabricInputFromLegacy } from './modules/fabric';
 import { Floors, extractFloorsInputFromLegacy } from './modules/floors'
+import { Fuels, extractFuelsInputFromLegacy } from './modules/fuels';
 import { Occupancy, extractOccupancyInputFromLegacy } from './modules/occupancy'
 import { extractRegionFromLegacy} from './modules/region';
 import { extractSolarHotWaterInputFromLegacy, SolarHotWater } from './modules/solar-hot-water';
@@ -60,6 +61,7 @@ calc.run = function (datain) {
     calc.start(calc.data);
 
     const validatedScenario = legacyScenarioSchema.parse(datain)
+    const fuels = new Fuels(extractFuelsInputFromLegacy(validatedScenario))
     const floors = new Floors(extractFloorsInputFromLegacy(validatedScenario))
     const occupancy = new Occupancy(extractOccupancyInputFromLegacy(validatedScenario), { floors })
     const region = extractRegionFromLegacy(validatedScenario)
@@ -2344,6 +2346,7 @@ calc.fabric_energy_efficiency = function (data) {
     calc.start(data_FEE);
     const validatedScenarioFEE = legacyScenarioSchema.parse(data_FEE)
 
+    const fuels = new Fuels(extractFuelsInputFromLegacy(validatedScenarioFEE))
     const floors = new Floors(extractFloorsInputFromLegacy(validatedScenarioFEE))
     const occupancy = new Occupancy(extractOccupancyInputFromLegacy(validatedScenarioFEE), { floors })
     const region = extractRegionFromLegacy(validatedScenarioFEE)
