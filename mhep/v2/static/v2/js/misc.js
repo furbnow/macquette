@@ -683,7 +683,15 @@ function get_item_index_by_id(id, array) {
 function extract_assessment_inputs(project) {
     var result = {};
     for (let z in project) {
-        result[z] = _extract_scenario_inputs(project[z]);
+        try {
+            result[z] = _extract_scenario_inputs(project[z]);
+        } catch (e) {
+            console.error('Error saving input', e);
+            if (window.Sentry) {
+                Sentry.captureException(e);
+            }
+            result[z] = project[z];
+        }
     }
     return result;
 }
