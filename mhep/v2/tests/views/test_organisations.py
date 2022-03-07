@@ -1,7 +1,7 @@
 import datetime
+from datetime import timezone
 
 import pytest
-import pytz
 from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -18,12 +18,12 @@ pytestmark = pytest.mark.django_db  # enable DB and run each test in transaction
 class TestListOrganisations(APITestCase):
     def test_shows_logged_in_users_organisations(self):
         me = UserFactory.create(
-            last_login=datetime.datetime(2019, 6, 3, 16, 35, 0, 0, pytz.UTC)
+            last_login=datetime.datetime(2019, 6, 3, 16, 35, 0, 0, timezone.utc)
         )
         my_org = OrganisationFactory.create()
 
         org_admin = UserFactory.create(
-            last_login=datetime.datetime(2019, 6, 3, 13, 21, 0, 0, pytz.UTC)
+            last_login=datetime.datetime(2019, 6, 3, 13, 21, 0, 0, timezone.utc)
         )
         my_org.members.add(org_admin)
         my_org.admins.add(org_admin)
@@ -125,12 +125,12 @@ class TestListOrganisationsPermissions(APITestCase):
         cls.org = OrganisationFactory.create()
 
         cls.member_1 = UserFactory.create(
-            last_login=datetime.datetime(2019, 6, 3, 16, 35, 0, 0, pytz.UTC)
+            last_login=datetime.datetime(2019, 6, 3, 16, 35, 0, 0, timezone.utc)
         )
         cls.org.members.add(cls.member_1)
 
         cls.org_admin = UserFactory.create(
-            last_login=datetime.datetime(2019, 6, 3, 13, 21, 0, 0, pytz.UTC)
+            last_login=datetime.datetime(2019, 6, 3, 13, 21, 0, 0, timezone.utc)
         )
         cls.org.members.add(cls.org_admin)
         cls.org.admins.add(cls.org_admin)

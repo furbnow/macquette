@@ -1,4 +1,3 @@
-pytz                  # https://github.com/stub42/pytz
 argon2-cffi           # https://github.com/hynek/argon2_cffi
 requests
 pillow
