@@ -810,33 +810,37 @@ function _extract_scenario_inputs(data) {
     };
 
     inputdata.appliancelist = {list: []};
-    for (z in data.appliancelist.list) {
-        inputdata.appliancelist.list[z] = {
-            name: data.appliancelist.list[z].name,
-            category: data.appliancelist.list[z].category,
-            power: data.appliancelist.list[z].power,
-            fuel: data.appliancelist.list[z].fuel,
-            efficiency: data.appliancelist.list[z].efficiency,
-            hours: data.appliancelist.list[z].hours
-        };
+    if ('appliancelist' in data && 'list' in data.appliancelist) {
+        for (z in data.appliancelist.list) {
+            inputdata.appliancelist.list[z] = {
+                name: data.appliancelist.list[z].name,
+                category: data.appliancelist.list[z].category,
+                power: data.appliancelist.list[z].power,
+                fuel: data.appliancelist.list[z].fuel,
+                efficiency: data.appliancelist.list[z].efficiency,
+                hours: data.appliancelist.list[z].hours
+            };
+        }
     }
 
     inputdata.applianceCarbonCoop = {list: []};
-    for (z in data.applianceCarbonCoop.list) {
-        inputdata.applianceCarbonCoop.list[z] = {
-            category: data.applianceCarbonCoop.list[z].category,
-            name: data.applianceCarbonCoop.list[z].name,
-            number_used: data.applianceCarbonCoop.list[z].number_used,
-            a_plus_rated: data.applianceCarbonCoop.list[z].a_plus_rated,
-            'norm_demand': data.applianceCarbonCoop.list[z]['norm_demand'],
-            units: data.applianceCarbonCoop.list[z].units,
-            'utilisation_factor': data.applianceCarbonCoop.list[z]['utilisation_factor'],
-            frequency: data.applianceCarbonCoop.list[z].frequency,
-            'reference_quantity': data.applianceCarbonCoop.list[z]['reference_quantity'],
-            'type_of_fuel': data.applianceCarbonCoop.list[z]['type_of_fuel'],
-            efficiency: data.applianceCarbonCoop.list[z].efficiency,
-            fuel: data.applianceCarbonCoop.list[z].fuel
-        };
+    if ('applianceCarbonCoop' in data && 'list' in data.applianceCarbonCoop) {
+        for (z in data.applianceCarbonCoop.list) {
+            inputdata.applianceCarbonCoop.list[z] = {
+                category: data.applianceCarbonCoop.list[z].category,
+                name: data.applianceCarbonCoop.list[z].name,
+                number_used: data.applianceCarbonCoop.list[z].number_used,
+                a_plus_rated: data.applianceCarbonCoop.list[z].a_plus_rated,
+                norm_demand: data.applianceCarbonCoop.list[z].norm_demand,
+                units: data.applianceCarbonCoop.list[z].units,
+                utilisation_factor: data.applianceCarbonCoop.list[z].utilisation_factor,
+                frequency: data.applianceCarbonCoop.list[z].frequency,
+                reference_quantity: data.applianceCarbonCoop.list[z].reference_quantity,
+                type_of_fuel: data.applianceCarbonCoop.list[z].type_of_fuel,
+                efficiency: data.applianceCarbonCoop.list[z].efficiency,
+                fuel: data.applianceCarbonCoop.list[z].fuel
+            };
+        }
     }
 
     inputdata.temperature = {
