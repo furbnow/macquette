@@ -3,7 +3,7 @@ import { cloneDeep, pick } from 'lodash';
 import { calcRun as referenceCalcRun } from './reference-model';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import fc from 'fast-check';
-import { arbScenario } from './arbitraries/scenario';
+import { arbScenario, SHWInputKeys } from './arbitraries/scenario';
 import {
     LegacyScenario,
     legacyScenarioSchema,
@@ -135,23 +135,11 @@ const modelValueComparer =
 const normaliseScenario = (scenario: LegacyScenario) => {
     // SHW normalisation
     if (scenario.SHW !== undefined) {
-        const inputKeys = [
-            'pump',
-            'A',
-            'n0',
-            'a1',
-            'a2',
-            'orientation',
-            'inclination',
-            'overshading',
-            'Vs',
-            'combined_cylinder_volume',
-        ] as const;
-        const inputs = pick(scenario.SHW, ...inputKeys);
+        const inputs = pick(scenario.SHW, ...SHWInputKeys);
         const moduleIsDisabled = !(
             scenario.use_SHW || scenario.water_heating?.solar_water_heating
         );
-        const inputIsIncomplete = inputKeys.reduce(
+        const inputIsIncomplete = SHWInputKeys.reduce(
             (someInputWasUndefined, key) =>
                 someInputWasUndefined || inputs[key] === undefined,
             false,

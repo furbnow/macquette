@@ -11,6 +11,7 @@ import {
     stringySensibleFloat,
 } from './values';
 import { arbFabric } from './fabric';
+import { pick } from 'lodash';
 
 const arbOvershading = fc
     .oneof(...Overshading.names.map((n) => fc.constant(n)))
@@ -147,5 +148,33 @@ export const arbScenario = () =>
                 }
             }
 
+            // If SHW is enabled make sure input is complete
+            if (scenario.SHW !== undefined) {
+                const inputs = pick(scenario.SHW, ...SHWInputKeys);
+                const moduleIsEnabled =
+                    scenario.use_SHW || scenario.water_heating?.solar_water_heating;
+                const inputIsComplete = SHWInputKeys.reduce(
+                    (allInputsWerePresent, key) =>
+                        allInputsWerePresent && inputs[key] !== undefined,
+                    true,
+                );
+                if (moduleIsEnabled) {
+                    return inputIsComplete;
+                }
+            }
+
             return true;
         });
+
+export const SHWInputKeys = [
+    'pump',
+    'A',
+    'n0',
+    'a1',
+    'a2',
+    'orientation',
+    'inclination',
+    'overshading',
+    'Vs',
+    'combined_cylinder_volume',
+] as const;
