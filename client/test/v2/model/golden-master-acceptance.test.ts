@@ -22,12 +22,16 @@ const runLegacyModel = (data: any) => runModel(data, referenceCalcRun);
 const runLiveModel = (data: any) => runModel(data, calcRun);
 
 describe('golden master acceptance tests', () => {
-    test.each(scenarios)('fixed data: $name', (scenario) => {
+    test.concurrent.each(scenarios)('fixed data: $displayName', (scenario) => {
         if (shouldSkipScenario(scenario)) {
             return;
         }
         const legacyReference = runLegacyModel(cloneDeep(scenario.data));
-        expect(hasNoKnownBugs(legacyReference)).toBe(true);
+        expect(hasNoKnownBugs(legacyReference)).toEqual(
+            expect.objectContaining({
+                bugs: false,
+            }),
+        );
         const actual = runLiveModel(cloneDeep(scenario.data));
         expect(actual).toEqualBy(legacyReference, modelValueComparer());
     });
@@ -37,7 +41,7 @@ describe('golden master acceptance tests', () => {
         fc.assert(
             fc.property(arbScenario(), (scenario) => {
                 const legacyReference = runLegacyModel(scenario);
-                fc.pre(hasNoKnownBugs(legacyReference));
+                fc.pre(!hasNoKnownBugs(legacyReference).bugs);
                 const actual = runLiveModel(scenario);
                 expect(actual).toEqualBy(legacyReference, modelValueComparer());
             }),
@@ -56,11 +60,10 @@ describe('golden master acceptance tests', () => {
     });
 });
 
-const floatingPointString = /^-?([1-9]\d*|0)(\.\d*[1-9])?$/;
 const isValidStringyFloat = (value: unknown) => {
     return (
         typeof value === 'number' ||
-        (typeof value === 'string' && floatingPointString.test(value))
+        (typeof value === 'string' && !Number.isNaN(stricterParseFloat(value)))
     );
 };
 
@@ -75,24 +78,60 @@ const hasNoKnownBugs = (legacyScenario: any) => {
         isValidStringyFloat(legacyScenario.TFA);
     const noStringConcatenationBugs =
         // Wide spectrum
-        !Number.isNaN(1.0 * legacyScenario.total_cost) &&
+        !Number.isNaN(stricterParseFloat(legacyScenario.total_cost)) &&
         // Catch a specific SHW string concatenation bug
         (legacyScenario.SHW.a1 === undefined ||
             (legacyScenario.SHW.a1 === '0' && legacyScenario.a2 >= 0) ||
             legacyScenario.SHW.a1 === '' ||
             typeof legacyScenario.SHW.a1 === 'number');
-
     const noVentilationBugs =
-        // if num_of_floors_override is 0, legacy treats it as undefined
+        // if num_of_floors_override is 0, legacy treats it as undefined (i.e.
+        // no override)
         legacyScenario.num_of_floors_override !== 0 &&
         !Number.isNaN(legacyScenario.ventilation.average_WK);
 
-    return noFabricBugs && noStringConcatenationBugs && noVentilationBugs;
+    if (!noFabricBugs) {
+        return { bugs: true, type: 'fabric bugs' };
+    }
+    if (!noStringConcatenationBugs) {
+        return { bugs: true, type: 'string concatenation bugs' };
+    }
+    if (!noVentilationBugs) {
+        return { bugs: true, type: 'ventilation bugs' };
+    }
+    return { bugs: false };
 };
 
+const heuristicTypeOf = (value: unknown) => {
+    if (typeof value === 'number') {
+        return { type: 'number' as const, value };
+    }
+    if (typeof value === 'string') {
+        const parsed = stricterParseFloat(value);
+        if (Number.isNaN(parsed)) {
+            if (/^[\d\-.e]+$/.test(value)) {
+                // String was not a parseable number, but only contained
+                // characters found in floating point numbers. Suspicious...
+                return { type: 'string concatenation bug' as const, value };
+            } else {
+                return { type: 'non-numeric string' as const, value };
+            }
+        } else {
+            return { type: 'stringified number' as const, value: parsed };
+        }
+    }
+    return { type: 'unknown' as const, value };
+};
 const modelValueComparer =
     (compareFloatParams?: CompareFloatParams) =>
     (receivedLive: unknown, expectedLegacy: unknown): boolean => {
+        // First, detect some special cases
+        if (expectedLegacy === '' && receivedLive === 0) {
+            return true;
+        }
+        if (expectedLegacy === 1 && receivedLive === true) {
+            return true;
+        }
         if (
             Number.isNaN(expectedLegacy) &&
             (typeof receivedLive === 'number' || receivedLive === null)
@@ -100,39 +139,79 @@ const modelValueComparer =
             // If legacy gives us NaN, allow any numeric or null value in the new code
             return true;
         }
-        if (typeof receivedLive === 'number' && typeof expectedLegacy === 'number') {
-            return compareFloats(compareFloatParams)(receivedLive, expectedLegacy);
+
+        // Then try and ascertain what kind of type the parameters are.
+        const heuristicLive = heuristicTypeOf(receivedLive);
+        const heuristicLegacy = heuristicTypeOf(expectedLegacy);
+
+        // If either of them are non-number and non-string, use Object.is
+        if (heuristicLive.type === 'unknown' || heuristicLegacy.type === 'unknown') {
+            return Object.is(receivedLive, expectedLegacy);
         }
-        if (typeof expectedLegacy === 'string' && typeof receivedLive === 'string') {
-            // Check if values were numbers encoded as strings and if so
-            // compare them as floats.
-            const expectedLegacyFloat = stricterParseFloat(expectedLegacy);
-            const receivedLiveFloat = stricterParseFloat(receivedLive);
-            if (Number.isNaN(expectedLegacyFloat)) {
-                return true;
-            } else if (Number.isNaN(receivedLiveFloat)) {
-                return false;
-            } else {
-                return compareFloats(compareFloatParams)(
-                    receivedLiveFloat,
-                    expectedLegacyFloat,
-                );
+
+        /*
+            Now the fun stuff. We want to detect if stringy values are
+            stringified numbers, nonsense strings resulting from string
+            concatenation bugs, or legitimate strings, and do some combination
+            of blind acceptance, blind rejection, numeric string parsing,
+            floating point comparison, and Object.is comparison, depending on
+            what we find.
+
+            Here is a case table for what comparison function to use, excluding
+            the above special cases. Note that it is not symmetrical. Simple,
+            right?!
+
+                  Legacy → | stringy    | number     | non-numeric | numeric string |
+             Live ↓        | number     |            | string      | concat bug     |
+            ---------------+------------+------------+-------------+----------------+
+            stringy        | parse,     |   false    |    false    |      true      |
+            number         | fp compare |            |             |                |
+            ---------------+------------+------------+-------------+----------------+
+            number         | parse,     | fp compare |    false    |      true      |
+                           | fp compare |            |             |                |
+            ---------------+------------+------------+-------------+----------------+
+            non-numeric    |   false    |   false    |  Object.is  |     false      |
+            string         |            |            |             |                |
+            ---------------+------------+------------+-------------+----------------+
+            numeric string |   false    |   false    |    false    |      true      |
+            concat bug     |            |            |             |                |
+            ---------------+------------+------------+-------------+----------------+
+        */
+        switch (heuristicLegacy.type) {
+            case 'stringified number': {
+                if (
+                    heuristicLive.type === 'non-numeric string' ||
+                    heuristicLive.type === 'string concatenation bug'
+                ) {
+                    return false;
+                } else {
+                    return compareFloats(compareFloatParams)(
+                        heuristicLive.value,
+                        heuristicLegacy.value,
+                    );
+                }
+            }
+            case 'number': {
+                if (heuristicLive.type === 'number') {
+                    return compareFloats(compareFloatParams)(
+                        heuristicLive.value,
+                        heuristicLegacy.value,
+                    );
+                } else {
+                    return false;
+                }
+            }
+            case 'non-numeric string': {
+                if (heuristicLive.type === 'non-numeric string') {
+                    return Object.is(heuristicLive.value, heuristicLegacy.value);
+                } else {
+                    return false;
+                }
+            }
+            case 'string concatenation bug': {
+                return heuristicLive.type !== 'non-numeric string';
             }
         }
-        if (expectedLegacy === '' && receivedLive === 0) {
-            return true;
-        }
-        if (typeof expectedLegacy === 'string' && typeof receivedLive === 'number') {
-            const expectedLegacyParsed = stricterParseFloat(expectedLegacy);
-            if (Number.isNaN(expectedLegacyParsed)) {
-                return true;
-            }
-            return compareFloats(compareFloatParams)(receivedLive, expectedLegacyParsed);
-        }
-        if (receivedLive === true && expectedLegacy === 1) {
-            return true;
-        }
-        return Object.is(receivedLive, expectedLegacy);
     };
 
 // Mutate the scenario rather than deep-cloning it, for performance

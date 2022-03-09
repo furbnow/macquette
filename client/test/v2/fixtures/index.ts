@@ -19,9 +19,13 @@ const safeJsonParse = (...args: Parameters<typeof JSON.parse>): unknown =>
     JSON.parse(...args);
 
 export class Scenario {
-    public name: string;
-    constructor(public path: string, public scenario: string, public data: unknown) {
-        this.name = `${this.path} - ${this.scenario}`;
+    public displayName: string;
+    constructor(
+        public fixturePath: string,
+        public scenarioName: string,
+        public data: unknown,
+    ) {
+        this.displayName = `${this.fixturePath} - ${this.scenarioName}`;
     }
 }
 
@@ -48,10 +52,18 @@ export const scenarios = fixtures.flatMap((fixture) => {
 });
 
 export const shouldSkipScenario = (scenario: Scenario): boolean => {
+    if (
+        scenario.fixturePath === 'private/443.json' &&
+        scenario.scenarioName === 'scenario1'
+    ) {
+        // Deliberately buggy test scenario
+        return true;
+    }
+
     // eslint-disable-next-line
     if ((scenario.data as any).LAC_calculation_type === 'detailedlist') {
         console.warn(
-            `Skipping fixed data test "${scenario.name}" for detailedlist LAC mode`,
+            `Skipping fixed data test "${scenario.displayName}" for detailedlist LAC mode`,
         );
         return true;
     }

@@ -5,7 +5,7 @@ import { scenarios, shouldSkipScenario } from '../fixtures';
 
 describe('legacy scenario validator', () => {
     describe('parsed JSON scenarios', () => {
-        test.each(scenarios)('$name', (scenario) => {
+        test.each(scenarios)('$displayName', (scenario) => {
             if (shouldSkipScenario(scenario)) {
                 return;
             }
@@ -14,11 +14,9 @@ describe('legacy scenario validator', () => {
     });
 
     describe('after running calc.run', () => {
-        for (const scenario of scenarios) {
-            test(`${scenario.name}`, () => {
-                const modelOutput = calcRun(cloneDeep(scenario));
-                expect(() => legacyScenarioSchema.parse(modelOutput)).not.toThrow();
-            });
-        }
+        test.each(scenarios)('$displayName', (scenario) => {
+            const modelOutput = calcRun(cloneDeep(scenario));
+            expect(() => legacyScenarioSchema.parse(modelOutput)).not.toThrow();
+        });
     });
 });
