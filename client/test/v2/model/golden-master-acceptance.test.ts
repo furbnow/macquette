@@ -15,14 +15,13 @@ const runModel = (data: any, calcRun: (data: any) => any) => {
     // dependencies which stabilise after two runs
     out = calcRun(out);
     out = calcRun(out);
-    out = normaliseScenario(out);
     return out;
 };
 const runLegacyModel = (data: any) => runModel(data, referenceCalcRun);
 const runLiveModel = (data: any) => runModel(data, calcRun);
 
 describe('golden master acceptance tests', () => {
-    test.concurrent.each(scenarios)('fixed data: $displayName', (scenario) => {
+    test.each(scenarios)('fixed data: $displayName', (scenario) => {
         if (shouldSkipScenario(scenario)) {
             return;
         }
@@ -33,7 +32,10 @@ describe('golden master acceptance tests', () => {
             }),
         );
         const actual = runLiveModel(cloneDeep(scenario.data));
-        expect(actual).toEqualBy(legacyReference, modelValueComparer());
+        expect(normaliseScenario(actual)).toEqualBy(
+            normaliseScenario(legacyReference),
+            modelValueComparer(),
+        );
     });
 
     test('fast-check data', () => {
@@ -43,7 +45,10 @@ describe('golden master acceptance tests', () => {
                 const legacyReference = runLegacyModel(scenario);
                 fc.pre(!hasNoKnownBugs(legacyReference).bugs);
                 const actual = runLiveModel(scenario);
-                expect(actual).toEqualBy(legacyReference, modelValueComparer());
+                expect(normaliseScenario(actual)).toEqualBy(
+                    normaliseScenario(legacyReference),
+                    modelValueComparer(),
+                );
             }),
             {
                 examples,
@@ -76,14 +81,30 @@ const hasNoKnownBugs = (legacyScenario: any) => {
         isValidStringyFloat(legacyScenario.fabric.total_wall_area) &&
         isValidStringyFloat(legacyScenario.fabric.total_window_area) &&
         isValidStringyFloat(legacyScenario.TFA);
+
+    const solarHotWaterStringConcatenationBug = (): 'bug' | 'no bug' => {
+        const { a1, a2 } = legacyScenario.SHW;
+        if (typeof a1 !== 'string') return 'no bug';
+        if (a1 === '0' && a2 >= 0) return 'no bug';
+        if (a1 === '') return 'no bug';
+        return 'bug';
+    };
+
+    const ventilationStringConcatenationBug = (): 'bug' | 'no bug' => {
+        const { system_air_change_rate, ventilation_type } = legacyScenario.ventilation;
+        if (ventilation_type !== 'MV') return 'no bug';
+        if (typeof system_air_change_rate !== 'string') return 'no bug';
+        if (system_air_change_rate === '') return 'no bug';
+        return 'bug';
+    };
+
     const noStringConcatenationBugs =
         // Wide spectrum
         !Number.isNaN(stricterParseFloat(legacyScenario.total_cost)) &&
-        // Catch a specific SHW string concatenation bug
-        (legacyScenario.SHW.a1 === undefined ||
-            (legacyScenario.SHW.a1 === '0' && legacyScenario.a2 >= 0) ||
-            legacyScenario.SHW.a1 === '' ||
-            typeof legacyScenario.SHW.a1 === 'number');
+        // Specifics
+        solarHotWaterStringConcatenationBug() === 'no bug' &&
+        ventilationStringConcatenationBug() === 'no bug';
+
     const noVentilationBugs =
         // if num_of_floors_override is 0, legacy treats it as undefined (i.e.
         // no override)

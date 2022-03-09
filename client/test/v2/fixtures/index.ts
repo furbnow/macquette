@@ -52,12 +52,16 @@ export const scenarios = fixtures.flatMap((fixture) => {
 });
 
 export const shouldSkipScenario = (scenario: Scenario): boolean => {
-    if (
-        scenario.fixturePath === 'private/443.json' &&
-        scenario.scenarioName === 'scenario1'
-    ) {
-        // Deliberately buggy test scenario
-        return true;
+    const knownBuggy: Array<[string, string]> = [
+        ['private/443.json', 'scenario1'],
+        ['private/143.json', 'master'],
+        ['private/143.json', 'scenario1'],
+    ];
+    for (const [path, name] of knownBuggy) {
+        if (scenario.fixturePath === path && scenario.scenarioName === name) {
+            console.warn(`Skipping known buggy scenario ${scenario.displayName}`);
+            return true;
+        }
     }
 
     // eslint-disable-next-line
