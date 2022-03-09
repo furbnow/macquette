@@ -2027,10 +2027,10 @@ external-editor@^3.0.3:
     iconv-lite "^0.4.24"
     tmp "^0.0.33"
 
-fast-check@^2.19.0:
-  version "2.19.0"
-  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-2.19.0.tgz#e87666450e417cd163a564bd546ee763d27c0f19"
-  integrity sha512-qY4Rc0Nljl2aJx2qgbK3o6wPBjL9QvhKdD/VqJgaKd5ewn8l4ViqgDpUHJq/JkHTBnFKomYYvkFkOYGDVTT8bw==
+fast-check@^2.22.0:
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/fast-check/-/fast-check-2.22.0.tgz#b807ef18e10a37e8eb57b28e43974e7986563585"
+  integrity sha512-Yrx1E8fZk6tfSqYaNkwnxj/lOk+vj2KTbbpHDtYoK9MrrL/D204N/rCtcaVSz5bE29g6gW4xj0byresjlFyybg==
   dependencies:
     pure-rand "^5.0.0"
 

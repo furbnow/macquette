@@ -1,20 +1,20 @@
 import fc from 'fast-check';
 import { arbFloat } from '../../../helpers/arbitraries';
 
-export const sensibleFloat = arbFloat({ noDefaultInfinity: true, noNaN: true }).filter(
-    (floatVal) => {
-        if (Object.is(floatVal, -0)) {
-            return false;
-        }
-        if (floatVal === 0) {
-            return true;
-        }
-        const log2Abs = Math.log2(Math.abs(floatVal));
-        if (log2Abs > -7 && log2Abs < 13) {
-            return true;
-        }
-        return false;
-    },
+export const sensibleFloat = fc.oneof(
+    arbFloat({
+        noDefaultInfinity: true,
+        noNaN: true,
+        min: -Math.pow(2, 13),
+        max: -Math.pow(2, -7),
+    }),
+    arbFloat({
+        noDefaultInfinity: true,
+        noNaN: true,
+        min: Math.pow(2, -7),
+        max: Math.pow(2, 13),
+    }),
+    fc.constant(0),
 );
 
 type StringyNumberOptions = { excludeNumericStrings?: boolean };

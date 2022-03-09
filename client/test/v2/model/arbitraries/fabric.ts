@@ -90,14 +90,14 @@ const floor = (id?: number) =>
 const arbIds = fc
     .record({
         // WallLikes can have deductions
-        numWallLikes: fc.nat({ max: 20 }),
+        numWallLikes: fc.nat({ max: 10 }),
         // Floors cannot have deductions
-        numFloors: fc.nat({ max: 20 }),
-        numDeductible: fc.nat({ max: 20 }),
+        numFloors: fc.nat({ max: 5 }),
+        numDeductible: fc.nat({ max: 10 }),
     })
     .chain(({ numWallLikes, numFloors, numDeductible }) =>
         fc
-            .set(sensibleFloat, {
+            .set(fc.nat(), {
                 minLength: numWallLikes + numFloors + numDeductible,
                 maxLength: numWallLikes + numFloors + numDeductible,
             })

@@ -45,6 +45,7 @@ const arbFuels = () =>
             co2factor: stringySensibleFloat(),
             primaryenergyfactor: stringySensibleFloat(),
         }),
+        { maxKeys: 5 },
     );
 
 const arbLAC_calculation_type = () =>
@@ -92,7 +93,7 @@ const arbVentilation = () =>
         ),
         percentage_draught_proofed: sensibleFloat,
         draught_lobby: legacyBoolean(),
-        number_of_sides_sheltered: sensibleFloat,
+        number_of_sides_sheltered: fc.nat(),
         ventilation_type: fc.oneof(
             ...(['NV', 'IE', 'MEV', 'PS', 'MVHR', 'MV', 'DEV'] as const).map(fc.constant),
         ),
@@ -116,7 +117,7 @@ export const arbScenario = () =>
                 fuels: fc.constant(fuels),
                 floors: arbFloors(),
                 use_custom_occupancy: legacyBoolean(),
-                custom_occupancy: fc.oneof(sensibleFloat, fc.constant('')),
+                custom_occupancy: fc.oneof(fc.nat(), fc.constant('')),
                 region: fc.integer({ min: 0, max: Region.names.length - 1 }),
                 fabric: arbFabric(),
                 water_heating: fcPartialRecord({
@@ -147,7 +148,7 @@ export const arbScenario = () =>
                 LAC_calculation_type: arbLAC_calculation_type(),
                 LAC: arbLAC(Object.keys(fuels)),
                 ventilation: arbVentilation(),
-                num_of_floors_override: sensibleFloat,
+                num_of_floors_override: fc.nat(),
             }),
         )
         .filter((scenario) => {
