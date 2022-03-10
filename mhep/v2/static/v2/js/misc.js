@@ -472,12 +472,12 @@ function get_hours_three_periods(time_on_1, time_off_1, time_on_2, time_off_2, t
  ************************/
 
 function format_performance_string(performance) {
-    return performance.replace('WK.m2', 'W/m<sup>2</sup>.K')
-        .replace('W/K.m2', 'W/m<sup>2</sup>.K')
-        .replace('m3m2.hr50pa', 'm<sup>3</sup>/m<sup>2</sup>.hr50pa')
-        .replace('m3/m2.hr50pa', 'm<sup>3</sup>/m<sup>2</sup>.hr50pa')
-        .replace('W/msup2/sup.K', ' W/m<sup>2</sup>.K')
-        .replace('msup3/sup/msup2/sup.hr50pa', 'm<sup>3</sup>/m<sup>2</sup>.hr50pa')
+    return performance.replace('WK.m2', 'W/m².K')
+        .replace('W/K.m2', 'W/m².K')
+        .replace('m3m2.hr50pa', 'm³/m².hr50pa')
+        .replace('m3/m2.hr50pa', 'm³/m².hr50pa')
+        .replace('W/msup2/sup.K', ' W/m².K')
+        .replace('msup3/sup/msup2/sup.hr50pa', 'm³/m².hr50pa')
         .replace('na', 'n/a');
 }
 
