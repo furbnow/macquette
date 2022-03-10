@@ -468,8 +468,94 @@ function get_hours_three_periods(time_on_1, time_off_1, time_on_2, time_off_2, t
 
 
 /************************
- **  Cost of measures
+ **  Measures
  ************************/
+
+function format_performance_string(performance) {
+    return performance.replace('WK.m2', 'W/m<sup>2</sup>.K')
+        .replace('W/K.m2', 'W/m<sup>2</sup>.K')
+        .replace('m3m2.hr50pa', 'm<sup>3</sup>/m<sup>2</sup>.hr50pa')
+        .replace('m3/m2.hr50pa', 'm<sup>3</sup>/m<sup>2</sup>.hr50pa')
+        .replace('W/msup2/sup.K', ' W/m<sup>2</sup>.K')
+        .replace('msup3/sup/msup2/sup.hr50pa', 'm<sup>3</sup>/m<sup>2</sup>.hr50pa')
+        .replace('na', 'n/a');
+}
+
+function getScenarioMeasures(scenario, assessment) {
+    const scenarioData = assessment[scenario];
+    const scenarioMeasures = [];
+
+    function pushedNestedMeasures(measures_by_id) {
+        for (const id in measures_by_id) {
+            scenarioMeasures.push(measures_by_id[id].measure);
+        }
+    }
+
+    // Fabric
+    if ('measures' in scenarioData.fabric) {
+        pushedNestedMeasures(scenarioData.fabric.measures);
+    }
+
+    if ('measures' in scenarioData) {
+        // Ventilation
+        if ('ventilation' in scenarioData.measures) {
+            if ('extract_ventilation_points' in scenarioData.measures.ventilation) {
+                pushedNestedMeasures(scenarioData.measures.ventilation.extract_ventilation_points);
+            }
+            if ('intentional_vents_and_flues' in scenarioData.measures.ventilation) {
+                pushedNestedMeasures(scenarioData.measures.ventilation.intentional_vents_and_flues);
+            }
+            if ('intentional_vents_and_flues_measures' in scenarioData.measures.ventilation) {
+                pushedNestedMeasures(scenarioData.measures.ventilation.intentional_vents_and_flues_measures);
+            }
+            if ('draught_proofing_measures' in scenarioData.measures.ventilation) {
+                scenarioMeasures.push(scenarioData.measures.ventilation.draught_proofing_measures.measure);
+            }
+            if ('ventilation_systems_measures' in scenarioData.measures.ventilation) {
+                scenarioMeasures.push(scenarioData.measures.ventilation.ventilation_systems_measures.measure);
+            }
+            if ('clothes_drying_facilities' in scenarioData.measures.ventilation) {
+                pushedNestedMeasures(scenarioData.measures.ventilation.clothes_drying_facilities);
+            }
+        }
+    }
+
+    // Water heating
+    if ('water_heating' in scenarioData.measures) {
+        if ('water_usage' in scenarioData.measures.water_heating) {
+            pushedNestedMeasures(scenarioData.measures.water_heating.water_usage);
+        }
+        if ('storage_type_measures' in scenarioData.measures.water_heating) {
+            scenarioMeasures.push(scenarioData.measures.water_heating.storage_type_measures.measure);
+        }
+        if ('pipework_insulation' in scenarioData.measures.water_heating) {
+            scenarioMeasures.push(scenarioData.measures.water_heating.pipework_insulation.measure);
+        }
+        if ('hot_water_control_type' in scenarioData.measures.water_heating) {
+            scenarioMeasures.push(scenarioData.measures.water_heating.hot_water_control_type.measure);
+        }
+    }
+    // Heating controls
+    if ('space_heating_control_type' in scenarioData.measures) {
+        pushedNestedMeasures(scenarioData.measures.space_heating_control_type);
+    }
+    // Heating systems
+    if ('heating_systems' in scenarioData.measures) {
+        pushedNestedMeasures(scenarioData.measures.heating_systems);
+    }
+    // Generation
+    if (scenarioData.use_generation == 1 && 'PV_generation' in scenarioData.measures) {
+        scenarioMeasures.push(scenarioData.measures.PV_generation.measure);
+    }
+    // Lighting
+    if ('LAC' in scenarioData.measures) {
+        if ('lighting' in scenarioData.measures.LAC) {
+            scenarioMeasures.push(scenarioData.measures.LAC.lighting.measure);
+        }
+    }
+    return scenarioMeasures;
+}
+
 function measures_costs(scenario) {
     var measures_total_cost = 0;
     if (project[scenario].fabric.measures != undefined) {

@@ -108,86 +108,11 @@ function downloadCSV(csv, filename = 'untitled.csv') {
     downloadLink.click();
 }
 
-function getScenarioMeasures(scenario, assessment) {
-    const scenarioData = assessment[scenario];
-    const scenarioMeasures = [];
-
-    function pushedNestedMeasures(measures_by_id) {
-        for (const id in measures_by_id) {
-            scenarioMeasures.push(measures_by_id[id].measure);
-        }
-    }
-
-    // Fabric
-    if ('measures' in scenarioData.fabric) {
-        pushedNestedMeasures(scenarioData.fabric.measures);
-    }
-
-    if ('measures' in scenarioData) {
-        // Ventilation
-        if ('ventilation' in scenarioData.measures) {
-            if ('extract_ventilation_points' in scenarioData.measures.ventilation) {
-                pushedNestedMeasures(scenarioData.measures.ventilation.extract_ventilation_points);
-            }
-            if ('intentional_vents_and_flues' in scenarioData.measures.ventilation) {
-                pushedNestedMeasures(scenarioData.measures.ventilation.intentional_vents_and_flues);
-            }
-            if ('intentional_vents_and_flues_measures' in scenarioData.measures.ventilation) {
-                pushedNestedMeasures(scenarioData.measures.ventilation.intentional_vents_and_flues_measures);
-            }
-            if ('draught_proofing_measures' in scenarioData.measures.ventilation) {
-                scenarioMeasures.push(scenarioData.measures.ventilation.draught_proofing_measures.measure);
-            }
-            if ('ventilation_systems_measures' in scenarioData.measures.ventilation) {
-                scenarioMeasures.push(scenarioData.measures.ventilation.ventilation_systems_measures.measure);
-            }
-            if ('clothes_drying_facilities' in scenarioData.measures.ventilation) {
-                pushedNestedMeasures(scenarioData.measures.ventilation.clothes_drying_facilities);
-            }
-        }
-    }
-
-    // Water heating
-    if ('water_heating' in scenarioData.measures) {
-        if ('water_usage' in scenarioData.measures.water_heating) {
-            pushedNestedMeasures(scenarioData.measures.water_heating.water_usage);
-        }
-        if ('storage_type_measures' in scenarioData.measures.water_heating) {
-            scenarioMeasures.push(scenarioData.measures.water_heating.storage_type_measures.measure);
-        }
-        if ('pipework_insulation' in scenarioData.measures.water_heating) {
-            scenarioMeasures.push(scenarioData.measures.water_heating.pipework_insulation.measure);
-        }
-        if ('hot_water_control_type' in scenarioData.measures.water_heating) {
-            scenarioMeasures.push(scenarioData.measures.water_heating.hot_water_control_type.measure);
-        }
-    }
-    // Heating controls
-    if ('space_heating_control_type' in scenarioData.measures) {
-        pushedNestedMeasures(scenarioData.measures.space_heating_control_type);
-    }
-    // Heating systems
-    if ('heating_systems' in scenarioData.measures) {
-        pushedNestedMeasures(scenarioData.measures.heating_systems);
-    }
-    // Generation
-    if (scenarioData.use_generation == 1 && 'PV_generation' in scenarioData.measures) {
-        scenarioMeasures.push(scenarioData.measures.PV_generation.measure);
-    }
-    // Lighting
-    if ('LAC' in scenarioData.measures) {
-        if ('lighting' in scenarioData.measures.LAC) {
-            scenarioMeasures.push(scenarioData.measures.LAC.lighting.measure);
-        }
-    }
-    return scenarioMeasures;
-}
-
 function getMeasures(assessment) {
     const scenarioListIds = getScenarioIds({ project, excludeBase: true });
     let measures = [];
     for (const scenarioId of scenarioListIds) {
-        const scenarioMeasures = getScenarioMeasures(scenarioId, assessment); // cloned in misc.js
+        const scenarioMeasures = getScenarioMeasures(scenarioId, assessment);
         for (let measure of scenarioMeasures) {
             measure.scenario = scenarioId;
         }
