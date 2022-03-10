@@ -874,6 +874,14 @@ function _extract_scenario_inputs(data) {
     return inputdata;
 }
 
+function getScenarioIds({ project, excludeBase = false } = {}) {
+    let result = Object.keys(project);
+    if (excludeBase) {
+        return result.filter(key => key !== 'master');
+    } else {
+        return result;
+    }
+}
 
 
 /** Some debugging helpers **/

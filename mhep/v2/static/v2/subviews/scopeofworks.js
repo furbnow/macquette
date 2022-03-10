@@ -184,8 +184,7 @@ function getScenarioMeasures(scenario, assessment) {
 }
 
 function getMeasures(assessment) {
-    const scenarioListIds = Object.keys(assessment);
-
+    const scenarioListIds = getScenarioIds({ project, excludeBase: true });
     let measures = [];
     for (const scenarioId of scenarioListIds) {
         const scenarioMeasures = getScenarioMeasures(scenarioId, assessment); // cloned in misc.js
