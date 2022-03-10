@@ -236,8 +236,8 @@ $('#openbem').on('click', '#bulk-measure-finish', function () {
         measure[lib].lib = lib;
     }
     measure[lib].id = 1 + get_elements_max_id();
-    measure[lib].location = '';
     var area = 0;
+    let locations = [];
 
     // Save original elements
     data.fabric.measures[measure[lib].id] = {};
@@ -246,13 +246,15 @@ $('#openbem').on('click', '#bulk-measure-finish', function () {
         if (obj.checked == true) {
             var row = $(obj).attr('element-row');
             area += data.fabric.elements[row].netarea;
-            measure[lib].location += data.fabric.elements[row].location + ',<br>';
+            locations.push(data.fabric.elements[row].location);
             for (var attr in measure[lib]) {
                 var element_id = data.fabric.elements[row].id;
                 data.fabric.measures[measure[lib].id].original_elements[element_id] = cloneObj(data.fabric.elements[row]);
             }
         }
     });
+
+    measure[lib].location = locations.join(', ')
 
     //Apply measure to the selected elements
     $('.bulk-element').each(function (i, obj) {

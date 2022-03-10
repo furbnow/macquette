@@ -481,13 +481,12 @@ function format_performance_string(performance) {
         .replace('na', 'n/a');
 }
 
-function getScenarioMeasures(scenario, assessment) {
-    const scenarioData = assessment[scenario];
-    const scenarioMeasures = [];
+function getScenarioMeasures(scenarioData) {
+    const result = [];
 
     function pushedNestedMeasures(measures_by_id) {
         for (const id in measures_by_id) {
-            scenarioMeasures.push(measures_by_id[id].measure);
+            result.push(measures_by_id[id].measure);
         }
     }
 
@@ -509,51 +508,78 @@ function getScenarioMeasures(scenario, assessment) {
                 pushedNestedMeasures(scenarioData.measures.ventilation.intentional_vents_and_flues_measures);
             }
             if ('draught_proofing_measures' in scenarioData.measures.ventilation) {
-                scenarioMeasures.push(scenarioData.measures.ventilation.draught_proofing_measures.measure);
+                result.push(scenarioData.measures.ventilation.draught_proofing_measures.measure);
             }
             if ('ventilation_systems_measures' in scenarioData.measures.ventilation) {
-                scenarioMeasures.push(scenarioData.measures.ventilation.ventilation_systems_measures.measure);
+                result.push(scenarioData.measures.ventilation.ventilation_systems_measures.measure);
             }
             if ('clothes_drying_facilities' in scenarioData.measures.ventilation) {
                 pushedNestedMeasures(scenarioData.measures.ventilation.clothes_drying_facilities);
             }
         }
+
+        // Water heating
+        if ('water_heating' in scenarioData.measures) {
+            if ('water_usage' in scenarioData.measures.water_heating) {
+                pushedNestedMeasures(scenarioData.measures.water_heating.water_usage);
+            }
+            if ('storage_type_measures' in scenarioData.measures.water_heating) {
+                result.push(scenarioData.measures.water_heating.storage_type_measures.measure);
+            }
+            if ('pipework_insulation' in scenarioData.measures.water_heating) {
+                result.push(scenarioData.measures.water_heating.pipework_insulation.measure);
+            }
+            if ('hot_water_control_type' in scenarioData.measures.water_heating) {
+                result.push(scenarioData.measures.water_heating.hot_water_control_type.measure);
+            }
+        }
+
+        if ('space_heating_control_type' in scenarioData.measures) {
+            pushedNestedMeasures(scenarioData.measures.space_heating_control_type);
+        }
+
+        if ('heating_systems' in scenarioData.measures) {
+            pushedNestedMeasures(scenarioData.measures.heating_systems);
+        }
+
+        if ('LAC' in scenarioData.measures) {
+            if ('lighting' in scenarioData.measures.LAC) {
+                result.push(scenarioData.measures.LAC.lighting.measure);
+            }
+        }
+
+        if (scenarioData.use_generation == 1 && 'PV_generation' in scenarioData.measures) {
+            result.push(scenarioData.measures.PV_generation.measure);
+        }
     }
 
-    // Water heating
-    if ('water_heating' in scenarioData.measures) {
-        if ('water_usage' in scenarioData.measures.water_heating) {
-            pushedNestedMeasures(scenarioData.measures.water_heating.water_usage);
+    function normaliseLocation(location) {
+        // Due to a historical mess, sometimes measure.location includes either
+        // '<br>' or 'br'.  This should be normalised to whitespace.
+        // This used to happen on bulk measures.
+        location = location.replace(/,br/g, ', ').replace(/,<br>/g, ', ').trim();
+
+        // The code used to also put excess commas at the ends of things.
+        // TODO: Fix this bug in the data, not the code.
+        if (location[location.length - 1] === ',') {
+            location = location.substring(0, location.length - 1);
         }
-        if ('storage_type_measures' in scenarioData.measures.water_heating) {
-            scenarioMeasures.push(scenarioData.measures.water_heating.storage_type_measures.measure);
-        }
-        if ('pipework_insulation' in scenarioData.measures.water_heating) {
-            scenarioMeasures.push(scenarioData.measures.water_heating.pipework_insulation.measure);
-        }
-        if ('hot_water_control_type' in scenarioData.measures.water_heating) {
-            scenarioMeasures.push(scenarioData.measures.water_heating.hot_water_control_type.measure);
-        }
+
+        return location;
     }
-    // Heating controls
-    if ('space_heating_control_type' in scenarioData.measures) {
-        pushedNestedMeasures(scenarioData.measures.space_heating_control_type);
-    }
-    // Heating systems
-    if ('heating_systems' in scenarioData.measures) {
-        pushedNestedMeasures(scenarioData.measures.heating_systems);
-    }
-    // Generation
-    if (scenarioData.use_generation == 1 && 'PV_generation' in scenarioData.measures) {
-        scenarioMeasures.push(scenarioData.measures.PV_generation.measure);
-    }
-    // Lighting
-    if ('LAC' in scenarioData.measures) {
-        if ('lighting' in scenarioData.measures.LAC) {
-            scenarioMeasures.push(scenarioData.measures.LAC.lighting.measure);
-        }
-    }
-    return scenarioMeasures;
+
+    return result.map(row => Object.assign({}, row, {
+        tag: row.lib || row.tag,
+        location: row.location ? normaliseLocation(row.location) : 'Whole house',
+        description: row.description || '',
+        key_risks: row.key_risks || '',
+        associated_work: row.associated_work || '',
+        quantity: (1.0 * row.quantity).toFixed(2),
+        cost_total: (1.0 * row.cost_total).toFixed(2),
+        maintenance: row.maintenance || 'N/A',
+        disruption: row.disruption ? row.disruption.replace('MEDIUMHIGH', 'MEDIUM / HIGH') : 'N/A',
+        performance: row.performance ? format_performance_string(row.performance) : '',
+    }));
 }
 
 function measures_costs(scenario) {

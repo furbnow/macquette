@@ -12,12 +12,33 @@ function scopeofworks_initUI() {
 
     $('#export_csv').click(function () {
         const assessment = p.data;
-        const measures = getMeasures(assessment);
-        const formatted = formatMeasures(measures);
-        const csv = convertObjectArrayToCSV(formatted);
+        const output = [
+            [
+                'Scenario',
+                'Code',
+                'Measure',
+                'Label/location',
+                'Description',
+                'Performance target',
+                'Key risks',
+                'Maintenance',
+                'Associated work',
+            ],
+            ...getMeasures(assessment).map(row => [
+                row.scenario,
+                row.tag,
+                row.name,
+                row.location,
+                row.description,
+                row.performance,
+                row.key_risks,
+                row.maintenance,
+                row.associated_work,
+            ])
+        ];
+        const csv = convertNestedArrayToCSV(output);
         downloadCSV(csv, 'measures.csv');
     });
-
 
     function get_lookup(table, key) {
         return table[project.master.household[key]];
@@ -84,20 +105,8 @@ function cleanCSVcell(csvCell) {
 // cleanCSVcell('\n') === '""'
 // cleanCSVcell('"Right said Fred"') === '"""Right said Fred"""'
 
-function convertObjectArrayToCSV(objArray) {
-    let csv = '';
-    for (let i = 0; i < objArray.length; i++) {
-        let row = '';
-        for (const col in objArray[i]) {
-            if (row != '') {
-                row += ',';
-            }
-            const csvCell = objArray[i][col];
-            row += cleanCSVcell(csvCell);
-        }
-        csv += row + '\r\n';
-    }
-    return csv;
+function convertNestedArrayToCSV(input) {
+    return input.map(row => row.map(cleanCSVcell).join(",")).join("\r\n") + "\r\n";
 }
 
 function downloadCSV(csv, filename = 'untitled.csv') {
@@ -109,41 +118,14 @@ function downloadCSV(csv, filename = 'untitled.csv') {
 }
 
 function getMeasures(assessment) {
-    const scenarioListIds = getScenarioIds({ project, excludeBase: true });
+    const scenarioIds = getScenarioIds({ project, excludeBase: true });
     let measures = [];
-    for (const scenarioId of scenarioListIds) {
-        const scenarioMeasures = getScenarioMeasures(scenarioId, assessment);
+    for (const scenarioId of scenarioIds) {
+        const scenarioMeasures = getScenarioMeasures(assessment[scenarioId]);
         for (let measure of scenarioMeasures) {
             measure.scenario = scenarioId;
         }
         measures = measures.concat(scenarioMeasures);
     }
     return measures;
-}
-
-function formatMeasures(measures) {
-    let formatted = measures.map((measure) => ({
-        scenario: measure.scenario,
-        tag: measure.lib || measure.tag,
-        name: measure.name,
-        location: measure.location || 'Whole house',
-        description: measure.description,
-        performance: measure.performance,
-        key_risks: measure.key_risks,
-        maintenance: measure.maintenance,
-        associated_work: measure.associated_work,
-    }));
-    const header = {
-        scenario: 'Scenario',
-        tag: 'Code',
-        name: 'Measure',
-        location: 'Label/location',
-        description: 'Description',
-        performance: 'Performance target',
-        key_risks: 'Key risks',
-        maintenance: 'Maintenance',
-        associated_work: 'Associated work',
-    };
-    formatted.unshift(header); // prepend header row
-    return formatted;
 }
