@@ -18,15 +18,24 @@ class Bin(BaseModel):
     label: str
     data: List[float]
 
+    class Config:
+        extra = "forbid"
+
 
 class Line(BaseModel):
     value: float
     label: str
 
+    class Config:
+        extra = "forbid"
+
 
 class ShadedArea(BaseModel):
     interval: Tuple[float, float]
     label: Union[str, None] = None
+
+    class Config:
+        extra = "forbid"
 
 
 class BarChart(BaseModel):
@@ -115,15 +124,22 @@ class BarChart(BaseModel):
 
     class Config:
         alias_generator = to_camel
+        extra = "forbid"
 
 
 class Axis(BaseModel):
     units: str
 
+    class Config:
+        extra = "forbid"
+
 
 class LineRow(BaseModel):
     label: str
     data: List[List[float]]
+
+    class Config:
+        extra = "forbid"
 
 
 class LineGraph(BaseModel):
@@ -134,6 +150,7 @@ class LineGraph(BaseModel):
 
     class Config:
         alias_generator = to_camel
+        extra = "forbid"
 
 
 def parse_figure(figure: dict) -> Union[BarChart, LineGraph]:
