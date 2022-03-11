@@ -38,7 +38,7 @@ class Organisation(models.Model):
         null=True,
         blank=True,
     )
-    report_vars = models.JSONField(default=dict, validators=[validate_dict])
+    report_vars = models.JSONField(default=dict, validators=[validate_dict], blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
