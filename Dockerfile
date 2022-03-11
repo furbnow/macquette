@@ -34,6 +34,10 @@ ENV PYTHONDONTWRITEBYTECODE 1
 RUN addgroup --system django \
     && adduser --system --ingroup django django
 
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+       make libharfbuzz-bin libpango-1.0-0 pangoft2-1.0-0
+
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /app/requirements
 WORKDIR /app

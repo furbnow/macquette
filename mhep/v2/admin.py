@@ -8,11 +8,17 @@ from .models import Assessment
 from .models import Image
 from .models import Library
 from .models import Organisation
+from .models import ReportTemplate
 
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
     list_display = ["id", "created_at", "assessment", "note", "image"]
+
+
+@admin.register(ReportTemplate)
+class ReportTemplateAdmin(admin.ModelAdmin):
+    list_display = ["id", "name"]
 
 
 @admin.register(Assessment)

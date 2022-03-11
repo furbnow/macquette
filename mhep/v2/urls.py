@@ -22,6 +22,7 @@ from .views.organisations import ListCreateOrganisationAssessments
 from .views.organisations import ListOrganisationLibraryShares
 from .views.organisations import ListOrganisations
 from .views.organisations import ShareUnshareOrganisationLibraries
+from .views.reports import GenerateReport
 from .views.users import ListUsers
 
 
@@ -110,6 +111,11 @@ urlpatterns = [
         "api/organisations/<int:pk>/members/<int:userid>/",
         view=CreateDeleteOrganisationMembers.as_view(),
         name="create-delete-organisation-members",
+    ),
+    path(
+        "api/organisations/<int:pk>/report/",
+        view=GenerateReport.as_view(),
+        name="generate-report",
     ),
     path(
         "api/libraries/<int:pk>/items/",

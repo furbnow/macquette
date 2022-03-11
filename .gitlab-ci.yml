@@ -29,7 +29,8 @@ python-test:
 
     before_script:
         - python -V
-        - apt update && apt install make
+        - apt-get update &&
+          apt-get install --no-install-recommends -y make libharfbuzz-bin libpango-1.0-0 pangoft2-1.0-0
         - pip install virtualenv
         - virtualenv venv
         - source venv/bin/activate
@@ -40,6 +41,16 @@ python-test:
         # Silence warnings
         - mkdir staticfiles
         - make test-python
+        - coverage xml
+
+    artifacts:
+        expose_as: test-output
+        paths:
+            - graph_results
+        expire_in: 1 week
+
+        reports:
+            cobertura: coverage.xml
 
 js-test:
     stage: test

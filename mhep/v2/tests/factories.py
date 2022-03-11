@@ -9,6 +9,7 @@ from ..models import Assessment
 from ..models import Image
 from ..models import Library
 from ..models import Organisation
+from ..models import ReportTemplate
 from mhep.users.tests.factories import UserFactory
 
 
@@ -59,8 +60,42 @@ class ImageFactory(DjangoModelFactory):
 class OrganisationFactory(DjangoModelFactory):
     name = factory.Faker("company")
 
+    @factory.post_generation
+    def members(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for group in extracted:
+                self.members.add(group)
+
+    @factory.post_generation
+    def librarians(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for group in extracted:
+                self.librarians.add(group)
+
+    @factory.post_generation
+    def admins(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for group in extracted:
+                self.admins.add(group)
+
     class Meta:
         model = Organisation
+
+
+class ReportTemplateFactory(DjangoModelFactory):
+    name = factory.Faker("name")
+
+    class Meta:
+        model = ReportTemplate
 
 
 class LibraryFactory(DjangoModelFactory):
