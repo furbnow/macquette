@@ -27,7 +27,7 @@ export const datasets = {
             primaryenergyfactor: 1.141,
             SAP_code: 2,
         },
-        'Bottled LPG ': {
+        'Bottled LPG': {
             category: 'Gas',
             standingcharge: 0,
             fuelcost: 11.33,

@@ -12,6 +12,8 @@ import { Occupancy, extractOccupancyInputFromLegacy } from './modules/occupancy'
 import { extractRegionFromLegacy} from './modules/region';
 import { extractSolarHotWaterInputFromLegacy, SolarHotWater } from './modules/solar-hot-water';
 import { extractWaterCommonInputFromLegacy, WaterCommon } from './modules/water-common';
+import { setBlankLegacyOutputs, setDefaultLegacyInputs } from './modules/legacy-initialisation';
+import { legacyCloneDeep } from '../helpers/legacy-clone';
 
 let g, m, x, z, fuel; // Variables used in for-loops
 
@@ -60,9 +62,6 @@ let calc = {data: {}};
  *
  ******************************************************************/
 calc.run = function (datain) {
-    calc.data = calc.start(datain);
-    calc.start(calc.data);
-
     const validatedScenario = legacyScenarioSchema.parse(datain)
     const fuels = new Fuels(extractFuelsInputFromLegacy(validatedScenario))
     const floors = new Floors(extractFloorsInputFromLegacy(validatedScenario))
@@ -75,6 +74,9 @@ calc.run = function (datain) {
     const appliances = constructAppliances(extractAppliancesInputFromLegacy(validatedScenario), { fuels, floors, occupancy })
     const cooking = constructCooking(extractCookingInputFromLegacy(validatedScenario), { fuels, floors, occupancy })
 
+    calc.data = datain;
+    setDefaultLegacyInputs(calc.data)
+    setBlankLegacyOutputs(calc.data)
     floors.mutateLegacyData(calc.data)
     occupancy.mutateLegacyData(calc.data)
     fabric.mutateLegacyData(calc.data)
@@ -104,67 +106,6 @@ calc.run = function (datain) {
     calc.data.kwhdpp = (calc.data.energy_use / 365.0) / calc.data.occupancy;
     calc.data.primarykwhdpp = (calc.data.primary_energy_use / 365.0) / calc.data.occupancy;
     return calc.data;
-};
-
-/******************************************************************
- * START
- *
- * Inits the data input object
- *
- ******************************************************************/
-calc.start = function (data) {
-    data = data || {};
-    // Global namespace variables:
-    if (data.region == undefined) {
-        data.region = 0;
-    }
-    if (data.altitude == undefined) {
-        data.altitude = 0;
-    }
-    if (data.LAC_calculation_type == undefined) {
-        data.LAC_calculation_type = 'SAP';
-    }
-
-    if (data.fuels == undefined) {
-        data.fuels = datasets.fuels;
-    }
-
-    // Copy over any new fuels added in datasets to local assessment copy
-    // this does not overwrite any local changes
-    for (let fuel in datasets.fuels) {
-        if (data.fuels[fuel] == undefined) {
-            data.fuels[fuel] = datasets.fuels[fuel];
-        }
-    }
-
-    data.internal_temperature = [18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18];
-    data.external_temperature = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
-    data.losses_WK = {};
-    data.gains_W = {};
-    data.annual_useful_gains_kWh_m2 = {};
-    data.annual_losses_kWh_m2 = {};
-    data.energy_requirements = {};
-    data.fuel_requirements = {
-        lighting: {quantity: 0, list: []},
-        cooking: {quantity: 0, list: []},
-        appliances: {quantity: 0, list: []},
-        waterheating: {quantity: 0, list: []},
-        space_heating: {quantity: 0, list: []},
-        fans_and_pumps: {quantity: 0, list: []}
-    };
-    data.fuel_totals = {};
-    data.mean_internal_temperature = {};
-    data.total_cost = 0;
-    data.total_income = 0;
-    data.primary_energy_use = 0;
-    data.kgco2perm2 = 0;
-    data.primary_energy_use_bills = 0;
-    data.space_heating_demand_m2 = 0;
-    data.primary_energy_use_by_requirement = {};
-    data.totalWK = 0;
-    data.FEE = 0;
-
-    return data;
 };
 
 /*---------------------------------------------------------------------------------------------
@@ -642,7 +583,7 @@ calc.temperature = function (data) {
     data.mean_internal_temperature.u_factor_rest_of_dwelling = utilisation_factor_B;
     data.mean_internal_temperature.m_i_t_rest_of_dwelling = Ti_restdwelling;
     data.mean_internal_temperature.fLA = fLA;
-    data.mean_internal_temperature.m_i_t_whole_dwelling = JSON.parse(JSON.stringify(data.internal_temperature));
+    data.mean_internal_temperature.m_i_t_whole_dwelling = legacyCloneDeep(data.internal_temperature);
     data.external_temperature = Te;
 
     // Temperature adjustment
@@ -1036,14 +977,13 @@ calc.fuel_requirements = function (data) {
 
 calc.SAP = function (data) {
     // Calculate total energy cost in the SAP way: taking into account only fuel cost for space heating, water heating, lighting and fans and pumps
-    let dataSAP = JSON.parse(JSON.stringify(data));
+    let dataSAP = legacyCloneDeep(data);
     dataSAP.total_cost = 0;
     dataSAP.primary_energy_use = 0;
     dataSAP.fuel_requirements.appliances = {quantity: {}, list: []};
     dataSAP.fuel_requirements.cooking = {quantity: {}, list: []};
     dataSAP = calc.fuel_requirements(dataSAP);
     // SAP
-    data.SAP = {};
     data.SAP.total_costSAP = dataSAP.total_cost;
     data.SAP.annualco2SAP = dataSAP.annualco2;
     data.SAP.kgco2perm2SAP = dataSAP.annualco2 / data.TFA;
@@ -1954,7 +1894,7 @@ calc.gains_summary = function (data) {
  //---------------------------------------------------------------------------------------------*/
 
 calc.fabric_energy_efficiency = function (data) {
-    let data_FEE = JSON.parse(JSON.stringify(data));
+    let data_FEE = legacyCloneDeep(data);
 
     // correct openBEM deviations from SAP
     data_FEE.use_custom_occupancy = false;
@@ -2025,7 +1965,6 @@ calc.fabric_energy_efficiency = function (data) {
     // N/A
 
     // Run the model
-    calc.start(data_FEE);
     const validatedScenarioFEE = legacyScenarioSchema.parse(data_FEE)
 
     const fuels = new Fuels(extractFuelsInputFromLegacy(validatedScenarioFEE))
@@ -2039,6 +1978,8 @@ calc.fabric_energy_efficiency = function (data) {
     const appliances = constructAppliances(extractAppliancesInputFromLegacy(validatedScenarioFEE), { fuels, floors, occupancy })
     const cooking = constructCooking(extractCookingInputFromLegacy(validatedScenarioFEE), { fuels, floors, occupancy })
 
+    setDefaultLegacyInputs(data_FEE)
+    setBlankLegacyOutputs(data_FEE)
     floors.mutateLegacyData(data_FEE)
     occupancy.mutateLegacyData(data_FEE)
     fabric.mutateLegacyData(data_FEE)

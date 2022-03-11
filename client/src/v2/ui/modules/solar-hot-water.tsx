@@ -1,5 +1,5 @@
 import React from 'react';
-import { merge, set, unset } from 'lodash';
+import { set, unset } from 'lodash';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { Orientation, OrientationName } from '../../model/enums/orientation';
 import { Overshading, OvershadingName } from '../../model/enums/overshading';
@@ -20,6 +20,7 @@ import {
 } from '../output-components/numeric';
 import { LockedWarning } from '../output-components/locked-warning';
 import { PropsOf } from '../../helpers/props-of';
+import { safeMerge } from '../../helpers/safe-merge';
 import { Shadow } from '../../helpers/shadow-object-type';
 import { coalesceEmptyString } from '../../legacy-state-validators/numericValues';
 
@@ -131,14 +132,6 @@ const extractInputsFromLegacy = ({
         dedicatedSolarStorageVolume: SHW?.Vs ?? null,
         combinedCylinderVolume: SHW?.combined_cylinder_volume ?? null,
     };
-};
-
-/** Lodash merge with type checking that ensures Source extends Destination */
-const safeMerge = <Source extends Dest, Dest extends object>(
-    dest: Dest,
-    source: Partial<Source>,
-): Dest & Partial<Source> => {
-    return merge(dest, source);
 };
 
 export const solarHotWaterModule: UiModule<SolarHotWaterState> = {

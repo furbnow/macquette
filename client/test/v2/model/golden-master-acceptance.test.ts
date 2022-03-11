@@ -4,10 +4,7 @@ import { calcRun as referenceCalcRun } from './reference-model';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import fc from 'fast-check';
 import { arbScenario, SHWInputKeys } from './arbitraries/scenario';
-import {
-    LegacyScenario,
-    legacyScenarioSchema,
-} from '../../../src/v2/legacy-state-validators/scenario';
+import { legacyScenarioSchema } from '../../../src/v2/legacy-state-validators/scenario';
 import { FcInfer } from '../../helpers/arbitraries';
 import { CompareFloatParams, compareFloats } from '../../helpers/fuzzy-float-equality';
 
@@ -132,7 +129,7 @@ const modelValueComparer =
     };
 
 // Mutate the scenario rather than deep-cloning it, for performance
-const normaliseScenario = (scenario: LegacyScenario) => {
+const normaliseScenario = (scenario: any) => {
     // SHW normalisation
     if (scenario.SHW !== undefined) {
         const inputs = pick(scenario.SHW, ...SHWInputKeys);
@@ -157,7 +154,7 @@ const normaliseScenario = (scenario: LegacyScenario) => {
     // If using carbon coop mode for the appliances and cooking modules, remove
     // variables that are added by legacy but never used
     if (scenario.LAC_calculation_type === 'carboncoop_SAPlighting') {
-        const { LAC } = scenario as any;
+        const { LAC } = scenario;
         delete LAC.EA;
         delete LAC.energy_efficient_appliances;
         delete LAC.fuels_appliances;
@@ -169,7 +166,7 @@ const normaliseScenario = (scenario: LegacyScenario) => {
     }
 
     // Legacy property added by removed LAC "detailedlist" module
-    delete (scenario as any).appliancelist;
+    delete scenario.appliancelist;
 
     return scenario;
 };
