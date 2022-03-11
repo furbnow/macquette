@@ -97,6 +97,11 @@ const urlHelper = function() {
                 const dummyURL = '{% url VERSION|add:":create-delete-organisation-librarians" "12345" "67890" %}';
                 return dummyURL.replace(/12345/, parseInt(userID)).replace(/67890/, parseInt(organisationID));
             },
+
+            report: function(organisationID) {
+                const dummyURL = '{% url VERSION|add:":generate-report" "12345" %}';
+                return dummyURL.replace(/12345/, parseInt(organisationID));
+            },
         },
 
         html: {

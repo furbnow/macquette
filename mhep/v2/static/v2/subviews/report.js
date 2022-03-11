@@ -37,7 +37,83 @@ function report_initUI() {
         });
     }
 
+    let newReport = window.features.includes("new-report-generation");
+    let oldReport = !window.features.includes("disable-old-report-generation");
+
+    if ((newReport && !oldReport) || (!newReport && oldReport)) {
+        $("#content .small-caps").hide()
+    }
+
+    if (newReport) {
+        document.getElementById("new-report-generation").style.display = "block";
+    }
+
+    function startFetch() {
+        document.getElementById("request-spinner").style.display = "inline-block";
+        document.getElementById("request-pdf").disabled = true;
+        document.getElementById("request-preview").disabled = true;
+    }
+    function endFetch() {
+        document.getElementById("request-spinner").style.display = "none";
+        document.getElementById("request-pdf").disabled = false;
+        document.getElementById("request-preview").disabled = false;
+    }
+
+    $("#request-pdf").click(async () => {
+        startFetch();
+        const scenarioIds = getSelectedScenarioIds();
+        const context = get_context_data(scenarioIds);
+        const graphs = window.Macquette.generateReportGraphs(project, scenarioIds);
+
+        try {
+            const pdf = await mhep_helper.generate_report(p.organisation.id, {
+                context,
+                graphs,
+            });
+            const downloadLink = document.createElement('a');
+            downloadLink.href = window.URL.createObjectURL(pdf);
+            downloadLink.setAttribute('download', 'test-report.pdf');
+            downloadLink.click();
+            endFetch();
+        } catch (err) {
+            alert(`Error generating report. See console for details.`);
+            console.log(err);
+            endFetch();
+        }
+    })
+
+    $("#request-preview").click(async () => {
+        startFetch();
+        const scenarioIds = getSelectedScenarioIds();
+        const context = get_context_data(scenarioIds);
+        const graphs = window.Macquette.generateReportGraphs(project, scenarioIds);
+
+        try {
+            const blob = await mhep_helper.generate_report(p.organisation.id, {
+                preview: true,
+                context,
+                graphs,
+            });
+            const html = await blob.text();
+            document.querySelector('#report-preview').style.display = 'block';
+            document.querySelector('iframe').contentDocument.querySelector('body').innerHTML = html;
+            endFetch();
+        } catch (err) {
+            alert(`Error generating report. See console for details.`);
+            console.log(err);
+            endFetch();
+        }
+    })
+
     let __report = new Report();
+}
+
+function getSelectedScenarioIds() {
+    let result = [];
+    $('#scenario-choices input:checked').each(function () {
+        result.push(this.value);
+    });
+    return result;
 }
 
 class Report {
@@ -287,6 +363,18 @@ function get_pv() {
     };
 }
 
+function get_generation() {
+    if (typeof project.master.currentenergy.generation.annual_generation !== 'number' ||
+            project.master.currentenergy.generation.annual_generation === 0) {
+        return false;
+    }
+
+    return {
+        kwh: project.master.currentenergy.generation.annual_generation, // kWh
+        used_onsite: project.master.currentenergy.generation.fraction_used_onsite * 100,  // %
+    };
+}
+
 function get_used_fuels(scenarios) {
     let all_fuel_names = new Set();
 
@@ -307,18 +395,70 @@ function get_used_fuels(scenarios) {
 
 function get_scenario_list(scenarios) {
     return scenarios
-        .filter(id => id !== 'master')
-        .map(scenario_id => ({
-            id: scenario_id,
-            num: parseInt(scenario_id.match(/(\d+)/g)[0], 10),
-            name: project[scenario_id].scenario_name,
-            description: project[scenario_id].scenario_description,
+        .map(id => ({
+            id,
+            num: id === 'master' ? 0 : parseInt(id.match(/(\d+)/g)[0], 10),
+            name: project[id].scenario_name,
+            description: project[id].scenario_description,
         }));
 }
 
 function get_lookup(table, key) {
     return table[project.master.household[key]];
 }
+
+function get_heating_load(scenario) {
+    const heatloss = scenario.totalWK;
+    const temp = scenario.temperature.target;
+    const temp_diff = temp - (-5);
+    const peak_heat = heatloss * temp_diff;
+    const area = scenario.TFA;
+    const peak_heat_m2 = peak_heat / area;
+
+    return {
+        heatloss,
+        temp,
+        temp_diff,
+        peak_heat: peak_heat / 1000, // in kW instead of W
+        area,
+        peak_heat_m2,
+    };
+}
+
+function get_climate_region() {
+    let numberToText = {
+        0: "UK average",
+        1: "Thames",
+        2: "South East England",
+        3: "Southern England",
+        4: "South West England",
+        5: "Severn Wales / Severn England",
+        6: "Midlands",
+        7: "West Pennines Wales / West Pennines England",
+        8: "North West England / South West Scotland",
+        9: "Borders Scotland / Borders England",
+        10: "North East England",
+        11: "East Pennines",
+        12: "East Anglia",
+        13: "Wales",
+        14: "West Scotland",
+        15: "East Scotland",
+        16: "North East Scotland",
+        17: "Highland",
+        18: "Western Isles",
+        19: "Orkney",
+        20: "Shetland",
+        21: "Northern Ireland",
+    }
+    return numberToText[project.master.region];
+}
+
+function sumArray(arr) {
+    return arr.reduce((a, b) => a + b, 0);
+}
+
+const scenarioName = (scenarioId, idx) =>
+    scenarioId === 'master' ? 'Baseline' : `Scenario ${idx}`;
 
 function get_context_data(scenarios) {
     const hh = project.master.household;
@@ -368,6 +508,12 @@ function get_context_data(scenarios) {
             }
         },
         now: {
+            climate_region: get_climate_region(),
+            occupancy: project.master.occupancy,
+            heating: {
+                hours_on_weekday: 24 - sumArray(project.master.temperature.hours_off.weekday),
+                hours_on_weekend: 24 - sumArray(project.master.temperature.hours_off.weekend),
+            },
             home_type: get_lookup(questionnaire.HOUSE_TYPE, 'house_type'),
             num_bedrooms: hh['house_nr_bedrooms'],
             floor_area: project.master.TFA,
@@ -455,17 +601,58 @@ function get_context_data(scenarios) {
                 overheating_comments: hh['overheating_note'],
             },
             context_and_other_points: hh['context_and_other_points'],
+            // delete this line post-new report - it contains inaccurate info
             pv: get_pv(),
+            generation: get_generation(),
         },
         used_fuels: get_used_fuels(scenarios),
         commentary: {
+            brief: hh['commentary_brief'],
             context: hh['commentary_context'],
             decisions: hh['commentary_decisions'],
         },
         scenarios: {
-            list: get_scenario_list(scenarios),
-        }
+            list: get_scenario_list(scenarios).filter(({id}) => id !== 'master')
+        },
+        // new - serverside generation only
+        // rename to 'scenarios' when deployed
+        scenario_data: get_scenario_list(scenarios).map(scenario => Object.assign(
+            {},
+            scenario,
+            {
+                created_from: {
+                    num: scenario.num === 0 ? -1 :
+                        project[scenario.id].created_from === 'master'
+                            ? 0
+                            : parseInt(project[scenario.id].created_from.split('scenario')[1], 10),
+                },
+                measures: getScenarioMeasures(project[scenario.id]),
+                measures_cost: Math.round(measures_costs(scenario.id) / 10) * 10,
+                measures_additive_cost: Math.round(get_additive_cost(scenario.id) / 10) * 10,
+                heating_load: get_heating_load(project[scenario.id]),
+                target_temp: project[scenario.id].temperature.target,
+                co2: {
+                    total: project[scenario.id].annualco2,
+                    per_person: project[scenario.id].annualco2 / project[scenario.id].occupancy
+                },
+                heatloss: heatlossData(scenario.id),
+            }
+        ))
     };
+}
+
+function get_additive_cost(scenarioId) {
+    let next = project[scenarioId].created_from;
+    if (!next || next === 'master') {
+        return null;
+    }
+
+    let sum = measures_costs(scenarioId);
+    while (next && next !== 'master') {
+        sum += measures_costs(next);
+        next = project[next].created_from;
+    }
+    return sum;
 }
 
 function add_heat_loss_summary(root, scenarios) {

@@ -568,7 +568,8 @@ function getScenarioMeasures(scenarioData) {
         return location;
     }
 
-    return result.map(row => Object.assign({}, row, {
+    return result.map((row, idx) => Object.assign({}, row, {
+        num: idx + 1,
         tag: row.lib || row.tag,
         location: row.location ? normaliseLocation(row.location) : 'Whole house',
         description: row.description || '',

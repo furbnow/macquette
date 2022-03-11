@@ -139,6 +139,60 @@ export const legacyScenarioSchema = z
             })
             .partial(),
         num_of_floors_override: z.number(), // Used only in ventilation
+        FEE: numberWithNaN,
+        total_cost: stringyFloatSchema.nullable(),
+        annualco2: z.number().nullable(),
+        totalWK: z.number(),
+        TFA: stringyFloatSchema,
+        fuel_requirements: z.record(
+            z.object({
+                quantity: numberWithNaN.nullable(),
+            }),
+        ),
+        temperature: z
+            .object({
+                target: z.number(),
+            })
+            .partial(),
+        fuel_totals: z.record(
+            z.object({ name: z.string(), quantity: z.number().nullable() }),
+        ),
+        currentenergy: z
+            .object({
+                total_cost: numberWithNaN,
+                enduse_annual_kwh: stringyFloatSchema,
+                use_by_fuel: z.record(
+                    z.object({
+                        annual_use: stringyFloatSchema,
+                    }),
+                ),
+                generation: z
+                    .object({
+                        fraction_used_onsite: numberWithNaN,
+                        annual_generation: numberWithNaN,
+                    })
+                    .partial(),
+            })
+            .partial(),
+        space_heating: z
+            .object({
+                annual_heating_demand_m2: numberWithNaN.nullable(),
+            })
+            .partial(),
+        space_heating_demand_m2: numberWithNaN.nullable(),
+        annual_useful_gains_kWh_m2: z
+            .object({
+                Solar: numberWithNaN.nullable(),
+                Internal: numberWithNaN.nullable(),
+            })
+            .partial(),
+        annual_losses_kWh_m2: z
+            .object({
+                fabric: numberWithNaN.nullable(),
+                ventilation: numberWithNaN.nullable(),
+                infiltration: numberWithNaN.nullable(),
+            })
+            .partial(),
     })
     .partial();
 

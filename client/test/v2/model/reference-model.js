@@ -2239,7 +2239,7 @@ calc.generation = function (data) {
     if (data.generation == undefined) {
         data.generation = {
             solar_annual_kwh: 0,
-            solar_fraction_used_onsite: 0.5,
+            solar_fraction_used_onsite: 0.25,
             solar_FIT: 0,
             solar_export_FIT: 0,
             wind_annual_kwh: 0,

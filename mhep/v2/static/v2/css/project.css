@@ -420,12 +420,27 @@ label input[type=radio] {
     color: var(--brown-1);
 }
 
-
-
-
-
 tr.item {
     vertical-align: top;
+}
+
+/*** Spinner ***/
+
+.spinner {
+    border: 5px solid var(--brown-2);
+    border-top-color: var(--app-color);
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 

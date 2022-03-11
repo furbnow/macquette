@@ -1,3 +1,5 @@
+const csrfToken = new URLSearchParams(document.cookie.replaceAll('; ', '&')).get('csrftoken');
+
 var mhep_helper = {
     'list_assessments': function () {
         return new Promise((resolve, reject) => {
@@ -367,5 +369,22 @@ var mhep_helper = {
                 }
             });
         });
+    },
+    'generate_report': async function (orgid, context) {
+        const response = await fetch(urlHelper.api.report(orgid), {
+            method: 'post',
+            body: JSON.stringify(context),
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (!response.ok) {
+            const body = await response.json();
+            throw new Error(`HTTP error, status: ${response.status}, contents: ${JSON.stringify(body)}`);
+        }
+
+        return response.blob();
     },
 };

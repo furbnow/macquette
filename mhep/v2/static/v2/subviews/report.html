@@ -19,12 +19,25 @@
     <ul class="list-unstyled" id="scenario-choices"></ul>
 </div>
 
-<div class="mb-30">
-    <button class="btn" id="generate-report">Generate</button>
-    <button class="btn" id="print-report">Print</button>
+<div class="d-flex">
+    <div class="mb-30 mr-30">
+        <div class="small-caps">Old report</div>
+
+        <button class="btn" id="generate-report">Generate</button>
+        <button class="btn" id="print-report">Print</button>
+    </div>
+
+    <div class="mb-30" id="new-report-generation" style="display: none">
+        <div class="small-caps">New report</div>
+
+        <button class="btn" id="request-preview">Preview</button>
+        <button class="btn" id="request-pdf">Get PDF</button>
+        <span class="spinner" id="request-spinner" style="display: none"></span>
+    </div>
 </div>
 
 <div id="report-preview" style="display: none">
     <span class="small-caps">Report preview</span>
+    <div class="alert mb-0">This is useful to check text, but some aspects will not appear correctly when compared to the generated PDF.</div>
     <iframe class="report-frame-body" style="width: 100%; height: 90vh; border: 2px solid black;"></iframe>
 </div>
