@@ -42,10 +42,23 @@ def _render_bar_chart(figure: types.BarChart):
                 facecolor=bg_colours[idx % len(bg_colours)],
                 alpha=0.15,
                 edgecolor="#000",
+                zorder=0,
             )
             if area.label:
                 ax.text(lower + (upper - lower) / 2, -0.75, area.label, ha="center")
                 extra_label_space = True
+
+    # Lines also get added now so they're underneath the bars.
+    if figure.lines:
+        for line in figure.lines:
+            ax.axvline(
+                x=line.value,
+                linestyle="dashed",
+                color="#000",
+                linewidth=0.5,
+                zorder=0,
+            )
+            ax.text(line.value, -0.75, f" {line.label}")
 
     # Convert our data from being per-bin into being per-category.
     dataset = []
@@ -80,6 +93,7 @@ def _render_bar_chart(figure: types.BarChart):
                 edgecolor="#000",
                 tick_label=bin_labels,
                 color=bar_colours[idx % len(bar_colours)],
+                zorder=10,
             )
 
             if negative:
@@ -103,11 +117,12 @@ def _render_bar_chart(figure: types.BarChart):
                 edgecolor="#000",
                 tick_label=bin_labels,
                 color=bar_colours[idx % len(bar_colours)],
+                zorder=10,
             )
 
             units = figure.units if len(figure.units) < 5 else ""
             texts = ax.bar_label(
-                rects, labels=[f"{r:.1f}{units}" for r in data], padding=-5
+                rects, labels=[f"{r:.1f}{units}" for r in data], padding=-5, zorder=15
             )
             for t in texts:
                 t.set(color="white", ha="right")
@@ -129,6 +144,8 @@ def _render_bar_chart(figure: types.BarChart):
     plt.tick_params(left=False)
     ax.spines["right"].set_visible(False)
     ax.spines["top"].set_visible(False)
+
+    ax.spines["left"].set_zorder(20)
 
     fig.tight_layout()
 
