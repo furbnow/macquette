@@ -132,7 +132,7 @@ def _render_bar_chart(figure: types.BarChart):
 
     fig.tight_layout()
 
-    if figure.num_categories > 1:
+    if figure.num_categories > 1 and figure.category_labels:
         key = [
             (name, bar_colours[idx % len(bar_colours)])
             for idx, name in enumerate(figure.category_labels)
