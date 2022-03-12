@@ -1,3 +1,4 @@
+import math
 import re
 
 import pydantic
@@ -14,7 +15,7 @@ from mhep import graphs
 
 
 @pass_eval_context
-def nl2br(eval_ctx, value):
+def _nl2br(eval_ctx, value):
     br = "<br>\n"
 
     if eval_ctx.autoescape:
@@ -28,11 +29,16 @@ def nl2br(eval_ctx, value):
     return Markup(result) if eval_ctx.autoescape else result
 
 
+def _sqrt(value):
+    return math.sqrt(value)
+
+
 def parse_template(template):
-    """Compile HTML template to see if any syntax errors come up."""
+    """Parse and compile the provided template."""
     env = Environment(loader=DictLoader({}), autoescape=select_autoescape())
-    env.filters["nl2br"] = nl2br
-    template = env.from_string(template)
+    env.filters["nl2br"] = _nl2br
+    env.filters["sqrt"] = _sqrt
+    return env.from_string(template)
 
 
 def render_template(template, context, graph_data):
@@ -53,9 +59,7 @@ def render_template(template, context, graph_data):
             "key": key,
         }
 
-    env = Environment(loader=DictLoader({}), autoescape=select_autoescape())
-    env.filters["nl2br"] = nl2br
-    template = env.from_string(template)
+    template = parse_template(template)
     return template.render({"graphs": rendered_graphs, **context})
 
 
