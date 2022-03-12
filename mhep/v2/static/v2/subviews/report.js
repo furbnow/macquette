@@ -351,8 +351,9 @@ function get_context_data(scenarios) {
             priorities: get_priorities(),
             qual_criteria: hh['priority_qualitative_note'],
             aesthetics: {
-                internal: hh['aesthetics_external'] === 'YES',
-                external: hh['aesthetics_internal'] === 'YES',
+                // true means it's ok to change aesthetics
+                internal: hh['aesthetics_external'] === 'NO',
+                external: hh['aesthetics_internal'] === 'NO',
                 note: hh['aesthetics_note'],
             },
             logistics: {
