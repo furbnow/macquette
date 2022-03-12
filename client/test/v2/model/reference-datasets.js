@@ -159,7 +159,7 @@ export const datasets = {
         'generation': {
             category: 'Generation',
             standingcharge: 0,
-            fuelcost: 0,
+            fuelcost: 19.44,
             co2factor: 0.136,
             primaryenergyfactor: 1.501,
             SAP_code: 0,
