@@ -249,7 +249,6 @@ const calc = {
     //************
     // Variables
     //************
-    var changelog = "";
     var selected_library = -1;
     var selected_library_tag = "Wall";
     var page;
@@ -394,7 +393,6 @@ const calc = {
             $("#openbem").trigger("onKeyChange", {key: key, value: val});
 
             console.log(key + " changed from " + lastval + " to " + val);
-            changelog += key + " changed from " + lastval + " to " + val + "<br>";
 
             if (key.endsWith('.scenario_name')) {
               redraw_scenario_menu();
