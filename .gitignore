@@ -2,8 +2,7 @@
 graph_results
 
 # Ignore private test fixtures
-client/test/model/fixtures/private/*
-
+client/test/v2/fixtures/private/*
 mhep/media/
 js_generated
 
