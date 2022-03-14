@@ -586,17 +586,14 @@ libraryHelper.prototype.onEditLibraryItem = function (origin) {
 };
 libraryHelper.prototype.onEditLibraryItemOk = function (library_id) {
     $('#edit-item-message').html('');
-    //if ($('#library-select').val() != undefined)
-    //library_id = $('#library-select').val();
+
     var selected_library = this.get_library_by_id(library_id);
     var item = {};
     // Call to specific function for the type
     var function_name = this.type + '_get_item_to_save';
     item = this[function_name]();
     for (tag in item) {
-        var item_string = JSON.stringify(item[tag]).replace('+', '/plus'); // For a reason i have not been able to find why the character + becomes a carrier return when it is accesed in $_POST in the controller, because of this we escape + with \plus
-        item_string = item_string.replace(/&/g, 'and');
-        //item[tag].number_of_intermittentfans="\\+2";
+        var item_string = item[tag];
         $.ajax({type: 'PUT',
             url: urlHelper.api.libraryItem(selected_library.id, tag),
             data: item_string,
