@@ -8,3 +8,4 @@ Design documentation
    002-refactoring-plan
    004-report-generation
    005-playwright
+   006-validation
