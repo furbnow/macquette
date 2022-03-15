@@ -98,12 +98,22 @@ const hasNoKnownBugs = (legacyScenario: any) => {
         return 'bug';
     };
 
+    const floorAreaStringConcatenationBug = (): 'bug' | 'no bug' => {
+        const floorsInit: Array<{ area: string | number }> = legacyScenario.floors.slice(
+            0,
+            legacyScenario.floors.length - 1,
+        );
+        if (floorsInit.some((floor) => typeof floor.area === 'string')) return 'bug';
+        return 'no bug';
+    };
+
     const noStringConcatenationBugs =
         // Wide spectrum
         !Number.isNaN(stricterParseFloat(legacyScenario.total_cost)) &&
         // Specifics
         solarHotWaterStringConcatenationBug() === 'no bug' &&
-        ventilationStringConcatenationBug() === 'no bug';
+        ventilationStringConcatenationBug() === 'no bug' &&
+        floorAreaStringConcatenationBug() === 'no bug';
 
     const noVentilationBugs =
         // if num_of_floors_override is 0, legacy treats it as undefined (i.e.

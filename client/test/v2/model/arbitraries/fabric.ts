@@ -11,7 +11,27 @@ const commonElement = (id?: number) =>
         id: id !== undefined ? fc.constant(id) : sensibleFloat,
         uvalue: stringySensibleFloat(),
         kvalue: stringySensibleFloat(),
-        area: stringySensibleFloat(),
+
+        /*
+            In the wild, we see stringy areas on fabric elements, but making
+            the area stringy in the arbitrary can result in some very deep and
+            hard to detect string concatenation errors in the legacy model.
+
+            For example, if any of the elements in a particular category (e.g.
+            window-like elements) have a stringy area, a concatenation bug will
+            occur -- unless the element's dimensions are also specified, in
+            which case the area is computed as a non-stringy number by
+            multiplying them, or unless the stringy area is '' and subsequent
+            elements' areas are also '', in which case it comes right in the
+            end, and also if the partial sum of areas up to that element is
+            fractional, subsequent areas may also be '0' without triggering the
+            bug.
+
+            If an error like this were to occur in a real scenario, it would be
+            picked up by the fixed data golden master tests as a value
+            difference between legacy and live anyway.
+        */
+        area: sensibleFloat,
     });
 
 const wallLike = (id?: number) =>

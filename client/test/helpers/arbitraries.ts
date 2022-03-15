@@ -4,7 +4,7 @@ export type FcInfer<ArbT> = ArbT extends fc.Arbitrary<infer T>
     ? T
     : ArbT extends (...args: unknown[]) => fc.Arbitrary<infer T>
     ? T
-    : unknown;
+    : never;
 
 export const merge = <
     U extends Record<string, unknown>,

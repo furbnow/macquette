@@ -3,8 +3,8 @@ export type CompareFloatParams = {
     // `|(expected - received)/expected|`
     tolerance?: number;
 
-    // If expected = 0, the above formula is undefined, so this is the maximum
-    // tolerable value of `|received|`
+    // If expected is close to 0, the above formula breaks down, so we specify
+    // a tolerance in absolute terms in that case.
     absoluteToleranceAroundZero?: number;
 };
 
@@ -15,11 +15,8 @@ export const compareFloats =
             return Object.is(received, expected);
         }
         const absoluteToleranceAroundZero = params?.absoluteToleranceAroundZero ?? 0.0001;
-        if (Object.is(expected, 0) || Object.is(expected, -0)) {
-            return Math.abs(received) <= absoluteToleranceAroundZero;
-        }
-        if (Object.is(received, 0) || Object.is(received, -0)) {
-            return Math.abs(expected) <= absoluteToleranceAroundZero;
+        if (Math.abs(expected) < absoluteToleranceAroundZero) {
+            return Math.abs(received) < absoluteToleranceAroundZero;
         }
 
         // Non-zero rational numbers
