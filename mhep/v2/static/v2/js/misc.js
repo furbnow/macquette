@@ -568,6 +568,20 @@ function getScenarioMeasures(scenarioData) {
         return location;
     }
 
+    function normaliseCost(cost) {
+        function roundToNearest(val, to) {
+            return Math.ceil(val / to) * to;
+        }
+
+        if (cost < 500) {
+            return roundToNearest(cost, 5);
+        } else if (cost < 5000) {
+            return roundToNearest(cost, 50);
+        } else {
+            return roundToNearest(cost, 500);
+        }
+    }
+
     return result.map((row, idx) => Object.assign({}, row, {
         num: idx + 1,
         tag: row.lib || row.tag,
@@ -576,75 +590,19 @@ function getScenarioMeasures(scenarioData) {
         key_risks: row.key_risks || '',
         associated_work: row.associated_work || '',
         quantity: (1.0 * row.quantity).toFixed(2),
-        cost_total: (1.0 * row.cost_total).toFixed(2),
+        cost_total: normaliseCost(1.0 * row.cost_total).toFixed(2),
         maintenance: row.maintenance || 'N/A',
         disruption: row.disruption ? row.disruption.replace('MEDIUMHIGH', 'MEDIUM / HIGH') : 'N/A',
         performance: row.performance ? format_performance_string(row.performance) : '',
     }));
 }
 
-function measures_costs(scenario) {
-    var measures_total_cost = 0;
-    if (project[scenario].fabric.measures != undefined) {
-        measures_total_cost += cost_of_measures_by_id(project[scenario].fabric.measures);
-    }
-    if (project[scenario].measures.ventilation != undefined) {
-        if (project[scenario].measures.ventilation.extract_ventilation_points != undefined) {
-            measures_total_cost += cost_of_measures_by_id(project[scenario].measures.ventilation.extract_ventilation_points);
-        }
-        if (project[scenario].measures.ventilation.intentional_vents_and_flues != undefined) {
-            measures_total_cost += cost_of_measures_by_id(project[scenario].measures.ventilation.intentional_vents_and_flues);
-        }
-        if (project[scenario].measures.ventilation.intentional_vents_and_flues_measures != undefined) {
-            measures_total_cost += cost_of_measures_by_id(project[scenario].measures.ventilation.intentional_vents_and_flues_measures);
-        }
-        if (project[scenario].measures.ventilation.draught_proofing_measures != undefined) {
-            measures_total_cost += project[scenario].measures.ventilation.draught_proofing_measures.measure.cost_total;
-        }
-        if (project[scenario].measures.ventilation.ventilation_systems_measures != undefined) {
-            measures_total_cost += project[scenario].measures.ventilation.ventilation_systems_measures.measure.cost_total;
-        }
-        if (project[scenario].measures.ventilation.clothes_drying_facilities != undefined) {
-            measures_total_cost += cost_of_measures_by_id(project[scenario].measures.ventilation.clothes_drying_facilities);
-        }
-    }
-    if (project[scenario].measures.water_heating != undefined) {
-        if (project[scenario].measures.water_heating.water_usage != undefined) {
-            measures_total_cost += cost_of_measures_by_id(project[scenario].measures.water_heating.water_usage);
-        }
-        if (project[scenario].measures.water_heating.storage_type_measures != undefined) {
-            measures_total_cost += project[scenario].measures.water_heating.storage_type_measures.measure.cost_total;
-        }
-        if (project[scenario].measures.water_heating.pipework_insulation != undefined) {
-            measures_total_cost += project[scenario].measures.water_heating.pipework_insulation.measure.cost_total;
-        }
-        if (project[scenario].measures.water_heating.hot_water_control_type != undefined) {
-            measures_total_cost += project[scenario].measures.water_heating.hot_water_control_type.measure.cost_total;
-        }
-    }
-    if (project[scenario].measures.space_heating_control_type != undefined) {
-        measures_total_cost += cost_of_measures_by_id(project[scenario].measures.space_heating_control_type);
-    }
-    if (project[scenario].measures.heating_systems != undefined) {
-        measures_total_cost += cost_of_measures_by_id(project[scenario].measures.heating_systems);
-    }
-    if (project[scenario].use_generation == 1 && project[scenario].measures.PV_generation != undefined) {
-        measures_total_cost += project[scenario].measures.PV_generation.measure.cost_total;
-    }
-    if (project[scenario].measures.LAC != undefined) {
-        if (project[scenario].measures.LAC.lighting != undefined) {
-            measures_total_cost += project[scenario].measures.LAC.lighting.measure.cost_total;
-        }
-    }
-    return measures_total_cost;
+function measures_costs(scenarioId) {
+    return getScenarioMeasures(project[scenarioId])
+        .map(row => row.cost_total)
+        .reduce((prev, curr) => prev + (1.0 * curr), 0);
 }
-function cost_of_measures_by_id(list_of_measures_by_id) {
-    var cost = 0;
-    for (var id in list_of_measures_by_id) {
-        cost += list_of_measures_by_id[id].measure.cost_total;
-    }
-    return cost;
-}
+
 // Add extra properties to measure
 function add_quantity_and_cost_to_measure(measure) {
     // ares of EWI is bigger than the actual area of the wall
