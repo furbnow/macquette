@@ -201,5 +201,6 @@ def render(data: Union[types.BarChart, types.LineGraph]):
 def to_url(fig) -> str:
     buf = BytesIO()
     fig.savefig(buf, format="png", dpi=300)
+    plt.close(fig)
     encoded = b64encode(buf.getbuffer()).decode("ascii")
     return f"data:image/png;base64,{encoded}"
