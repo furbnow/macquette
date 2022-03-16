@@ -1,4 +1,8 @@
+import { defaultFuels } from './default-fuels'
+
 export const datasets = {
+    fuels: defaultFuels,
+
     /*********************************************
          * regions
          *
