@@ -159,6 +159,10 @@ export class WindowLike {
             month,
         );
         const season = 'winter'; // For heating, use winter values all year round (as per note in Table 6d)
+
+        // We apply the same solar access factor to roof lights as any other windows.
+        // This is a deviation from SAP2012 (p.216, table 6d, note 2) where solar
+        // access factors for roof lights are always 1, independent of overshading.
         const accessFactor = solarAccessFactor(this.spec.overshading, season);
         const gain =
             0.9 *
@@ -177,6 +181,10 @@ export class WindowLike {
 
     get naturalLight(): number {
         // Summand of numerator of G_L in SAP Appendix L
+
+        // We apply the same light access factor to roof lights as any other windows.
+        // This is a deviation from SAP2012 (p.216, table 6d, note 2) where light
+        // access factors for roof lights are always 1, independent of overshading.
         const accessFactor = lightAccessFactor(this.spec.overshading);
         const light =
             0.9 *
