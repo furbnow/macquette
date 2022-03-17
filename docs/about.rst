@@ -81,18 +81,26 @@ Writeup of the user story map for the assessor to be included here
 History
 -------
 
-Macquette is a fork of the original MyHomeEnergyPlanner (MHEP), which
-was written in PHP using the EmonCMS framework. Macquette has been
-ported to Python/Django and is the software backing assessments as part
-of the People Powered Retrofit project.
+In 2009, URBED had a spreadsheet based on SAP 2005.  In early 2011, Carbon Co-op/URBED
+used LEAF funding to develop this further and use it for household assessments.
+
+Macquette (then My Home Energy Planner) was developed becuase there weren't the tools
+tools or useful advice to work out how to best retrofit buildings.  Existing tools
+(EPCs/RdSAP) didn't have enough information to make good decisions or enough flexibility
+to adapt to different circumstances.  And so...
+
+In autumn 2014, CC/URBED got InnovateUK funding to develop web tool version.  Trystan at
+OEM had already built SAP 9.92 as a web tool, so the concept was to bring the two
+systems together.  In early 2017, home assessments performed by CC/URBED shifted from
+spreadsheet to webtool.
+
+Macquette is a fork of the original MyHomeEnergyPlanner (MHEP), which was written in PHP
+using the EmonCMS framework.  Macquette was ported to Python/Django by Ian Drysdale and
+Paul Fawkesley using BEIS funnding.  It continued to be developed by
+`People Powered Retrofit. <https://retrofit.coop/>`_.
+
+Over time the focus of the tool has changed – it's a bit less about energy now and more
+about being an overall retrofit planner tool.
 
 The calculation engine is a fork of `openBEM <https://github.com/TrystanLea/openBEM/>`_,
 originally and continuingly developed by Trystan Lea.
-
-MHEP was originally a spreadsheet which was turned into a web
-application by Trystan Lea. It was ported to Python in 2019 by Ian
-Drysdale and Paul Fawkesley. It continues being developed in-house at
-Carbon Co-op.
-
-You will see ``mhep`` all over the place in the code and issue tracker.
-This will change over time!
