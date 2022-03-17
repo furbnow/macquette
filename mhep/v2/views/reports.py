@@ -57,7 +57,7 @@ class GenerateReport(APIView):
             pdf = render_to_pdf(html)
 
             response = HttpResponse(status=200, content_type="application/pdf")
-            response["Content-Disposition"] = f'inline; filename="{filename}.pdf"'
+            response["Content-Disposition"] = f'attachment; filename="{filename}.pdf"'
             response["Content-Transfer-Encoding"] = "binary"
             response.write(pdf)
 
