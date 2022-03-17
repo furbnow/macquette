@@ -139,7 +139,7 @@ const fuelUse = (project: ProjectData, scenarioIds: string[]): BarChart => {
     const fuelList = project.scenario('master').fuels;
 
     const getScenarioData = (
-        fuelTotals: Exclude<LegacyScenario['fuel_totals'], undefined>,
+        fuelTotals: Record<string, { name: string; quantity: number | null }>,
     ): number[] => {
         const result = [0, 0, 0, 0];
 
@@ -292,6 +292,7 @@ const cumulativeCo2 = (project: ProjectData, scenarioIds: string[]): LineGraph =
 
 const energyCosts = (project: ProjectData, scenarioIds: string[]): BarChart => {
     const billsData = project.scenario('master').currentenergy?.total_cost ?? 0;
+
     return {
         type: 'bar',
         stacked: true,
@@ -300,14 +301,24 @@ const energyCosts = (project: ProjectData, scenarioIds: string[]): BarChart => {
             billsData
                 ? {
                       label: 'Bills data',
-                      data: [billsData],
+                      data: [billsData, 0],
                   }
                 : null,
-            ...scenarioIds.map((scenarioId, idx) => ({
-                label: scenarioName(scenarioId, idx),
-                data: [project.scenario(scenarioId).total_cost ?? 0],
-            })),
+            ...scenarioIds.map((scenarioId, idx) => {
+                const scenario = project.scenario(scenarioId);
+                const generationReduction =
+                    scenario.fuel_totals?.['generation']?.annualcost;
+
+                return {
+                    label: scenarioName(scenarioId, idx),
+                    data: [
+                        scenario.total_cost ?? 0,
+                        Math.abs(coalesceEmptyString(generationReduction, 0) ?? 0),
+                    ],
+                };
+            }),
         ].filter((row): row is BarChart['bins'][0] => row !== null),
+        categoryLabels: ['Cost', 'Assumed saving from generation'],
     };
 };
 

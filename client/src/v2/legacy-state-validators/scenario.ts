@@ -155,7 +155,11 @@ export const legacyScenarioSchema = z
             })
             .partial(),
         fuel_totals: z.record(
-            z.object({ name: z.string(), quantity: z.number().nullable() }),
+            z.object({
+                name: z.string(),
+                quantity: z.number().nullable(),
+                annualcost: stringyFloatSchema.nullable(),
+            }),
         ),
         currentenergy: z
             .object({
