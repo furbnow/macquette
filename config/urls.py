@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import include
 from django.urls import path
 from django.urls import reverse_lazy
@@ -12,6 +13,9 @@ admin.site.site_title = "Backend admin"
 admin.site.index_title = "Macquette administration"
 
 urlpatterns = [
+    path(
+        "favicon.ico", RedirectView.as_view(url=staticfiles_storage.url("favicon.png"))
+    ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # Login stuff
