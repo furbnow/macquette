@@ -363,7 +363,7 @@ function get_pv() {
     };
 }
 
-function get_generation() {
+function get_current_generation() {
     if (typeof project.master.currentenergy.generation.annual_generation !== 'number' ||
             project.master.currentenergy.generation.annual_generation === 0) {
         return false;
@@ -603,7 +603,7 @@ function get_context_data(scenarios) {
             context_and_other_points: hh['context_and_other_points'],
             // delete this line post-new report - it contains inaccurate info
             pv: get_pv(),
-            generation: get_generation(),
+            generation: get_current_generation(),
         },
         used_fuels: get_used_fuels(scenarios),
         commentary: {
