@@ -44,7 +44,11 @@
     <div id="macquette-container"></div>
     <script>
         function initHandler() {
-            initMacquette({{ locked_javascript }}, {{ assessment.id }})
+            const featureFlags = [
+                {% for feature in features %}'{{ feature }}',{% endfor %}
+            ]
+
+            initMacquette({{ locked_javascript }}, {{ assessment.id }}, featureFlags)
         }
 
         if (document.readyState === 'loading') {

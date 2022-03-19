@@ -17,8 +17,9 @@ var projectid;
 var p;
 var project;
 
-async function initMacquette(lockedState, assessmentId) {
-    // Set up our globals
+async function initMacquette(lockedState, assessmentId, featureFlags) {
+    window.features = featureFlags;
+
     projectid = assessmentId;
     locked = lockedState;
 
