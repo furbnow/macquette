@@ -15,24 +15,23 @@
 
     {# Load Sentry first #}
     {% if settings.sentry_url %}
-<script
-  src="https://browser.sentry-cdn.com/6.14.0/bundle.min.js"
-  integrity="sha384-1FVbcJ5cSGdCrMNyUndHGSl0WlS+Cq5zaYdfnVF7NqkkQpU+7plvm0NomKbzcD//"
-  crossorigin="anonymous"
-></script>
-
-    <script>Sentry.init({ dsn: "{{ settings.sentry_url }}" });</script>
+        <script
+          src="https://browser.sentry-cdn.com/6.14.0/bundle.min.js"
+          integrity="sha384-1FVbcJ5cSGdCrMNyUndHGSl0WlS+Cq5zaYdfnVF7NqkkQpU+7plvm0NomKbzcD//"
+          crossorigin="anonymous"
+        ></script>
+        <script>Sentry.init({ dsn: "{{ settings.sentry_url }}" });</script>
     {% endif %}
 
     <script src="{% static VERSION|add:'/js/vendor/jquery-1.11.3.min.js' %}"></script>
     <script>
         'use strict';
-        {% include VERSION|add:"/js/handle_server_error.js" %}
-        {% include VERSION|add:"/js/add_csrf_token_to_ajax.js" %}
         {% include VERSION|add:"/js/url_helper.js" %}
         {% include VERSION|add:"/js/waffle_flags.js" %}
     </script>
     <script src="{% static VERSION|add:'/js/vendor/bootstrap-2.3.2.min.js' %}"></script>
+    <script src="{% static VERSION|add:'/js/handle_server_error.js' %}"></script>
+    <script src="{% static VERSION|add:'/js/add_csrf_token_to_ajax.js' %}"></script>
 
     {% block extra_head %}{% endblock %}
 </head>
