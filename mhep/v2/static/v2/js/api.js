@@ -1,21 +1,24 @@
-const csrfToken = new URLSearchParams(document.cookie.replaceAll('; ', '&')).get('csrftoken');
+class DjangoAPI {
+    constructor(urls) {
+        this.urls = urls;
 
-var mhep_helper = {
-    'subview': async function(viewName) {
-        const url = urlHelper.static('subviews/' + viewName + '.html');
+        const cookieJar = new URLSearchParams(document.cookie.replaceAll('; ', '&'));
+        this.csrfToken = cookieJar.get('csrftoken');
+    }
+
+    async subview(viewName) {
+        const url = this.urls.static('subviews/' + viewName + '.html');
         if (!url) {
             throw new Error(
-                `Couldn't find URL for 'subviews/${view}.html'` +
-                "If you are running the code locally, this could be because you have" +
-                "added a new page without running collectstatic."
+                `Couldn't find URL for 'subviews/${view}.html' ` +
+                    '(if you are running the code locally, this could be because you' +
+                    ' added a new page without running collectstatic)',
             );
         }
 
         const response = await fetch(url, {
             method: 'get',
-            headers: {
-                'X-CSRFToken': csrfToken,
-            },
+            headers: { 'X-CSRFToken': this.csrfToken },
         });
 
         if (!response.ok) {
@@ -23,25 +26,31 @@ var mhep_helper = {
         }
 
         return response.text();
-    },
-    'list_assessments': function () {
+    }
+
+    list_assessments() {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.assessments(),
+                url: this.urls.api.assessments(),
                 success: function (data) {
                     resolve(data);
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('listing assessments')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('listing assessments')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
-                }
+                },
             });
         });
-    },
-    'get': function (id) {
+    }
+
+    get(id) {
         var result = {};
         $.ajax({
-            url: urlHelper.api.assessment(id),
+            url: this.urls.api.assessment(id),
             async: false,
             error: handleServerError('loading assessment'),
             success: function (data) {
@@ -49,13 +58,14 @@ var mhep_helper = {
             },
         });
         return result;
-    },
-    'set': function (id, data, callback) {
+    }
+
+    set(id, data, callback) {
         var result = {};
         $.ajax({
             type: 'PATCH',
-            url: urlHelper.api.assessment(id),
-            data: JSON.stringify({'data': data}),
+            url: this.urls.api.assessment(id),
+            data: JSON.stringify({ data: data }),
             dataType: 'json',
             contentType: 'application/json;charset=utf-8',
             async: true,
@@ -67,19 +77,20 @@ var mhep_helper = {
                 callback(null, data);
             },
         });
-    },
-    'create': function (name, description, orgid, callback) {
+    }
+
+    create(name, description, orgid, callback) {
         var result = 0;
         const newAssessment = {
-            'name': name,
-            'description': description,
+            name: name,
+            description: description,
         };
 
         var endpoint;
         if (orgid > 0) {
-            endpoint = urlHelper.api.organisationAssessments(orgid);
+            endpoint = this.urls.api.organisationAssessments(orgid);
         } else {
-            endpoint = urlHelper.api.assessments();
+            endpoint = this.urls.api.assessments();
         }
 
         $.ajax({
@@ -97,14 +108,19 @@ var mhep_helper = {
             },
         });
         return result;
-    },
-    'duplicate_assessment': function (id) {
+    }
+
+    duplicate_assessment(id) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.duplicateAssessment(id),
+                url: this.urls.api.duplicateAssessment(id),
                 type: 'POST',
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('duplicating assessment')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('duplicating assessment')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
                 },
                 success: function (data) {
@@ -112,14 +128,19 @@ var mhep_helper = {
                 },
             });
         });
-    },
-    'delete_assessment': function (id) {
+    }
+
+    delete_assessment(id) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.assessment(id),
+                url: this.urls.api.assessment(id),
                 type: 'DELETE',
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('deleting assessment')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('deleting assessment')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
                 },
                 success: function () {
@@ -127,59 +148,71 @@ var mhep_helper = {
                 },
             });
         });
-    },
-    'set_status': function (id, status) {
+    }
+
+    set_status(id, status) {
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: 'PATCH',
-                url: urlHelper.api.assessment(id),
+                url: this.urls.api.assessment(id),
                 dataType: 'json',
                 contentType: 'application/json;charset=utf-8',
-                data: JSON.stringify({'status': status}),
+                data: JSON.stringify({ status }),
                 success: function () {
                     resolve();
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('setting assessment status')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('setting assessment status')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
-                }
+                },
             });
         });
-    },
-    'set_name_and_description': function (id, name, description) {
-        $.ajax({type: 'PATCH',
-            url: urlHelper.api.assessment(id),
-            data: JSON.stringify({'name': name, 'description': description}),
+    }
+
+    set_name_and_description(id, name, description) {
+        $.ajax({
+            type: 'PATCH',
+            url: this.urls.api.assessment(id),
+            data: JSON.stringify({ name, description }),
             dataType: 'json',
             contentType: 'application/json;charset=utf-8',
             async: false,
             error: handleServerError('setting assessment name and description'),
-            success: function (data) {
-            },
+            success: function (data) {},
         });
-    },
-    'list_organisations': function() {
+    }
+
+    list_organisations() {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.organisations(),
+                url: this.urls.api.organisations(),
                 success: function (data) {
                     resolve(data);
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('listing organisations')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('listing organisations')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
-                }
+                },
             });
         });
-    },
-    'list_users': function() {
+    }
+
+    list_users() {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.users(),
+                url: this.urls.api.users(),
                 success: function (data) {
                     resolve(data);
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     // This means we can't do this because we're not an admin in any
                     // groups.  Just resolve to the empty list.
                     if (jqXHR.status == 403) {
@@ -188,16 +221,17 @@ var mhep_helper = {
 
                     handleServerError('listing users')(jqXHR, textStatus, errorThrown);
                     reject(errorThrown);
-                }
+                },
             });
         });
-    },
-    'add_member': function(orgid, userid) {
+    }
+
+    add_member(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.members(orgid, userid),
+                url: this.urls.api.members(orgid, userid),
                 type: 'POST',
-                error: function(jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     handleServerError('adding member')(jqXHR, textStatus, errorThrown);
                     reject(errorThrown);
                 },
@@ -206,13 +240,14 @@ var mhep_helper = {
                 },
             });
         });
-    },
-    'remove_member': function(orgid, userid) {
+    }
+
+    remove_member(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.members(orgid, userid),
+                url: this.urls.api.members(orgid, userid),
                 type: 'DELETE',
-                error: function(jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     handleServerError('removing member')(jqXHR, textStatus, errorThrown);
                     reject(errorThrown);
                 },
@@ -221,13 +256,14 @@ var mhep_helper = {
                 },
             });
         });
-    },
-    'create_library': function(libraryData, organisationID) {
+    }
+
+    create_library(libraryData, organisationID) {
         var apiURL = '';
-        if(organisationID == null) {
-            apiURL = urlHelper.api.libraries();
+        if (organisationID == null) {
+            apiURL = this.urls.api.libraries();
         } else {
-            apiURL = urlHelper.api.organisationLibraries(organisationID);
+            apiURL = this.urls.api.organisationLibraries(organisationID);
         }
 
         return new Promise((resolve, reject) => {
@@ -237,7 +273,7 @@ var mhep_helper = {
                 data: JSON.stringify(libraryData),
                 datatype: 'json',
                 contentType: 'application/json;charset=utf-8',
-                error: function(jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     handleServerError('creating library')(jqXHR, textStatus, errorThrown);
                     reject(errorThrown);
                 },
@@ -246,14 +282,23 @@ var mhep_helper = {
                 },
             });
         });
-    },
-    'share_library_with_organisation': function(fromOrgID, libraryID, toOrgID) {
+    }
+
+    share_library_with_organisation(fromOrgID, libraryID, toOrgID) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.shareUnshareOrganisationLibraries(fromOrgID, libraryID, toOrgID),
+                url: this.urls.api.shareUnshareOrganisationLibraries(
+                    fromOrgID,
+                    libraryID,
+                    toOrgID,
+                ),
                 type: 'POST',
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('sharing library with organisation')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('sharing library with organisation')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
                 },
                 success: function (data) {
@@ -261,14 +306,23 @@ var mhep_helper = {
                 },
             });
         });
-    },
-    'stop_sharing_library_with_organisation': function(fromOrgID, libraryID, toOrgID) {
+    }
+
+    stop_sharing_library_with_organisation(fromOrgID, libraryID, toOrgID) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.shareUnshareOrganisationLibraries(fromOrgID, libraryID, toOrgID),
+                url: this.urls.api.shareUnshareOrganisationLibraries(
+                    fromOrgID,
+                    libraryID,
+                    toOrgID,
+                ),
                 type: 'DELETE',
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('stopping sharing library with organisation')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('stopping sharing library with organisation')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
                 },
                 success: function (data) {
@@ -276,28 +330,38 @@ var mhep_helper = {
                 },
             });
         });
-    },
-    'list_organisations_library_shares': function(orgID, libraryID) {
+    }
+
+    list_organisations_library_shares(orgID, libraryID) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.libraryOrganisationLibraryShares(orgID, libraryID),
+                url: this.urls.api.libraryOrganisationLibraryShares(orgID, libraryID),
                 success: function (data) {
                     resolve(data);
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('listing organisations library is shared with')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('listing organisations library is shared with')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
-                }
+                },
             });
         });
-    },
-    'promote_user_as_librarian': function(orgid, userid) {
+    }
+
+    promote_user_as_librarian(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.librarians(orgid, userid),
+                url: this.urls.api.librarians(orgid, userid),
                 type: 'POST',
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('promoting user as librarian')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('promoting user as librarian')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
                 },
                 success: function (data) {
@@ -305,14 +369,19 @@ var mhep_helper = {
                 },
             });
         });
-    },
-    'demote_user_as_librarian': function(orgid, userid) {
+    }
+
+    demote_user_as_librarian(orgid, userid) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: urlHelper.api.librarians(orgid, userid),
+                url: this.urls.api.librarians(orgid, userid),
                 type: 'DELETE',
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('demoting user as librarian')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('demoting user as librarian')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
                 },
                 success: function (data) {
@@ -320,94 +389,111 @@ var mhep_helper = {
                 },
             });
         });
-    },
-    'upload_image': function (assessment_id, file) {
+    }
+
+    upload_image(assessment_id, file) {
         return new Promise((resolve, reject) => {
             const form = new FormData();
             form.append('file', file);
 
             $.ajax({
                 type: 'POST',
-                url: urlHelper.api.uploadImage(assessment_id),
+                url: this.urls.api.uploadImage(assessment_id),
                 data: form,
                 processData: false,
                 contentType: false,
                 success: function (data) {
                     resolve(data);
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     handleServerError('uploading image')(jqXHR, textStatus, errorThrown);
                     reject(errorThrown);
-                }
+                },
             });
         });
-    },
-    'set_featured_image': function(assessment_id, image_id) {
+    }
+
+    set_featured_image(assessment_id, image_id) {
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: 'POST',
-                url: urlHelper.api.setFeaturedImage(assessment_id),
+                url: this.urls.api.setFeaturedImage(assessment_id),
                 dataType: 'json',
                 contentType: 'application/json;charset=utf-8',
-                data: JSON.stringify({ 'id': image_id }),
+                data: JSON.stringify({ id: image_id }),
                 success: function (data) {
                     resolve();
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('setting featured image')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('setting featured image')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
-                }
+                },
             });
         });
-    },
-    'set_image_note': function (id, note) {
+    }
+
+    set_image_note(id, note) {
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: 'PATCH',
-                url: urlHelper.api.image(id),
+                url: this.urls.api.image(id),
                 dataType: 'json',
                 contentType: 'application/json;charset=utf-8',
-                data: JSON.stringify({ 'note': note }),
+                data: JSON.stringify({ note: note }),
                 success: function (data) {
                     resolve(data);
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    handleServerError('setting image note')(jqXHR, textStatus, errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('setting image note')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
                     reject(errorThrown);
-                }
+                },
             });
         });
-    },
-    'delete_image': function (id) {
+    }
+
+    delete_image(id) {
         return new Promise((resolve, reject) => {
             $.ajax({
                 type: 'DELETE',
-                url: urlHelper.api.image(id),
+                url: this.urls.api.image(id),
                 success: function (data) {
                     resolve();
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     handleServerError('deleting image')(jqXHR, textStatus, errorThrown);
                     reject(errorThrown);
-                }
+                },
             });
         });
-    },
-    'generate_report': async function (orgid, context) {
-        const response = await fetch(urlHelper.api.report(orgid), {
+    }
+
+    async generate_report(orgid, context) {
+        const response = await fetch(this.urls.api.report(orgid), {
             method: 'post',
             body: JSON.stringify(context),
             headers: {
-                'X-CSRFToken': csrfToken,
-                'Content-Type': 'application/json'
+                'X-CSRFToken': this.csrfToken,
+                'Content-Type': 'application/json',
             },
         });
 
         if (!response.ok) {
             const body = await response.json();
-            throw new Error(`HTTP error, status: ${response.status}, contents: ${JSON.stringify(body)}`);
+            throw new Error(
+                `HTTP error, status: ${response.status}, contents: ${JSON.stringify(
+                    body,
+                )}`,
+            );
         }
 
         return response.blob();
-    },
-};
+    }
+}

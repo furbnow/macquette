@@ -48,7 +48,8 @@
                 {% for feature in features %}'{{ feature }}',{% endfor %}
             ]
 
-            initMacquette({{ locked_javascript }}, {{ assessment.id }}, featureFlags)
+            const api = new DjangoAPI(urlHelper);
+            initMacquette(api, {{ locked_javascript }}, {{ assessment.id }}, featureFlags)
         }
 
         if (document.readyState === 'loading') {

@@ -6,6 +6,8 @@ var locked;
 var data = {};
 var keys = {};
 
+var mhep_helper;
+
 var historical = [];
 var historical_index;
 
@@ -17,7 +19,8 @@ var projectid;
 var p;
 var project;
 
-async function initMacquette(lockedState, assessmentId, featureFlags) {
+async function initMacquette(api, lockedState, assessmentId, featureFlags) {
+    mhep_helper = api;
     window.features = featureFlags;
 
     projectid = assessmentId;

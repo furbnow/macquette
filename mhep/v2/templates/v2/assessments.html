@@ -211,6 +211,7 @@
     var orgid = null;
     var current_user = '{{ user.username|default:"anonymous" }}';
 
+    var mhep_helper;
     var assessments = [];
     var users = [];
     var organisations = [];
@@ -222,15 +223,6 @@
     function getAssessmentById(id) {
         return assessments.find(e => e.id == id)
     }
-
-// -----------------------------------------------------------------------------------
-// 1) Load assessment lists
-// -----------------------------------------------------------------------------------
-
-    mhep_helper.list_assessments().then(result => {
-        assessments = result;
-        draw_assessments("#assessments", assessments);
-    });
 
 // -----------------------------------------------------------------------------------
 // Create new assessment
@@ -476,8 +468,6 @@
         });
     }
 
-    fetchAndDrawOrganisationList()
-
     $("body").on("click", ".view-organisation", function () {
         orgid = $(this).attr("data-id");
         draw_organisation(orgid);
@@ -705,5 +695,19 @@
         $("#show-members-button").hide();
     })
 
+    function initHandler() {
+        mhep_helper = new DjangoAPI(urlHelper);
+        mhep_helper.list_assessments().then(result => {
+            assessments = result;
+            draw_assessments("#assessments", assessments);
+        });
+        fetchAndDrawOrganisationList();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHandler)
+    } else {
+        initHandler()
+    }
 </script>
 {% endblock %}
