@@ -1,6 +1,29 @@
 const csrfToken = new URLSearchParams(document.cookie.replaceAll('; ', '&')).get('csrftoken');
 
 var mhep_helper = {
+    'subview': async function(viewName) {
+        const url = urlHelper.static('subviews/' + viewName + '.html');
+        if (!url) {
+            throw new Error(
+                `Couldn't find URL for 'subviews/${view}.html'` +
+                "If you are running the code locally, this could be because you have" +
+                "added a new page without running collectstatic."
+            );
+        }
+
+        const response = await fetch(url, {
+            method: 'get',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
+        }
+
+        return response.text();
+    },
     'list_assessments': function () {
         return new Promise((resolve, reject) => {
             $.ajax({
