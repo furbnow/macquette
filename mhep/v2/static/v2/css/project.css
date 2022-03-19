@@ -443,7 +443,6 @@ tr.item {
     }
 }
 
-
 .scenario-locked-warning {
     background-color: var(--warning-yellow);
     padding: 10px;
@@ -452,4 +451,28 @@ tr.item {
 
 svg.bi { /* Bootstrap Icon SVG */
     vertical-align: text-top;
+}
+
+.cc {
+    color: var(--app-color);
+    font-weight: bold;
+    padding-right:20px;
+
+}
+
+.title {
+    padding: 10px 30px;
+    color:#888;
+    float:left;
+}
+
+.modal-backdrop {
+    opacity:0.3 !important;
+}
+
+body .modal {
+    /* new custom width */
+    width: 560px;
+    /* must be half of the width, minus scrollbar on the left (30px) */
+    margin-left: -280px;
 }

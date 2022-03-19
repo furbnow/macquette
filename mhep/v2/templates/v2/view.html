@@ -27,34 +27,6 @@ const calc = {
 <script src="{% static VERSION|add:'/js/openfuvc.js' %}"></script>
 <script src="{% static VERSION|add:'/js/openfuvc-ui-helper.js' %}"></script>
 <link rel="stylesheet" href="{% static VERSION|add:'/css/openfuvc.css' %}">
-
-<style>
-    .cc {
-        color: var(--app-color);
-        font-weight: bold;
-        padding-right:20px;
-
-    }
-
-    .title {
-        padding: 10px 30px;
-        color:#888;
-        float:left;
-    }
-
-    .modal-backdrop
-    {
-        opacity:0.3 !important;
-    }
-    body .modal {
-        /* new custom width */
-        width: 560px;
-        /* must be half of the width, minus scrollbar on the left (30px) */
-        margin-left: -280px;
-    }
-
-</style>
-
 {% endblock %}
 
 
