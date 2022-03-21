@@ -48,12 +48,25 @@ class BarChart(BaseModel):
     areas: Optional[List[ShadedArea]]
 
     @property
-    def num_categories(self):
+    def num_categories(self) -> int:
         """The number of different data points we're trying to plot in each bin."""
         if self.category_labels:
             return len(self.category_labels)
         else:
             return len(self.bins[0].data)
+
+    def reversed_data_by_category(self) -> List[List[float]]:
+        """Convert data from being per-bin into being per-category (backwards)."""
+        return [
+            list(reversed([bin.data[idx] for bin in self.bins]))
+            for idx in range(self.num_categories)
+        ]
+
+    def data_by_category(self) -> List[List[float]]:
+        """Convert data from being per-bin into being per-category."""
+        return [
+            [bin.data[idx] for bin in self.bins] for idx in range(self.num_categories)
+        ]
 
     @validator("bins")
     def _must_have_data(cls, v):

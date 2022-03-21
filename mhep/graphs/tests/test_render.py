@@ -6,6 +6,7 @@ import pytest
 
 from mhep.graphs import parse
 from mhep.graphs import render
+from mhep.graphs import types
 
 
 INPUT_DIR = pathlib.Path(__file__).parent.resolve() / "render_input"
@@ -27,5 +28,25 @@ def test_against_saved_image(data):
     """Use pytest-mpl to compare the output from the code with the saved PNGs."""
     json_obj = json.loads(data)
     parsed = parse(json_obj)
-    fig, legend = render(parsed)
+    fig, key = render(parsed)
     return fig
+
+
+def test_report_key_omits_unused_labels():
+    from mhep.graphs.render import bar_colours
+
+    chart = types.BarChart(
+        type="bar",
+        units="none",
+        categoryLabels=["French", "German", "Mauritian"],
+        bins=[
+            {"label": "Fnargle", "data": [0, 0, 100]},
+            {"label": "Fnord", "data": [100, 0, 0]},
+        ],
+    )
+    _, key = render(chart)
+
+    assert key == [
+        ("French", bar_colours[0]),
+        ("Mauritian", bar_colours[2]),
+    ]

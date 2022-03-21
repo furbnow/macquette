@@ -1,5 +1,6 @@
 from base64 import b64encode
 from io import BytesIO
+from typing import Tuple
 from typing import Union
 
 import matplotlib as mpl
@@ -21,6 +22,22 @@ bar_colours = [
     "#c8d5cb",
 ]
 bg_colours = ["#444", "#aaa"]
+
+
+def _make_key(figure: types.BarChart) -> Tuple[str, str]:
+    data = figure.data_by_category()
+    data_sums = [sum(category) for category in data]
+
+    if figure.num_categories > 1 and figure.category_labels:
+        key = [
+            (name, bar_colours[idx % len(bar_colours)])
+            for idx, name in enumerate(figure.category_labels)
+            if data_sums[idx] != 0
+        ]
+    else:
+        key = None
+
+    return key
 
 
 def _render_bar_chart(figure: types.BarChart):
@@ -60,13 +77,6 @@ def _render_bar_chart(figure: types.BarChart):
             )
             ax.text(line.value, -0.75, f" {line.label}")
 
-    # Convert our data from being per-bin into being per-category.
-    dataset = []
-    for idx in range(figure.num_categories):
-        category = [bin.data[idx] for bin in figure.bins]
-        category.reverse()
-        dataset.append(category)
-
     bin_labels = [bin.label for bin in figure.bins]
     bin_labels.reverse()
     x = np.arange(len(bin_labels))  # the label locations
@@ -81,7 +91,7 @@ def _render_bar_chart(figure: types.BarChart):
         pos_cum_size = np.zeros(len(figure.bins))
         neg_cum_size = np.zeros(len(figure.bins))
 
-        for idx, data in enumerate(dataset):
+        for idx, data in enumerate(figure.reversed_data_by_category()):
             negative = any(val < 0 for val in data)
 
             rects = ax.barh(
@@ -108,7 +118,7 @@ def _render_bar_chart(figure: types.BarChart):
     else:
         width = 0.75 / figure.num_categories
 
-        for idx, data in enumerate(dataset):
+        for idx, data in enumerate(figure.reversed_data_by_category()):
             rects = ax.barh(
                 x + (idx * width),
                 data,
@@ -149,15 +159,7 @@ def _render_bar_chart(figure: types.BarChart):
 
     fig.tight_layout()
 
-    if figure.num_categories > 1 and figure.category_labels:
-        key = [
-            (name, bar_colours[idx % len(bar_colours)])
-            for idx, name in enumerate(figure.category_labels)
-        ]
-    else:
-        key = None
-
-    return fig, key
+    return fig, _make_key(figure)
 
 
 def _render_line_graph(figure: types.LineGraph):
