@@ -322,18 +322,42 @@ const energyCosts = (project: ProjectData, scenarioIds: string[]): BarChart => {
     };
 };
 
+// Remove NaNs to work around the model sometimes outputting NaNs.
+// NaNs get serialized to null, which trips up the server-side type checker - it's
+// expecting only numbers.
+// Instead of wrapping every call in the above with NaN checks, just do it in one go,
+// it results in cleaner code.
+function removeNaNs(name: string, chart: BarChart) {
+    for (let bin of chart.bins) {
+        for (let [idx, datapoint] of bin.data.entries()) {
+            if (!Number.isNaN(datapoint)) {
+                continue;
+            }
+
+            bin.data[idx] = 0;
+            console.warn(`Graph ${name}, bin ${bin.label}, datapoint idx ${idx} was NaN`);
+        }
+    }
+}
+
 export function generateReportGraphs(
     project: unknown,
     scenarioIds: string[],
 ): Record<string, BarChart | LineGraph> {
     const parsed = new ProjectData(project);
-    return {
+    const bars = {
         heatBalance: heatBalance(parsed, scenarioIds),
         spaceHeatingDemand: spaceHeatingDemand(parsed, scenarioIds),
         peakHeatingLoad: peakHeatingLoad(parsed, scenarioIds),
         fuelUse: fuelUse(parsed, scenarioIds),
         energyUseIntensity: energyUseIntensity(parsed, scenarioIds),
-        cumulativeCo2: cumulativeCo2(parsed, scenarioIds),
         energyCosts: energyCosts(parsed, scenarioIds),
+    };
+    for (let [name, graph] of Object.entries(bars)) {
+        removeNaNs(name, graph);
+    }
+    return {
+        ...bars,
+        cumulativeCo2: cumulativeCo2(parsed, scenarioIds),
     };
 }
