@@ -381,7 +381,9 @@ function get_used_fuels(scenarios) {
     for (let scenario_id of scenarios) {
         let scenario = project[scenario_id];
         for (let fuel of Object.values(scenario.fuel_totals)) {
-            all_fuel_names.add(fuel.name);
+            if (fuel.quantity !== 0) {
+                all_fuel_names.add(fuel.name);
+            }
         }
     }
 
