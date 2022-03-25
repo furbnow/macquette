@@ -129,7 +129,7 @@ test-js-watch:  ## Run non-browser JS tests (watch mode)
 .PHONY: lint-js
 lint-js:  ## Runs eslint with a separate config in the 'client' directory
 	cd client && ./node_modules/.bin/eslint \
-		--fix \
+		$$(if [ "$${CI}" != "true" ]; then echo "--fix"; fi) \
 		--config .eslintrc.js \
 		--ignore-path .eslintignore \
 		--max-warnings 0 \
@@ -138,7 +138,7 @@ lint-js:  ## Runs eslint with a separate config in the 'client' directory
 .PHONY: lint-js-legacy
 lint-js-legacy:  ## Runs eslint with a separate config on legacy (non-compiled) JS
 	./client/node_modules/.bin/eslint \
-		--fix \
+		$$(if [ "$${CI}" != "true" ]; then echo "--fix"; fi) \
 		--config mhep/v2/static/v2/js/.eslintrc.json \
 		--ignore-path mhep/v2/static/v2/js/.eslintignore \
 		--max-warnings 0 \
