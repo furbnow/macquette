@@ -6,12 +6,12 @@
  * e.g., NaN and Infinity become 'null', -0 becomes 0, undefined object
  * properties are dropped, undefined array elements become null.
  */
-export const legacyCloneDeep = (data: unknown): unknown => {
+export const emulateJsonRoundTrip = (data: unknown): unknown => {
     if (isRecord(data)) {
         const out: Record<string, unknown> = {};
         for (const [key, val] of Object.entries(data)) {
             if (val !== undefined) {
-                out[key] = legacyCloneDeep(val);
+                out[key] = emulateJsonRoundTrip(val);
             }
         }
         return out;
@@ -20,7 +20,7 @@ export const legacyCloneDeep = (data: unknown): unknown => {
             if (element === undefined) {
                 return null;
             } else {
-                return legacyCloneDeep(element);
+                return emulateJsonRoundTrip(element);
             }
         });
     } else if (typeof data === 'number') {

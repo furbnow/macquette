@@ -110,7 +110,7 @@ const arbVentilation = () =>
         ),
     });
 
-export const arbScenario = () =>
+export const arbScenarioInputs = () =>
     arbFuels()
         .chain((fuels) =>
             fcPartialRecord({

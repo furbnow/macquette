@@ -3,7 +3,7 @@
 import { legacyScenarioSchema } from '../legacy-state-validators/scenario';
 import { datasets } from './datasets/legacy'
 import { setBlankLegacyOutputs, setDefaultLegacyInputs } from './modules/legacy-initialisation';
-import { legacyCloneDeep } from '../helpers/legacy-clone';
+import { emulateJsonRoundTrip } from '../helpers/emulate-json-round-trip';
 import { CombinedModules, extractInputFromLegacy } from './combinedModules';
 
 let g, m, x, z, fuel; // Variables used in for-loops
@@ -287,7 +287,7 @@ calc.temperature = function (data) {
     data.mean_internal_temperature.u_factor_rest_of_dwelling = utilisation_factor_B;
     data.mean_internal_temperature.m_i_t_rest_of_dwelling = Ti_restdwelling;
     data.mean_internal_temperature.fLA = fLA;
-    data.mean_internal_temperature.m_i_t_whole_dwelling = legacyCloneDeep(data.internal_temperature);
+    data.mean_internal_temperature.m_i_t_whole_dwelling = emulateJsonRoundTrip(data.internal_temperature);
     data.external_temperature = Te;
 
     // Temperature adjustment
@@ -681,7 +681,7 @@ calc.fuel_requirements = function (data) {
 
 calc.SAP = function (data) {
     // Calculate total energy cost in the SAP way: taking into account only fuel cost for space heating, water heating, lighting and fans and pumps
-    let dataSAP = legacyCloneDeep(data);
+    let dataSAP = emulateJsonRoundTrip(data);
     dataSAP.total_cost = 0;
     dataSAP.primary_energy_use = 0;
     dataSAP.fuel_requirements.appliances = {quantity: {}, list: []};
@@ -1593,7 +1593,7 @@ calc.gains_summary = function (data) {
  //---------------------------------------------------------------------------------------------*/
 
 calc.fabric_energy_efficiency = function (data) {
-    let data_FEE = legacyCloneDeep(data);
+    let data_FEE = emulateJsonRoundTrip(data);
 
     // correct openBEM deviations from SAP
     data_FEE.use_custom_occupancy = false;

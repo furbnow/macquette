@@ -3,7 +3,7 @@ import { cloneDeep, pick } from 'lodash';
 import { calcRun as referenceCalcRun } from './reference-model';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import fc from 'fast-check';
-import { arbScenario, SHWInputKeys } from './arbitraries/scenario';
+import { arbScenarioInputs, SHWInputKeys } from './arbitraries/scenario';
 import { legacyScenarioSchema } from '../../../src/v2/legacy-state-validators/scenario';
 import { FcInfer } from '../../helpers/arbitraries';
 import { CompareFloatParams, compareFloats } from '../../helpers/fuzzy-float-equality';
@@ -39,9 +39,9 @@ describe('golden master acceptance tests', () => {
     });
 
     test('fast-check data', () => {
-        const examples: Array<[FcInfer<typeof arbScenario>]> = [];
+        const examples: Array<[FcInfer<typeof arbScenarioInputs>]> = [];
         fc.assert(
-            fc.property(arbScenario(), (scenario) => {
+            fc.property(arbScenarioInputs(), (scenario) => {
                 const legacyReference = runLegacyModel(scenario);
                 fc.pre(!hasNoKnownBugs(legacyReference).bugs);
                 const actual = runLiveModel(scenario);
@@ -58,7 +58,7 @@ describe('golden master acceptance tests', () => {
 
     test('scenario schema validates fast-check arbitrary', () => {
         fc.assert(
-            fc.property(arbScenario(), (scenario) => {
+            fc.property(arbScenarioInputs(), (scenario) => {
                 expect(() => legacyScenarioSchema.parse(scenario)).not.toThrow();
             }),
         );

@@ -139,10 +139,10 @@ export const legacyScenarioSchema = z
             })
             .partial(),
         num_of_floors_override: z.number(), // Used only in ventilation
-        FEE: numberWithNaN,
+        FEE: numberWithNaN.nullable(),
         total_cost: stringyFloatSchema.nullable(),
         annualco2: z.number().nullable(),
-        totalWK: z.number(),
+        totalWK: numberWithNaN.nullable(),
         TFA: stringyFloatSchema,
         fuel_requirements: z.record(
             z.object({
