@@ -328,8 +328,8 @@ const energyCosts = (project: ProjectData, scenarioIds: string[]): BarChart => {
 // Instead of wrapping every call in the above with NaN checks, just do it in one go,
 // it results in cleaner code.
 function removeNaNs(name: string, chart: BarChart) {
-    for (let bin of chart.bins) {
-        for (let [idx, datapoint] of bin.data.entries()) {
+    for (const bin of chart.bins) {
+        for (const [idx, datapoint] of bin.data.entries()) {
             if (!Number.isNaN(datapoint)) {
                 continue;
             }
@@ -353,7 +353,7 @@ export function generateReportGraphs(
         energyUseIntensity: energyUseIntensity(parsed, scenarioIds),
         energyCosts: energyCosts(parsed, scenarioIds),
     };
-    for (let [name, graph] of Object.entries(bars)) {
+    for (const [name, graph] of Object.entries(bars)) {
         removeNaNs(name, graph);
     }
     return {
