@@ -27,9 +27,9 @@ services:
             DJANGO_SUPERUSER_PASSWORD: test-superuser-password
             MAILGUN_API_KEY: test-mailgun-api-key
             MAILGUN_DOMAIN: test-mailgun-domain
-        command: sh -c '/app/scripts/run-migrations.sh &&
+        command: sh -c '/app/migrate &&
             (/app/manage.py createsuperuser --noinput || true) &&
-            /app/scripts/run-service.sh'
+            /app/webserver'
         networks:
             - macquette-network
 

@@ -48,6 +48,7 @@ COPY ./config ./config
 COPY ./mhep ./mhep
 COPY ./scripts ./scripts
 COPY ./manage.py ./
+COPY scripts/migrate scripts/webserver ./
 
 # Copy in built JS assets
 COPY --from=js /app/mhep/dev/static/dev/js_generated/ /app/mhep/dev/static/dev/js_generated/
@@ -61,4 +62,4 @@ RUN DJANGO_SETTINGS_MODULE=config.settings.staticfiles \
 USER django
 
 EXPOSE 5000
-CMD [ "/usr/local/bin/gunicorn", "config.wsgi", "--bind", "0.0.0.0:5000", "--chdir", "/app", "--timeout", "120", "--log-level", "debug", "--workers", "3" ]
+CMD [ "/app/webserver" ]
