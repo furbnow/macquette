@@ -375,24 +375,54 @@ function get_current_generation() {
     };
 }
 
-function get_used_fuels(scenarios) {
-    let all_fuel_names = new Set();
+function getUsedFuelNames(scenarioIds) {
+    let fuelNames = new Set();
 
-    for (let scenario_id of scenarios) {
-        let scenario = project[scenario_id];
+    for (let id of scenarioIds) {
+        let scenario = project[id];
         for (let fuel of Object.values(scenario.fuel_totals)) {
             if (fuel.quantity !== 0) {
-                all_fuel_names.add(fuel.name);
+                fuelNames.add(fuel.name);
             }
         }
     }
 
-    return [...all_fuel_names].map(name => ({
+    return fuelNames;
+}
+
+function getUsedFuels(scenarioIds) {
+    let fuelNames = getUsedFuelNames(scenarioIds);
+    return [...fuelNames].map(name => ({
         name: name,
         co2factor: project.master.fuels[name].co2factor,
         standingcharge: project.master.fuels[name].standingcharge / 100,
         fuelcost: project.master.fuels[name].fuelcost / 100,
     }));
+}
+
+function getAnyScenarioHasBiomass(scenarioIds) {
+    let fuelNames = getUsedFuelNames(scenarioIds);
+    for (let name of fuelNames) {
+        name = name.toLowerCase();
+        // Dual fuel appliances can usually take logs or coal - so this
+        // is a 'maybe'.
+        if (name.includes('wood') || name.includes('dual fuel')) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function getAnyScenarioHasGeneration(scenarioIds) {
+    for (let scenarioId of scenarioIds) {
+        let scenario = project[scenarioId];
+        if ('generation' in scenario.fuel_totals &&
+                scenario.fuel_totals.generation.quantity !== 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function get_scenario_list(scenarios) {
@@ -607,7 +637,9 @@ function get_context_data(scenarios) {
             pv: get_pv(),
             generation: get_current_generation(),
         },
-        used_fuels: get_used_fuels(scenarios),
+        used_fuels: getUsedFuels(scenarios),
+        any_scenario_has_generation: getAnyScenarioHasGeneration(scenarios),
+        any_scenario_has_biomass: getAnyScenarioHasBiomass(scenarios),
         commentary: {
             brief: hh['commentary_brief'],
             context: hh['commentary_context'],
