@@ -72,7 +72,7 @@ pre-commit:
     needs: []
     image: python:3.9-slim
     variables:
-        PIP_CACHE_DIR: '$CI_PROJECT_DIR/.cache/pip'
+        PIP_CACHE_DIR: '${CI_PROJECT_DIR}/.cache/pip'
         PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
     cache:
         key: pre-commit
