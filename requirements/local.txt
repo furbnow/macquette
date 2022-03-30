@@ -6,6 +6,8 @@
 #
 alabaster==0.7.12
     # via sphinx
+anyio==3.5.0
+    # via watchfiles
 appnope==0.1.2
     # via ipython
 argon2-cffi==21.3.0
@@ -124,6 +126,7 @@ django==4.0.3
     #   django-storages
     #   django-stubs
     #   django-stubs-ext
+    #   django-watchfiles
     #   djangorestframework
 django-anymail[mailgun]==8.5
     # via -r requirements/./production.txt
@@ -153,6 +156,8 @@ django-stubs-ext==0.3.1
     # via django-stubs
 django-waffle==2.3.0
     # via -r requirements/./production.txt
+django-watchfiles==0.0.1
+    # via -r requirements/local.in
 djangorestframework==3.13.1
     # via -r requirements/./production.txt
 djangorestframework-stubs==1.4.0
@@ -197,6 +202,7 @@ identify==2.4.11
 idna==3.3
     # via
     #   -r requirements/./production.txt
+    #   anyio
     #   requests
 imagesize==1.3.0
     # via sphinx
@@ -431,6 +437,8 @@ six==1.16.0
     #   nplusone
     #   python-dateutil
     #   virtualenv
+sniffio==1.2.0
+    # via anyio
 snowballstemmer==2.2.0
     # via sphinx
 social-auth-app-django==5.0.0
@@ -518,6 +526,8 @@ urllib3==1.26.8
     #   sentry-sdk
 virtualenv==20.13.3
     # via pre-commit
+watchfiles==0.10
+    # via django-watchfiles
 wcwidth==0.2.5
     # via prompt-toolkit
 weasyprint==54.2

@@ -50,5 +50,8 @@ INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
 INSTALLED_APPS += ["django_extensions"]  # noqa F405
 
+# django-watchfiles
+INSTALLED_APPS += ["django_watchfiles"]  # noqa F405
+
 # Your stuff...
 # ------------------------------------------------------------------------------
