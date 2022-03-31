@@ -63,7 +63,9 @@ class ListCreateOrganisationAssessments(
         except Organisation.DoesNotExist:
             raise exceptions.NotFound("Organisation not found")
 
-        all_for_org = Assessment.objects.filter(organisation=organisation)
+        all_for_org = Assessment.objects.filter(
+            organisation=organisation
+        ).prefetch_related("owner", "organisation")
 
         if self.request.user in organisation.admins.all():
             return all_for_org
