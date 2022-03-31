@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions
 from rest_framework import generics
+from rest_framework import serializers
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -68,6 +69,24 @@ class ListCreateOrganisationAssessments(
             return all_for_org
         else:
             return all_for_org.filter(owner=self.request.user)
+
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        description = serializers.CharField(allow_blank=True, required=False)
+        data = serializers.JSONField(allow_null=True, default=dict)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        assessment = Assessment.objects.create(
+            **serializer.data,
+            owner=request.user,
+            organisation_id=self.kwargs["pk"],
+        )
+
+        result = AssessmentMetadataSerializer(assessment)
+        return Response(result.data, status=status.HTTP_201_CREATED)
 
 
 class CreateOrganisationLibraries(

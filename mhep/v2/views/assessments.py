@@ -5,10 +5,12 @@ import PIL
 from django.core.files.base import ContentFile
 from rest_framework import generics
 from rest_framework import parsers
+from rest_framework import serializers
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from ..models import Assessment
 from ..models import Image
 from ..serializers import AssessmentFullSerializer
 from ..serializers import AssessmentMetadataSerializer
@@ -17,13 +19,30 @@ from ..serializers import ImageSerializer
 from .mixins import AssessmentQuerySetMixin
 
 
-class ListCreateAssessments(AssessmentQuerySetMixin, generics.ListCreateAPIView):
+class ListCreateAssessments(AssessmentQuerySetMixin, generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = AssessmentMetadataSerializer
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset(*args, **kwargs)
         return queryset.select_related("owner", "organisation")
+
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField()
+        description = serializers.CharField(allow_blank=True, required=False)
+        data = serializers.JSONField(allow_null=True, default=dict)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        assessment = Assessment.objects.create(
+            **serializer.data,
+            owner=request.user,
+        )
+
+        result = AssessmentMetadataSerializer(assessment)
+        return Response(result.data, status=status.HTTP_201_CREATED)
 
 
 class RetrieveUpdateDestroyAssessment(

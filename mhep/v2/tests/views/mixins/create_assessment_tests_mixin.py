@@ -114,21 +114,6 @@ class CreateAssessmentTestsMixin:
             },
         )
 
-    def test_create_assessment_fails_if_status_is_not_valid_choice(self):
-        self.client.force_authenticate(self.user)
-
-        self.assert_create_fails(
-            {"name": "test assessment 1", "status": "bar"},
-            status.HTTP_400_BAD_REQUEST,
-            {
-                "status": [
-                    exceptions.ErrorDetail(
-                        string='"bar" is not a valid choice.', code="invalid_choice"
-                    )
-                ]
-            },
-        )
-
     def assert_create_fails(self, new_assessment, expected_status, expected_response):
         self.client.force_authenticate(self.user)
 

@@ -5,18 +5,15 @@ from .models import Assessment
 from .models import Image
 from .models import Library
 from .models import Organisation
+from .models.assessment import STATUS_CHOICES
 
 User = get_user_model()
 
 
-class UserSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(read_only=True)
-    name = serializers.CharField(read_only=True)
-    email = serializers.CharField(read_only=True)
-
-    class Meta:
-        model = User
-        fields = ["id", "name", "email"]
+class UserSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    name = serializers.CharField()
+    email = serializers.CharField()
 
 
 class OrganisationSerializer(serializers.ModelSerializer):
@@ -66,14 +63,9 @@ class OrganisationSerializer(serializers.ModelSerializer):
         }
 
 
-class OrganisationMetadataSerializer(OrganisationSerializer):
-    """
-    OrganisationMetadataSerializer serializes the id and name of an organisation.
-    """
-
-    class Meta:
-        model = Organisation
-        fields = ["id", "name"]
+class OrganisationMetadataSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    name = serializers.CharField()
 
 
 class ImagesMixin:
@@ -123,38 +115,26 @@ class ImageUpdateSerializer(serializers.Serializer):
     note = serializers.CharField(max_length=200)
 
 
-class AssessmentMetadataSerializer(
-    serializers.ModelSerializer,
-):
-    id = serializers.CharField(read_only=True)
-    owner = UserSerializer(read_only=True)
-    organisation = OrganisationMetadataSerializer(read_only=True)
-
-    def create(self, validated_data):
-        validated_data["owner"] = self.context["request"].user
-        validated_data["organisation"] = self.context.get("organisation", None)
-        return super().create(validated_data)
-
-    class Meta:
-        model = Assessment
-        fields = [
-            "id",
-            "name",
-            "description",
-            "status",
-            "created_at",
-            "updated_at",
-            "owner",
-            "organisation",
-        ]
+class AssessmentMetadataSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+    status = serializers.ChoiceField(choices=STATUS_CHOICES)
+    created_at = serializers.DateTimeField()
+    updated_at = serializers.DateTimeField()
+    owner = UserSerializer()
+    organisation = OrganisationMetadataSerializer()
 
 
-class AssessmentFullSerializer(ImagesMixin, AssessmentMetadataSerializer):
+class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
     """
     Identical to AssessmentMetadataSerializer except that it includes the `data` and
     `images` fields
     """
 
+    id = serializers.CharField(read_only=True)
+    owner = UserSerializer(read_only=True)
+    organisation = OrganisationMetadataSerializer(read_only=True)
     images = serializers.SerializerMethodField()
 
     class Meta:
