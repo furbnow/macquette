@@ -25,7 +25,7 @@ class ListCreateAssessments(AssessmentQuerySetMixin, generics.ListAPIView):
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset(*args, **kwargs)
-        return queryset.prefetch_related("owner", "organisation")
+        return queryset.prefetch_related("owner", "organisation").defer("data")
 
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField()
