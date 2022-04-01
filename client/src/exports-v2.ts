@@ -2,6 +2,7 @@ import { datasets } from './v2/model/datasets/legacy';
 import { calcRun } from './v2/model/model';
 import { mount } from './v2/ui/module-management';
 import { generateReportGraphs } from './v2/reports/graphs';
+import { cloneDeep } from 'lodash';
 
 declare global {
     interface Window {
@@ -18,4 +19,5 @@ window.Macquette = {
     calcRun,
     uiModules,
     generateReportGraphs,
+    cloneDeep,
 };

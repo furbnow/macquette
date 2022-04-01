@@ -440,9 +440,15 @@ function get_lookup(table, key) {
 }
 
 function get_heating_load(scenario) {
-    const heatloss = scenario.totalWK;
-    const temp = scenario.temperature.target;
-    const temp_diff = temp - (-5);
+    // Standardise internal target temp at 21°, accounting for comfort take-back
+    const scenarioCopy = window.Macquette.cloneDeep(scenario);
+    scenarioCopy.temperature.target = 21;
+    const result = calc.run(scenarioCopy);
+
+    const heatloss = result.totalWK;
+    const temp = 21;
+    const temp_low = -4;
+    const temp_diff = temp - temp_low;
     const peak_heat = heatloss * temp_diff;
     const area = scenario.TFA;
     const peak_heat_m2 = peak_heat / area;
@@ -450,6 +456,7 @@ function get_heating_load(scenario) {
     return {
         heatloss,
         temp,
+        temp_low,
         temp_diff,
         peak_heat: peak_heat / 1000, // in kW instead of W
         area,
