@@ -7,6 +7,7 @@ var data = {};
 var keys = {};
 
 var mhep_helper;
+var library_helper;
 
 var historical = [];
 var historical_index;
@@ -48,6 +49,8 @@ async function initMacquette(api, lockedState, assessmentId, featureFlags) {
         project[s].fuels = project.master.fuels;
         project[s] = calc.run(project[s]);
     }
+
+    library_helper = new libraryHelper('', $('#openbem'));
 
     load_page_from_hash();
     redraw_scenario_menu();

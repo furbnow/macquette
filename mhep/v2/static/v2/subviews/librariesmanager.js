@@ -1,7 +1,5 @@
 console.log('debug libraries_manager.js');
 
-var library_helper = new libraryHelper('', $('#openbem'));
-
 function librariesmanager_UpdateUI() {
     //library_helper.init();
     $('#libraries-table').html('');

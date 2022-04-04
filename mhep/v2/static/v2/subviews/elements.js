@@ -1,11 +1,5 @@
 console.log('debug elements.js');
 
-if (typeof library_helper != 'undefined') {
-    library_helper.type = 'elements';
-} else {
-    var library_helper = new libraryHelper('elements', $('#openbem'));
-}
-
 // Deep-clone an object of simple values
 const cloneObj = obj => JSON.parse(JSON.stringify(obj));
 

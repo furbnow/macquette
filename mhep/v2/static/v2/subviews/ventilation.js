@@ -1,11 +1,5 @@
 console.log('Debug ventilation.js');
 
-if (typeof library_helper != 'undefined') {
-    library_helper.type = 'systems';
-} else {
-    var library_helper = new libraryHelper('systems', $('#openbem'));
-}
-
 $("[key='data.ventilation.ventilation_type']").change(function () {
 
     var v = $(this).val();

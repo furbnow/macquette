@@ -1,9 +1,5 @@
 console.log('debug heating.js');
-if (typeof library_helper != 'undefined') {
-    library_helper.type = 'water_usage';
-} else {
-    var library_helper = new libraryHelper('heating_systems', $('#openbem'));
-}
+
 function heating_UpdateUI() {
     add_water_usage();
     add_heating_systems();
