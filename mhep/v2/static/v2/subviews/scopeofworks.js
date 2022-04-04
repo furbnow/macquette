@@ -1,15 +1,6 @@
 console.log('Debug scopeofworks.js');
 
 function scopeofworks_initUI() {
-    if (!window.questionnaire) {
-        $.ajax({
-            url: urlHelper.static('subviews/householdquestionnaire.js'),
-            dataType: 'script',
-            async: false,
-            error: handleServerError('loading householdquestionnaire.js'),
-        });
-    }
-
     $('#export_csv').click(function () {
         const assessment = p.data;
         const output = [
