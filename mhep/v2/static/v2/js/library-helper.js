@@ -3472,18 +3472,10 @@ libraryHelper.prototype.populate_selects_in_apply_measure_modal = function (type
     $('#replace-from-lib').attr('library_type', type_of_library);
     this.onChangeApplyMeasureReplaceFromLib(type_of_library); // This one to populate the select for items
 };
-libraryHelper.prototype.delete_library_item = function (library_id, tag) {
-    var myself = this;
-    $.ajax({
-        type: 'DELETE',
-        async: false,
-        url: urlHelper.api.libraryItem(library_id, tag),
-        error: handleServerError('deleting item from library'),
-        success: function() {
-            $('#confirm-delete-library-item-modal').modal('hide');
-            myself.load_libraries();
-        },
-    });
+libraryHelper.prototype.delete_library_item = async function (library_id, tag) {
+    await mhep_helper.delete_library_item(library_id, tag);
+    $('#confirm-delete-library-item-modal').modal('hide');
+    this.load_libraries();
 };
 
 libraryHelper.prototype.get_list_of_libraries_for_select = function (library_type) {

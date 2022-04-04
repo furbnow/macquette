@@ -68,6 +68,26 @@ class DjangoAPI {
         });
     }
 
+    delete_library_item(library_id, tag) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: this.urls.api.libraryItem(library_id, tag),
+                type: 'DELETE',
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('deleting item from library')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
+                    reject(errorThrown);
+                },
+                success: function () {
+                    resolve();
+                },
+            });
+        });
+    }
+
     list_assessments(orgid = null) {
         const url = orgid
             ? urlHelper.api.organisationAssessments(orgid)
