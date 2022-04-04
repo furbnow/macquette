@@ -807,18 +807,11 @@ libraryHelper.prototype.onDeleteLibrary = function (library_id) {
     $('#confirm-delete-library-modal #delete-library-ok').attr('data-library-id', library_id);
     $('#confirm-delete-library-modal').modal('show');
 };
-libraryHelper.prototype.onDeleteLibraryOk = function (library_id) {
-    var myself = this;
-    $.ajax({
-        url: urlHelper.api.library(library_id),
-        type: 'DELETE',
-        async: false,
-        error: handleServerError('deleting library'),
-        success: function () {
-            $('#confirm-delete-library-modal').modal('hide');
-            myself.load_libraries().then(() => UpdateUI());
-        },
-    });
+libraryHelper.prototype.onDeleteLibraryOk = async function (library_id) {
+    await mhep_helper.delete_library(library_id);
+    $('#confirm-delete-library-modal').modal('hide');
+    await this.load_libraries();
+    UpdateUI();
 };
 libraryHelper.prototype.onShowLibraryItemsEditMode = function (library_id) {
     var library = this.get_library_by_id(library_id);
