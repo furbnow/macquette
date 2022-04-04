@@ -13,48 +13,16 @@
  *
  ********************************************************/
 
-var openFUVC_helper = new openFUVC();
+var openFUVC_helper;
 
-$(document).ready(function () {
-    openFUVC_helper.add_modal_to_DOM();
-    openFUVC_helper.add_events();
-    openFUVC_helper.ini_modal();
-
-    // Development
-    /*$('#launch-calculator').click();*/
-    /*$('#type-of-floor select').val('suspended_floor').change();
-    $('#area input').val(75.6);
-    $('#perimeter input').val(35.4);
-    $('#wall_thickness input').val(0.3);
-    $('#height input').val(0.3);
-    $('#wall_uvalue select').val(1.7);
-    $('#area_ventilation_openings input').val(0.002);
-    $('#wind_shielding_factor select').val(0.05);
-    $('#depth_of_basement_floor input').val(0.3);
-    $('#wind_speed_annual_average input').val(4);
-    $('#external_temperature_annual_average input').val(10);*/
-
-    /*$('#add-layer').click();
-     $('[layer="1"] .thickness').val(0.10);
-     $('[layer="1"] .spacing').val(1);
-     $('[layer="1"] .length-material2').val(0.2);
-     $('[layer="2"] .thickness').val(0);
-     $('[layer="2"] .spacing').val(1);
-     $('[layer="2"] .length-material2').val(0.2);
-     $('[layer="1"] .material1').val("unventilated");
-     $('#openFUVC-calculate').click();*/
-
-});
-
-openFUVC.prototype.add_modal_to_DOM = function () {
-    $.ajax({
-        url: urlHelper.static('subviews/_openfuvc.html'),
-        async: false,
-        success: function(data) {
-            $('body').append(data);
-        }
+function initOpenFUVCHelper(api) {
+    openFUVC_helper = new openFUVC();
+    api.subview('_openfuvc').then(html => {
+        $('body').append(html);
+        openFUVC_helper.add_events();
+        openFUVC_helper.ini_modal();
     });
-};
+}
 
 openFUVC.prototype.ini_modal = function () {
     //Fill up selects with options defined in this.dataset
