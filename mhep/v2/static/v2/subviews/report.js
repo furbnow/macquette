@@ -19,15 +19,6 @@
 console.log('debug report.js');
 
 function report_initUI() {
-    if (!view_html['compare']) {
-        $.ajax({
-            url: urlHelper.static('subviews/compare.js'),
-            async: false,
-            cache: false,
-            error: handleServerError('loading subview compare.js'),
-        });
-    }
-
     let newReport = window.features.includes("new-report-generation");
     let oldReport = !window.features.includes("disable-old-report-generation");
 
