@@ -28,6 +28,26 @@ class DjangoAPI {
         return response.text();
     }
 
+    list_libraries() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: this.urls.api.libraries(),
+                datatype: 'json',
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('loading libraries')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    }
+
     list_assessments(orgid = null) {
         const url = orgid
             ? urlHelper.api.organisationAssessments(orgid)

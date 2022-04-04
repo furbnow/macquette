@@ -30,7 +30,7 @@ function libraryHelper(type, container) {
     this.library_id = 0;
     this.library_names = {};
 
-    this.load_user_libraries(); // Populates this.library_list
+    this.load_libraries(); // Populates this.library_list
     this.append_modals();
     this.add_events();
 }
@@ -428,12 +428,13 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
     }
 
     mhep_helper.create_library(new_library_body, organisationID).then(result => {
-        myself.load_user_libraries();
-        $('#create-library-message').html('Library created');
-        $('#cancelnewlibrary').hide('fast');
-        $('#newlibrary').hide('fast');
-        $('#finishcreatelibrary').show('fast');
-        UpdateUI(data);
+        myself.load_libraries().then(() => {
+            $('#create-library-message').html('Library created');
+            $('#cancelnewlibrary').hide('fast');
+            $('#newlibrary').hide('fast');
+            $('#finishcreatelibrary').show('fast');
+            UpdateUI(data);
+        });
     });
 
 };
@@ -819,8 +820,7 @@ libraryHelper.prototype.onDeleteLibraryOk = function (library_id) {
         error: handleServerError('deleting library'),
         success: function () {
             $('#confirm-delete-library-modal').modal('hide');
-            myself.load_user_libraries();
-            UpdateUI();
+            myself.load_libraries().then(() => UpdateUI());
         },
     });
 };
@@ -3401,29 +3401,20 @@ libraryHelper.prototype.generation_measures_get_item_to_save = function () {
 /***************************************************
  * Other methods
  ***************************************************/
-libraryHelper.prototype.load_user_libraries = function (callback) {
-    $.ajax({
-        url: urlHelper.api.libraries(),
-        async: false,
-        datatype: 'json',
-        error: handleServerError('loading libraries'),
-        success: result => {
-            let libraries_by_type = {};
-            for (let type of Object.keys(libraryHelper.library_names)) {
-                libraries_by_type[type] = [];
-            }
+libraryHelper.prototype.load_libraries = async function () {
+    const libraries = await mhep_helper.list_libraries();
 
-            for (let library of result) {
-                let type = library.type;
-                libraries_by_type[type].push(library);
-            }
+    let libraries_by_type = {};
+    for (let type of Object.keys(libraryHelper.library_names)) {
+        libraries_by_type[type] = [];
+    }
 
-            if (callback !== undefined) {
-                callback();
-            }
+    for (let library of libraries) {
+        let type = library.type;
+        libraries_by_type[type].push(library);
+    }
 
-            this.library_list = libraries_by_type;
-        }});
+    this.library_list = libraries_by_type;
 };
 libraryHelper.prototype.get_library_by_id = function (id) {
     for (z in this.library_list) {
@@ -3501,7 +3492,7 @@ libraryHelper.prototype.delete_library_item = function (library_id, tag) {
         error: handleServerError('deleting item from library'),
         success: function() {
             $('#confirm-delete-library-item-modal').modal('hide');
-            myself.load_user_libraries();
+            myself.load_libraries();
         },
     });
 };
