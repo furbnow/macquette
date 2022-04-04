@@ -473,15 +473,12 @@
         draw_organisation(orgid);
         $("#organisation-add-member").attr("href", urlHelper.admin.organisation(orgid));
         $("#show-members-button").show();
-        $.ajax({
-            url: urlHelper.api.organisationAssessments(orgid),
-            error: handleServerError('listing assessments for organisation'),
-            success: function (result) {
-                assessments = result;
-                draw_assessments("#assessments", assessments)
-                const organisation = getOrganisationById(orgid);
-                $("#assessments-title").html(organisation.name + " Assessments");
-            }
+
+        mhep_helper.list_assessments(orgid).then(result => {
+            assessments = result;
+            draw_assessments("#assessments", assessments)
+            const organisation = getOrganisationById(orgid);
+            $("#assessments-title").html(organisation.name + " Assessments");
         });
     });
 

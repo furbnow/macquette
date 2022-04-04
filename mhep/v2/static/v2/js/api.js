@@ -28,10 +28,13 @@ class DjangoAPI {
         return response.text();
     }
 
-    list_assessments() {
+    list_assessments(orgid = null) {
+        const url = orgid
+            ? urlHelper.api.organisationAssessments(orgid)
+            : urlHelper.api.assessments();
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: this.urls.api.assessments(),
+                url,
                 success: function (data) {
                     resolve(data);
                 },
