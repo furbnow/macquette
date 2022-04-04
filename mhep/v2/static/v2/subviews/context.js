@@ -16,7 +16,7 @@ $('#add-floor').click(function(){
         name = size+'th Floor';
     }
     data.floors.push({name: name, area: 0, height: 0, volume: 0});
-    add_floor(data.floors.length-1);
+    add_floor_context(data.floors.length-1);
     update();
 });
 
@@ -27,7 +27,7 @@ $('#openbem').on('click','.delete-floor', function(){
     update();
 });
 
-function add_floor(z) {
+function add_floor_context(z) {
     $('#floors').append($('#template').html());
     $("#floors [key='data.floors.template.name']").attr('key','data.floors.'+z+'.name');
     $("#floors [key='data.floors.template.area']").attr('key','data.floors.'+z+'.area');
@@ -38,7 +38,7 @@ function add_floor(z) {
 
 function context_initUI() {
     for (z in data.floors) {
-        add_floor(z);
+        add_floor_context(z);
     }
 }
 
