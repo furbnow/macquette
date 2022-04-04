@@ -14,12 +14,13 @@ function commentary_initUI() {
         data.household = {};
     }
 
-    for (let s of scenarios) {
+    for (const s of scenarios) {
         let scenario = project[s];
         $('#overviews').append('<div id="overview-' + s + '" class="overview"></div>');
-        load_view('#overview-' + s, 'topgraphic');
-        $('#overviews #overview-' + s + ' #scenario-name').html(s.charAt(0).toUpperCase() + s.slice(1) + ' - ' + scenario.scenario_name);
-        draw_openbem_graphics('#overview-' + s, scenario);
+        load_view('#overview-' + s, 'topgraphic').then(() => {
+            $('#overviews #overview-' + s + ' #scenario-name').html(s.charAt(0).toUpperCase() + s.slice(1) + ' - ' + scenario.scenario_name);
+            draw_openbem_graphics('#overview-' + s, scenario);
+        })
     }
 
     for (let scenario_name of scenarios) {

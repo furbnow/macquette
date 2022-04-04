@@ -1,47 +1,32 @@
 var view_html = {};
 
-function load_view(eid, view) {
-    if (view_html[view] != undefined) {
-        $(eid).html(view_html[view]);
-        return view_html[view];
-    }
+async function requireJs(url) {
+    return new Promise((resolve, reject) => {
+        var scriptElem = document.createElement('script');
+        scriptElem.src = url;
 
-    const url = urlHelper.static('subviews/' + view + '.html');
-    if (!url) {
-        console.error(`Couldn't find URL for 'subviews/${view}.html'`);
-        console.error(
-            'If you are running the code locally, this could be because you have' +
-            ' added a new page without running collectstatic.'
-        );
-        alert('Error loading page.');
+        scriptElem.onload = () => resolve();
+        scriptElem.onerror = () => reject();
+
+        document.head.appendChild(scriptElem);
+    });
+}
+
+async function load_view(rootElem, viewName) {
+    if (viewName in view_html) {
+        $(rootElem).html(view_html[viewName]);
         return;
     }
 
-    var result_html = '';
-    $.ajax({
-        url: url,
-        async: false,
-        cache: false,
-        error: handleServerError('loading HTML for subview "' + view + '"'),
-        success: function (data) {
-            result_html = data;
-        },
-    });
+    const html = await mhep_helper.subview(viewName);
 
-    $(eid).html(result_html);
+    $(rootElem).html(html);
+    view_html[viewName] = html;
 
-    // Load js
-    $.ajax({
-        url: urlHelper.static('subviews/' + view + '.js'),
-        dataType: 'script',
-        async: false,
-        error: handleServerError('loading Javascript for subview "' + view + '"'),
-    });
+    // We have to load the HTML and then the JS sequentially due to legacy assumptions
+    await requireJs(urlHelper.static('subviews/' + viewName + '.js'));
+};
 
-    view_html[view] = result_html;
-
-    return result_html;
-}
 function varset(key, value) {
     var lastval = '';
     var p = key.split('.');

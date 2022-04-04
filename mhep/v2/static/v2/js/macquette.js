@@ -30,7 +30,10 @@ async function initMacquette(api, lockedState, assessmentId, featureFlags) {
     document.getElementById('macquette-container').innerHTML = surrounds;
 
     // Load house graphic + stats
-    load_view('#topgraphic', 'topgraphic');
+    load_view('#topgraphic', 'topgraphic').catch((err) => {
+        console.error(`Failed to load topgraphic: ${err}`);
+        alert('Failed to load top graphic');
+    });
 
     // Various project initialisation stuff
     p = mhep_helper.get(projectid);
@@ -482,7 +485,9 @@ function load_page_from_hash() {
     page = tmp[1] || 'context';
     scenario = tmp[0] || 'master';
 
-    if (project[scenario] == undefined) scenario = 'master';
+    if (project[scenario] == undefined) {
+        scenario = 'master';
+    }
 
     if (oldPage === page && oldScenario === scenario) {
         return;
@@ -496,54 +501,65 @@ function load_page_from_hash() {
     data = project[scenario];
 
     // Render page
-    load_view('#content', page);
+    load_view('#content', page)
+        .catch((err) => {
+            console.error(`Failed to load view ${page}`);
+            console.error(err);
+            alert(`Failed to load view ${page}`);
+        })
+        .then(() => {
+            if (
+                page == 'report' ||
+                page == 'householdquestionnaire' ||
+                page == 'commentary' ||
+                page == 'scopeofworks'
+            ) {
+                hide_house_graphic();
+            } else {
+                show_house_graphic();
+                draw_openbem_graphics('#topgraphic', data);
+            }
 
-    if (
-        page == 'report' ||
-        page == 'householdquestionnaire' ||
-        page == 'commentary' ||
-        page == 'scopeofworks'
-    ) {
-        hide_house_graphic();
-    } else {
-        show_house_graphic();
-        draw_openbem_graphics('#topgraphic', data);
-    }
+            InitUI();
+            UpdateUI(data);
 
-    InitUI();
-    UpdateUI(data);
+            // Add lock functionality to buttons and icons
+            if (
+                page != 'librariesmanager' &&
+                page != 'imagegallery' &&
+                page != 'export' &&
+                page != 'householdquestionnaire' &&
+                page != 'currentenergy' &&
+                page != 'commentary' &&
+                page != 'report'
+            ) {
+                $('#content button').addClass('if-not-locked');
+                $('#content i').addClass('if-not-locked');
+                $('#content .revert-to-original').each(function () {
+                    if ($(this).css('display') != 'none') {
+                        $(this).addClass('if-not-locked');
+                    }
+                });
+            }
 
-    // Add lock functionality to buttons and icons
-    if (
-        page != 'librariesmanager' &&
-        page != 'imagegallery' &&
-        page != 'export' &&
-        page != 'householdquestionnaire' &&
-        page != 'currentenergy' &&
-        page != 'commentary' &&
-        page != 'report'
-    ) {
-        $('#content button').addClass('if-not-locked');
-        $('#content i').addClass('if-not-locked');
-        $('#content .revert-to-original').each(function () {
-            if ($(this).css('display') != 'none') $(this).addClass('if-not-locked');
+            // Disable measures if master
+            show_hide_if_master();
+
+            if (data.locked) {
+                $('.if-not-locked').hide();
+            } else {
+                $('.if-not-locked').show();
+            }
+
+            // Disable measures if master
+            show_hide_if_master();
+
+            // Make modals draggable
+            $('#openbem .modal-header').css('cursor', 'move');
+            $('#openbem .modal').draggable({
+                handle: '.modal-header',
+            });
         });
-    }
-
-    // Disable measures if master
-    show_hide_if_master();
-
-    if (data.locked) $('.if-not-locked').hide();
-    else $('.if-not-locked').show();
-
-    // Disable measures if master
-    show_hide_if_master();
-
-    // Make modals draggable
-    $('#openbem .modal-header').css('cursor', 'move');
-    $('#openbem .modal').draggable({
-        handle: '.modal-header',
-    });
 }
 
 function refresh_undo_redo_buttons() {
