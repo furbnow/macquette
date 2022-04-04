@@ -482,6 +482,7 @@ libraryHelper.prototype.onCreateInLibraryOk = function (library_id) {
     // Call to specific function for the type
     var function_name = this.type + '_get_item_to_save';
     item = this[function_name]();
+    var myself = this;
     // Add item to library and save it
     for (tag in item) {
         if (tag === '') {
@@ -503,6 +504,7 @@ libraryHelper.prototype.onCreateInLibraryOk = function (library_id) {
                     $('#create-in-library-message').html('Item added to the library');
                     $('#modal-create-in-library button').hide('fast');
                     $('#create-in-library-finish').show('fast');
+                    myself.load_libraries();
                 },
             });
         }
