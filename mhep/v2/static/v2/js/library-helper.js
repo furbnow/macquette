@@ -356,7 +356,6 @@ libraryHelper.prototype.onEditLibraryNameOk = function () {
     var library_new_name = $('#edit-library-name-modal #new-library-name').val();
     var myself = this;
     this.set_library_name(library_id, library_new_name);
-    //this.set_library_name(library_id, library_new_name);
 };
 libraryHelper.prototype.onSelectingLibraryToShow = function (origin) {
     var id = $('#library-select').val();
@@ -917,19 +916,10 @@ libraryHelper.prototype.onSaveLibraryEditMode = function (selector, library_id) 
         });
     });
 
-    $.ajax({
-        type: 'PATCH',
-        url: urlHelper.api.library(library_id),
-        data: JSON.stringify({'data': data}),
-        datatype: 'json',
-        contentType: 'application/json;charset=utf-8',
-        error: handleServerError('saving library'),
-        success: function (result) {
-            $('#show-library-modal-edit-mode #save').attr('disabled', 'disabled');
-            $('#show-library-modal-edit-mode #message').html('Saved');
-        },
+    mhep_helper.update_library(library_id, { data }).then(() => {
+        $('#show-library-modal-edit-mode #save').attr('disabled', 'disabled');
+        $('#show-library-modal-edit-mode #message').html('Saved');
     });
-
 };
 
 /**********************************************
@@ -3424,25 +3414,12 @@ libraryHelper.prototype.populate_measure_new_item = function (type_of_library) {
     var out = this[function_name](new_item, item_index);
     $('#apply-measure-item-fields').html(out);
 };
-libraryHelper.prototype.set_library_name = function (library_id, new_name, callback) {
-    const body = JSON.stringify({
-        'name': new_name,
-    });
-
-    $.ajax({
-        url: urlHelper.api.library(library_id),
-        type: 'PATCH',
-        data: body,
-        async: false,
-        datatype: 'json',
-        contentType: 'application/json;charset=utf-8',
-        error: handleServerError('renaming library'),
-        success: function (response) {
-            var library = library_helper.get_library_by_id(library_id);
-            library.name = new_name;
-            UpdateUI(data);
-            $('.modal').modal('hide');
-        },
+libraryHelper.prototype.set_library_name = function (library_id, name) {
+    mhep_helper.update_library(library_id, { name }).then(() => {
+        var library = library_helper.get_library_by_id(library_id);
+        library.name = name;
+        UpdateUI(data);
+        $('.modal').modal('hide');
     });
 };
 libraryHelper.prototype.populate_library_modal = function (origin) {
