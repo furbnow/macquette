@@ -1,7 +1,6 @@
 console.log('debug libraries_manager.js');
 
 function librariesmanager_UpdateUI() {
-    //library_helper.init();
     $('#libraries-table').html('');
 
     const libraries_by_type = library_helper.library_list;

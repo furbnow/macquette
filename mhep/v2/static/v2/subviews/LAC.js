@@ -71,7 +71,6 @@ $('#openbem').on('change', '#LAC_calculation_type', function () {
     library_helper.type = 'appliances_and_cooking';
 });
 $('#openbem').on('click', '.add-CarbonCoop-from-lib', function () {
-    library_helper.init();
     library_helper.type = 'appliances_and_cooking';
     library_helper.onAddItemFromLib();
 });

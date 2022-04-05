@@ -78,12 +78,10 @@ $('#openbem').on('click', '[key="data.water_heating.solar_water_heating"]', func
     data.use_SHW = !data.water_heating.solar_water_heating; // Copy the negative because data.water_heating.solar_water_heating is not yet updated to the value of the checkbox
 });
 $('#openbem').on('click', '.add-water-efficiency-from-lib', function () {
-    library_helper.init();
     library_helper.type = 'water_usage';
     library_helper.onAddItemFromLib();
 });
 $('#openbem').on('click', '.add-heating-system-from-lib', function () {
-    library_helper.init();
     library_helper.type = 'heating_systems';
     library_helper.onAddItemFromLib();
 });
@@ -107,7 +105,6 @@ $('#openbem').on('click', '.edit-item-water-usage', function () {
 });
 $('#openbem').on('click', '.apply-water-heating-measure', function () {
 //1. Set variables in library_helper
-    library_helper.init();
     library_helper.type_of_measure = $(this).attr('type');
     if (library_helper.type_of_measure == 'add_heating_systems_measure') {
         library_helper.type = 'heating_systems_measures';
@@ -341,7 +338,6 @@ $('#openbem').on('click', '#apply-measure-water-heating-ok', function () {
     $('#apply-measure-water-heating-modal').modal('hide');
 });
 $('#openbem').on('click', '.select-type-of-storage-from-lib', function () {
-    library_helper.init();
     library_helper.type = 'storage_type';
     library_helper.onAddItemFromLib();
 });

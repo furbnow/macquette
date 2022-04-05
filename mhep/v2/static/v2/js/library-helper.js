@@ -30,12 +30,10 @@ function libraryHelper(type, container) {
     this.library_id = 0;
     this.library_names = {};
 
-    this.init();
+    this.load_user_libraries(); // Populates this.library_list
     this.append_modals();
     this.add_events();
 }
-
-//  //if ($('#library-select').val() != undefined) Needs to be removed from every function where it appears. Ensure we always pass the library id
 
 /***********************************
  * Methods called in the constructor
@@ -43,13 +41,9 @@ function libraryHelper(type, container) {
 
 libraryHelper.library_names = LIBRARY_NAMES;
 
-libraryHelper.prototype.init = function () {
-    this.load_user_libraries(); // Populates this.library_list
-};
 libraryHelper.prototype.add_events = function () {
     var myself = this;
     this.container.on('click', '.add-from-lib', function () {
-        myself.init(); // Reload the lobrary before we display it
         myself.onAddItemFromLib($(this));
     });
     this.container.on('change', '#library-select', function () {
@@ -92,8 +86,6 @@ libraryHelper.prototype.add_events = function () {
         myself.onEditLibraryItemOk(library_id);
     });
     this.container.on('click', '.edit-item', function () {
-        // myself.onEditItem($(this));
-        myself.init(); // Reload the lobrary before we display it
         myself.onAddItemFromLib($(this));
     });
     this.container.on('click', '.edit-item-ok', function () {
@@ -124,7 +116,6 @@ libraryHelper.prototype.add_events = function () {
         myself.onEditLibraryNameOk();
     });
     this.container.on('click', '.show-items-edit-mode', function () {
-        myself.init(); // Reload the lobrary before we display it
         myself.onShowLibraryItemsEditMode($(this).attr('data-library-id'));
     });
     this.container.on('change', '#show-library-items-modal .element-type select', function () {
@@ -169,7 +160,6 @@ libraryHelper.prototype.add_events = function () {
         myself.onDeleteLibraryOk($(this).attr('data-library-id'));
     });
     this.container.on('click', '.add-item', function () {
-        myself.init(); // Reload the lobrary before we display it
         var library_id = $(this).attr('data-library-id');
         myself.type = myself.get_library_by_id(library_id).type;
         myself.onCreateInLibrary(library_id);
@@ -829,7 +819,7 @@ libraryHelper.prototype.onDeleteLibraryOk = function (library_id) {
         error: handleServerError('deleting library'),
         success: function () {
             $('#confirm-delete-library-modal').modal('hide');
-            myself.init();
+            myself.load_user_libraries();
             UpdateUI();
         },
     });

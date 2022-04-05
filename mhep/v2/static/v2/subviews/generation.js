@@ -40,7 +40,6 @@ $('#openbem').on('change', '[key="data.generation.use_PV_calculator"]', function
 
 $('#openbem').on('click', '.apply-generation-measure-from-lib', function () {
     // Set variables in library_helper
-    library_helper.init();
     library_helper.type = 'generation_measures';
 
     // Prepare modal

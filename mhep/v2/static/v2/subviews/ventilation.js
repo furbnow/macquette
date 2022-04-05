@@ -38,7 +38,6 @@ $("[key='data.ventilation.air_permeability_test']").change(function () {
 });
 
 $('#openbem').on('click', '.add-ventilation-system-from-lib', function () {
-    library_helper.init();
     library_helper.type = 'ventilation_systems';
     library_helper.onAddItemFromLib();
 });
@@ -57,7 +56,6 @@ $('#openbem').on('click', '.add-ventilation-system', function () {
 });
 $('#openbem').on('click', '.apply-ventilation-measure-from-lib', function () {
     // Set variables in library_helper
-    library_helper.init();
     library_helper.type_of_measure = $(this).attr('type');
     if (library_helper.type_of_measure == 'add_extract_ventilation_points') {
         library_helper.type = 'extract_ventilation_points';
@@ -293,17 +291,14 @@ $('#openbem').on('click', '[name=apply-measure-ventilation-what-to-do]', functio
 
 });
 $('#openbem').on('click', '.add-IVF-from-lib', function () {
-    library_helper.init();
     library_helper.type = 'intentional_vents_and_flues';
     library_helper.onAddItemFromLib();
 });
 $('#openbem').on('click', '.add-EVP-from-lib', function () {
-    library_helper.init();
     library_helper.type = 'extract_ventilation_points';
     library_helper.onAddItemFromLib();
 });
 $('#openbem').on('click', '.add-CDF-from-lib', function () {
-    library_helper.init();
     library_helper.type = 'clothes_drying_facilities';
     library_helper.onAddItemFromLib();
 });
