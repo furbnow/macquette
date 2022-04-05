@@ -90,6 +90,28 @@ class DjangoAPI {
         });
     }
 
+    update_library_item(library_id, tag, updates) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: this.urls.api.libraryItem(library_id, tag),
+                type: 'PUT',
+                data: JSON.stringify(updates),
+                contentType: 'application/json;charset=utf-8',
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('updating item in library')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
+                    reject(errorThrown);
+                },
+                success: function () {
+                    resolve();
+                },
+            });
+        });
+    }
+
     delete_library(library_id) {
         return new Promise((resolve, reject) => {
             $.ajax({

@@ -563,22 +563,16 @@ libraryHelper.prototype.onEditLibraryItemOk = function (library_id) {
     $('#edit-item-message').html('');
 
     var selected_library = this.get_library_by_id(library_id);
-    var item = {};
+
     // Call to specific function for the type
     var function_name = this.type + '_get_item_to_save';
-    item = this[function_name]();
+    var item = this[function_name]();
+
     for (tag in item) {
-        var item_string = item[tag];
-        $.ajax({type: 'PUT',
-            url: urlHelper.api.libraryItem(selected_library.id, tag),
-            data: item_string,
-            contentType: 'application/json;charset=utf-8',
-            error: handleServerError('saving library'),
-            success: function(xhr) {
-                $('#edit-item-message').html('Item edited and library saved');
-                $('#modal-edit-item button').hide('fast');
-                $('#edit-item-finish').show('fast');
-            }
+        mhep_helper.update_library_item(library_id, tag, item[tag]).then(() => {
+            $('#edit-item-message').html('Item edited and library saved');
+            $('#modal-edit-item button').hide('fast');
+            $('#edit-item-finish').show('fast');
         });
     }
 };
