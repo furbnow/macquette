@@ -222,8 +222,8 @@ class DjangoAPI {
 
     list_assessments(orgid = null) {
         const url = orgid
-            ? urlHelper.api.organisationAssessments(orgid)
-            : urlHelper.api.assessments();
+            ? this.urls.api.organisationAssessments(orgid)
+            : this.urls.api.assessments();
         return new Promise((resolve, reject) => {
             $.ajax({
                 url,
