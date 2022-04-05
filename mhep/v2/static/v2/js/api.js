@@ -1,3 +1,75 @@
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + '=') {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+}
+
+$.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            var csrftoken = getCookie('csrftoken');
+            // relates to Django's CSRF_HEADER_NAME setting
+            xhr.setRequestHeader('X-CSRFTOKEN', csrftoken);
+        }
+    },
+});
+
+function handleServerError(intendedAction) {
+    /*
+    pass this into $.ajax() as the error parameter for example
+    ```
+      $ajax({
+        success: function(response) { ... },
+        error: handleServerError('listing libraries'),
+        ...
+      })
+    ```
+    */
+
+    return function (jqXHR, textStatus, errorThrown) {
+        let msg = jqXHR.statusText;
+        if (jqXHR.responseJSON) {
+            msg += ': ' + JSON.stringify(jqXHR.responseJSON);
+        }
+
+        console.error('jqXHR:', jqXHR);
+        console.error('textStatus:', textStatus);
+        console.error('errorThrown:', errorThrown);
+        console.error('responseJSON: ', jqXHR.responseJSON);
+        console.error(
+            'error ' +
+                intendedAction +
+                ': server returned: HTTP ' +
+                jqXHR.status +
+                ': ' +
+                msg,
+        );
+        alert(
+            'Error ' +
+                intendedAction +
+                '. The server responded: HTTP ' +
+                jqXHR.status +
+                ': ' +
+                msg,
+        );
+    };
+}
+
 class DjangoAPI {
     constructor(urls) {
         this.urls = urls;
