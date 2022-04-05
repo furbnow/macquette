@@ -57,13 +57,33 @@ class DjangoAPI {
                 datatype: 'json',
                 contentType: 'application/json;charset=utf-8',
                 error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('updating library')(
+                    handleServerError('updating library')(jqXHR, textStatus, errorThrown);
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
+        });
+    }
+
+    add_item_to_library(library_id, data) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: 'POST',
+                url: this.urls.api.libraryItems(library_id),
+                data: JSON.stringify(data),
+                dataType: 'json',
+                contentType: 'application/json;charset=utf-8',
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('adding item to library')(
                         jqXHR,
                         textStatus,
                         errorThrown,
                     );
                     reject(errorThrown);
-                },                success: function (data) {
+                },
+                success: function (data) {
                     resolve(data);
                 },
             });

@@ -468,14 +468,13 @@ libraryHelper.prototype.onCreateInLibrary = function (library_id) {
 };
 libraryHelper.prototype.onCreateInLibraryOk = function (library_id) {
     $('#create-in-library-message').html('');
-    //if ($('#library-select').val() != undefined)
-    //library_id = $('#library-select').val();
+
     var selected_library = this.get_library_by_id(library_id);
-    var item = {};
+
     // Call to specific function for the type
     var function_name = this.type + '_get_item_to_save';
-    item = this[function_name]();
-    var myself = this;
+    var item = this[function_name]();
+
     // Add item to library and save it
     for (tag in item) {
         if (tag === '') {
@@ -483,23 +482,13 @@ libraryHelper.prototype.onCreateInLibraryOk = function (library_id) {
         } else if (selected_library.data[tag] != undefined) {
             $('#create-in-library-message').html('Tag already exist, choose another one');
         } else {
-            $.ajax({
-                type: 'POST',
-                url: urlHelper.api.libraryItems(selected_library.id),
-                data: JSON.stringify({
-                    'tag': tag,
-                    'item': item[tag],
-                }),
-                dataType: 'json',
-                contentType: 'application/json;charset=utf-8',
-                error: handleServerError('adding item to library'),
-                success: function (result) {
+            mhep_helper.add_item_to_library(library_id, { tag, item: item[tag] })
+                .then(() => {
                     $('#create-in-library-message').html('Item added to the library');
                     $('#modal-create-in-library button').hide('fast');
                     $('#create-in-library-finish').show('fast');
-                    myself.load_libraries();
-                },
-            });
+                    this.load_libraries();
+                });
         }
     }
 };
