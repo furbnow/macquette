@@ -41,6 +41,7 @@ class LibraryAdmin(ImportExportMixin, admin.ModelAdmin):
         "owner_user",
         "owner_organisation",
         "number_of_items",
+        "updated_at",
     ]
     search_fields = ["name", "type"]
     formfield_overrides = {models.ManyToManyField: {"widget": CheckboxSelectMultiple}}
