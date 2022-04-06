@@ -350,23 +350,9 @@ class DjangoAPI {
         });
     }
 
-    delete_assessment(id) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.assessment(id),
-                type: 'DELETE',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('deleting assessment')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-                success: function () {
-                    resolve();
-                },
-            });
+    async delete_assessment(id) {
+        await this.wrappedFetch('deleting assessment', this.urls.api.assessment(id), {
+            method: 'delete',
         });
     }
 
