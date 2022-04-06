@@ -448,20 +448,12 @@ class DjangoAPI {
         });
     }
 
-    remove_member(orgid, userid) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.members(orgid, userid),
-                type: 'DELETE',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('removing member')(jqXHR, textStatus, errorThrown);
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+    async remove_member(organisationId, userId) {
+        await this.wrappedFetch(
+            'removing member',
+            this.urls.api.members(organisationId, userId),
+            { method: 'delete' },
+        );
     }
 
     async create_library(libraryData, organisationId) {

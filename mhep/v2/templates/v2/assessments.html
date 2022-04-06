@@ -627,7 +627,7 @@
         $(this).text("Removing...");
         var orgid = $(this).attr('data-org-id');
         var userid = $(this).attr('data-user-id');
-        mhep_helper.remove_member(orgid, userid).then(result => {
+        mhep_helper.remove_member(orgid, userid).then(() => {
             fetchAndDrawOrganisation(orgid);
         });
     };
