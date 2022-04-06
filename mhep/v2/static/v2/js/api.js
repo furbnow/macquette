@@ -514,28 +514,16 @@ class DjangoAPI {
         });
     }
 
-    stop_sharing_library_with_organisation(fromOrgID, libraryID, toOrgID) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.shareUnshareOrganisationLibraries(
-                    fromOrgID,
-                    libraryID,
-                    toOrgID,
-                ),
-                type: 'DELETE',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('stopping sharing library with organisation')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+    async stop_sharing_library_with_organisation(fromOrgId, libraryId, toOrgId) {
+        await this.wrappedFetch(
+            'stopping sharing library with organisation',
+            this.urls.api.shareUnshareOrganisationLibraries(
+                fromOrgId,
+                libraryId,
+                toOrgId,
+            ),
+            { method: 'delete' },
+        );
     }
 
     async list_organisations_library_shares(organisationId, libraryId) {

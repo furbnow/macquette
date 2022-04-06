@@ -340,7 +340,7 @@ libraryHelper.prototype.onStopSharingLib = function (e) {
     var ownerOrgID = $(this).attr('data-owner-org-id');
     var libraryID = $(this).attr('data-library-id');
     var sharedOrgID = $(this).attr('data-shared-org-id');
-    mhep_helper.stop_sharing_library_with_organisation(ownerOrgID, libraryID, sharedOrgID).then(result => {
+    mhep_helper.stop_sharing_library_with_organisation(ownerOrgID, libraryID, sharedOrgID).then(() => {
         $('#return-message').html('Stopped sharing library');
         libraryHelper.prototype.onOpenShareLib(libraryID, ownerOrgID);
     });
