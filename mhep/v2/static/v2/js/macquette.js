@@ -508,8 +508,6 @@ function load_page_from_hash() {
     load_view('#content', page)
         .catch((err) => {
             console.error(`Failed to load view ${page}`);
-            console.error(err);
-            alert(`Failed to load view ${page}`);
         })
         .then(() => {
             if (

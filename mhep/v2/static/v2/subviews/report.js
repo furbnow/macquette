@@ -58,7 +58,6 @@ function report_initUI() {
             downloadLink.click();
             endFetch();
         } catch (err) {
-            alert(`Error generating report. See console for details.`);
             console.log(err);
             endFetch();
         }
@@ -81,7 +80,6 @@ function report_initUI() {
             document.querySelector('iframe').contentDocument.querySelector('body').innerHTML = html;
             endFetch();
         } catch (err) {
-            alert(`Error generating report. See console for details.`);
             console.log(err);
             endFetch();
         }

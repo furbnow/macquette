@@ -16,7 +16,7 @@ function getCookie(name) {
 
 function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
-    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method.toUpperCase());
 }
 
 $.ajaxSetup({
@@ -78,6 +78,47 @@ class DjangoAPI {
         this.csrfToken = cookieJar.get('csrftoken');
     }
 
+    async wrappedFetch(intendedAction, url, params = {}) {
+        if (!csrfSafeMethod(params.method ?? 'get')) {
+            params.headers = Object.assign(
+                { 'X-CSRFToken': this.csrfToken },
+                params.headers,
+            );
+        }
+
+        let response;
+        try {
+            response = await fetch(url, params);
+        } catch (err) {
+            alert(`error ${intendedAction}: ${err}`);
+            console.error(`Error ${intendedAction}:`, err);
+            throw new Error(`Error ${intendedAction}: ${err}`);
+        }
+
+        if (!response.ok) {
+            const msg = `Error ${intendedAction}: server returned ${response.status} (${response.statusText})`;
+            alert(msg);
+
+            if (response.headers.get('content-type') === 'application/json') {
+                const json = await response.json();
+                console.error('Response body:', json);
+                throw new Error(`${msg}: ${JSON.stringify(json)}`);
+            } else {
+                throw new Error(msg);
+            }
+        }
+
+        return response;
+    }
+
+    wrappedJsonFetch(intendedAction, url, params = {}) {
+        params.headers = Object.assign(
+            { 'content-type': 'application/json' },
+            params.headers,
+        );
+        return this.wrappedFetch(intendedAction, url, params);
+    }
+
     async subview(viewName) {
         const url = this.urls.static('subviews/' + viewName + '.html');
         if (!url) {
@@ -88,15 +129,7 @@ class DjangoAPI {
             );
         }
 
-        const response = await fetch(url, {
-            method: 'get',
-            headers: { 'X-CSRFToken': this.csrfToken },
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error ${response.status}`);
-        }
-
+        const response = await this.wrappedFetch('loading subview', url);
         return response.text();
     }
 
@@ -648,24 +681,15 @@ class DjangoAPI {
         });
     }
 
-    async generate_report(orgid, context) {
-        const response = await fetch(this.urls.api.report(orgid), {
-            method: 'post',
-            body: JSON.stringify(context),
-            headers: {
-                'X-CSRFToken': this.csrfToken,
-                'Content-Type': 'application/json',
+    async generate_report(organisationId, context) {
+        const response = await this.wrappedJsonFetch(
+            'generating report',
+            this.urls.api.report(organisationId),
+            {
+                method: 'post',
+                body: JSON.stringify(context),
             },
-        });
-
-        if (!response.ok) {
-            const body = await response.json();
-            throw new Error(
-                `HTTP error, status: ${response.status}, contents: ${JSON.stringify(
-                    body,
-                )}`,
-            );
-        }
+        );
 
         return response.blob();
     }
