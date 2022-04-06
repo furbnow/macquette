@@ -261,22 +261,26 @@ class DjangoAPI {
         });
     }
 
-    set(id, data, callback) {
-        var result = {};
-        $.ajax({
-            type: 'PATCH',
-            url: this.urls.api.assessment(id),
-            data: JSON.stringify({ data: data }),
-            dataType: 'json',
-            contentType: 'application/json;charset=utf-8',
-            async: true,
-            error: function (err) {
-                callback(err, null);
-                handleServerError('updating assessment');
-            },
-            success: function (data) {
-                callback(null, data);
-            },
+    update_assessment(id, updates) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: 'PATCH',
+                url: this.urls.api.assessment(id),
+                data: JSON.stringify(updates),
+                dataType: 'json',
+                contentType: 'application/json;charset=utf-8',
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('updating assessment')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
         });
     }
 
@@ -348,42 +352,6 @@ class DjangoAPI {
                     resolve();
                 },
             });
-        });
-    }
-
-    set_status(id, status) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: 'PATCH',
-                url: this.urls.api.assessment(id),
-                dataType: 'json',
-                contentType: 'application/json;charset=utf-8',
-                data: JSON.stringify({ status }),
-                success: function () {
-                    resolve();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('setting assessment status')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-            });
-        });
-    }
-
-    set_name_and_description(id, name, description) {
-        $.ajax({
-            type: 'PATCH',
-            url: this.urls.api.assessment(id),
-            data: JSON.stringify({ name, description }),
-            dataType: 'json',
-            contentType: 'application/json;charset=utf-8',
-            async: false,
-            error: handleServerError('setting assessment name and description'),
-            success: function (data) {},
         });
     }
 

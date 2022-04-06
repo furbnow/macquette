@@ -311,7 +311,7 @@
     $(".assessments").on('change', '.assessment-status', function () {
         var assessmentid = $(this).attr('data-assessment-id');
         var status = $(this).val();
-        mhep_helper.set_status(assessmentid, status).then(() => {
+        mhep_helper.update_assessment(assessmentid, { status }).then(() => {
             let assessment = getAssessmentById(assessmentid)
             assessment.status = status;
             draw_assessments("#assessments", assessments);

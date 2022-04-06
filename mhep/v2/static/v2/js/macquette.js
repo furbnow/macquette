@@ -270,7 +270,10 @@ function setupEventHandlers() {
         $('#project-title').html(p.name);
         $('#project-description').html(p.description);
         $('#modal-edit-project-name-and-description').modal('hide');
-        mhep_helper.set_name_and_description(projectid, p.name, p.description);
+        mhep_helper.update_assessment(projectid, {
+            name: p.name,
+            description: p.description,
+        });
     });
     $('#modal-error-submitting-data-done').on('click', function () {
         location.reload();
@@ -329,15 +332,13 @@ function update(undo_redo = false) {
     $('#saving_status').text('Saving...');
 
     const inputs = extract_assessment_inputs(project);
-    mhep_helper.set(projectid, inputs, function (err, result) {
-        if (err) {
-            $('#saving_status').text('Failed to save');
-        } else {
-            $('#saving_status').text('Saved');
-            alertifnotlogged(result);
-            alert_if_assessment_locked(result);
-        }
-    });
+    mhep_helper.update_assessment(projectid, { data: inputs }).then(result => {
+        $('#saving_status').text('Saved');
+        alertifnotlogged(result);
+        alert_if_assessment_locked(result);
+    }).catch(err => {
+        $('#saving_status').text('Failed to save');
+    })
 }
 
 function hide_house_graphic() {
