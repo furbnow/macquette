@@ -538,23 +538,13 @@ class DjangoAPI {
         });
     }
 
-    list_organisations_library_shares(orgID, libraryID) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.libraryOrganisationLibraryShares(orgID, libraryID),
-                success: function (data) {
-                    resolve(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('listing organisations library is shared with')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-            });
-        });
+    async list_organisations_library_shares(organisationId, libraryId) {
+        const response = await this.wrappedFetch(
+            'listing organisations library is shared with',
+            this.urls.api.libraryOrganisationLibraryShares(organisationId, libraryId),
+            { method: 'get' },
+        );
+        return response.json();
     }
 
     async promote_user_as_librarian(organisationId, userId) {
