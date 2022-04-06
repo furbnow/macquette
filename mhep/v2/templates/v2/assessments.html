@@ -614,7 +614,7 @@
         submitButton.attr("disabled", true);
         submitButton.val("Adding...");
         var userid = $('#promote-librarian-select-' + orgid).val();
-        mhep_helper.promote_user_as_librarian(orgid, userid).then(result => {
+        mhep_helper.promote_user_as_librarian(orgid, userid).then(() => {
             submitButton.attr("disabled", false);
             submitButton.val("Add");
             fetchAndDrawOrganisation(orgid);
