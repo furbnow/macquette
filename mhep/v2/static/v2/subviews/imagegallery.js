@@ -84,7 +84,7 @@ class ImageGallery {
 
     delete(ids) {
         for (let id of ids) {
-            mhep_helper.delete_image(id).then(_ => this.removeImage(id));
+            mhep_helper.delete_image(id).then(() => this.removeImage(id));
         }
     }
 

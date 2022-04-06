@@ -665,19 +665,9 @@ class DjangoAPI {
         });
     }
 
-    delete_image(id) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: 'DELETE',
-                url: this.urls.api.image(id),
-                success: function (data) {
-                    resolve();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('deleting image')(jqXHR, textStatus, errorThrown);
-                    reject(errorThrown);
-                },
-            });
+    async delete_image(id) {
+        await this.wrappedFetch('deleting image', this.urls.api.image(id), {
+            method: 'delete',
         });
     }
 
