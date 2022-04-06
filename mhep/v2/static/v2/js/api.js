@@ -597,26 +597,15 @@ class DjangoAPI {
         });
     }
 
-    upload_image(assessment_id, file) {
-        return new Promise((resolve, reject) => {
-            const form = new FormData();
-            form.append('file', file);
-
-            $.ajax({
-                type: 'POST',
-                url: this.urls.api.uploadImage(assessment_id),
-                data: form,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    resolve(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('uploading image')(jqXHR, textStatus, errorThrown);
-                    reject(errorThrown);
-                },
-            });
-        });
+    async upload_image(assessmentId, image) {
+        const formData = new FormData();
+        formData.append('file', image);
+        const response = await this.wrappedFetch(
+            'uploading image',
+            this.urls.api.uploadImage(assessmentId),
+            { method: 'post', body: formData },
+        );
+        return response.json();
     }
 
     async set_featured_image(assessmentId, imageId) {
