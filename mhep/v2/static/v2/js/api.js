@@ -464,30 +464,19 @@ class DjangoAPI {
         });
     }
 
-    create_library(libraryData, organisationID) {
-        var apiURL = '';
-        if (organisationID == null) {
-            apiURL = this.urls.api.libraries();
-        } else {
-            apiURL = this.urls.api.organisationLibraries(organisationID);
-        }
+    async create_library(libraryData, organisationId) {
+        const response = await this.wrappedJsonFetch(
+            'creating library',
+            organisationId
+                ? this.urls.api.organisationLibraries(organisationId)
+                : this.urls.api.libraries(),
+            {
+                method: 'post',
+                body: JSON.stringify(libraryData),
+            },
+        );
 
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: apiURL,
-                type: 'POST',
-                data: JSON.stringify(libraryData),
-                datatype: 'json',
-                contentType: 'application/json;charset=utf-8',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('creating library')(jqXHR, textStatus, errorThrown);
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+        return response.json();
     }
 
     async share_library_with_organisation(fromOrgId, libraryId, toOrgId) {
