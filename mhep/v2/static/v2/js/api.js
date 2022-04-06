@@ -642,27 +642,13 @@ class DjangoAPI {
         });
     }
 
-    set_image_note(id, note) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: 'PATCH',
-                url: this.urls.api.image(id),
-                dataType: 'json',
-                contentType: 'application/json;charset=utf-8',
-                data: JSON.stringify({ note: note }),
-                success: function (data) {
-                    resolve(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('setting image note')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-            });
-        });
+    async set_image_note(id, note) {
+        const response = await this.wrappedJsonFetch(
+            'setting image note',
+            this.urls.api.image(id),
+            { method: 'patch', body: JSON.stringify({ note }) },
+        );
+        return response.json();
     }
 
     async delete_image(id) {
