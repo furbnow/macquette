@@ -37,7 +37,7 @@ async function initMacquette(api, lockedState, assessmentId, featureFlags) {
     });
 
     // Various project initialisation stuff
-    p = mhep_helper.get(projectid);
+    p = await mhep_helper.get_assessment(projectid);
     if (p.data == false || p.data == null || Object.keys(p.data).length == 0) {
         p.data = { master: { scenario_name: 'Baseline' } };
     }

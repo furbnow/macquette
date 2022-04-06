@@ -242,17 +242,23 @@ class DjangoAPI {
         });
     }
 
-    get(id) {
-        var result = {};
-        $.ajax({
-            url: this.urls.api.assessment(id),
-            async: false,
-            error: handleServerError('loading assessment'),
-            success: function (data) {
-                result = data;
-            },
+    get_assessment(id) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: this.urls.api.assessment(id),
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('loading assessment')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
+                    reject(errorThrown);
+                },
+            });
         });
-        return result;
     }
 
     set(id, data, callback) {
