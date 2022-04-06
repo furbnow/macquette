@@ -392,23 +392,13 @@ class DjangoAPI {
         });
     }
 
-    list_organisations() {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.organisations(),
-                success: function (data) {
-                    resolve(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('listing organisations')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-            });
-        });
+    async list_organisations() {
+        const response = await this.wrappedFetch(
+            'listing organisations',
+            this.urls.api.organisations(),
+            { method: 'get' },
+        );
+        return response.json();
     }
 
     list_users() {
