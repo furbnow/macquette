@@ -133,24 +133,13 @@ class DjangoAPI {
         return response.text();
     }
 
-    list_libraries() {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.libraries(),
-                datatype: 'json',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('loading libraries')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+    async list_libraries() {
+        const response = await this.wrappedFetch(
+            'listing libraries',
+            this.urls.api.libraries(),
+            { method: 'get' },
+        );
+        return response.json();
     }
 
     update_library(library_id, updates) {
