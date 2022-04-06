@@ -638,7 +638,7 @@
         submitButton.attr("disabled", true);
         submitButton.val("Adding...");
         var userid = $('#add-member-select-' + orgid).val();
-        mhep_helper.add_member(orgid, userid).then(result => {
+        mhep_helper.add_member(orgid, userid).then(() => {
             submitButton.attr("disabled", false);
             submitButton.val("Add");
             fetchAndDrawOrganisation(orgid);

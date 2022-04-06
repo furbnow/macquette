@@ -432,20 +432,12 @@ class DjangoAPI {
         });
     }
 
-    add_member(orgid, userid) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.members(orgid, userid),
-                type: 'POST',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('adding member')(jqXHR, textStatus, errorThrown);
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+    async add_member(organisationId, userId) {
+        await this.wrappedFetch(
+            'adding member',
+            this.urls.api.members(organisationId, userId),
+            { method: 'post' },
+        );
     }
 
     async remove_member(organisationId, userId) {
