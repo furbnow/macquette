@@ -256,7 +256,7 @@
             return;
         }
 
-        mhep_helper.create(name, description, organisation, assessment => {
+        mhep_helper.create_assessment(name, description, organisation).then((assessment) => {
             assessments.push(assessment);
             draw_assessments("#assessments", assessments);
             $("#noassessments").hide();

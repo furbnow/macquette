@@ -284,35 +284,39 @@ class DjangoAPI {
         });
     }
 
-    create(name, description, orgid, callback) {
-        var result = 0;
+    create_assessment(name, description, orgid) {
         const newAssessment = {
             name: name,
             description: description,
         };
 
-        var endpoint;
+        let url;
         if (orgid > 0) {
-            endpoint = this.urls.api.organisationAssessments(orgid);
+            url = this.urls.api.organisationAssessments(orgid);
         } else {
-            endpoint = this.urls.api.assessments();
+            url = this.urls.api.assessments();
         }
 
-        $.ajax({
-            type: 'POST',
-            url: endpoint,
-            data: JSON.stringify(newAssessment),
-            dataType: 'json',
-            contentType: 'application/json;charset=utf-8',
-            async: false,
-            error: handleServerError('creating assessment'),
-            success: function (data) {
-                if (callback) {
-                    callback(data);
-                }
-            },
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: JSON.stringify(newAssessment),
+                dataType: 'json',
+                contentType: 'application/json;charset=utf-8',
+                error: function (jqXHR, textStatus, errorThrown) {
+                    handleServerError('creating assessment')(
+                        jqXHR,
+                        textStatus,
+                        errorThrown,
+                    );
+                    reject(errorThrown);
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+            });
         });
-        return result;
     }
 
     duplicate_assessment(id) {
