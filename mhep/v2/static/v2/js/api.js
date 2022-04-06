@@ -253,26 +253,15 @@ class DjangoAPI {
         });
     }
 
-    list_assessments(orgid = null) {
-        const url = orgid
-            ? this.urls.api.organisationAssessments(orgid)
-            : this.urls.api.assessments();
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url,
-                success: function (data) {
-                    resolve(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('listing assessments')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-            });
-        });
+    async list_assessments(organisationId) {
+        const response = await this.wrappedFetch(
+            'listing assessments',
+            organisationId
+                ? this.urls.api.organisationAssessments(organisationId)
+                : this.urls.api.assessments(),
+            { method: 'get' },
+        );
+        return response.json();
     }
 
     get_assessment(id) {
