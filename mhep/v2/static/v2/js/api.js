@@ -577,24 +577,12 @@ class DjangoAPI {
         });
     }
 
-    demote_user_as_librarian(orgid, userid) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.librarians(orgid, userid),
-                type: 'DELETE',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('demoting user as librarian')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+    async demote_user_as_librarian(organisationId, userId) {
+        await this.wrappedFetch(
+            'demoting user as librarian',
+            this.urls.api.librarians(organisationId, userId),
+            { method: 'delete' },
+        );
     }
 
     async upload_image(assessmentId, image) {
