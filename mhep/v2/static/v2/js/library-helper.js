@@ -322,7 +322,7 @@ libraryHelper.prototype.onShareLib = function (e, ownerID, libraryID) {
     submitButton.val('Sharing...');
     var toOrgID = $('#share-lib-with-org-select-' + libraryID).val();
 
-    mhep_helper.share_library_with_organisation(ownerID, libraryID, toOrgID).then(result => {
+    mhep_helper.share_library_with_organisation(ownerID, libraryID, toOrgID).then(() => {
         submitButton.attr('disabled', false);
         $('#return-message').html('Successfully shared library');
         libraryHelper.prototype.onOpenShareLib(libraryID, ownerID);
