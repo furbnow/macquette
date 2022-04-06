@@ -229,22 +229,16 @@ libraryHelper.prototype.add_events = function () {
     });
 };
 libraryHelper.prototype.append_modals = function () {
-    var html;
-    var myself = this;
-    $.ajax({
-        url: urlHelper.static('subviews/_library-helper.html'),
-        datatype: 'json',
-        error: handleServerError('loading library helper HTML'),
-        success: function (result) {
-            html = result;
-            myself.container.append(html);
-            // Make modals draggable
-            $('#openbem .modal').css('position', 'fixed');
-            $('#openbem .modal-header').css('cursor', 'move');
-            $('#openbem .modal').draggable({
-                handle: '.modal-header'
-            });
-        }});
+    mhep_helper.subview('_library-helper').then(html => {
+        this.container.append(html);
+
+        // Make modals draggable
+        $('#openbem .modal').css('position', 'fixed');
+        $('#openbem .modal-header').css('cursor', 'move');
+        $('#openbem .modal').draggable({
+            handle: '.modal-header'
+        });
+    });
 };
 /************************************
  * Events methods
