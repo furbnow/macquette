@@ -619,27 +619,12 @@ class DjangoAPI {
         });
     }
 
-    set_featured_image(assessment_id, image_id) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: 'POST',
-                url: this.urls.api.setFeaturedImage(assessment_id),
-                dataType: 'json',
-                contentType: 'application/json;charset=utf-8',
-                data: JSON.stringify({ id: image_id }),
-                success: function (data) {
-                    resolve();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('setting featured image')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-            });
-        });
+    async set_featured_image(assessmentId, imageId) {
+        await this.wrappedJsonFetch(
+            'setting featured image',
+            this.urls.api.setFeaturedImage(assessmentId),
+            { method: 'post', body: JSON.stringify({ id: imageId }) },
+        );
     }
 
     async set_image_note(id, note) {

@@ -76,7 +76,7 @@ class ImageGallery {
     setFeatured(id) {
         mhep_helper
             .set_featured_image(this.projectId, id)
-            .then(_ => {
+            .then(() => {
                 this.featured_id = id;
                 this.view();
             });
