@@ -295,39 +295,18 @@ class DjangoAPI {
         });
     }
 
-    create_assessment(name, description, orgid) {
-        const newAssessment = {
-            name: name,
-            description: description,
-        };
-
-        let url;
-        if (orgid > 0) {
-            url = this.urls.api.organisationAssessments(orgid);
-        } else {
-            url = this.urls.api.assessments();
-        }
-
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: JSON.stringify(newAssessment),
-                dataType: 'json',
-                contentType: 'application/json;charset=utf-8',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('creating assessment')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+    async create_assessment(name, description, orgid) {
+        const response = await this.wrappedJsonFetch(
+            'duplicating assessment',
+            orgid
+                ? this.urls.api.organisationAssessments(orgid)
+                : this.urls.api.assessments(),
+            {
+                method: 'post',
+                body: JSON.stringify({ name, description }),
+            },
+        );
+        return response.json();
     }
 
     async duplicate_assessment(id) {
