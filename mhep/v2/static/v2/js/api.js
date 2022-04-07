@@ -253,23 +253,13 @@ class DjangoAPI {
         return response.json();
     }
 
-    get_assessment(id) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.assessment(id),
-                success: function (data) {
-                    resolve(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('loading assessment')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-            });
-        });
+    async get_assessment(id) {
+        const response = await this.wrappedFetch(
+            'getting assessment',
+            this.urls.api.assessment(id),
+            { method: 'get' },
+        );
+        return response.json();
     }
 
     async update_assessment(id, updates) {
