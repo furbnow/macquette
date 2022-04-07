@@ -272,26 +272,10 @@ class DjangoAPI {
         });
     }
 
-    update_assessment(id, updates) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: 'PATCH',
-                url: this.urls.api.assessment(id),
-                data: JSON.stringify(updates),
-                dataType: 'json',
-                contentType: 'application/json;charset=utf-8',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('updating assessment')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
+    async update_assessment(id, updates) {
+        await this.wrappedJsonFetch('updating assessment', this.urls.api.assessment(id), {
+            method: 'patch',
+            body: JSON.stringify(updates),
         });
     }
 

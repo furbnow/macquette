@@ -5,10 +5,9 @@ $('#openbem').on('click', '#import-data', function () {
     project.master.imagegallery = [];
 
     update();
-    mhep_helper.update_assessment(projectid, { data: project }).then((result) => {
-        alertifnotlogged(result);
+    mhep_helper.update_assessment(projectid, { data: project }).then(() => {
+        redraw_scenario_menu();
     });
-    redraw_scenario_menu();
 });
 
 $('#openbem').on('click', '#show-project-data', function () {

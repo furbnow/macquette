@@ -332,13 +332,11 @@ function update(undo_redo = false) {
     $('#saving_status').text('Saving...');
 
     const inputs = extract_assessment_inputs(project);
-    mhep_helper.update_assessment(projectid, { data: inputs }).then(result => {
+    mhep_helper.update_assessment(projectid, { data: inputs }).then(() => {
         $('#saving_status').text('Saved');
-        alertifnotlogged(result);
-        alert_if_assessment_locked(result);
     }).catch(err => {
         $('#saving_status').text('Failed to save');
-    })
+    });
 }
 
 function hide_house_graphic() {
