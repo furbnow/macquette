@@ -330,24 +330,13 @@ class DjangoAPI {
         });
     }
 
-    duplicate_assessment(id) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.duplicateAssessment(id),
-                type: 'POST',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('duplicating assessment')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+    async duplicate_assessment(id) {
+        const response = await this.wrappedFetch(
+            'duplicating assessment',
+            this.urls.api.duplicateAssessment(id),
+            { method: 'post' },
+        );
+        return response.json();
     }
 
     async delete_assessment(id) {
