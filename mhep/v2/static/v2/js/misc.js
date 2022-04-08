@@ -24,7 +24,7 @@ async function load_view(rootElem, viewName) {
     view_html[viewName] = html;
 
     // We have to load the HTML and then the JS sequentially due to legacy assumptions
-    await requireJs(urlHelper.static('subviews/' + viewName + '.js'));
+    await requireJs(staticFileResolver.resolve('subviews/' + viewName + '.js'));
 };
 
 function varset(key, value) {

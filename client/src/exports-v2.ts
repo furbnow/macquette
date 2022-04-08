@@ -5,6 +5,7 @@ import { generateReportGraphs } from './v2/reports/graphs';
 import { cloneDeep } from 'lodash';
 import { HTTPClient } from './v2/api/http';
 import { URLHelper } from './v2/api/url-helper';
+import { StaticFileResolver } from './v2/api/static-file-resolver';
 
 declare global {
     interface Window {
@@ -24,4 +25,5 @@ window.Macquette = {
     cloneDeep,
     HTTPClient,
     URLHelper,
+    StaticFileResolver,
 };

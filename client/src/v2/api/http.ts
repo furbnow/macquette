@@ -1,4 +1,5 @@
-import type { URLHelper } from './url-helper';
+import { URLHelper } from './url-helper';
+import { StaticFileResolver } from './static-file-resolver';
 
 function csrfSafeMethod(method: string) {
     // these HTTP methods do not require CSRF protection
@@ -7,8 +8,11 @@ function csrfSafeMethod(method: string) {
 
 export class HTTPClient {
     private csrfToken: string;
+    private urls: URLHelper;
 
-    constructor(private urls: URLHelper) {
+    constructor(private resolver: StaticFileResolver) {
+        this.urls = new URLHelper();
+
         const cookieJar = new URLSearchParams(document.cookie.replace(/; /g, '&'));
         const csrfToken = cookieJar.get('csrftoken');
         if (csrfToken !== null && csrfToken !== '') {
@@ -72,7 +76,7 @@ export class HTTPClient {
     }
 
     async subview(viewName: string): Promise<string> {
-        const url = this.urls.static('subviews/' + viewName + '.html');
+        const url = this.resolver.resolve('subviews/' + viewName + '.html');
         if (!url) {
             throw new Error(
                 `Couldn't find URL for 'subviews/${viewName}.html' ` +

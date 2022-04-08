@@ -44,14 +44,15 @@
 {% block content %}
     <div id="macquette-container"></div>
     <script>
-        const urlHelper = new window.Macquette.URLHelper(`{{ static_urls | safe }}`);
+        const urlHelper = new window.Macquette.URLHelper();
+        const staticFileResolver = new window.Macquette.StaticFileResolver(`{{ static_urls | safe }}`);
 
         function initHandler() {
             const featureFlags = [
                 {% for feature in features %}'{{ feature }}',{% endfor %}
             ]
 
-            const apiClient = new window.Macquette.HTTPClient(urlHelper);
+            const apiClient = new window.Macquette.HTTPClient(staticFileResolver);
             initOpenFUVCHelper(apiClient);
             initMacquette(apiClient, {{ locked_javascript }}, {{ assessment.id }}, featureFlags);
         }
