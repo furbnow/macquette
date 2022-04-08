@@ -1,8 +1,40 @@
 import { urls } from './urls';
+import { listAssessmentSchema } from './schemas';
+import type { AssessmentMetadata } from './schemas';
 
 function csrfSafeMethod(method: string) {
     // these HTTP methods do not require CSRF protection
     return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method.toUpperCase());
+}
+
+export function cameliseStr(str: string): string {
+    const replaced = str
+        .replace(/(_[a-zA-Z])/g, (capture) => {
+            const letter = capture[1];
+            if (letter !== undefined) {
+                return letter.toUpperCase();
+            } else {
+                throw new Error('unreachable');
+            }
+        })
+        // Clean up any stragglers
+        .replace(/_/g, () => '');
+
+    return replaced;
+}
+
+export function camelise(input: unknown): unknown {
+    if (Array.isArray(input)) {
+        return input.map((row) => camelise(row));
+    } else if (typeof input !== 'object' || input === null) {
+        return input;
+    } else {
+        return Object.fromEntries(
+            Object.entries(input).map(([key, value]) => {
+                return [cameliseStr(key), camelise(value)];
+            }),
+        );
+    }
 }
 
 export class HTTPClient {
@@ -125,7 +157,7 @@ export class HTTPClient {
         );
     }
 
-    async listAssessments(organisationId?: string): Promise<unknown> {
+    async listAssessments(organisationId?: string): Promise<AssessmentMetadata> {
         const response = await this.wrappedFetch(
             'listing assessments',
             organisationId !== undefined
@@ -133,7 +165,8 @@ export class HTTPClient {
                 : urls.assessments(),
             { method: 'get' },
         );
-        return response.json();
+        const json: unknown = await response.json();
+        return listAssessmentSchema.parse(camelise(json));
     }
 
     async getAssessment(id: string): Promise<unknown> {

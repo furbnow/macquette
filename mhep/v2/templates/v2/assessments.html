@@ -346,9 +346,9 @@
 
                 return a_status_nr - b_status_nr;
             } else {
-                if (b.updated_at > a.updated_at) {
+                if (b.updatedAt > a.updatedAt) {
                     return 1;
-                } else if (b.updated_at == a.updated_at) {
+                } else if (b.updatedAt == a.updatedAt) {
                     return 0;
                 } else {
                     return -1;
@@ -357,15 +357,15 @@
         })
 
         const getDate = date => {
-            var t = new Date();
-            var d = new Date(date);
-            if (t.getYear() == d.getYear()) {
-                var mins = d.getMinutes();
-                if (mins < 10)
+            var now = new Date();
+            if (now.getFullYear() == date.getFullYear()) {
+                var mins = date.getMinutes();
+                if (mins < 10) {
                     mins = "0" + mins;
-                return `${d.getHours()}:${mins} ${d.getDate()} ${months[d.getMonth()]}`;
+                }
+                return `${date.getHours()}:${mins} ${date.getDate()} ${months[date.getMonth()]}`;
             } else {
-                return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+                return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
             }
         }
 
@@ -397,7 +397,7 @@
                         ${assessment.description}
                     </td>
                     <td style='color:#888'>${owner}</td>
-                    <td style='color:#888'>${getDate(assessment.updated_at)}</td>
+                    <td style='color:#888'>${getDate(assessment.updatedAt)}</td>
                     <td>
                         <select class='assessment-status ${statusColour}'
                                 data-assessment-id="${assessment.id}">
