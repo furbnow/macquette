@@ -18,7 +18,7 @@ export class HTTPClient {
         }
     }
 
-    async wrappedFetch(
+    private async wrappedFetch(
         intendedAction: string,
         url: string,
         params: RequestInit = {},
@@ -59,7 +59,7 @@ export class HTTPClient {
         return response;
     }
 
-    wrappedJsonFetch(
+    private wrappedJsonFetch(
         intendedAction: string,
         url: string,
         params: RequestInit = {},
