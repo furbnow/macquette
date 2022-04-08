@@ -222,24 +222,12 @@ class DjangoAPI {
         });
     }
 
-    delete_library_item(library_id, tag) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.urls.api.libraryItem(library_id, tag),
-                type: 'DELETE',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('deleting item from library')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-                success: function () {
-                    resolve();
-                },
-            });
-        });
+    async delete_library_item(libraryId, tag) {
+        await this.wrappedFetch(
+            'deleting item from library',
+            this.urls.api.libraryItem(libraryId, tag),
+            { method: 'delete' },
+        );
     }
 
     async list_assessments(organisationId) {
