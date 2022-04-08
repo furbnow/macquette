@@ -142,23 +142,15 @@ class DjangoAPI {
         return response.json();
     }
 
-    update_library(library_id, updates) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: 'PATCH',
-                url: this.urls.api.library(library_id),
-                data: JSON.stringify(updates),
-                datatype: 'json',
-                contentType: 'application/json;charset=utf-8',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('updating library')(jqXHR, textStatus, errorThrown);
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+    async update_library(libraryId, updates) {
+        await this.wrappedJsonFetch(
+            'updating library',
+            this.urls.api.library(libraryId),
+            {
+                method: 'patch',
+                body: JSON.stringify(data),
+            },
+        );
     }
 
     async add_item_to_library(libraryId, data) {
