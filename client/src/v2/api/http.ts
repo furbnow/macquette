@@ -1,4 +1,4 @@
-import { URLHelper } from './url-helper';
+import { urls } from './urls';
 import { StaticFileResolver } from './static-file-resolver';
 
 function csrfSafeMethod(method: string) {
@@ -8,11 +8,8 @@ function csrfSafeMethod(method: string) {
 
 export class HTTPClient {
     private csrfToken: string;
-    private urls: URLHelper;
 
     constructor(private resolver: StaticFileResolver) {
-        this.urls = new URLHelper();
-
         const cookieJar = new URLSearchParams(document.cookie.replace(/; /g, '&'));
         const csrfToken = cookieJar.get('csrftoken');
         if (csrfToken !== null && csrfToken !== '') {
@@ -90,16 +87,14 @@ export class HTTPClient {
     }
 
     async list_libraries(): Promise<unknown> {
-        const response = await this.wrappedFetch(
-            'listing libraries',
-            this.urls.libraries(),
-            { method: 'get' },
-        );
+        const response = await this.wrappedFetch('listing libraries', urls.libraries(), {
+            method: 'get',
+        });
         return response.json();
     }
 
     async update_library(libraryId: string, updates: unknown): Promise<void> {
-        await this.wrappedJsonFetch('updating library', this.urls.library(libraryId), {
+        await this.wrappedJsonFetch('updating library', urls.library(libraryId), {
             method: 'patch',
             body: JSON.stringify(updates),
         });
@@ -108,7 +103,7 @@ export class HTTPClient {
     async add_item_to_library(libraryId: string, data: unknown): Promise<void> {
         await this.wrappedJsonFetch(
             'adding item to library',
-            this.urls.libraryItems(libraryId),
+            urls.libraryItems(libraryId),
             {
                 method: 'post',
                 body: JSON.stringify(data),
@@ -123,7 +118,7 @@ export class HTTPClient {
     ): Promise<void> {
         await this.wrappedJsonFetch(
             'updating item in library',
-            this.urls.libraryItem(libraryId, tag),
+            urls.libraryItem(libraryId, tag),
             {
                 method: 'put',
                 body: JSON.stringify(updates),
@@ -132,7 +127,7 @@ export class HTTPClient {
     }
 
     async delete_library(libraryId: string): Promise<void> {
-        await this.wrappedFetch('deleting library', this.urls.library(libraryId), {
+        await this.wrappedFetch('deleting library', urls.library(libraryId), {
             method: 'delete',
         });
     }
@@ -140,7 +135,7 @@ export class HTTPClient {
     async delete_library_item(libraryId: string, tag: string): Promise<void> {
         await this.wrappedFetch(
             'deleting item from library',
-            this.urls.libraryItem(libraryId, tag),
+            urls.libraryItem(libraryId, tag),
             { method: 'delete' },
         );
     }
@@ -149,8 +144,8 @@ export class HTTPClient {
         const response = await this.wrappedFetch(
             'listing assessments',
             organisationId !== undefined
-                ? this.urls.organisationAssessments(organisationId)
-                : this.urls.assessments(),
+                ? urls.organisationAssessments(organisationId)
+                : urls.assessments(),
             { method: 'get' },
         );
         return response.json();
@@ -159,14 +154,14 @@ export class HTTPClient {
     async get_assessment(id: string): Promise<unknown> {
         const response = await this.wrappedFetch(
             'getting assessment',
-            this.urls.assessment(id),
+            urls.assessment(id),
             { method: 'get' },
         );
         return response.json();
     }
 
     async update_assessment(id: string, updates: unknown): Promise<void> {
-        await this.wrappedJsonFetch('updating assessment', this.urls.assessment(id), {
+        await this.wrappedJsonFetch('updating assessment', urls.assessment(id), {
             method: 'patch',
             body: JSON.stringify(updates),
         });
@@ -180,8 +175,8 @@ export class HTTPClient {
         const response = await this.wrappedJsonFetch(
             'duplicating assessment',
             organisationId !== undefined
-                ? this.urls.organisationAssessments(organisationId)
-                : this.urls.assessments(),
+                ? urls.organisationAssessments(organisationId)
+                : urls.assessments(),
             {
                 method: 'post',
                 body: JSON.stringify({ name, description }),
@@ -193,14 +188,14 @@ export class HTTPClient {
     async duplicate_assessment(id: string): Promise<unknown> {
         const response = await this.wrappedFetch(
             'duplicating assessment',
-            this.urls.duplicateAssessment(id),
+            urls.duplicateAssessment(id),
             { method: 'post' },
         );
         return response.json();
     }
 
     async delete_assessment(id: string): Promise<void> {
-        await this.wrappedFetch('deleting assessment', this.urls.assessment(id), {
+        await this.wrappedFetch('deleting assessment', urls.assessment(id), {
             method: 'delete',
         });
     }
@@ -208,33 +203,29 @@ export class HTTPClient {
     async list_organisations(): Promise<unknown> {
         const response = await this.wrappedFetch(
             'listing organisations',
-            this.urls.organisations(),
+            urls.organisations(),
             { method: 'get' },
         );
         return response.json();
     }
 
     async list_users(): Promise<unknown> {
-        const response = await this.wrappedFetch('listing users', this.urls.users(), {
+        const response = await this.wrappedFetch('listing users', urls.users(), {
             method: 'get',
         });
         return response.json();
     }
 
     async add_member(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch(
-            'adding member',
-            this.urls.members(organisationId, userId),
-            { method: 'post' },
-        );
+        await this.wrappedFetch('adding member', urls.members(organisationId, userId), {
+            method: 'post',
+        });
     }
 
     async remove_member(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch(
-            'removing member',
-            this.urls.members(organisationId, userId),
-            { method: 'delete' },
-        );
+        await this.wrappedFetch('removing member', urls.members(organisationId, userId), {
+            method: 'delete',
+        });
     }
 
     async create_library(
@@ -244,8 +235,8 @@ export class HTTPClient {
         const response = await this.wrappedJsonFetch(
             'creating library',
             organisationId !== undefined
-                ? this.urls.organisationLibraries(organisationId)
-                : this.urls.libraries(),
+                ? urls.organisationLibraries(organisationId)
+                : urls.libraries(),
             {
                 method: 'post',
                 body: JSON.stringify(libraryData),
@@ -262,7 +253,7 @@ export class HTTPClient {
     ): Promise<void> {
         await this.wrappedFetch(
             'sharing library with organisation',
-            this.urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
+            urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
             { method: 'post' },
         );
     }
@@ -274,7 +265,7 @@ export class HTTPClient {
     ): Promise<void> {
         await this.wrappedFetch(
             'stopping sharing library with organisation',
-            this.urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
+            urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
             { method: 'delete' },
         );
     }
@@ -285,7 +276,7 @@ export class HTTPClient {
     ): Promise<unknown> {
         const response = await this.wrappedFetch(
             'listing organisations library is shared with',
-            this.urls.libraryOrganisationLibraryShares(organisationId, libraryId),
+            urls.libraryOrganisationLibraryShares(organisationId, libraryId),
             { method: 'get' },
         );
         return response.json();
@@ -297,7 +288,7 @@ export class HTTPClient {
     ): Promise<void> {
         await this.wrappedFetch(
             'promoting user as librarian',
-            this.urls.librarians(organisationId, userId),
+            urls.librarians(organisationId, userId),
             { method: 'post' },
         );
     }
@@ -308,7 +299,7 @@ export class HTTPClient {
     ): Promise<void> {
         await this.wrappedFetch(
             'demoting user as librarian',
-            this.urls.librarians(organisationId, userId),
+            urls.librarians(organisationId, userId),
             { method: 'delete' },
         );
     }
@@ -318,7 +309,7 @@ export class HTTPClient {
         formData.append('file', image);
         const response = await this.wrappedFetch(
             'uploading image',
-            this.urls.uploadImage(assessmentId),
+            urls.uploadImage(assessmentId),
             { method: 'post', body: formData },
         );
         return response.json();
@@ -327,7 +318,7 @@ export class HTTPClient {
     async set_featured_image(assessmentId: string, imageId: string): Promise<void> {
         await this.wrappedJsonFetch(
             'setting featured image',
-            this.urls.setFeaturedImage(assessmentId),
+            urls.setFeaturedImage(assessmentId),
             { method: 'post', body: JSON.stringify({ id: imageId }) },
         );
     }
@@ -335,14 +326,14 @@ export class HTTPClient {
     async set_image_note(id: string, note: string): Promise<unknown> {
         const response = await this.wrappedJsonFetch(
             'setting image note',
-            this.urls.image(id),
+            urls.image(id),
             { method: 'patch', body: JSON.stringify({ note }) },
         );
         return response.json();
     }
 
     async delete_image(id: string): Promise<void> {
-        await this.wrappedFetch('deleting image', this.urls.image(id), {
+        await this.wrappedFetch('deleting image', urls.image(id), {
             method: 'delete',
         });
     }
@@ -350,7 +341,7 @@ export class HTTPClient {
     async generate_report(organisationId: string, context: unknown): Promise<Blob> {
         const response = await this.wrappedJsonFetch(
             'generating report',
-            this.urls.report(organisationId),
+            urls.report(organisationId),
             {
                 method: 'post',
                 body: JSON.stringify(context),
