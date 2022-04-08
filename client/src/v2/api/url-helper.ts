@@ -20,58 +20,51 @@ export class URLHelper {
     }
 
     apiAssessments(): string {
-        return '/v2/api/assessments/';
+        return `/v2/api/assessments/`;
     }
 
     apiAssessment(assessmentId: string): string {
-        const dummyURL = '/v2/api/assessments/12345/';
-        return dummyURL.replace(/12345/, assessmentId);
+        return `/v2/api/assessments/${assessmentId}/`;
     }
 
     apiDuplicateAssessment(assessmentId: string): string {
-        const dummyURL = '/v2/api/assessments/12345/duplicate/';
-        return dummyURL.replace(/12345/, assessmentId);
+        return `/v2/api/assessments/${assessmentId}/duplicate/`;
     }
 
     apiUploadImage(assessmentId: string): string {
-        const dummyURL = '/v2/api/assessments/12345/images/';
-        return dummyURL.replace(/12345/, assessmentId);
+        return `/v2/api/assessments/${assessmentId}/images/`;
     }
 
     apiSetFeaturedImage(assessmentId: string): string {
-        const dummyURL = '/v2/api/assessments/12345/images/featured/';
-        return dummyURL.replace(/12345/, assessmentId);
+        return `/v2/api/assessments/${assessmentId}/images/featured/`;
     }
 
     apiImage(imageId: string): string {
-        const dummyURL = '/v2/api/images/12345/';
-        return dummyURL.replace(/12345/, imageId);
+        return `/v2/api/images/${imageId}/`;
     }
 
     apiOrganisationAssessments(organisationId: string): string {
-        const dummyURL = '/v2/api/organisations/12345/assessments/';
-        return dummyURL.replace(/12345/, organisationId);
+        return `/v2/api/organisations/${organisationId}/assessments/`;
     }
 
     apiOrganisations(): string {
-        return '/v2/api/organisations/';
+        return `/v2/api/organisations/`;
     }
 
     apiUsers(): string {
-        return '/v2/api/users/';
+        return `/v2/api/users/`;
     }
 
-    apiMembers(userId: string, organisationId: string): string {
-        const dummyURL = '/v2/api/organisations/12345/members/67890/';
-        return dummyURL.replace(/12345/, userId).replace(/67890/, organisationId);
+    apiMembers(organisationId: string, userId: string): string {
+        return `/v2/api/organisations/${organisationId}/members/${userId}/`;
     }
 
     apiLibraries(): string {
-        return '/v2/api/libraries/';
+        return `/v2/api/libraries/`;
     }
 
     apiOrganisationLibraries(organisationId: string): string {
-        return '/v2/api/organisations/12345/libraries/'.replace(/12345/, organisationId);
+        return `/v2/api/organisations/${organisationId}/libraries/`;
     }
 
     apiShareUnshareOrganisationLibraries(
@@ -79,51 +72,41 @@ export class URLHelper {
         libraryId: string,
         toOrgId: string,
     ): string {
-        const dummyURL = '/v2/api/organisations/123/libraries/456/shares/789/';
-        return dummyURL
-            .replace(/123/, fromOrgId)
-            .replace(/456/, libraryId)
-            .replace(/789/, toOrgId);
+        return `/v2/api/organisations/${fromOrgId}/libraries/${libraryId}/shares/${toOrgId}/`;
     }
 
     apiLibraryOrganisationLibraryShares(
         organisationId: string,
         libraryId: string,
     ): string {
-        const dummyURL = '/v2/api/organisations/12345/libraries/67890/shares/';
-        return dummyURL.replace(/12345/, organisationId).replace(/67890/, libraryId);
+        return `/v2/api/organisations/${organisationId}/libraries/${libraryId}/shares/`;
     }
 
     apiLibrary(libraryId: string): string {
-        return '/v2/api/libraries/12345/'.replace(/12345/, libraryId);
+        return `/v2/api/libraries/${libraryId}/`;
     }
 
     apiLibraryItems(libraryId: string): string {
-        const dummyURL = '/v2/api/libraries/12345/items/';
-        return dummyURL.replace(/12345/, libraryId);
+        return `/v2/api/libraries/${libraryId}/items/`;
     }
 
     apiLibraryItem(libraryId: string, tag: string): string {
-        const dummyURL = '/v2/api/libraries/12345/items/abcde/';
-        return dummyURL.replace(/12345/, libraryId).replace(/abcde/, tag);
+        return `/v2/api/libraries/${libraryId}/items/${tag}/`;
     }
 
-    apiLibrarians(userId: string, organisationId: string): string {
-        const dummyURL = '/v2/api/organisations/12345/librarians/67890/';
-        return dummyURL.replace(/12345/, userId).replace(/67890/, organisationId);
+    apiLibrarians(organisationId: string, userId: string): string {
+        return `/v2/api/organisations/${organisationId}/librarians/${userId}/`;
     }
 
     apiReport(organisationId: string): string {
-        const dummyURL = '/v2/api/organisations/12345/report/';
-        return dummyURL.replace(/12345/, organisationId);
+        return `/v2/api/organisations/${organisationId}/report/`;
     }
 
     htmlAssessment(assessmentId: string): string {
-        return '/v2/assessments/12345/'.replace(/12345/, assessmentId.toString());
+        return `/v2/assessments/${assessmentId}/`;
     }
 
     htmlOrganisationAdmin(organisationId: string): string {
-        const dummyURL = '/admin/v2/organisation/12345/change/';
-        return dummyURL.replace(/12345/, organisationId);
+        return `/admin/v2/organisation/${organisationId}/change/`;
     }
 }
