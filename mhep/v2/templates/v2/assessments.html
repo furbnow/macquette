@@ -213,7 +213,7 @@
 
     var mhep_helper;
     var assessments = [];
-    var users = [];
+    var users;
     var organisations = [];
 
     function getOrganisationById(id) {
@@ -443,15 +443,19 @@
         })
     }
 
-    function fetchAllUsers() {
-        return mhep_helper.list_users().then(result => {
-            users = result;
+    async function fetchAllUsers() {
+        if (users) {
             return users;
-        })
+        } else {
+            return mhep_helper.list_users().then(result => {
+                users = result;
+                return users;
+            })
+        }
     };
 
     function fetchAndDrawOrganisationList() {
-        let waitFor = [ fetchOrganisations(), fetchAllUsers() ]
+        let waitFor = [ fetchOrganisations(), ]
 
         Promise.all(waitFor).then(_ => {
             if (organisations.length === 0) {
@@ -477,7 +481,7 @@
         mhep_helper.list_assessments(orgid).then(result => {
             assessments = result;
             draw_assessments("#assessments", assessments)
-            const organisation = getOrganisationById(orgid);
+            const organisation = getOrganisationById(orgid);draw_organisation
             $("#assessments-title").html(organisation.name + " Assessments");
         });
     });
@@ -553,47 +557,49 @@
         }
 
         $("#organisation-members-container").html(table);
+        $("#promote-librarian-form-container").html("");
+        $("#add-member-form-container").html("");
 
-        if (permissions.can_promote_demote_librarians) {
-            var promoteLibrarianFormTemplate = $("#promote-librarian-form-template");
-            var promoteLibrarianForm = promoteLibrarianFormTemplate.clone();
-            promoteLibrarianForm.removeAttr('id');
+        if (permissions.can_promote_demote_librarians || permissions.can_add_remove_members) {
+            fetchAllUsers().then(() => {
+                if (permissions.can_promote_demote_librarians) {
+                    var promoteLibrarianFormTemplate = $("#promote-librarian-form-template");
+                    var promoteLibrarianForm = promoteLibrarianFormTemplate.clone();
+                    promoteLibrarianForm.removeAttr('id');
 
-            promoteLibrarianForm.find("#promote-librarian-select-template").removeAttr("id").attr(
-                "id", "promote-librarian-select-" + orgid
-            )
-            promoteLibrarianForm.find("#promote-librarian-label-template").removeAttr("id").attr(
-                "for", "promote-librarian-select-" + orgid
-            )
-            promoteLibrarianForm.on("submit", handleSubmitPromoteLibrarian);
+                    promoteLibrarianForm.find("#promote-librarian-select-template").removeAttr("id").attr(
+                        "id", "promote-librarian-select-" + orgid
+                    )
+                    promoteLibrarianForm.find("#promote-librarian-label-template").removeAttr("id").attr(
+                        "for", "promote-librarian-select-" + orgid
+                    )
+                    promoteLibrarianForm.on("submit", handleSubmitPromoteLibrarian);
 
-            populatePromoteLibrarianSelect(promoteLibrarianForm);
-            promoteLibrarianForm.show();
+                    populatePromoteLibrarianSelect(promoteLibrarianForm);
+                    promoteLibrarianForm.show();
 
-            $("#promote-librarian-form-container").html(promoteLibrarianForm);
-        } else {
-            $("#promote-librarian-form-container").html("");
-        }
+                    $("#promote-librarian-form-container").html(promoteLibrarianForm);
+                }
 
-        if (permissions.can_add_remove_members) {
-            var addMemberFormTemplate = $("#add-member-form-template");
-            var addMemberForm = addMemberFormTemplate.clone();
-            addMemberForm.removeAttr('id');
+                if (permissions.can_add_remove_members) {
+                    var addMemberFormTemplate = $("#add-member-form-template");
+                    var addMemberForm = addMemberFormTemplate.clone();
+                    addMemberForm.removeAttr('id');
 
-            addMemberForm.find("#add-member-select-template").removeAttr("id").attr(
-                "id", "add-member-select-" + orgid
-            )
-            addMemberForm.find("#add-member-label-template").removeAttr("id").attr(
-                "for", "add-member-select-" + orgid
-            )
-            addMemberForm.on("submit", handleSubmitAddMember);
+                    addMemberForm.find("#add-member-select-template").removeAttr("id").attr(
+                        "id", "add-member-select-" + orgid
+                    )
+                    addMemberForm.find("#add-member-label-template").removeAttr("id").attr(
+                        "for", "add-member-select-" + orgid
+                    )
+                    addMemberForm.on("submit", handleSubmitAddMember);
 
-            populateAddMemberSelect(addMemberForm);
-            addMemberForm.show();
+                    populateAddMemberSelect(addMemberForm);
+                    addMemberForm.show();
 
-            $("#add-member-form-container").html(addMemberForm);
-        } else {
-            $("#add-member-form-container").html("");
+                    $("#add-member-form-container").html(addMemberForm);
+                }
+            })
         }
     }
 
