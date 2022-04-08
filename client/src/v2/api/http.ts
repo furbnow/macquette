@@ -71,21 +71,21 @@ export class HTTPClient {
         return this.wrappedFetch(intendedAction, url, params);
     }
 
-    async list_libraries(): Promise<unknown> {
+    async listLibraries(): Promise<unknown> {
         const response = await this.wrappedFetch('listing libraries', urls.libraries(), {
             method: 'get',
         });
         return response.json();
     }
 
-    async update_library(libraryId: string, updates: unknown): Promise<void> {
+    async updateLibrary(libraryId: string, updates: unknown): Promise<void> {
         await this.wrappedJsonFetch('updating library', urls.library(libraryId), {
             method: 'patch',
             body: JSON.stringify(updates),
         });
     }
 
-    async add_item_to_library(libraryId: string, data: unknown): Promise<void> {
+    async addItemToLibrary(libraryId: string, data: unknown): Promise<void> {
         await this.wrappedJsonFetch(
             'adding item to library',
             urls.libraryItems(libraryId),
@@ -96,7 +96,7 @@ export class HTTPClient {
         );
     }
 
-    async update_library_item(
+    async updateLibraryItem(
         libraryId: string,
         tag: string,
         updates: unknown,
@@ -111,13 +111,13 @@ export class HTTPClient {
         );
     }
 
-    async delete_library(libraryId: string): Promise<void> {
+    async deleteLibrary(libraryId: string): Promise<void> {
         await this.wrappedFetch('deleting library', urls.library(libraryId), {
             method: 'delete',
         });
     }
 
-    async delete_library_item(libraryId: string, tag: string): Promise<void> {
+    async deleteLibraryItem(libraryId: string, tag: string): Promise<void> {
         await this.wrappedFetch(
             'deleting item from library',
             urls.libraryItem(libraryId, tag),
@@ -125,7 +125,7 @@ export class HTTPClient {
         );
     }
 
-    async list_assessments(organisationId?: string): Promise<unknown> {
+    async listAssessments(organisationId?: string): Promise<unknown> {
         const response = await this.wrappedFetch(
             'listing assessments',
             organisationId !== undefined
@@ -136,7 +136,7 @@ export class HTTPClient {
         return response.json();
     }
 
-    async get_assessment(id: string): Promise<unknown> {
+    async getAssessment(id: string): Promise<unknown> {
         const response = await this.wrappedFetch(
             'getting assessment',
             urls.assessment(id),
@@ -145,14 +145,14 @@ export class HTTPClient {
         return response.json();
     }
 
-    async update_assessment(id: string, updates: unknown): Promise<void> {
+    async updateAssessment(id: string, updates: unknown): Promise<void> {
         await this.wrappedJsonFetch('updating assessment', urls.assessment(id), {
             method: 'patch',
             body: JSON.stringify(updates),
         });
     }
 
-    async create_assessment(
+    async createAssessment(
         name: string,
         description: string,
         organisationId?: string,
@@ -170,7 +170,7 @@ export class HTTPClient {
         return response.json();
     }
 
-    async duplicate_assessment(id: string): Promise<unknown> {
+    async duplicateAssessment(id: string): Promise<unknown> {
         const response = await this.wrappedFetch(
             'duplicating assessment',
             urls.duplicateAssessment(id),
@@ -179,13 +179,13 @@ export class HTTPClient {
         return response.json();
     }
 
-    async delete_assessment(id: string): Promise<void> {
+    async deleteAssessment(id: string): Promise<void> {
         await this.wrappedFetch('deleting assessment', urls.assessment(id), {
             method: 'delete',
         });
     }
 
-    async list_organisations(): Promise<unknown> {
+    async listOrganisations(): Promise<unknown> {
         const response = await this.wrappedFetch(
             'listing organisations',
             urls.organisations(),
@@ -194,29 +194,26 @@ export class HTTPClient {
         return response.json();
     }
 
-    async list_users(): Promise<unknown> {
+    async listUsers(): Promise<unknown> {
         const response = await this.wrappedFetch('listing users', urls.users(), {
             method: 'get',
         });
         return response.json();
     }
 
-    async add_member(organisationId: string, userId: string): Promise<void> {
+    async addMember(organisationId: string, userId: string): Promise<void> {
         await this.wrappedFetch('adding member', urls.members(organisationId, userId), {
             method: 'post',
         });
     }
 
-    async remove_member(organisationId: string, userId: string): Promise<void> {
+    async removeMember(organisationId: string, userId: string): Promise<void> {
         await this.wrappedFetch('removing member', urls.members(organisationId, userId), {
             method: 'delete',
         });
     }
 
-    async create_library(
-        libraryData: unknown,
-        organisationId?: string,
-    ): Promise<unknown> {
+    async createLibrary(libraryData: unknown, organisationId?: string): Promise<unknown> {
         const response = await this.wrappedJsonFetch(
             'creating library',
             organisationId !== undefined
@@ -231,7 +228,7 @@ export class HTTPClient {
         return response.json();
     }
 
-    async share_library_with_organisation(
+    async shareLibraryWithOrganisation(
         fromOrgId: string,
         libraryId: string,
         toOrgId: string,
@@ -243,7 +240,7 @@ export class HTTPClient {
         );
     }
 
-    async stop_sharing_library_with_organisation(
+    async stopSharingLibraryWithOrganisation(
         fromOrgId: string,
         libraryId: string,
         toOrgId: string,
@@ -255,7 +252,7 @@ export class HTTPClient {
         );
     }
 
-    async list_organisations_library_shares(
+    async listOrganisationsLibraryShares(
         organisationId: string,
         libraryId: string,
     ): Promise<unknown> {
@@ -267,10 +264,7 @@ export class HTTPClient {
         return response.json();
     }
 
-    async promote_user_as_librarian(
-        organisationId: string,
-        userId: string,
-    ): Promise<void> {
+    async promoteUserAsLibrarian(organisationId: string, userId: string): Promise<void> {
         await this.wrappedFetch(
             'promoting user as librarian',
             urls.librarians(organisationId, userId),
@@ -278,10 +272,7 @@ export class HTTPClient {
         );
     }
 
-    async demote_user_as_librarian(
-        organisationId: string,
-        userId: string,
-    ): Promise<void> {
+    async demoteUserAsLibrarian(organisationId: string, userId: string): Promise<void> {
         await this.wrappedFetch(
             'demoting user as librarian',
             urls.librarians(organisationId, userId),
@@ -289,7 +280,7 @@ export class HTTPClient {
         );
     }
 
-    async upload_image(assessmentId: string, image: string): Promise<unknown> {
+    async uploadImage(assessmentId: string, image: string): Promise<unknown> {
         const formData = new FormData();
         formData.append('file', image);
         const response = await this.wrappedFetch(
@@ -300,7 +291,7 @@ export class HTTPClient {
         return response.json();
     }
 
-    async set_featured_image(assessmentId: string, imageId: string): Promise<void> {
+    async setFeaturedImage(assessmentId: string, imageId: string): Promise<void> {
         await this.wrappedJsonFetch(
             'setting featured image',
             urls.setFeaturedImage(assessmentId),
@@ -308,7 +299,7 @@ export class HTTPClient {
         );
     }
 
-    async set_image_note(id: string, note: string): Promise<unknown> {
+    async setImageNote(id: string, note: string): Promise<unknown> {
         const response = await this.wrappedJsonFetch(
             'setting image note',
             urls.image(id),
@@ -317,13 +308,13 @@ export class HTTPClient {
         return response.json();
     }
 
-    async delete_image(id: string): Promise<void> {
+    async deleteImage(id: string): Promise<void> {
         await this.wrappedFetch('deleting image', urls.image(id), {
             method: 'delete',
         });
     }
 
-    async generate_report(organisationId: string, context: unknown): Promise<Blob> {
+    async generateReport(organisationId: string, context: unknown): Promise<Blob> {
         const response = await this.wrappedJsonFetch(
             'generating report',
             urls.report(organisationId),

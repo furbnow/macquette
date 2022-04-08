@@ -52,7 +52,7 @@ class ImageGallery {
 
     setNote(id, note) {
         mhep_helper
-            .set_image_note(id, note)
+            .setImageNote(id, note)
             .then(newData => {
                 const imageIndex = this.list.findIndex(elem => elem.id === id);
                 this.list[imageIndex] = newData;
@@ -75,7 +75,7 @@ class ImageGallery {
 
     setFeatured(id) {
         mhep_helper
-            .set_featured_image(this.projectId, id)
+            .setFeaturedImage(this.projectId, id)
             .then(() => {
                 this.featured_id = id;
                 this.view();
@@ -84,14 +84,14 @@ class ImageGallery {
 
     delete(ids) {
         for (let id of ids) {
-            mhep_helper.delete_image(id).then(() => this.removeImage(id));
+            mhep_helper.deleteImage(id).then(() => this.removeImage(id));
         }
     }
 
     upload(fileList) {
         for (let file of fileList) {
             mhep_helper
-                .upload_image(this.projectId, file)
+                .uploadImage(this.projectId, file)
                 .then(newData => this.addImage(newData));
         }
     }

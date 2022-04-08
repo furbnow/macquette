@@ -258,7 +258,7 @@
             return;
         }
 
-        apiClient.create_assessment(name, description, organisation === "" ? undefined : organisation).then((assessment) => {
+        apiClient.createAssessment(name, description, organisation === "" ? undefined : organisation).then((assessment) => {
             assessments.push(assessment);
             draw_assessments("#assessments", assessments);
             $("#noassessments").hide();
@@ -281,7 +281,7 @@
 
         const id = $(this).attr('data-assessment-id');
 
-        apiClient.duplicate_assessment(id).then(data => {
+        apiClient.duplicateAssessment(id).then(data => {
             assessments.push(data)
             draw_assessments("#assessments", assessments);
         });
@@ -299,7 +299,7 @@
 
         const id = $(this).attr('data-assessment-id');
 
-        apiClient.delete_assessment(id).then(() => {
+        apiClient.deleteAssessment(id).then(() => {
             let idx = assessments.findIndex(e => e.id == id)
             assessments.splice(idx, 1);
             draw_assessments("#assessments", assessments);
@@ -313,7 +313,7 @@
     $(".assessments").on('change', '.assessment-status', function () {
         var assessmentid = $(this).attr('data-assessment-id');
         var status = $(this).val();
-        apiClient.update_assessment(assessmentid, { status }).then(() => {
+        apiClient.updateAssessment(assessmentid, { status }).then(() => {
             let assessment = getAssessmentById(assessmentid)
             assessment.status = status;
             draw_assessments("#assessments", assessments);
@@ -439,7 +439,7 @@
 // ----------------------------------------------------------------------------
 
     function fetchOrganisations() {
-        return apiClient.list_organisations().then(result => {
+        return apiClient.listOrganisations().then(result => {
             organisations = result;
             return organisations;
         })
@@ -449,7 +449,7 @@
         if (users) {
             return users;
         } else {
-            return apiClient.list_users().then(result => {
+            return apiClient.listUsers().then(result => {
                 users = result;
                 return users;
             })
@@ -483,7 +483,7 @@
         );
         $("#show-members-button").show();
 
-        apiClient.list_assessments(orgid).then(result => {
+        apiClient.listAssessments(orgid).then(result => {
             assessments = result;
             draw_assessments("#assessments", assessments)
             const organisation = getOrganisationById(orgid);
@@ -614,7 +614,7 @@
         $(this).text("Demoting...");
         var orgid = $(this).attr('data-org-id');
         var userid = $(this).attr('data-user-id');
-        apiClient.demote_user_as_librarian(orgid, userid).then(() => {
+        apiClient.demoteUserAsLibrarian(orgid, userid).then(() => {
             fetchAndDrawOrganisation(orgid);
         });
     };
@@ -625,7 +625,7 @@
         submitButton.attr("disabled", true);
         submitButton.val("Adding...");
         var userid = $('#promote-librarian-select-' + orgid).val();
-        apiClient.promote_user_as_librarian(orgid, userid).then(() => {
+        apiClient.promoteUserAsLibrarian(orgid, userid).then(() => {
             submitButton.attr("disabled", false);
             submitButton.val("Add");
             fetchAndDrawOrganisation(orgid);
@@ -638,7 +638,7 @@
         $(this).text("Removing...");
         var orgid = $(this).attr('data-org-id');
         var userid = $(this).attr('data-user-id');
-        apiClient.remove_member(orgid, userid).then(() => {
+        apiClient.removeMember(orgid, userid).then(() => {
             fetchAndDrawOrganisation(orgid);
         });
     };
@@ -649,7 +649,7 @@
         submitButton.attr("disabled", true);
         submitButton.val("Adding...");
         var userid = $('#add-member-select-' + orgid).val();
-        apiClient.add_member(orgid, userid).then(() => {
+        apiClient.addMember(orgid, userid).then(() => {
             submitButton.attr("disabled", false);
             submitButton.val("Add");
             fetchAndDrawOrganisation(orgid);
@@ -691,7 +691,7 @@
         $("#organisation-list").show();
         $("#org-members").hide();
 
-        apiClient.list_assessments().then(result => {
+        apiClient.listAssessments().then(result => {
             assessments = result;
             $("#assessments-title").html("Your Assessments");
             draw_assessments("#assessments", assessments);
@@ -704,7 +704,7 @@
     })
 
     function initHandler() {
-        apiClient.list_assessments().then(result => {
+        apiClient.listAssessments().then(result => {
             assessments = result;
             draw_assessments("#assessments", assessments);
         });

@@ -37,7 +37,7 @@ async function initMacquette(api, lockedState, assessmentId, featureFlags) {
     });
 
     // Various project initialisation stuff
-    p = await mhep_helper.get_assessment(projectid);
+    p = await mhep_helper.getAssessment(projectid);
     if (p.data == false || p.data == null || Object.keys(p.data).length == 0) {
         p.data = { master: { scenario_name: 'Baseline' } };
     }
@@ -270,7 +270,7 @@ function setupEventHandlers() {
         $('#project-title').html(p.name);
         $('#project-description').html(p.description);
         $('#modal-edit-project-name-and-description').modal('hide');
-        mhep_helper.update_assessment(projectid, {
+        mhep_helper.updateAssessment(projectid, {
             name: p.name,
             description: p.description,
         });
@@ -332,7 +332,7 @@ function update(undo_redo = false) {
     $('#saving_status').text('Saving...');
 
     const inputs = extract_assessment_inputs(project);
-    mhep_helper.update_assessment(projectid, { data: inputs }).then(() => {
+    mhep_helper.updateAssessment(projectid, { data: inputs }).then(() => {
         $('#saving_status').text('Saved');
     }).catch(err => {
         $('#saving_status').text('Failed to save');

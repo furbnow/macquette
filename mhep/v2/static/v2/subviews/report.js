@@ -48,7 +48,7 @@ function report_initUI() {
         const graphs = window.Macquette.generateReportGraphs(project, scenarioIds);
 
         try {
-            const pdf = await mhep_helper.generate_report(p.organisation.id, {
+            const pdf = await mhep_helper.generateReport(p.organisation.id, {
                 context,
                 graphs,
             });
@@ -70,7 +70,7 @@ function report_initUI() {
         const graphs = window.Macquette.generateReportGraphs(project, scenarioIds);
 
         try {
-            const blob = await mhep_helper.generate_report(p.organisation.id, {
+            const blob = await mhep_helper.generateReport(p.organisation.id, {
                 preview: true,
                 context,
                 graphs,
@@ -123,7 +123,7 @@ class Report {
     }
 
     get_template() {
-        mhep_helper.list_organisations()
+        mhep_helper.listOrganisations()
             .then(orgs => {
                 let f = orgs.find(e => e.id == p.organisation.id);
                 this.report_template = f.report_template;

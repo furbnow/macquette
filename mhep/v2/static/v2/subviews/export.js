@@ -5,7 +5,7 @@ $('#openbem').on('click', '#import-data', function () {
     project.master.imagegallery = [];
 
     update();
-    mhep_helper.update_assessment(projectid, { data: project }).then(() => {
+    mhep_helper.updateAssessment(projectid, { data: project }).then(() => {
         redraw_scenario_menu();
     });
 });

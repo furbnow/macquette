@@ -281,7 +281,7 @@ libraryHelper.prototype.onOpenShareLib = function (libraryID, ownerID) {
 
     var rowTemplate = $('#organisation-library_shared_with-row-template');
 
-    mhep_helper.list_organisations_library_shares(ownerID, libraryID).then(organisations => {
+    mhep_helper.listOrganisationsLibraryShares(ownerID, libraryID).then(organisations => {
         for (let i = 0; i < organisations.length; i++) {
             org = organisations[i];
 
@@ -322,7 +322,7 @@ libraryHelper.prototype.onShareLib = function (e, ownerID, libraryID) {
     submitButton.val('Sharing...');
     var toOrgID = $('#share-lib-with-org-select-' + libraryID).val();
 
-    mhep_helper.share_library_with_organisation(ownerID, libraryID, toOrgID).then(() => {
+    mhep_helper.shareLibraryWithOrganisation(ownerID, libraryID, toOrgID).then(() => {
         submitButton.attr('disabled', false);
         $('#return-message').html('Successfully shared library');
         libraryHelper.prototype.onOpenShareLib(libraryID, ownerID);
@@ -340,7 +340,7 @@ libraryHelper.prototype.onStopSharingLib = function (e) {
     var ownerOrgID = $(this).attr('data-owner-org-id');
     var libraryID = $(this).attr('data-library-id');
     var sharedOrgID = $(this).attr('data-shared-org-id');
-    mhep_helper.stop_sharing_library_with_organisation(ownerOrgID, libraryID, sharedOrgID).then(() => {
+    mhep_helper.stopSharingLibraryWithOrganisation(ownerOrgID, libraryID, sharedOrgID).then(() => {
         $('#return-message').html('Stopped sharing library');
         libraryHelper.prototype.onOpenShareLib(libraryID, ownerOrgID);
     });
@@ -375,7 +375,7 @@ libraryHelper.prototype.onNewLibraryOption = function () {
     });
     $('#library-to-copy-select').html(libraryOptionsHTML);
 
-    mhep_helper.list_organisations().then(organisations => {
+    mhep_helper.listOrganisations().then(organisations => {
         var orgInputsHTML = '';
         organisations.forEach(function (org) {
             orgInputsHTML += '<p><input type="radio" name="organisation_id" value="' + org.id + '" />' + org.name + '</p>';
@@ -420,7 +420,7 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
         organisationID = undefined;
     }
 
-    mhep_helper.create_library(new_library_body, organisationID).then(result => {
+    mhep_helper.createLibrary(new_library_body, organisationID).then(result => {
         myself.load_libraries().then(() => {
             $('#create-library-message').html('Library created');
             $('#cancelnewlibrary').hide('fast');
@@ -482,7 +482,7 @@ libraryHelper.prototype.onCreateInLibraryOk = function (library_id) {
         } else if (selected_library.data[tag] != undefined) {
             $('#create-in-library-message').html('Tag already exist, choose another one');
         } else {
-            mhep_helper.add_item_to_library(library_id, { tag, item: item[tag] })
+            mhep_helper.addItemToLibrary(library_id, { tag, item: item[tag] })
                 .then(() => {
                     $('#create-in-library-message').html('Item added to the library');
                     $('#modal-create-in-library button').hide('fast');
@@ -569,7 +569,7 @@ libraryHelper.prototype.onEditLibraryItemOk = function (library_id) {
     var item = this[function_name]();
 
     for (tag in item) {
-        mhep_helper.update_library_item(library_id, tag, item[tag]).then(() => {
+        mhep_helper.updateLibraryItem(library_id, tag, item[tag]).then(() => {
             $('#edit-item-message').html('Item edited and library saved');
             $('#modal-edit-item button').hide('fast');
             $('#edit-item-finish').show('fast');
@@ -790,7 +790,7 @@ libraryHelper.prototype.onDeleteLibrary = function (library_id) {
     $('#confirm-delete-library-modal').modal('show');
 };
 libraryHelper.prototype.onDeleteLibraryOk = async function (library_id) {
-    await mhep_helper.delete_library(library_id);
+    await mhep_helper.deleteLibrary(library_id);
     $('#confirm-delete-library-modal').modal('hide');
     await this.load_libraries();
     UpdateUI();
@@ -899,7 +899,7 @@ libraryHelper.prototype.onSaveLibraryEditMode = function (selector, library_id) 
         });
     });
 
-    mhep_helper.update_library(library_id, { data }).then(() => {
+    mhep_helper.updateLibrary(library_id, { data }).then(() => {
         $('#show-library-modal-edit-mode #save').attr('disabled', 'disabled');
         $('#show-library-modal-edit-mode #message').html('Saved');
     });
@@ -3364,7 +3364,7 @@ libraryHelper.prototype.generation_measures_get_item_to_save = function () {
  * Other methods
  ***************************************************/
 libraryHelper.prototype.load_libraries = async function () {
-    const libraries = await mhep_helper.list_libraries();
+    const libraries = await mhep_helper.listLibraries();
 
     let libraries_by_type = {};
     for (let type of Object.keys(libraryHelper.library_names)) {
@@ -3398,7 +3398,7 @@ libraryHelper.prototype.populate_measure_new_item = function (type_of_library) {
     $('#apply-measure-item-fields').html(out);
 };
 libraryHelper.prototype.set_library_name = function (library_id, name) {
-    mhep_helper.update_library(library_id, { name }).then(() => {
+    mhep_helper.updateLibrary(library_id, { name }).then(() => {
         var library = library_helper.get_library_by_id(library_id);
         library.name = name;
         UpdateUI(data);
@@ -3433,7 +3433,7 @@ libraryHelper.prototype.populate_selects_in_apply_measure_modal = function (type
     this.onChangeApplyMeasureReplaceFromLib(type_of_library); // This one to populate the select for items
 };
 libraryHelper.prototype.delete_library_item = async function (library_id, tag) {
-    await mhep_helper.delete_library_item(library_id, tag);
+    await mhep_helper.deleteLibraryItem(library_id, tag);
     $('#confirm-delete-library-item-modal').modal('hide');
     this.load_libraries();
 };
@@ -3546,7 +3546,7 @@ libraryHelper.prototype.show_temporally_hidden_modals = function () {
 
 libraryHelper.prototype.populateShareLibWithOrgSelect = function (form, fromOrgID) {
     var select = form.find('select');
-    mhep_helper.list_organisations().then(organisations => {
+    mhep_helper.listOrganisations().then(organisations => {
         organisations.forEach(function (org) {
             if (fromOrgID == org.id) {
                 return; // disable sharing a library from one org to itself
