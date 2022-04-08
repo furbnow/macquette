@@ -81,12 +81,4 @@ export class URLHelper {
     apiReport(organisationId: string): string {
         return `/v2/api/organisations/${organisationId}/report/`;
     }
-
-    htmlAssessment(assessmentId: string): string {
-        return `/v2/assessments/${assessmentId}/`;
-    }
-
-    htmlOrganisationAdmin(organisationId: string): string {
-        return `/admin/v2/organisation/${organisationId}/change/`;
-    }
 }

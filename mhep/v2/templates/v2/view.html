@@ -44,7 +44,6 @@
 {% block content %}
     <div id="macquette-container"></div>
     <script>
-        const urlHelper = new window.Macquette.URLHelper();
         const staticFileResolver = new window.Macquette.StaticFileResolver(`{{ static_urls | safe }}`);
 
         function initHandler() {

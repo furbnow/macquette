@@ -207,7 +207,6 @@
 </div>
 
 <script>
-    const urlHelper = new window.Macquette.URLHelper();
     const staticFileResolver = new window.Macquette.StaticFileResolver(`{{ static_urls | safe }}`);
     const apiClient = new window.Macquette.HTTPClient(staticFileResolver);
 
@@ -380,7 +379,7 @@
         let out = "";
         for (let assessment of sortedAssessments) {
             let statusColour = status_colours[assessment.status]
-            let assessmentURL = urlHelper.htmlAssessment(assessment.id);
+            let assessmentURL = `/{{ VERSION }}/assessments/${assessment.id}/`;
 
             let owner = `${assessment.owner.name}`;
             if (assessment.organisation && !orgid) {
@@ -478,7 +477,10 @@
     $("body").on("click", ".view-organisation", function () {
         orgid = $(this).attr("data-id");
         draw_organisation(orgid);
-        $("#organisation-add-member").attr("href", urlHelper.htmlOrganisationAdmin(orgid));
+        $("#organisation-add-member").attr(
+            "href",
+            `/admin/{{ VERSION }}/organisation/${orgid}/change/`
+        );
         $("#show-members-button").show();
 
         apiClient.list_assessments(orgid).then(result => {
