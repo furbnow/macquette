@@ -161,27 +161,15 @@ class DjangoAPI {
         });
     }
 
-    add_item_to_library(library_id, data) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                type: 'POST',
-                url: this.urls.api.libraryItems(library_id),
-                data: JSON.stringify(data),
-                dataType: 'json',
-                contentType: 'application/json;charset=utf-8',
-                error: function (jqXHR, textStatus, errorThrown) {
-                    handleServerError('adding item to library')(
-                        jqXHR,
-                        textStatus,
-                        errorThrown,
-                    );
-                    reject(errorThrown);
-                },
-                success: function (data) {
-                    resolve(data);
-                },
-            });
-        });
+    async add_item_to_library(libraryId, data) {
+        await this.wrappedJsonFetch(
+            'adding item to library',
+            this.urls.api.libraryItems(libraryId),
+            {
+                method: 'post',
+                body: JSON.stringify(data),
+            },
+        );
     }
 
     async update_library_item(libraryId, tag, updates) {
