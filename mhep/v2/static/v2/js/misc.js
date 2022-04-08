@@ -12,13 +12,42 @@ async function requireJs(url) {
     });
 }
 
+async function subview(viewName) {
+    const url = staticFileResolver.resolve('subviews/' + viewName + '.html');
+    if (!url) {
+        throw new Error(
+            `Couldn't find URL for 'subviews/${viewName}.html' ` +
+                '(if you are running the code locally, this could be because you' +
+                ' added a new page without running collectstatic)',
+        );
+    }
+
+    let response;
+    try {
+        response = await fetch(url);
+    } catch (err) {
+        console.error('Error loading subview', viewName, err);
+        alert(`Error loading page ${viewName}`);
+        throw err;
+    }
+
+    if (!response.ok) {
+        const msg = `Error loading subview: server returned ${response.status} (${response.statusText})`;
+        console.error(msg, viewName, err, response);
+        alert(msg);
+        throw new Error(msg);
+    }
+
+    return response.text();
+}
+
 async function load_view(rootElem, viewName) {
     if (viewName in view_html) {
         $(rootElem).html(view_html[viewName]);
         return;
     }
 
-    const html = await mhep_helper.subview(viewName);
+    const html = await subview(viewName);
 
     $(rootElem).html(html);
     view_html[viewName] = html;

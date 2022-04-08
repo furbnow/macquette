@@ -17,7 +17,7 @@ var openFUVC_helper;
 
 function initOpenFUVCHelper(api) {
     openFUVC_helper = new openFUVC();
-    api.subview('_openfuvc').then(html => {
+    subview('_openfuvc').then(html => {
         $('body').append(html);
         openFUVC_helper.add_events();
         openFUVC_helper.ini_modal();

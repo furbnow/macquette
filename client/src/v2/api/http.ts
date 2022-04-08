@@ -1,5 +1,4 @@
 import { urls } from './urls';
-import { StaticFileResolver } from './static-file-resolver';
 
 function csrfSafeMethod(method: string) {
     // these HTTP methods do not require CSRF protection
@@ -9,7 +8,7 @@ function csrfSafeMethod(method: string) {
 export class HTTPClient {
     private csrfToken: string;
 
-    constructor(private resolver: StaticFileResolver) {
+    constructor() {
         const cookieJar = new URLSearchParams(document.cookie.replace(/; /g, '&'));
         const csrfToken = cookieJar.get('csrftoken');
         if (csrfToken !== null && csrfToken !== '') {
@@ -70,20 +69,6 @@ export class HTTPClient {
             params.headers,
         );
         return this.wrappedFetch(intendedAction, url, params);
-    }
-
-    async subview(viewName: string): Promise<string> {
-        const url = this.resolver.resolve('subviews/' + viewName + '.html');
-        if (!url) {
-            throw new Error(
-                `Couldn't find URL for 'subviews/${viewName}.html' ` +
-                    '(if you are running the code locally, this could be because you' +
-                    ' added a new page without running collectstatic)',
-            );
-        }
-
-        const response = await this.wrappedFetch('loading subview', url);
-        return response.text();
     }
 
     async list_libraries(): Promise<unknown> {

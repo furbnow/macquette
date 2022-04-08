@@ -229,7 +229,7 @@ libraryHelper.prototype.add_events = function () {
     });
 };
 libraryHelper.prototype.append_modals = function () {
-    mhep_helper.subview('_library-helper').then(html => {
+    subview('_library-helper').then(html => {
         this.container.append(html);
 
         // Make modals draggable

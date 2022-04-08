@@ -51,7 +51,7 @@
                 {% for feature in features %}'{{ feature }}',{% endfor %}
             ]
 
-            const apiClient = new window.Macquette.HTTPClient(staticFileResolver);
+            const apiClient = new window.Macquette.HTTPClient();
             initOpenFUVCHelper(apiClient);
             initMacquette(apiClient, {{ locked_javascript }}, {{ assessment.id }}, featureFlags);
         }

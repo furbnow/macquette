@@ -27,7 +27,7 @@ async function initMacquette(api, lockedState, assessmentId, featureFlags) {
     projectid = assessmentId;
     locked = lockedState;
 
-    const surrounds = await mhep_helper.subview('_surrounds');
+    const surrounds = await subview('_surrounds');
     document.getElementById('macquette-container').innerHTML = surrounds;
 
     // Load house graphic + stats

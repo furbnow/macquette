@@ -208,7 +208,7 @@
 
 <script>
     const staticFileResolver = new window.Macquette.StaticFileResolver(`{{ static_urls | safe }}`);
-    const apiClient = new window.Macquette.HTTPClient(staticFileResolver);
+    const apiClient = new window.Macquette.HTTPClient();
 
     // if null, show personal assessments; otherwise show assessments with in given org
     var orgid = null;
