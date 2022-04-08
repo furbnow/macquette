@@ -481,7 +481,7 @@
         mhep_helper.list_assessments(orgid).then(result => {
             assessments = result;
             draw_assessments("#assessments", assessments)
-            const organisation = getOrganisationById(orgid);draw_organisation
+            const organisation = getOrganisationById(orgid);
             $("#assessments-title").html(organisation.name + " Assessments");
         });
     });
