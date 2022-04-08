@@ -24,10 +24,6 @@
     {% endif %}
 
     <script src="{% static VERSION|add:'/js/vendor/jquery-1.11.3.min.js' %}"></script>
-    <script>
-        'use strict';
-        {% include VERSION|add:"/js/url_helper.js" %}
-    </script>
     <script src="{% static VERSION|add:'/js/vendor/bootstrap-2.3.2.min.js' %}"></script>
 
     {% block extra_head %}{% endblock %}

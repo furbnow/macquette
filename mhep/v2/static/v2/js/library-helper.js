@@ -417,7 +417,7 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
     var organisationID = $('input[name=organisation_id]:checked').val();
 
     if(organisationID == 'personal') {
-        organisationID = null;
+        organisationID = undefined;
     }
 
     mhep_helper.create_library(new_library_body, organisationID).then(result => {

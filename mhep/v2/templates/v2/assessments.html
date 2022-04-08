@@ -2,6 +2,8 @@
 {% load static %}
 
 {% block extra_head %}
+<script src="{% static VERSION|add:'/js_generated/exports-v2.js' %}"></script>
+
 <style>
     .icon { width: 1em; height: 1em; }
 
@@ -47,8 +49,6 @@
         background-color: var(--brown-2);
     }
 </style>
-
-<script src="{% static VERSION|add:'/js/api.js' %}"></script>
 
 {% endblock %}
 
@@ -207,11 +207,13 @@
 </div>
 
 <script>
+    const urlHelper = new window.Macquette.URLHelper(`{{ static_urls | safe }}`);
+    const apiClient = new window.Macquette.HTTPClient(urlHelper);
+
     // if null, show personal assessments; otherwise show assessments with in given org
     var orgid = null;
     var current_user = '{{ user.username|default:"anonymous" }}';
 
-    var mhep_helper;
     var assessments = [];
     var users;
     var organisations = [];
@@ -256,7 +258,7 @@
             return;
         }
 
-        mhep_helper.create_assessment(name, description, organisation).then((assessment) => {
+        apiClient.create_assessment(name, description, organisation === "" ? undefined : organisation).then((assessment) => {
             assessments.push(assessment);
             draw_assessments("#assessments", assessments);
             $("#noassessments").hide();
@@ -279,7 +281,7 @@
 
         const id = $(this).attr('data-assessment-id');
 
-        mhep_helper.duplicate_assessment(id).then(data => {
+        apiClient.duplicate_assessment(id).then(data => {
             assessments.push(data)
             draw_assessments("#assessments", assessments);
         });
@@ -297,7 +299,7 @@
 
         const id = $(this).attr('data-assessment-id');
 
-        mhep_helper.delete_assessment(id).then(() => {
+        apiClient.delete_assessment(id).then(() => {
             let idx = assessments.findIndex(e => e.id == id)
             assessments.splice(idx, 1);
             draw_assessments("#assessments", assessments);
@@ -311,7 +313,7 @@
     $(".assessments").on('change', '.assessment-status', function () {
         var assessmentid = $(this).attr('data-assessment-id');
         var status = $(this).val();
-        mhep_helper.update_assessment(assessmentid, { status }).then(() => {
+        apiClient.update_assessment(assessmentid, { status }).then(() => {
             let assessment = getAssessmentById(assessmentid)
             assessment.status = status;
             draw_assessments("#assessments", assessments);
@@ -377,7 +379,7 @@
         let out = "";
         for (let assessment of sortedAssessments) {
             let statusColour = status_colours[assessment.status]
-            let assessmentURL = urlHelper.html.assessment(assessment.id);
+            let assessmentURL = urlHelper.htmlAssessment(assessment.id);
 
             let owner = `${assessment.owner.name}`;
             if (assessment.organisation && !orgid) {
@@ -437,7 +439,7 @@
 // ----------------------------------------------------------------------------
 
     function fetchOrganisations() {
-        return mhep_helper.list_organisations().then(result => {
+        return apiClient.list_organisations().then(result => {
             organisations = result;
             return organisations;
         })
@@ -447,7 +449,7 @@
         if (users) {
             return users;
         } else {
-            return mhep_helper.list_users().then(result => {
+            return apiClient.list_users().then(result => {
                 users = result;
                 return users;
             })
@@ -475,10 +477,10 @@
     $("body").on("click", ".view-organisation", function () {
         orgid = $(this).attr("data-id");
         draw_organisation(orgid);
-        $("#organisation-add-member").attr("href", urlHelper.admin.organisation(orgid));
+        $("#organisation-add-member").attr("href", urlHelper.htmlOrganisationAdmin(orgid));
         $("#show-members-button").show();
 
-        mhep_helper.list_assessments(orgid).then(result => {
+        apiClient.list_assessments(orgid).then(result => {
             assessments = result;
             draw_assessments("#assessments", assessments)
             const organisation = getOrganisationById(orgid);
@@ -609,7 +611,7 @@
         $(this).text("Demoting...");
         var orgid = $(this).attr('data-org-id');
         var userid = $(this).attr('data-user-id');
-        mhep_helper.demote_user_as_librarian(orgid, userid).then(() => {
+        apiClient.demote_user_as_librarian(orgid, userid).then(() => {
             fetchAndDrawOrganisation(orgid);
         });
     };
@@ -620,7 +622,7 @@
         submitButton.attr("disabled", true);
         submitButton.val("Adding...");
         var userid = $('#promote-librarian-select-' + orgid).val();
-        mhep_helper.promote_user_as_librarian(orgid, userid).then(() => {
+        apiClient.promote_user_as_librarian(orgid, userid).then(() => {
             submitButton.attr("disabled", false);
             submitButton.val("Add");
             fetchAndDrawOrganisation(orgid);
@@ -633,7 +635,7 @@
         $(this).text("Removing...");
         var orgid = $(this).attr('data-org-id');
         var userid = $(this).attr('data-user-id');
-        mhep_helper.remove_member(orgid, userid).then(() => {
+        apiClient.remove_member(orgid, userid).then(() => {
             fetchAndDrawOrganisation(orgid);
         });
     };
@@ -644,7 +646,7 @@
         submitButton.attr("disabled", true);
         submitButton.val("Adding...");
         var userid = $('#add-member-select-' + orgid).val();
-        mhep_helper.add_member(orgid, userid).then(() => {
+        apiClient.add_member(orgid, userid).then(() => {
             submitButton.attr("disabled", false);
             submitButton.val("Add");
             fetchAndDrawOrganisation(orgid);
@@ -686,7 +688,7 @@
         $("#organisation-list").show();
         $("#org-members").hide();
 
-        mhep_helper.list_assessments().then(result => {
+        apiClient.list_assessments().then(result => {
             assessments = result;
             $("#assessments-title").html("Your Assessments");
             draw_assessments("#assessments", assessments);
@@ -699,8 +701,7 @@
     })
 
     function initHandler() {
-        mhep_helper = new DjangoAPI(urlHelper);
-        mhep_helper.list_assessments().then(result => {
+        apiClient.list_assessments().then(result => {
             assessments = result;
             draw_assessments("#assessments", assessments);
         });

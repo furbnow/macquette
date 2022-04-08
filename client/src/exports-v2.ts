@@ -3,6 +3,8 @@ import { calcRun } from './v2/model/model';
 import { mount } from './v2/ui/module-management';
 import { generateReportGraphs } from './v2/reports/graphs';
 import { cloneDeep } from 'lodash';
+import { HTTPClient } from './v2/api/http';
+import { URLHelper } from './v2/api/url-helper';
 
 declare global {
     interface Window {
@@ -20,4 +22,6 @@ window.Macquette = {
     uiModules,
     generateReportGraphs,
     cloneDeep,
+    HTTPClient,
+    URLHelper,
 };
