@@ -419,31 +419,6 @@ function get_lookup(table, key) {
     return table[project.master.household[key]];
 }
 
-function get_heating_load(scenario) {
-    // Standardise internal target temp at 21°, accounting for comfort take-back
-    const scenarioCopy = window.Macquette.cloneDeep(scenario);
-    scenarioCopy.temperature.target = 21;
-    const result = calc.run(scenarioCopy);
-
-    const heatloss = result.totalWK;
-    const temp = 21;
-    const temp_low = -4;
-    const temp_diff = temp - temp_low;
-    const peak_heat = heatloss * temp_diff;
-    const area = scenario.TFA;
-    const peak_heat_m2 = peak_heat / area;
-
-    return {
-        heatloss,
-        temp,
-        temp_low,
-        temp_diff,
-        peak_heat: peak_heat / 1000, // in kW instead of W
-        area,
-        peak_heat_m2,
-    };
-}
-
 function get_climate_region() {
     let numberToText = {
         0: "UK average",

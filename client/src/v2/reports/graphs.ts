@@ -3,29 +3,42 @@ import {
     legacyScenarioSchema,
     LegacyScenario,
 } from '../legacy-state-validators/scenario';
+import { cloneDeep } from 'lodash';
+import { calcRun } from '../model/model';
+import { isRecord } from '../helpers/is-record';
 
 /** Legacy project data wrapped with a safe accessor function */
 class ProjectData {
-    scenarios: Record<string, LegacyScenario> = {};
+    private data: Record<string | symbol, unknown>;
+    private cache: Record<string, LegacyScenario> = {};
 
     constructor(data: unknown) {
-        if (typeof data !== 'object' || data === null) {
+        if (!isRecord(data)) {
             throw new Error('Project data is not an object');
         }
-        for (const [id, scenario] of Object.entries(data)) {
-            this.scenarios[id] = legacyScenarioSchema.parse(scenario);
-        }
+        this.data = data;
     }
 
     scenario(id: string): LegacyScenario {
-        if (!(id in this.scenarios)) {
+        if (!(id in this.data)) {
             throw new Error(`No scenario with ID ${id}`);
         }
-        const scenario = this.scenarios[id];
-        if (scenario === undefined) {
-            throw new Error('Scenario is undefined');
+        if (id in this.cache) {
+            const result = this.cache[id];
+            if (result !== undefined) {
+                return result;
+            }
         }
-        return scenario;
+        const parsed = legacyScenarioSchema.parse(this.data[id]);
+        this.cache[id] = parsed;
+        return parsed;
+    }
+
+    scenarioRaw(id: string): unknown {
+        if (!(id in this.data)) {
+            throw new Error(`No scenario with ID ${id}`);
+        }
+        return this.data[id];
     }
 }
 
@@ -106,17 +119,38 @@ const spaceHeatingDemand = (project: ProjectData, scenarioIds: string[]): BarCha
     areas: [{ label: 'Target', interval: [20, 70] }],
 });
 
-function getHeatingLoad(scenario: LegacyScenario) {
-    const heatloss = scenario.totalWK ?? 0;
-    const temp = scenario.temperature?.target ?? 0;
-    const temp_diff = temp - -5;
+export function getHeatingLoad(scenario: unknown) {
+    // Standardise internal target temp at 21°, accounting for comfort take-back
+    const scenarioCopy = cloneDeep(scenario);
+    if (!isRecord(scenarioCopy)) {
+        throw new Error('Scenario unreadable');
+    }
+    if (!scenarioCopy['temperature']) {
+        scenarioCopy['temperature'] = {};
+    }
+    if (!isRecord(scenarioCopy['temperature'])) {
+        throw new Error('Scenario unreadable');
+    }
+    scenarioCopy['temperature']['target'] = 21;
+
+    const result = calcRun(scenarioCopy);
+
+    const heatloss = result.totalWK;
+    const temp = 21;
+    const temp_low = -4;
+    const temp_diff = temp - temp_low;
     const peak_heat = heatloss * temp_diff;
+    const area = typeof scenarioCopy['TFA'] === 'number' ? scenarioCopy['TFA'] : 0;
+    const peak_heat_m2 = peak_heat / area;
 
     return {
         heatloss,
         temp,
+        temp_low,
         temp_diff,
         peak_heat: peak_heat / 1000, // in kW instead of W
+        area,
+        peak_heat_m2,
     };
 }
 
@@ -125,7 +159,7 @@ const peakHeatingLoad = (project: ProjectData, scenarioIds: string[]): BarChart 
     units: 'kW',
     bins: scenarioIds.map((id, idx) => ({
         label: scenarioName(id, idx),
-        data: [getHeatingLoad(project.scenario(id)).peak_heat],
+        data: [getHeatingLoad(project.scenarioRaw(id)).peak_heat],
     })),
     areas: [
         { interval: [3, 6], label: 'Small' },

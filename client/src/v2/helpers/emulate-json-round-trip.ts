@@ -1,3 +1,5 @@
+import { isRecord } from './is-record';
+
 /** Deep-clone an object, emulating a JSON round-trip
  *
  * This function behaves the same way as JSON.parse(JSON.stringify(value)), but
@@ -38,10 +40,6 @@ export const emulateJsonRoundTrip = (data: unknown): unknown => {
     } else {
         return data;
     }
-};
-
-const isRecord = (val: unknown): val is Record<string, unknown> => {
-    return typeof val === 'object' && !Array.isArray(val) && val !== null;
 };
 
 const safeIsArray = (val: unknown): val is Array<unknown> => {
