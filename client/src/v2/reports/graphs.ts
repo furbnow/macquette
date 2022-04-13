@@ -107,7 +107,7 @@ const spaceHeatingDemand = (project: ProjectData, scenarioIds: string[]): BarCha
     bins: scenarioIds.map((id, idx) => ({
         label: scenarioName(id, idx),
         data: [
-            project.scenario(id).FEE ?? 0,
+            getStandardisedSpaceHeatingDemand(project.scenarioRaw(id)),
             project.scenario(id).space_heating_demand_m2 ?? 0,
         ],
     })),
@@ -119,23 +119,37 @@ const spaceHeatingDemand = (project: ProjectData, scenarioIds: string[]): BarCha
     areas: [{ label: 'Target', interval: [20, 70] }],
 });
 
-export function getHeatingLoad(scenario: unknown) {
-    // Standardise internal target temp at 21°, accounting for comfort take-back
+function standardisedHeating(scenario: unknown): Record<string, unknown> {
     const scenarioCopy = cloneDeep(scenario);
     if (!isRecord(scenarioCopy)) {
         throw new Error('Scenario unreadable');
     }
-    if (!scenarioCopy['temperature']) {
-        scenarioCopy['temperature'] = {};
-    }
+
+    scenarioCopy['temperature'] = scenarioCopy['temperature'] ?? {};
     if (!isRecord(scenarioCopy['temperature'])) {
-        throw new Error('Scenario unreadable');
+        throw new Error('Scenario temperature unreadable');
     }
+
     scenarioCopy['temperature']['target'] = 21;
+    scenarioCopy['temperature']['hours_off'] = {
+        weekday: [7, 9],
+        weekend: [7, 9],
+    };
 
-    const result = calcRun(scenarioCopy);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const result: unknown = calcRun(scenarioCopy);
+    if (isRecord(result)) {
+        return result;
+    } else {
+        throw new Error('Calc running failed');
+    }
+}
 
-    const heatloss = result.totalWK;
+export function getHeatingLoad(scenario: unknown) {
+    const scenarioCopy = standardisedHeating(scenario);
+
+    const heatloss =
+        typeof scenarioCopy['totalWK'] === 'number' ? scenarioCopy['totalWK'] : 0;
     const temp = 21;
     const temp_low = -4;
     const temp_diff = temp - temp_low;
@@ -152,6 +166,12 @@ export function getHeatingLoad(scenario: unknown) {
         area,
         peak_heat_m2,
     };
+}
+
+function getStandardisedSpaceHeatingDemand(scenario: unknown): number {
+    const scenarioCopy = standardisedHeating(scenario);
+    const shd = scenarioCopy['space_heating_demand_m2'];
+    return typeof shd === 'number' ? shd : 0;
 }
 
 const peakHeatingLoad = (project: ProjectData, scenarioIds: string[]): BarChart => ({
