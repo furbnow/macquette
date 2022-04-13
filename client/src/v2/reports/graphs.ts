@@ -351,8 +351,94 @@ const cumulativeCo2 = (project: ProjectData, scenarioIds: string[]): LineGraph =
     }),
 });
 
+function getUsedFuelNames(project: ProjectData, scenarioIds: string[]): Set<string> {
+    const fuelNames: Set<string> = new Set();
+    const baselineScenario = project.scenario('master');
+
+    for (const fuelName of Object.keys(
+        baselineScenario.currentenergy?.use_by_fuel ?? {},
+    )) {
+        const annualUse =
+            coalesceEmptyString(
+                baselineScenario.currentenergy?.use_by_fuel?.[fuelName]?.annual_use,
+                0,
+            ) ?? 0;
+        if (annualUse > 0) {
+            fuelNames.add(fuelName);
+        }
+    }
+
+    for (const scenarioId of scenarioIds) {
+        const scenario = project.scenario(scenarioId);
+        if (scenario.fuel_totals === null) {
+            continue;
+        }
+        for (const fuel of Object.values(scenario.fuel_totals ?? {})) {
+            if (fuel.quantity !== 0) {
+                fuelNames.add(fuel.name);
+            }
+        }
+    }
+
+    return fuelNames;
+}
+
+// Dark, light pairs
+const COLOUR_PAIRS: [string, string][] = [
+    ['#4286f4', '#9cbdfc'],
+    ['#f6a607', '#fce780'],
+    ['#18563e', '#408567'],
+    ['#66469e', '#9371bd'],
+    ['#83332f', '#ec674f'],
+];
+
+function selectColourPair(idx: number): [string, string] {
+    const pair = COLOUR_PAIRS[idx % COLOUR_PAIRS.length];
+    if (pair !== undefined) {
+        return pair;
+    } else {
+        throw Error('unreachable because of modulo');
+    }
+}
+
 const energyCosts = (project: ProjectData, scenarioIds: string[]): BarChart => {
-    const billsData = project.scenario('master').currentenergy?.total_cost ?? 0;
+    const baselineScenario = project.scenario('master');
+    const billsData = baselineScenario.currentenergy?.total_cost ?? 0;
+
+    type FuelCostEntry = { name: string; colour: string } & (
+        | {
+              source: 'UNIT_COST';
+              unitCost: number;
+          }
+        | {
+              source: 'STANDING_CHARGE';
+              standingCharge: number;
+          }
+    );
+
+    const usedFuelNames = getUsedFuelNames(project, scenarioIds);
+
+    // Remove generation because we account for it differently.
+    usedFuelNames.delete('generation');
+
+    const fuelList = baselineScenario.fuels;
+    const costEntries: FuelCostEntry[] = [...usedFuelNames].flatMap((name, idx) => {
+        const standingCharge =
+            coalesceEmptyString(fuelList?.[name]?.standingcharge, 0) ?? 0;
+        const unitCost = coalesceEmptyString(fuelList?.[name]?.fuelcost, 0) ?? 0;
+        const colours = selectColourPair(idx);
+        if (standingCharge > 0) {
+            return [
+                { name, source: 'STANDING_CHARGE', standingCharge, colour: colours[0] },
+                { name, source: 'UNIT_COST', unitCost, colour: colours[1] },
+            ];
+        } else {
+            return [{ name, source: 'UNIT_COST', unitCost, colour: colours[0] }];
+        }
+    });
+
+    const billsGenerationCostReduction =
+        baselineScenario.currentenergy?.generation?.annual_savings ?? 0;
 
     return {
         type: 'bar',
@@ -362,24 +448,83 @@ const energyCosts = (project: ProjectData, scenarioIds: string[]): BarChart => {
             billsData !== 0
                 ? {
                       label: 'Bills data',
-                      data: [billsData, 0],
+                      data: [
+                          ...costEntries.map((costEntry) => {
+                              const amountUsed =
+                                  coalesceEmptyString(
+                                      baselineScenario.currentenergy?.use_by_fuel?.[
+                                          costEntry.name
+                                      ]?.annual_use,
+                                      0,
+                                  ) ?? 0;
+                              if (amountUsed === 0) {
+                                  return 0;
+                              }
+
+                              if (costEntry.source === 'UNIT_COST') {
+                                  let totalCost = (amountUsed * costEntry.unitCost) / 100;
+                                  if (costEntry.name === 'Standard Tariff') {
+                                      totalCost -= billsGenerationCostReduction;
+                                      if (totalCost < 0) {
+                                          totalCost = 0;
+                                      }
+                                  }
+                                  return totalCost;
+                              } else {
+                                  return costEntry.standingCharge;
+                              }
+                          }),
+                          billsGenerationCostReduction,
+                      ],
                   }
                 : null,
             ...scenarioIds.map((scenarioId, idx) => {
                 const scenario = project.scenario(scenarioId);
-                const generationReduction =
-                    scenario.fuel_totals?.['generation']?.annualcost;
+                const generationCostReduction = Math.abs(
+                    coalesceEmptyString(
+                        scenario.fuel_totals?.['generation']?.annualcost,
+                        0,
+                    ) ?? 0,
+                );
 
                 return {
                     label: scenarioName(scenarioId, idx),
                     data: [
-                        scenario.total_cost ?? 0,
-                        Math.abs(coalesceEmptyString(generationReduction, 0) ?? 0),
+                        ...costEntries.map((costEntry) => {
+                            const amountUsed =
+                                scenario.fuel_totals?.[costEntry.name]?.quantity ?? 0;
+                            if (amountUsed === 0) {
+                                return 0;
+                            }
+
+                            if (costEntry.source === 'UNIT_COST') {
+                                let totalCost = (amountUsed * costEntry.unitCost) / 100;
+                                if (costEntry.name === 'Standard Tariff') {
+                                    totalCost -= generationCostReduction;
+                                    if (totalCost < 0) {
+                                        totalCost = 0;
+                                    }
+                                }
+                                return totalCost;
+                            } else {
+                                return costEntry.standingCharge;
+                            }
+                        }),
+                        generationCostReduction,
                     ],
                 };
             }),
         ].filter((row): row is BarChart['bins'][0] => row !== null),
-        categoryLabels: ['Cost', 'Assumed saving from generation'],
+        categoryLabels: [
+            ...costEntries.map(({ name, source }) => {
+                if (name === 'Standard Tariff') {
+                    name = 'Electricity';
+                }
+                return `${name} ${source === 'UNIT_COST' ? 'use' : 'standing charge'}`;
+            }),
+            'Assumed saving from generation',
+        ],
+        categoryColours: [...costEntries.map(({ colour }) => colour), '#bbbbbb'],
     };
 };
 

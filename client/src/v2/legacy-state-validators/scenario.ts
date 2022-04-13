@@ -147,6 +147,7 @@ export const legacyScenarioSchema = z
                     .object({
                         fraction_used_onsite: numberWithNaN,
                         annual_generation: numberWithNaN,
+                        annual_savings: numberWithNaN,
                     })
                     .partial(),
             })
