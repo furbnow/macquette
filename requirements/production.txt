@@ -4,6 +4,8 @@
 #
 #    pip-compile --output-file=requirements/production.txt requirements/production.in
 #
+adjusttext==0.7.3
+    # via -r requirements/./base.in
 argon2-cffi==21.3.0
     # via -r requirements/./base.in
 argon2-cffi-bindings==21.2.0
@@ -119,11 +121,15 @@ markuppy==1.14
 markupsafe==2.1.0
     # via jinja2
 matplotlib==3.5.1
-    # via -r requirements/./base.in
+    # via
+    #   -r requirements/./base.in
+    #   adjusttext
 nplusone==1.0.0
     # via -r requirements/./base.in
 numpy==1.22.3
-    # via matplotlib
+    # via
+    #   adjusttext
+    #   matplotlib
 oauthlib==3.2.0
     # via
     #   requests-oauthlib

@@ -28,6 +28,7 @@ sentry-sdk            # https://github.com/getsentry/sentry-python
 Jinja2
 weasyprint
 matplotlib
+adjustText   # For non-overlapping text labels
 
 # Auth0 integration
 # ------------------------------------------------------------------------------

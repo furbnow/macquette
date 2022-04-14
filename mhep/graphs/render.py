@@ -6,6 +6,7 @@ from typing import Union
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from adjustText import adjust_text
 
 from mhep.graphs import types
 
@@ -175,12 +176,19 @@ def _render_line_graph(figure: types.LineGraph):
         mpl.ticker.FuncFormatter(lambda x, p: format(int(x), ","))
     )
 
+    texts = []
     for idx, row in enumerate(figure.rows):
         x = [data[0] for data in row.data]
         y = [data[1] for data in row.data]
 
         ax.plot(x, y, label=row.label, color=bar_colours[idx % len(bar_colours)])
-        ax.text(x[-1], y[-1], f" {row.label}")
+        texts.append(ax.text(x[-1], y[-1], f" {row.label}"))
+
+    # We use adjust_text to adjust the y axis... and then undo its adjustments to the
+    # horizontal alignment because we want the text to the right of the graph.
+    adjust_text(texts)
+    for text in texts:
+        text.set_ha("left")
 
     ax.spines["right"].set_visible(False)
     ax.spines["top"].set_visible(False)
