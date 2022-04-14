@@ -12,8 +12,8 @@ function scopeofworks_initUI() {
                 'Description',
                 'Performance target',
                 'Key risks',
-                'Maintenance',
                 'Associated work',
+                'Maintenance',
             ],
             ...getMeasures(assessment).map(row => [
                 row.scenario,
@@ -23,8 +23,8 @@ function scopeofworks_initUI() {
                 row.description,
                 row.performance,
                 row.key_risks,
-                row.maintenance,
                 row.associated_work,
+                row.maintenance,
             ])
         ];
         const csv = convertNestedArrayToCSV(output);
