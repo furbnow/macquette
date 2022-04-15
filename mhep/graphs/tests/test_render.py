@@ -33,7 +33,7 @@ def test_against_saved_image(data):
 
 
 def test_report_key_omits_unused_labels():
-    from mhep.graphs.render import bar_colours
+    from mhep.graphs.render import DEFAULT_COLOURS
 
     chart = types.BarChart(
         type="bar",
@@ -47,6 +47,6 @@ def test_report_key_omits_unused_labels():
     _, key = render(chart)
 
     assert key == [
-        ("French", bar_colours[0]),
-        ("Mauritian", bar_colours[2]),
+        ("French", DEFAULT_COLOURS[0]),
+        ("Mauritian", DEFAULT_COLOURS[2]),
     ]

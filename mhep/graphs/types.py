@@ -5,6 +5,7 @@ from typing import Tuple
 from typing import Union
 
 from pydantic import BaseModel
+from pydantic import constr
 from pydantic import root_validator
 from pydantic import validator
 
@@ -44,6 +45,7 @@ class BarChart(BaseModel):
     units: str
     bins: List[Bin]
     category_labels: Optional[List[str]]
+    category_colours: Optional[List[constr(regex=r"^#[a-f0-9]{6}$")]]  # noqa:F722
     lines: Optional[List[Line]]
     areas: Optional[List[ShadedArea]]
 
@@ -78,12 +80,12 @@ class BarChart(BaseModel):
 
     @root_validator
     def _validate(cls, values):
-        cls._bins_must_all_have_same_num_of_categories(cls, values)
+        cls._consistent_number_of_categories(cls, values)
         cls._no_mixed_negative_and_positive_within_category(cls, values)
         return values
 
     @staticmethod
-    def _bins_must_all_have_same_num_of_categories(cls, values):
+    def _consistent_number_of_categories(cls, values):
         bins = values.get("bins")
         category_labels = values.get("category_labels")
 
@@ -103,6 +105,13 @@ class BarChart(BaseModel):
                     f"Bin '{bin.label}' should have {num_categories} item(s) of data"
                     f"{reason}, but instead it has {len(bin.data)}"
                 )
+
+        category_colours = values.get("category_colours")
+        if category_colours and len(category_colours) != num_categories:
+            raise ValueError(
+                f"Should have {num_categories} category colours but"
+                f" {len(category_colours)} provided"
+            )
 
     @staticmethod
     def _no_mixed_negative_and_positive_within_category(cls, values):

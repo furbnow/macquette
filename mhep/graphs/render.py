@@ -1,5 +1,6 @@
 from base64 import b64encode
 from io import BytesIO
+from typing import List
 from typing import Tuple
 from typing import Union
 
@@ -12,7 +13,7 @@ from mhep.graphs import types
 
 mpl.use("agg")
 
-bar_colours = [
+DEFAULT_COLOURS = [
     "#4286f4",
     "#f6a607",
     "#9dd5cb",
@@ -25,13 +26,13 @@ bar_colours = [
 bg_colours = ["#444", "#aaa"]
 
 
-def _make_key(figure: types.BarChart) -> Tuple[str, str]:
+def _make_key(figure: types.BarChart, colours: List[str]) -> Tuple[str, str]:
     data = figure.data_by_category()
     data_sums = [sum(category) for category in data]
 
     if figure.num_categories > 1 and figure.category_labels:
         key = [
-            (name, bar_colours[idx % len(bar_colours)])
+            (name, colours[idx % len(colours)])
             for idx, name in enumerate(figure.category_labels)
             if data_sums[idx] != 0
         ]
@@ -42,6 +43,8 @@ def _make_key(figure: types.BarChart) -> Tuple[str, str]:
 
 
 def _render_bar_chart(figure: types.BarChart):
+    colours = figure.category_colours or DEFAULT_COLOURS
+
     fig, ax = plt.subplots()
 
     ax.set_xlabel(figure.units)
@@ -103,7 +106,7 @@ def _render_bar_chart(figure: types.BarChart):
                 linewidth=0.5,
                 edgecolor="#000",
                 tick_label=bin_labels,
-                color=bar_colours[idx % len(bar_colours)],
+                color=colours[idx % len(colours)],
                 zorder=10,
             )
 
@@ -127,7 +130,7 @@ def _render_bar_chart(figure: types.BarChart):
                 linewidth=0.5,
                 edgecolor="#000",
                 tick_label=bin_labels,
-                color=bar_colours[idx % len(bar_colours)],
+                color=colours[idx % len(colours)],
                 zorder=10,
             )
 
@@ -160,7 +163,7 @@ def _render_bar_chart(figure: types.BarChart):
 
     fig.tight_layout()
 
-    return fig, _make_key(figure)
+    return fig, _make_key(figure, colours)
 
 
 def _render_line_graph(figure: types.LineGraph):
@@ -181,7 +184,9 @@ def _render_line_graph(figure: types.LineGraph):
         x = [data[0] for data in row.data]
         y = [data[1] for data in row.data]
 
-        ax.plot(x, y, label=row.label, color=bar_colours[idx % len(bar_colours)])
+        ax.plot(
+            x, y, label=row.label, color=DEFAULT_COLOURS[idx % len(DEFAULT_COLOURS)]
+        )
         texts.append(ax.text(x[-1], y[-1], f" {row.label}"))
 
     # We use adjust_text to adjust the y axis... and then undo its adjustments to the

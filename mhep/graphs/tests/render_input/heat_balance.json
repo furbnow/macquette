@@ -24,6 +24,7 @@
         "Fabric losses",
         "Ventilation and infiltration losses"
     ],
+    "categoryColours": ["#e89d25", "#f5bd76", "#4286f4", "#68ab20", "#b5d490"],
     "stacked": true,
     "type": "bar",
     "units": "kWh per m² per year"

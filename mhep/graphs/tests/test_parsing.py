@@ -38,6 +38,26 @@ def test_mismatching_number_of_categories():
     )
 
 
+def test_mismatching_number_of_colours():
+    input = {
+        "type": "bar",
+        "units": "none",
+        "bins": [
+            {
+                "label": "1",
+                "data": [0, 2],
+            }
+        ],
+        "categoryLabels": ["Cat 1", "Cat 2"],
+        "categoryColours": ["#feefee"],
+    }
+
+    with pytest.raises(ValueError) as excinfo:
+        parse(input)
+
+    assert "Should have 2 category colours but 1 provided" in str(excinfo.value)
+
+
 def test_mixed_positive_and_negative_within_same_category():
     input = {
         "type": "bar",
@@ -84,3 +104,23 @@ def test_mixed_positive_and_negative_within_same_category_with_mismatching_numbe
         parse(input)
 
     assert "Bin 'Two' should have 3 item(s) of data" in str(excinfo.value)
+
+
+def test_bad_colours():
+    input = {
+        "type": "bar",
+        "units": "none",
+        "bins": [
+            {
+                "label": "1",
+                "data": [0, 2],
+            }
+        ],
+        "categoryLabels": ["Cat 1", "Cat 2"],
+        "categoryColours": ["#ffffff", "#0033az"],
+    }
+
+    with pytest.raises(ValueError) as excinfo:
+        parse(input)
+
+    assert "string does not match regex" in str(excinfo.value)
