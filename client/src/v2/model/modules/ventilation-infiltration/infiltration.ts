@@ -32,7 +32,7 @@ export const extractInfiltrationInputFromLegacy = (
             ventilationRate: coalesceEmptyString(ventilation_rate, 0),
         })) ?? [];
     let estimateFrom: InfiltrationInput['estimateFrom'];
-    if (ventilation?.air_permeability_test) {
+    if (ventilation?.air_permeability_test === true) {
         estimateFrom = {
             type: 'pressure test',
             airPermeability:

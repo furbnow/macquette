@@ -145,7 +145,7 @@ const fuelUse = (project: ProjectData, scenarioIds: string[]): BarChart => {
 
         for (const { name, quantity } of Object.values(fuelTotals)) {
             const fuelType = fuelList?.[name];
-            if (!fuelType) {
+            if (fuelType === undefined) {
                 throw new Error('Fuel does not have an associated category');
             }
 
@@ -183,7 +183,11 @@ const fuelUse = (project: ProjectData, scenarioIds: string[]): BarChart => {
             0) *
         (project.scenario('master').currentenergy?.generation?.annual_generation ?? 0);
 
-    const hasBillsData = billsData[0] || billsData[1] || billsData[2] || billsData[3];
+    const hasBillsData =
+        billsData[0] !== 0 ||
+        billsData[1] !== 0 ||
+        billsData[2] !== 0 ||
+        billsData[3] !== 0;
 
     return {
         type: 'bar',
@@ -227,7 +231,7 @@ const energyUseIntensity = (project: ProjectData, scenarioIds: string[]): BarCha
         stacked: true,
         units: 'kWh per m² per year',
         bins: [
-            billsData
+            billsData !== 0
                 ? {
                       label: 'Bills data',
                       data: [0, 0, 0, 0, 0, 0, billsData, billsAssumedConsumedGeneration],
@@ -298,7 +302,7 @@ const energyCosts = (project: ProjectData, scenarioIds: string[]): BarChart => {
         stacked: true,
         units: '£ per year',
         bins: [
-            billsData
+            billsData !== 0
                 ? {
                       label: 'Bills data',
                       data: [billsData, 0],

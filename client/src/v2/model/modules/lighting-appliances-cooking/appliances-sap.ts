@@ -1,4 +1,5 @@
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
+import { isTruthy } from '../../../helpers/is-truthy';
 import { sum } from '../../../helpers/sum';
 import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Month } from '../../enums/month';
@@ -110,9 +111,11 @@ export class AppliancesSAP {
         data.LAC = data.LAC ?? {};
         data.LAC.EA = this.energyAnnual;
         data.LAC.energy_efficient_appliances = this.input.energyEfficient;
-        if (data.LAC.fuels_appliances == undefined) {
+
+        if (!isTruthy(data.LAC.fuels_appliances)) {
             data.LAC.fuels_appliances = [{ fuel: Fuels.STANDARD_TARIFF, fraction: 1 }];
         }
+
         if (this.energyAnnual > 0) {
             data.gains_W['Appliances'] = Month.all.map((m) => this.heatGainMonthly(m));
             data.energy_requirements = data.energy_requirements ?? {};

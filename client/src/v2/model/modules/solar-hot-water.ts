@@ -1,4 +1,5 @@
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
+import { isTruthy } from '../../helpers/is-truthy';
 import { sum } from '../../helpers/sum';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { solarHotWaterOvershadingFactor } from '../datasets';
@@ -42,7 +43,7 @@ export type SolarHotWaterInput =
 export const extractSolarHotWaterInputFromLegacy = (
     data: LegacyScenario,
 ): SolarHotWaterInput => {
-    if (!(data.use_SHW || data.water_heating?.solar_water_heating)) {
+    if (!(isTruthy(data.use_SHW) || isTruthy(data.water_heating?.solar_water_heating))) {
         return 'module disabled';
     }
     if (data.SHW === undefined) {

@@ -1,4 +1,5 @@
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
+import { isTruthy } from '../../../helpers/is-truthy';
 import { sum } from '../../../helpers/sum';
 import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Month } from '../../enums/month';
@@ -145,9 +146,11 @@ export class LightingSAP {
         // object. Fortunately, it does not seem essential for any actual
         // subsequent behaviour, so all the real functionality is still
         // captured in the other methods of this class.
-        if (LAC.fuels_lighting == undefined) {
+
+        if (!isTruthy(LAC.fuels_lighting)) {
             LAC.fuels_lighting = [{ fuel: Fuels.STANDARD_TARIFF, fraction: 1 }];
         }
+
         if (this.input.outlets.total !== 0) {
             LAC.C1 = this.lowEnergyCorrectionFactor;
             LAC.C2 = this.daylightingCorrectionFactor;

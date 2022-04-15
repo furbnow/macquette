@@ -29,7 +29,9 @@ export const stringyNumber = (
     const poss = [
         number,
         fc.constant(''),
-        ...(options?.excludeNumericStrings ? [] : [number.map((f) => f.toString(10))]),
+        ...(options?.excludeNumericStrings ?? false
+            ? []
+            : [number.map((f) => f.toString(10))]),
     ];
     return fc.oneof(...poss);
 };

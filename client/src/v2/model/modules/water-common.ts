@@ -1,4 +1,5 @@
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
+import { isTruthy } from '../../helpers/is-truthy';
 import { sum } from '../../helpers/sum';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { monthlyHotWaterTemperatureRise, monthlyHotWaterUseFactor } from '../datasets';
@@ -19,7 +20,7 @@ export const extractWaterCommonInputFromLegacy = (
         override_annual_energy_content,
     } = scenario.water_heating ?? {};
     let annualEnergyContentOverride: false | number;
-    if (!override_annual_energy_content) {
+    if (!isTruthy(override_annual_energy_content)) {
         annualEnergyContentOverride = false;
     } else if (typeof annual_energy_content === 'number') {
         annualEnergyContentOverride = annual_energy_content;

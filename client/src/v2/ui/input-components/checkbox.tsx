@@ -15,7 +15,7 @@ export const CheckboxInput = ({ checked, callback, ...passthrough }: CheckboxPro
             type="checkbox"
             checked={checked}
             onChange={(evt) => {
-                if (passthrough.readOnly || passthrough.disabled) {
+                if (passthrough.readOnly === true || passthrough.disabled === true) {
                     return;
                 } else {
                     callback(evt.target.checked);

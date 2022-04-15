@@ -9,6 +9,7 @@ import {
 } from './values';
 import { arbFabric } from './fabric';
 import { shwInputIsComplete, shwInputs } from './solar-hot-water';
+import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 
 const arbFloors = () =>
     fc.array(
@@ -144,8 +145,8 @@ export const arbScenarioInputs = () =>
             // If a water heating override is configured, make sure a value is
             // given
             if (
-                scenario.water_heating?.override_annual_energy_content &&
-                scenario.water_heating.annual_energy_content === undefined
+                isTruthy(scenario.water_heating?.override_annual_energy_content) &&
+                scenario.water_heating?.annual_energy_content === undefined
             ) {
                 return false;
             }
@@ -164,7 +165,8 @@ export const arbScenarioInputs = () =>
             // If SHW is enabled make sure input is complete
             if (scenario.SHW !== undefined) {
                 const moduleIsEnabled =
-                    scenario.use_SHW || scenario.water_heating?.solar_water_heating;
+                    isTruthy(scenario.use_SHW) ||
+                    isTruthy(scenario.water_heating?.solar_water_heating);
                 if (moduleIsEnabled) {
                     return shwInputIsComplete(scenario.SHW);
                 }

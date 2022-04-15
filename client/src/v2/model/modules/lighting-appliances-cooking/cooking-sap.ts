@@ -5,6 +5,7 @@ import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
 import { Fuel as LACModuleFuel, FuelInput } from './fuel';
 import { Fuel as FuelsModuleFuel } from '../fuels';
+import { isTruthy } from '../../../helpers/is-truthy';
 
 export type CookingSAPInput = {
     energyEfficient: boolean;
@@ -106,9 +107,10 @@ export class CookingSAP {
         // (in kWh/year) for cooking. Fortunately, nothing seems to use it.
         LAC.GC = this.energyAnnual;
 
-        if (data.LAC.fuels_cooking == undefined) {
+        if (!isTruthy(data.LAC.fuels_cooking)) {
             data.LAC.fuels_cooking = [{ fuel: Fuels.STANDARD_TARIFF, fraction: 1 }];
         }
+
         if (this.heatGainPower > 0) {
             data.gains_W['Cooking'] = new Array(Month.all.length).fill(
                 this.heatGainPower,

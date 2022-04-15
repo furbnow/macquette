@@ -1,4 +1,5 @@
 import fc from 'fast-check';
+import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import { Overshading } from '../../../../src/v2/model/enums/overshading';
 import { fcOptional, merge } from '../../../helpers/arbitraries';
@@ -171,7 +172,7 @@ export const arbFabric = () =>
         .filter(({ global_TMP, global_TMP_value }) => {
             // Make sure that if global_TMP is truthy then global_TMP_value is set to something
             return (
-                !global_TMP ||
+                !isTruthy(global_TMP) ||
                 (global_TMP_value !== null && global_TMP_value !== undefined)
             );
         });
