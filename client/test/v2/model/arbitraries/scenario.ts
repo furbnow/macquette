@@ -4,7 +4,7 @@ import { fcPartialRecord } from '../../../helpers/arbitraries';
 import {
     legacyBoolean,
     sensibleFloat,
-    stringyInteger,
+    stringySensibleInteger,
     stringySensibleFloat,
 } from './values';
 import { arbFabric } from './fabric';
@@ -64,8 +64,8 @@ const arbLACFuels = (fuelNames: string[]) =>
 
 const arbLAC = (fuelNames: string[]) =>
     fcPartialRecord({
-        L: stringyInteger(),
-        LLE: stringyInteger(),
+        L: stringySensibleInteger(),
+        LLE: stringySensibleInteger(),
         reduced_heat_gains_lighting: legacyBoolean(),
         energy_efficient_appliances: legacyBoolean(),
         energy_efficient_cooking: legacyBoolean(),

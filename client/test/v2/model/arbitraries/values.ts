@@ -20,8 +20,8 @@ export const sensibleFloat = fc.oneof(
 type StringyNumberOptions = { excludeNumericStrings?: boolean };
 export const stringySensibleFloat = (options?: StringyNumberOptions) =>
     stringyNumber(sensibleFloat, options);
-export const stringyInteger = (options?: StringyNumberOptions) =>
-    stringyNumber(fc.integer(), options);
+export const stringySensibleInteger = (options?: StringyNumberOptions) =>
+    stringyNumber(fc.integer({ min: -Math.pow(2, 7), max: Math.pow(2, 7) }), options);
 export const stringyNumber = (
     number: fc.Arbitrary<number>,
     options?: StringyNumberOptions,
