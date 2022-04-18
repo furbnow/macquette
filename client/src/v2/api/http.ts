@@ -1,11 +1,8 @@
-import { urls } from './urls';
-import { listAssessmentSchema, createAssessmentSchema } from './schemas';
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
 import type { AssessmentMetadata } from './schemas';
-
-function csrfSafeMethod(method: string) {
-    // these HTTP methods do not require CSRF protection
-    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method.toUpperCase());
-}
+import { createAssessmentSchema, listAssessmentSchema } from './schemas';
+import { urls } from './urls';
 
 export function cameliseStr(str: string): string {
     const replaced = str
@@ -37,95 +34,105 @@ export function camelise(input: unknown): unknown {
     }
 }
 
+const jsonContentTypeHeader = { 'content-type': 'application/json' };
+
 export class HTTPClient {
-    private csrfToken: string;
+    private axios: AxiosInstance;
 
     constructor() {
         const cookieJar = new URLSearchParams(document.cookie.replace(/; /g, '&'));
         const csrfToken = cookieJar.get('csrftoken');
-        if (csrfToken !== null && csrfToken !== '') {
-            this.csrfToken = csrfToken;
-        } else {
+        if (csrfToken === null || csrfToken === '') {
             throw new Error('No CSRF token in document cookies');
         }
+
+        this.axios = axios.create({
+            responseType: 'text',
+            headers: {
+                'x-csrftoken': csrfToken,
+            },
+            transitional: {
+                silentJSONParsing: false,
+                forcedJSONParsing: false,
+                clarifyTimeoutError: true,
+            },
+        });
     }
 
     private async wrappedFetch(
-        intendedAction: string,
-        url: string,
-        params: RequestInit = {},
-    ): Promise<Response> {
-        if (!csrfSafeMethod(params.method ?? 'get')) {
-            params.headers = Object.assign(
-                { 'X-CSRFToken': this.csrfToken },
-                params.headers,
-            );
-        }
+        params: AxiosRequestConfig & { intent: string; responseType: 'blob' },
+    ): Promise<AxiosResponse<Blob>>;
 
-        let response;
+    private async wrappedFetch(
+        params: AxiosRequestConfig & { intent: string; responseType: 'json' },
+    ): Promise<AxiosResponse<unknown>>;
+
+    private async wrappedFetch(
+        params: AxiosRequestConfig & { intent: string },
+    ): Promise<AxiosResponse<string>>;
+
+    private async wrappedFetch(
+        params: AxiosRequestConfig & { intent: string },
+    ): Promise<AxiosResponse> {
         try {
-            response = await fetch(url, params);
-        } catch (err) {
-            if (err instanceof TypeError) {
-                alert(`error ${intendedAction}: ${err.toString()}`);
-                console.error(`Error ${intendedAction}:`, err);
-                throw new Error(`Error ${intendedAction}: ${err.toString()}`);
-            } else {
-                throw err;
-            }
-        }
+            return await this.axios.request(params);
+        } catch (error) {
+            let msg = `Error ${params.intent}: `;
 
-        if (!response.ok) {
-            const msg = `Error ${intendedAction}: server returned ${response.status} (${response.statusText})`;
+            if (!axios.isAxiosError(error)) {
+                // Some other error
+                if (error instanceof Error) {
+                    msg += error.toString();
+                }
+            } else if (error.response !== null && error.response !== undefined) {
+                // HTTP error
+                msg += `server returned ${error.response.statusText}`;
+
+                if (
+                    error.response.headers['content-type'] === 'application/json' &&
+                    typeof error.response.data === 'string'
+                ) {
+                    const json: unknown = JSON.parse(error.response.data);
+                    console.error(json);
+                }
+            } else if (error.request !== null && error.request !== undefined) {
+                msg += error.toString();
+            }
+
             alert(msg);
-
-            if (response.headers.get('content-type') === 'application/json') {
-                const json: unknown = await response.json();
-                console.error('Response body:', json);
-                throw new Error(`${msg}: ${JSON.stringify(json)}`);
-            } else {
-                throw new Error(msg);
-            }
+            throw new Error(msg);
         }
-
-        return response;
-    }
-
-    private wrappedJsonFetch(
-        intendedAction: string,
-        url: string,
-        params: RequestInit = {},
-    ): Promise<Response> {
-        params.headers = Object.assign(
-            { 'content-type': 'application/json' },
-            params.headers,
-        );
-        return this.wrappedFetch(intendedAction, url, params);
     }
 
     async listLibraries(): Promise<unknown> {
-        const response = await this.wrappedFetch('listing libraries', urls.libraries(), {
+        const response = await this.wrappedFetch({
+            intent: 'listing libraries',
+            url: urls.libraries(),
             method: 'GET',
+            headers: jsonContentTypeHeader,
+            responseType: 'json',
         });
-        return response.json();
+        return response.data;
     }
 
     async updateLibrary(libraryId: string, updates: unknown): Promise<void> {
-        await this.wrappedJsonFetch('updating library', urls.library(libraryId), {
+        await this.wrappedFetch({
+            intent: 'updating library',
+            url: urls.library(libraryId),
             method: 'PATCH',
-            body: JSON.stringify(updates),
+            headers: jsonContentTypeHeader,
+            data: updates,
         });
     }
 
     async addItemToLibrary(libraryId: string, data: unknown): Promise<void> {
-        await this.wrappedJsonFetch(
-            'adding item to library',
-            urls.libraryItems(libraryId),
-            {
-                method: 'POST',
-                body: JSON.stringify(data),
-            },
-        );
+        await this.wrappedFetch({
+            intent: 'adding item to library',
+            url: urls.libraryItems(libraryId),
+            method: 'POST',
+            headers: jsonContentTypeHeader,
+            data: data,
+        });
     }
 
     async updateLibraryItem(
@@ -133,55 +140,61 @@ export class HTTPClient {
         tag: string,
         updates: unknown,
     ): Promise<void> {
-        await this.wrappedJsonFetch(
-            'updating item in library',
-            urls.libraryItem(libraryId, tag),
-            {
-                method: 'PUT',
-                body: JSON.stringify(updates),
-            },
-        );
+        await this.wrappedFetch({
+            intent: 'updating item in library',
+            url: urls.libraryItem(libraryId, tag),
+            method: 'PUT',
+            headers: jsonContentTypeHeader,
+            data: updates,
+        });
     }
 
     async deleteLibrary(libraryId: string): Promise<void> {
-        await this.wrappedFetch('deleting library', urls.library(libraryId), {
+        await this.wrappedFetch({
+            intent: 'deleting library',
+            url: urls.library(libraryId),
             method: 'DELETE',
         });
     }
 
     async deleteLibraryItem(libraryId: string, tag: string): Promise<void> {
-        await this.wrappedFetch(
-            'deleting item from library',
-            urls.libraryItem(libraryId, tag),
-            { method: 'DELETE' },
-        );
+        await this.wrappedFetch({
+            intent: 'deleting item from library',
+            url: urls.libraryItem(libraryId, tag),
+            method: 'DELETE',
+        });
     }
 
     async listAssessments(organisationId?: string): Promise<AssessmentMetadata[]> {
-        const response = await this.wrappedFetch(
-            'listing assessments',
-            organisationId !== undefined
-                ? urls.organisationAssessments(organisationId)
-                : urls.assessments(),
-            { method: 'GET' },
-        );
-        const json: unknown = await response.json();
-        return listAssessmentSchema.parse(camelise(json));
+        const response = await this.wrappedFetch({
+            intent: 'listing assessments',
+            url:
+                organisationId !== undefined
+                    ? urls.organisationAssessments(organisationId)
+                    : urls.assessments(),
+            method: 'GET',
+            responseType: 'json',
+        });
+        return listAssessmentSchema.parse(camelise(response.data));
     }
 
     async getAssessment(id: string): Promise<unknown> {
-        const response = await this.wrappedFetch(
-            'getting assessment',
-            urls.assessment(id),
-            { method: 'GET' },
-        );
-        return response.json();
+        const response = await this.wrappedFetch({
+            intent: 'getting assessment',
+            url: urls.assessment(id),
+            method: 'GET',
+            responseType: 'json',
+        });
+        return response.data;
     }
 
     async updateAssessment(id: string, updates: unknown): Promise<void> {
-        await this.wrappedJsonFetch('updating assessment', urls.assessment(id), {
+        await this.wrappedFetch({
+            intent: 'updating assessment',
+            url: urls.assessment(id),
             method: 'PATCH',
-            body: JSON.stringify(updates),
+            headers: jsonContentTypeHeader,
+            data: updates,
         });
     }
 
@@ -190,76 +203,88 @@ export class HTTPClient {
         description: string,
         organisationId?: string,
     ): Promise<AssessmentMetadata> {
-        const response = await this.wrappedJsonFetch(
-            'duplicating assessment',
-            organisationId !== undefined
-                ? urls.organisationAssessments(organisationId)
-                : urls.assessments(),
-            {
-                method: 'POST',
-                body: JSON.stringify({ name, description }),
-            },
-        );
-        const json: unknown = await response.json();
-        return createAssessmentSchema.parse(camelise(json));
+        const response = await this.wrappedFetch({
+            intent: 'duplicating assessment',
+            url:
+                organisationId !== undefined
+                    ? urls.organisationAssessments(organisationId)
+                    : urls.assessments(),
+            method: 'POST',
+            headers: jsonContentTypeHeader,
+            data: { name, description },
+            responseType: 'json',
+        });
+        return createAssessmentSchema.parse(camelise(response.data));
     }
 
     async duplicateAssessment(id: string): Promise<unknown> {
-        const response = await this.wrappedFetch(
-            'duplicating assessment',
-            urls.duplicateAssessment(id),
-            { method: 'POST' },
-        );
-        return response.json();
+        const response = await this.wrappedFetch({
+            intent: 'duplicating assessment',
+            url: urls.duplicateAssessment(id),
+            method: 'POST',
+            responseType: 'json',
+        });
+        return response.data;
     }
 
     async deleteAssessment(id: string): Promise<void> {
-        await this.wrappedFetch('deleting assessment', urls.assessment(id), {
+        await this.wrappedFetch({
+            intent: 'deleting assessment',
+            url: urls.assessment(id),
             method: 'DELETE',
         });
     }
 
     async listOrganisations(): Promise<unknown> {
-        const response = await this.wrappedFetch(
-            'listing organisations',
-            urls.organisations(),
-            { method: 'GET' },
-        );
-        return response.json();
+        const response = await this.wrappedFetch({
+            intent: 'listing organisations',
+            url: urls.organisations(),
+            method: 'GET',
+            responseType: 'json',
+        });
+        return response.data;
     }
 
     async listUsers(): Promise<unknown> {
-        const response = await this.wrappedFetch('listing users', urls.users(), {
+        const response = await this.wrappedFetch({
+            intent: 'listing users',
+            url: urls.users(),
             method: 'GET',
+            responseType: 'json',
         });
-        return response.json();
+        return response.data;
     }
 
     async addMember(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch('adding member', urls.members(organisationId, userId), {
+        await this.wrappedFetch({
+            intent: 'adding member',
+            url: urls.members(organisationId, userId),
             method: 'POST',
         });
     }
 
     async removeMember(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch('removing member', urls.members(organisationId, userId), {
+        await this.wrappedFetch({
+            intent: 'removing member',
+            url: urls.members(organisationId, userId),
             method: 'DELETE',
         });
     }
 
     async createLibrary(libraryData: unknown, organisationId?: string): Promise<unknown> {
-        const response = await this.wrappedJsonFetch(
-            'creating library',
-            organisationId !== undefined
-                ? urls.organisationLibraries(organisationId)
-                : urls.libraries(),
-            {
-                method: 'POST',
-                body: JSON.stringify(libraryData),
-            },
-        );
+        const response = await this.wrappedFetch({
+            intent: 'creating library',
+            url:
+                organisationId !== undefined
+                    ? urls.organisationLibraries(organisationId)
+                    : urls.libraries(),
+            method: 'POST',
+            headers: jsonContentTypeHeader,
+            data: libraryData,
+            responseType: 'json',
+        });
 
-        return response.json();
+        return response.data;
     }
 
     async shareLibraryWithOrganisation(
@@ -267,11 +292,11 @@ export class HTTPClient {
         libraryId: string,
         toOrgId: string,
     ): Promise<void> {
-        await this.wrappedFetch(
-            'sharing library with organisation',
-            urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
-            { method: 'POST' },
-        );
+        await this.wrappedFetch({
+            intent: 'sharing library with organisation',
+            url: urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
+            method: 'POST',
+        });
     }
 
     async stopSharingLibraryWithOrganisation(
@@ -279,85 +304,94 @@ export class HTTPClient {
         libraryId: string,
         toOrgId: string,
     ): Promise<void> {
-        await this.wrappedFetch(
-            'stopping sharing library with organisation',
-            urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
-            { method: 'DELETE' },
-        );
+        await this.wrappedFetch({
+            intent: 'stopping sharing library with organisation',
+            url: urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
+            method: 'DELETE',
+        });
     }
 
     async listOrganisationsLibraryShares(
         organisationId: string,
         libraryId: string,
     ): Promise<unknown> {
-        const response = await this.wrappedFetch(
-            'listing organisations library is shared with',
-            urls.libraryOrganisationLibraryShares(organisationId, libraryId),
-            { method: 'GET' },
-        );
-        return response.json();
+        const response = await this.wrappedFetch({
+            intent: 'listing organisations library is shared with',
+            url: urls.libraryOrganisationLibraryShares(organisationId, libraryId),
+            method: 'GET',
+            responseType: 'json',
+        });
+        return response.data;
     }
 
     async promoteUserAsLibrarian(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch(
-            'promoting user as librarian',
-            urls.librarians(organisationId, userId),
-            { method: 'POST' },
-        );
+        await this.wrappedFetch({
+            intent: 'promoting user as librarian',
+            url: urls.librarians(organisationId, userId),
+            method: 'POST',
+        });
     }
 
     async demoteUserAsLibrarian(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch(
-            'demoting user as librarian',
-            urls.librarians(organisationId, userId),
-            { method: 'DELETE' },
-        );
+        await this.wrappedFetch({
+            intent: 'demoting user as librarian',
+            url: urls.librarians(organisationId, userId),
+            method: 'DELETE',
+        });
     }
 
     async uploadImage(assessmentId: string, image: string): Promise<unknown> {
         const formData = new FormData();
         formData.append('file', image);
-        const response = await this.wrappedFetch(
-            'uploading image',
-            urls.uploadImage(assessmentId),
-            { method: 'POST', body: formData },
-        );
-        return response.json();
+        const response = await this.wrappedFetch({
+            intent: 'uploading image',
+            url: urls.uploadImage(assessmentId),
+            method: 'POST',
+            data: formData,
+            responseType: 'json',
+        });
+        return response.data;
     }
 
     async setFeaturedImage(assessmentId: string, imageId: string): Promise<void> {
-        await this.wrappedJsonFetch(
-            'setting featured image',
-            urls.setFeaturedImage(assessmentId),
-            { method: 'POST', body: JSON.stringify({ id: imageId }) },
-        );
+        await this.wrappedFetch({
+            intent: 'setting featured image',
+            url: urls.setFeaturedImage(assessmentId),
+            method: 'POST',
+            headers: jsonContentTypeHeader,
+            data: { id: imageId },
+        });
     }
 
     async setImageNote(id: string, note: string): Promise<unknown> {
-        const response = await this.wrappedJsonFetch(
-            'setting image note',
-            urls.image(id),
-            { method: 'PATCH', body: JSON.stringify({ note }) },
-        );
-        return response.json();
+        const response = await this.wrappedFetch({
+            intent: 'setting image note',
+            url: urls.image(id),
+            method: 'PATCH',
+            headers: jsonContentTypeHeader,
+            data: { note },
+            responseType: 'json',
+        });
+        return response.data;
     }
 
     async deleteImage(id: string): Promise<void> {
-        await this.wrappedFetch('deleting image', urls.image(id), {
+        await this.wrappedFetch({
+            intent: 'deleting image',
+            url: urls.image(id),
             method: 'DELETE',
         });
     }
 
     async generateReport(organisationId: string, context: unknown): Promise<Blob> {
-        const response = await this.wrappedJsonFetch(
-            'generating report',
-            urls.report(organisationId),
-            {
-                method: 'POST',
-                body: JSON.stringify(context),
-            },
-        );
-
-        return response.blob();
+        const response = await this.wrappedFetch({
+            intent: 'generating report',
+            url: urls.report(organisationId),
+            method: 'POST',
+            headers: jsonContentTypeHeader,
+            data: context,
+            responseType: 'blob',
+        });
+        return response.data;
     }
 }
