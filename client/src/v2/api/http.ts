@@ -105,14 +105,14 @@ export class HTTPClient {
 
     async listLibraries(): Promise<unknown> {
         const response = await this.wrappedFetch('listing libraries', urls.libraries(), {
-            method: 'get',
+            method: 'GET',
         });
         return response.json();
     }
 
     async updateLibrary(libraryId: string, updates: unknown): Promise<void> {
         await this.wrappedJsonFetch('updating library', urls.library(libraryId), {
-            method: 'patch',
+            method: 'PATCH',
             body: JSON.stringify(updates),
         });
     }
@@ -122,7 +122,7 @@ export class HTTPClient {
             'adding item to library',
             urls.libraryItems(libraryId),
             {
-                method: 'post',
+                method: 'POST',
                 body: JSON.stringify(data),
             },
         );
@@ -137,7 +137,7 @@ export class HTTPClient {
             'updating item in library',
             urls.libraryItem(libraryId, tag),
             {
-                method: 'put',
+                method: 'PUT',
                 body: JSON.stringify(updates),
             },
         );
@@ -145,7 +145,7 @@ export class HTTPClient {
 
     async deleteLibrary(libraryId: string): Promise<void> {
         await this.wrappedFetch('deleting library', urls.library(libraryId), {
-            method: 'delete',
+            method: 'DELETE',
         });
     }
 
@@ -153,7 +153,7 @@ export class HTTPClient {
         await this.wrappedFetch(
             'deleting item from library',
             urls.libraryItem(libraryId, tag),
-            { method: 'delete' },
+            { method: 'DELETE' },
         );
     }
 
@@ -163,7 +163,7 @@ export class HTTPClient {
             organisationId !== undefined
                 ? urls.organisationAssessments(organisationId)
                 : urls.assessments(),
-            { method: 'get' },
+            { method: 'GET' },
         );
         const json: unknown = await response.json();
         return listAssessmentSchema.parse(camelise(json));
@@ -173,14 +173,14 @@ export class HTTPClient {
         const response = await this.wrappedFetch(
             'getting assessment',
             urls.assessment(id),
-            { method: 'get' },
+            { method: 'GET' },
         );
         return response.json();
     }
 
     async updateAssessment(id: string, updates: unknown): Promise<void> {
         await this.wrappedJsonFetch('updating assessment', urls.assessment(id), {
-            method: 'patch',
+            method: 'PATCH',
             body: JSON.stringify(updates),
         });
     }
@@ -196,7 +196,7 @@ export class HTTPClient {
                 ? urls.organisationAssessments(organisationId)
                 : urls.assessments(),
             {
-                method: 'post',
+                method: 'POST',
                 body: JSON.stringify({ name, description }),
             },
         );
@@ -207,14 +207,14 @@ export class HTTPClient {
         const response = await this.wrappedFetch(
             'duplicating assessment',
             urls.duplicateAssessment(id),
-            { method: 'post' },
+            { method: 'POST' },
         );
         return response.json();
     }
 
     async deleteAssessment(id: string): Promise<void> {
         await this.wrappedFetch('deleting assessment', urls.assessment(id), {
-            method: 'delete',
+            method: 'DELETE',
         });
     }
 
@@ -222,27 +222,27 @@ export class HTTPClient {
         const response = await this.wrappedFetch(
             'listing organisations',
             urls.organisations(),
-            { method: 'get' },
+            { method: 'GET' },
         );
         return response.json();
     }
 
     async listUsers(): Promise<unknown> {
         const response = await this.wrappedFetch('listing users', urls.users(), {
-            method: 'get',
+            method: 'GET',
         });
         return response.json();
     }
 
     async addMember(organisationId: string, userId: string): Promise<void> {
         await this.wrappedFetch('adding member', urls.members(organisationId, userId), {
-            method: 'post',
+            method: 'POST',
         });
     }
 
     async removeMember(organisationId: string, userId: string): Promise<void> {
         await this.wrappedFetch('removing member', urls.members(organisationId, userId), {
-            method: 'delete',
+            method: 'DELETE',
         });
     }
 
@@ -253,7 +253,7 @@ export class HTTPClient {
                 ? urls.organisationLibraries(organisationId)
                 : urls.libraries(),
             {
-                method: 'post',
+                method: 'POST',
                 body: JSON.stringify(libraryData),
             },
         );
@@ -269,7 +269,7 @@ export class HTTPClient {
         await this.wrappedFetch(
             'sharing library with organisation',
             urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
-            { method: 'post' },
+            { method: 'POST' },
         );
     }
 
@@ -281,7 +281,7 @@ export class HTTPClient {
         await this.wrappedFetch(
             'stopping sharing library with organisation',
             urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
-            { method: 'delete' },
+            { method: 'DELETE' },
         );
     }
 
@@ -292,7 +292,7 @@ export class HTTPClient {
         const response = await this.wrappedFetch(
             'listing organisations library is shared with',
             urls.libraryOrganisationLibraryShares(organisationId, libraryId),
-            { method: 'get' },
+            { method: 'GET' },
         );
         return response.json();
     }
@@ -301,7 +301,7 @@ export class HTTPClient {
         await this.wrappedFetch(
             'promoting user as librarian',
             urls.librarians(organisationId, userId),
-            { method: 'post' },
+            { method: 'POST' },
         );
     }
 
@@ -309,7 +309,7 @@ export class HTTPClient {
         await this.wrappedFetch(
             'demoting user as librarian',
             urls.librarians(organisationId, userId),
-            { method: 'delete' },
+            { method: 'DELETE' },
         );
     }
 
@@ -319,7 +319,7 @@ export class HTTPClient {
         const response = await this.wrappedFetch(
             'uploading image',
             urls.uploadImage(assessmentId),
-            { method: 'post', body: formData },
+            { method: 'POST', body: formData },
         );
         return response.json();
     }
@@ -328,7 +328,7 @@ export class HTTPClient {
         await this.wrappedJsonFetch(
             'setting featured image',
             urls.setFeaturedImage(assessmentId),
-            { method: 'post', body: JSON.stringify({ id: imageId }) },
+            { method: 'POST', body: JSON.stringify({ id: imageId }) },
         );
     }
 
@@ -336,14 +336,14 @@ export class HTTPClient {
         const response = await this.wrappedJsonFetch(
             'setting image note',
             urls.image(id),
-            { method: 'patch', body: JSON.stringify({ note }) },
+            { method: 'PATCH', body: JSON.stringify({ note }) },
         );
         return response.json();
     }
 
     async deleteImage(id: string): Promise<void> {
         await this.wrappedFetch('deleting image', urls.image(id), {
-            method: 'delete',
+            method: 'DELETE',
         });
     }
 
@@ -352,7 +352,7 @@ export class HTTPClient {
             'generating report',
             urls.report(organisationId),
             {
-                method: 'post',
+                method: 'POST',
                 body: JSON.stringify(context),
             },
         );
