@@ -77,6 +77,12 @@ class BarChart(BaseModel):
         return v
 
     @root_validator
+    def _validate(cls, values):
+        cls._bins_must_all_have_same_num_of_categories(cls, values)
+        cls._no_mixed_negative_and_positive_within_category(cls, values)
+        return values
+
+    @staticmethod
     def _bins_must_all_have_same_num_of_categories(cls, values):
         bins = values.get("bins")
         category_labels = values.get("category_labels")
@@ -98,9 +104,7 @@ class BarChart(BaseModel):
                     f"{reason}, but instead it has {len(bin.data)}"
                 )
 
-        return values
-
-    @root_validator
+    @staticmethod
     def _no_mixed_negative_and_positive_within_category(cls, values):
         """Ensure that all data points in a category are either positive or negative."""
         stacked = values.get("stacked")
@@ -132,8 +136,6 @@ class BarChart(BaseModel):
                     raise ValueError(
                         f"Mixed positive and negative values in category {cat_id}"
                     )
-
-        return values
 
     class Config:
         alias_generator = to_camel

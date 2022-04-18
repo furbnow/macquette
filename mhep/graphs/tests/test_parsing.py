@@ -61,3 +61,26 @@ def test_mixed_positive_and_negative_within_same_category():
     assert "Mixed positive and negative values in category index 1" in str(
         excinfo.value
     )
+
+
+def test_mixed_positive_and_negative_within_same_category_with_mismatching_number_of_categories():
+    input = {
+        "type": "bar",
+        "stacked": True,
+        "units": "none",
+        "bins": [
+            {
+                "label": "One",
+                "data": [10, 2, 3],
+            },
+            {
+                "label": "Two",
+                "data": [11],
+            },
+        ],
+    }
+
+    with pytest.raises(ValueError) as excinfo:
+        parse(input)
+
+    assert "Bin 'Two' should have 3 item(s) of data" in str(excinfo.value)
