@@ -58,6 +58,7 @@ type BarChart = {
     units: string;
     bins: { label: string; data: number[] }[];
     categoryLabels?: string[];
+    categoryColours?: string[];
     lines?: Line[];
     areas?: ShadedArea[];
 };
@@ -99,6 +100,7 @@ const heatBalance = (project: ProjectData, scenarioIds: string[]): BarChart => (
         'Fabric losses',
         'Ventilation and infiltration losses',
     ],
+    categoryColours: ['#e89d25', '#f5bd76', '#4286f4', '#68ab20', '#b5d490'],
 });
 
 const spaceHeatingDemand = (project: ProjectData, scenarioIds: string[]): BarChart => ({
@@ -115,6 +117,7 @@ const spaceHeatingDemand = (project: ProjectData, scenarioIds: string[]): BarCha
         'With standardised heating pattern',
         'With your current heating pattern',
     ],
+    categoryColours: ['#9cbdfc', '#4286f4'],
     lines: [{ value: 120, label: 'UK average' }],
     areas: [{ label: 'Target', interval: [20, 70] }],
 });
