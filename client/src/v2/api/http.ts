@@ -1,5 +1,5 @@
 import { urls } from './urls';
-import { listAssessmentSchema } from './schemas';
+import { listAssessmentSchema, createAssessmentSchema } from './schemas';
 import type { AssessmentMetadata } from './schemas';
 
 function csrfSafeMethod(method: string) {
@@ -157,7 +157,7 @@ export class HTTPClient {
         );
     }
 
-    async listAssessments(organisationId?: string): Promise<AssessmentMetadata> {
+    async listAssessments(organisationId?: string): Promise<AssessmentMetadata[]> {
         const response = await this.wrappedFetch(
             'listing assessments',
             organisationId !== undefined
@@ -189,7 +189,7 @@ export class HTTPClient {
         name: string,
         description: string,
         organisationId?: string,
-    ): Promise<unknown> {
+    ): Promise<AssessmentMetadata> {
         const response = await this.wrappedJsonFetch(
             'duplicating assessment',
             organisationId !== undefined
@@ -200,7 +200,8 @@ export class HTTPClient {
                 body: JSON.stringify({ name, description }),
             },
         );
-        return response.json();
+        const json: unknown = await response.json();
+        return createAssessmentSchema.parse(camelise(json));
     }
 
     async duplicateAssessment(id: string): Promise<unknown> {

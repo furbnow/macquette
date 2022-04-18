@@ -32,5 +32,6 @@ export const assessmentMetadataSchema = z.object({
     organisation: z.union([z.null(), organisationMetaSchema]),
 });
 
+export const createAssessmentSchema = assessmentMetadataSchema;
 export const listAssessmentSchema = z.array(assessmentMetadataSchema);
-export type AssessmentMetadata = z.infer<typeof listAssessmentSchema>;
+export type AssessmentMetadata = z.infer<typeof assessmentMetadataSchema>;
