@@ -217,14 +217,14 @@ export class HTTPClient {
         return createAssessmentSchema.parse(camelise(response.data));
     }
 
-    async duplicateAssessment(id: string): Promise<unknown> {
+    async duplicateAssessment(id: string): Promise<AssessmentMetadata> {
         const response = await this.wrappedFetch({
             intent: 'duplicating assessment',
             url: urls.duplicateAssessment(id),
             method: 'POST',
             responseType: 'json',
         });
-        return response.data;
+        return createAssessmentSchema.parse(camelise(response.data));
     }
 
     async deleteAssessment(id: string): Promise<void> {
