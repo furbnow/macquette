@@ -6,6 +6,14 @@
     --brown-3: #EEECE5;
     --brown-4: rgb(242, 242, 242);
 
+    --beige-000: #635647;
+    --beige-200: #82786c; /* rgba(99,86,71,0.8) */
+    --beige-400: #a19a91;
+    --beige-500: #b1aba3;
+    --beige-700: #d0ccc8;
+    --beige-800: #e0ddda; /* rgba(99,86,71,0.2) */
+    --beige-900: rgb(238, 236, 229);
+
     --warning-yellow: #fcf8e3;
 }
 
@@ -475,4 +483,29 @@ body .modal {
     width: 560px;
     /* must be half of the width, minus scrollbar on the left (30px) */
     margin-left: -280px;
+}
+
+.form-row {
+    display: flex;
+    align-items: first baseline;
+    min-height: 40px;
+    --form-row-width: 38ch;
+}
+
+.form-row > :first-child {
+    width: var(--form-row-width);
+    padding-right: 1ch;
+    padding-bottom: 10px;
+}
+
+.form-row select, .form-row input, .form-row label {
+    margin-bottom: 0;
+}
+
+.form-row i {
+    margin-left: 1ch;
+}
+
+.form-row select {
+    width: auto
 }
