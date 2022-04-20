@@ -27,7 +27,7 @@ The following global variables are present and available for use.
    name, status and scenarios data
 -  project: object that has as properties all the scenarios in the
    assessment. And for each scenario, all its data
--  scenario :string, scenario currently displayed
+-  scenario: string, scenario currently displayed
 -  page: current view loaded, if showing a view
 -  datasets: available as part of openBEM, datasets from SAP2012 and
    more like monthly average temperature, fuel costs and emissions, etc
@@ -175,6 +175,23 @@ TypeScript and dependencies, which is transpiled and bundled by ``esbuild`` and
 the resulting bundle and sourcemaps are placed in ``<django
 app>/static/js_generated``. Different exports files are bundled for the
 different Django apps which make up the versions of Macquette.
+
+In the `client/` directory:
+
+.. code::
+
+  scripts/              # Various helpful dev scripts
+  src/                  # All client-side JS
+    dev/                # Code from the abandoned "dev" version
+    v2/                 # Code for the rolling-release "v2" version
+    exports-dev.tsx     # Entry point for "dev"
+    exports-v2.tsx      # Entry point for "v2"
+  test/                 # Tests
+    dev/                #   for "dev"
+    v2/                 #   for "v2"
+    helpers/            # Helper functions used in tests
+
+In the Django app:
 
 .. code::
 

@@ -1,6 +1,11 @@
 Versioning scheme
 =================
 
+.. warning::
+    This documentation is out of date and needs rewriting to reflect the
+    decision to abandon "dev" and move to a rolling release model based
+    on "v2".
+
 It is important for professional use of Macquette that data in
 assessments that were completed in the past do not become unusable.
 The data that went into making assessments must remain accessible and

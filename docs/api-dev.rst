@@ -1,6 +1,11 @@
 dev API endpoints
 =================
 
+.. warning::
+    This documentation is out of date and needs rewriting to reflect the
+    decision to abandon "dev" and move to a rolling release model based
+    on "v2".
+
 All endpoints start with ``/dev/api`` e.g.
 ``http://localhost:9090/dev/api/assessments/``.
 

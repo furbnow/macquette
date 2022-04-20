@@ -1,6 +1,11 @@
 Reports
 =======
 
+.. warning::
+    This documentation is out of date and needs rewriting to reflect the
+    early 2022 changes to report generation.
+
+
 How they works
 --------------
 
