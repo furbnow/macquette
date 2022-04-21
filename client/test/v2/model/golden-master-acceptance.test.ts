@@ -284,6 +284,11 @@ const normaliseScenario = (scenario: any) => {
         LAC: any;
         appliancelist?: unknown;
         ventilation?: any;
+        space_heating?: any;
+        energy_requirements?: {
+            space_heating?: any;
+            space_cooling?: any;
+        };
     };
 
     // SHW normalisation
@@ -345,6 +350,36 @@ const normaliseScenario = (scenario: any) => {
         } else {
             delete ventilation.structural_infiltration_from_test;
         }
+    }
+
+    // Space heating
+
+    // Becaues the space heating module involves subtracting floating point
+    // numbers of arbitrary magnitude, it is easy for FP precision errors to
+    // become significant.
+    //
+    // One example is the annual space heating and cooling demands, which are
+    // compared to 0 to decide whether to set certain keys. Consider the
+    // following example:
+    //
+    // Total losses = 40,000.00001
+    // Useful gains = 40,000
+    // Space heating demand = 0.00001
+    // Demand > 0, therefore add the key.
+    //
+    // The new (or legacy) model may have both of these numbers as exactly
+    // equal and therefore demand = 0, therefore do not add the key.
+    //
+    // Therefore we check the annual space heating and cooling demands here,
+    // and if they are *close to* 0, we remove the key so that they cannot be
+    // compared.
+
+    const { space_heating } = castScenario;
+    if (compareFloats()(space_heating.annual_heating_demand, 0)) {
+        delete castScenario.energy_requirements?.space_heating;
+    }
+    if (compareFloats()(space_heating.annual_cooling_demand, 0)) {
+        delete castScenario.energy_requirements?.space_cooling;
     }
 
     return castScenario;
