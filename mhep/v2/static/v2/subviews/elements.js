@@ -118,9 +118,6 @@ $('#openbem').on('click', '#apply-measure-TB-modal-ok', function () {
 //We only record the original value if this is the first time we apply the measure in this scenario
     if (data.measures.thermal_bridging == undefined) {
         data.measures.thermal_bridging = {
-            original_element: {
-                value: data.fabric.thermal_bridging_yvalue
-            },
             measure: {}
         };
     }
@@ -582,9 +579,8 @@ function apply_measure(measure) {
     }
 
     // The first time we apply a measure to an element we record its original stage
-    if (data.fabric.measures[measure.item_id] == undefined) { // If it is the first time we apply a measure to this element iin this scenario
+    if (data.fabric.measures[measure.item_id] === undefined) { // If it is the first time we apply a measure to this element iin this scenario
         data.fabric.measures[measure.item_id] = {};
-        data.fabric.measures[measure.item_id].original_element = cloneObj(data.fabric.elements[measure.row]);
     }
 
     // measure.item only has one element, we do it this way to the "property", in this case somemthing like "CV1" oof "ROOF1"
