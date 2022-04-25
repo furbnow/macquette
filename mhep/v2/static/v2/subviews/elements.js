@@ -319,74 +319,7 @@ $('#openbem').on('click', '.calculate-floor-uvalue', function () {
         }
     });
 });
-$('#openbem').on('click', '.move-up', function () {
-    var original_element = JSON.parse($(this).attr('item'));
-    var index_original_element = $(this).attr('row');
-    var move = false;
-    // Find next item  of the same type up
-    for (var i = 1.0 * index_original_element - 1; i >= 0; i--) {
-        if (original_element.type == 'Wall' || isPartyWall(original_element.type) || isFloor(original_element.type)) {
-            if (original_element.type == data.fabric.elements[i].type) {
-                move = true;
-                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
-                data.fabric.elements[i] = original_element;
-                break;
-            }
-        } else if (isRoofOrLoft(original_element.type)) {
-            move = true;
-            if (isRoofOrLoft(data.fabric.elements[i].type)) {
-                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
-                data.fabric.elements[i] = original_element;
-                break;
-            }
-        } else {
-            if (isOpening(data.fabric.elements[i].type)) {
-                move = true;
-                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
-                data.fabric.elements[i] = original_element;
-                break;
-            }
-        }
-    }
-    if (move == true) {
-        elements_initUI();
-        update();
-    }
-});
-$('#openbem').on('click', '.move-down', function () {
-    var original_element = JSON.parse($(this).attr('item'));
-    var index_original_element = $(this).attr('row');
-    var move = false;
-    // Find next item  of the same type up
-    for (var i = 1.0 * index_original_element + 1; i < data.fabric.elements.length; i++) {
-        if (original_element.type == 'Wall' || isPartyWall(original_element.type) || isFloor(original_element.type)) {
-            if (original_element.type == data.fabric.elements[i].type) {
-                move = true;
-                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
-                data.fabric.elements[i] = original_element;
-                break;
-            }
-        } else if (isRoofOrLoft(original_element.type)) {
-            move = true;
-            if (isRoofOrLoft(data.fabric.elements[i].type)) {
-                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
-                data.fabric.elements[i] = original_element;
-                break;
-            }
-        } else {
-            if (isOpening(data.fabric.elements[i].type)) {
-                move = true;
-                data.fabric.elements[index_original_element] = cloneObj(data.fabric.elements[i]);
-                data.fabric.elements[i] = original_element;
-                break;
-            }
-        }
-    }
-    if (move == true) {
-        elements_initUI();
-        update();
-    }
-});
+
 
 
 // --------------------------------------------------------
