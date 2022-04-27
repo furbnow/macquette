@@ -30,6 +30,7 @@
         "bottleneck": "^2.19.5",
         "chokidar-cli": "^3.0.0",
         "concurrently": "^6.0.2",
+        "csv": "^6.0.5",
         "eslint": "^8.2.0",
         "eslint-config-prettier": "^8.1.0",
         "eslint-plugin-import": "^2.22.1",
