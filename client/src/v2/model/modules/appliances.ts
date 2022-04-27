@@ -1,4 +1,4 @@
-import { LegacyScenario } from '../../legacy-state-validators/scenario';
+import { Scenario } from '../../data-schemas/scenario';
 import {
     AppliancesSAPDependencies,
     AppliancesSAP,
@@ -15,9 +15,7 @@ export type AppliancesInput =
           type: 'carbon coop';
       };
 
-export const extractAppliancesInputFromLegacy = (
-    scenario: LegacyScenario,
-): AppliancesInput => {
+export const extractAppliancesInputFromLegacy = (scenario: Scenario): AppliancesInput => {
     switch (scenario.LAC_calculation_type) {
         case 'SAP':
         case undefined:

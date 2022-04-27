@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-import { stringyFloatSchema, stringyIntegerSchema } from './numericValues';
+import {
+    stringyFloatSchema,
+    stringyIntegerSchema,
+} from '../helpers/legacy-numeric-values';
 
 const subtractFrom = z.union([
     z.number(),

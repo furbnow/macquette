@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { legacyScenarioSchema } from '../legacy-state-validators/scenario';
+import { scenarioSchema } from '../data-schemas/scenario';
 import { datasets } from './datasets/legacy'
 import { setBlankLegacyOutputs, setDefaultLegacyInputs } from './modules/legacy-initialisation';
 import { emulateJsonRoundTrip } from '../helpers/emulate-json-round-trip';
@@ -53,7 +53,7 @@ let calc = {data: {}};
  *
  ******************************************************************/
 calc.run = function (datain) {
-    const validatedScenario = legacyScenarioSchema.parse(datain)
+    const validatedScenario = scenarioSchema.parse(datain)
     const combinedModules = new CombinedModules(extractInputFromLegacy(validatedScenario))
     calc.data = datain;
     setDefaultLegacyInputs(calc.data)
@@ -1664,7 +1664,7 @@ calc.fabric_energy_efficiency = function (data) {
     // N/A
 
     // Run the model
-    const validatedScenarioFEE = legacyScenarioSchema.parse(data_FEE)
+    const validatedScenarioFEE = scenarioSchema.parse(data_FEE)
     const combinedModules = new CombinedModules(extractInputFromLegacy(validatedScenarioFEE))
     setDefaultLegacyInputs(data_FEE)
     setBlankLegacyOutputs(data_FEE)

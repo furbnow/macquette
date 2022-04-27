@@ -1,17 +1,14 @@
 import { cloneDeep } from 'lodash';
 
+import { coalesceEmptyString } from '../data-schemas/helpers/legacy-numeric-values';
+import { Scenario, scenarioSchema } from '../data-schemas/scenario';
 import { isRecord } from '../helpers/is-record';
-import { coalesceEmptyString } from '../legacy-state-validators/numericValues';
-import {
-    legacyScenarioSchema,
-    LegacyScenario,
-} from '../legacy-state-validators/scenario';
 import { calcRun } from '../model/model';
 
 /** Legacy project data wrapped with a safe accessor function */
 class ProjectData {
     private data: Record<string | symbol, unknown>;
-    private cache: Record<string, LegacyScenario> = {};
+    private cache: Record<string, Scenario> = {};
 
     constructor(data: unknown) {
         if (!isRecord(data)) {
@@ -20,7 +17,7 @@ class ProjectData {
         this.data = data;
     }
 
-    scenario(id: string): LegacyScenario {
+    scenario(id: string): Scenario {
         if (!(id in this.data)) {
             throw new Error(`No scenario with ID ${id}`);
         }
@@ -30,7 +27,7 @@ class ProjectData {
                 return result;
             }
         }
-        const parsed = legacyScenarioSchema.parse(this.data[id]);
+        const parsed = scenarioSchema.parse(this.data[id]);
         this.cache[id] = parsed;
         return parsed;
     }

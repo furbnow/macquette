@@ -2,10 +2,7 @@ import { mapValues } from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {
-    LegacyScenario,
-    legacyScenarioSchema,
-} from '../../legacy-state-validators/scenario';
+import { Scenario, scenarioSchema } from '../../data-schemas/scenario';
 import { CommonState, commonStateReducer, initialCommonState } from '../common-state';
 import { ModuleAction, ModuleName, modules, ModuleStates } from '../modules';
 import { externals } from './shim';
@@ -34,7 +31,7 @@ export type UiModule<StateT> = {
 
 export type ExternalDataUpdateAction = {
     type: 'external data update';
-    data: LegacyScenario;
+    data: Scenario;
 };
 export type AppState = {
     dirty: boolean;
@@ -94,7 +91,7 @@ export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
     store.subscribe(render);
     return {
         update: () => {
-            const parsedData = legacyScenarioSchema.safeParse(externals().data);
+            const parsedData = scenarioSchema.safeParse(externals().data);
             if (!parsedData.success) {
                 console.error(
                     'Scenario validation failed! Refusing to dispatch external data update action',

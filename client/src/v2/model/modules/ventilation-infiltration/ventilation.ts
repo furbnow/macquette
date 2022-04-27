@@ -1,8 +1,8 @@
+import { coalesceEmptyString } from '../../../data-schemas/helpers/legacy-numeric-values';
+import { Scenario } from '../../../data-schemas/scenario';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
 import { mean } from '../../../helpers/mean';
 import { sum } from '../../../helpers/sum';
-import { coalesceEmptyString } from '../../../legacy-state-validators/numericValues';
-import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Month } from '../../enums/month';
 import { VentilationPoint } from './common-types';
 
@@ -49,7 +49,7 @@ export type VentilationDependencies = {
 };
 
 export const extractVentilationInputFromLegacy = (
-    scenario: LegacyScenario,
+    scenario: Scenario,
 ): VentilationInput => {
     const { ventilation } = scenario;
     const extractVentilationPoints =

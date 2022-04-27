@@ -33,5 +33,13 @@ export const numberWithNaN = z.custom<number>(
     (val) => ({ message: `Expected number (including NaN), received ${inspect(val)}` }),
 );
 
+export const nullableStringyFloat = z.union([
+    z.literal(null),
+    z.literal('null').transform(() => null),
+    z.literal('na').transform(() => null),
+    z.literal('n/a').transform(() => null),
+    stringyFloatSchema,
+]);
+
 export const coalesceEmptyString = <T, U>(val: T | '', default_: U) =>
     val === '' ? default_ : val;

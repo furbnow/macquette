@@ -1,12 +1,12 @@
 import { cloneDeep } from 'lodash';
 import React from 'react';
 
+import { Scenario } from '../../data-schemas/scenario';
+import { SolarHotWaterV1 } from '../../data-schemas/scenario/solar-hot-water';
 import { nanToNull, orNullish } from '../../helpers/null-wrapping';
 import { PropsOf } from '../../helpers/props-of';
 import { DeepPartial, safeMerge, DeepWith } from '../../helpers/safe-merge';
 import { Shadow } from '../../helpers/shadow-object-type';
-import { LegacyScenario } from '../../legacy-state-validators/scenario';
-import { SolarHotWaterV1 } from '../../legacy-state-validators/solar-hot-water';
 import { Orientation } from '../../model/enums/orientation';
 import { Overshading } from '../../model/enums/overshading';
 import { CheckboxInput } from '../input-components/checkbox';
@@ -60,7 +60,7 @@ export type SolarHotWaterAction = MergeInputAction;
 const extractOutputsFromLegacy = ({
     SHW,
     water_heating,
-}: LegacyScenario): SolarHotWaterState['outputs'] => {
+}: Scenario): SolarHotWaterState['outputs'] => {
     return {
         aStar: nanToNull(SHW?.a) ?? noOutput,
         collectorPerformanceRatio:
@@ -85,7 +85,7 @@ const extractOutputsFromLegacy = ({
 const extractInputsFromLegacy = ({
     SHW,
     use_SHW,
-}: LegacyScenario): SolarHotWaterState['inputs'] => {
+}: Scenario): SolarHotWaterState['inputs'] => {
     const refactoredScenarioInputs: RefactoredScenarioInputs =
         SHW?.input ?? solarHotWaterModule.initialState.inputs;
     const moduleEnabled =

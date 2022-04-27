@@ -1,5 +1,5 @@
-import { coalesceEmptyString } from '../../legacy-state-validators/numericValues';
-import { LegacyScenario } from '../../legacy-state-validators/scenario';
+import { coalesceEmptyString } from '../../data-schemas/helpers/legacy-numeric-values';
+import { Scenario } from '../../data-schemas/scenario';
 import { defaultFuels } from '../datasets';
 import { ModelError } from '../error';
 
@@ -13,7 +13,7 @@ export type Fuel = {
 
 export type FuelsDict = Record<string, Fuel>;
 
-export const extractFuelsInputFromLegacy = (scenario: LegacyScenario): FuelsDict => {
+export const extractFuelsInputFromLegacy = (scenario: Scenario): FuelsDict => {
     const legacyFuels = Object.assign({}, defaultFuels, scenario.fuels);
     type LegacyFuelData = typeof legacyFuels[''];
     type FuelData = FuelsDict[''];

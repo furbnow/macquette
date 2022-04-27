@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import { pick } from 'lodash';
 
-import { SolarHotWaterV1 } from '../../../../src/v2/legacy-state-validators/solar-hot-water';
+import { SolarHotWaterV1 } from '../../../../src/v2/data-schemas/scenario/solar-hot-water';
 import { solarHotWaterOvershadingFactor } from '../../../../src/v2/model/datasets';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import {

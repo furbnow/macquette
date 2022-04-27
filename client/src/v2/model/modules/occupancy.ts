@@ -1,5 +1,5 @@
+import { Scenario } from '../../data-schemas/scenario';
 import { cache } from '../../helpers/cache-decorators';
-import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { ModelError } from '../error';
 
 export type OccupancyInput = {
@@ -9,7 +9,7 @@ export type OccupancyInput = {
 export const extractOccupancyInputFromLegacy = ({
     use_custom_occupancy,
     custom_occupancy,
-}: LegacyScenario): OccupancyInput => {
+}: Scenario): OccupancyInput => {
     if (use_custom_occupancy === true) {
         if (custom_occupancy === undefined || custom_occupancy === '') {
             throw new ModelError(

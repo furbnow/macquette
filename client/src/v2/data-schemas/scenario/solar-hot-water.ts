@@ -1,10 +1,14 @@
 import { z } from 'zod';
 
-import { zodNullableObject } from '../helpers/zod-nullable-object';
-import { solarHotWaterOvershadingFactorReverse } from '../model/datasets';
-import { Orientation } from '../model/enums/orientation';
-import { Overshading } from '../model/enums/overshading';
-import { coalesceEmptyString, numberWithNaN, stringyFloatSchema } from './numericValues';
+import { solarHotWaterOvershadingFactorReverse } from '../../model/datasets';
+import { Orientation } from '../../model/enums/orientation';
+import { Overshading } from '../../model/enums/overshading';
+import {
+    coalesceEmptyString,
+    numberWithNaN,
+    stringyFloatSchema,
+} from '../helpers/legacy-numeric-values';
+import { zodNullableObject } from '../helpers/nullable-object';
 
 const outputsLegacy = z
     .object({

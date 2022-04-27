@@ -1,10 +1,10 @@
 import fc from 'fast-check';
 import { cloneDeep, pick } from 'lodash';
 
+import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
+import { SolarHotWaterV1 } from '../../../src/v2/data-schemas/scenario/solar-hot-water';
 import { assertNever } from '../../../src/v2/helpers/assertNever';
 import { isTruthy } from '../../../src/v2/helpers/is-truthy';
-import { legacyScenarioSchema } from '../../../src/v2/legacy-state-validators/scenario';
-import { SolarHotWaterV1 } from '../../../src/v2/legacy-state-validators/solar-hot-water';
 import { calcRun } from '../../../src/v2/model/model';
 import { FcInfer } from '../../helpers/arbitraries';
 import { CompareFloatParams, compareFloats } from '../../helpers/fuzzy-float-equality';
@@ -79,7 +79,7 @@ describe('golden master acceptance tests', () => {
     test('scenario schema validates fast-check arbitrary', () => {
         fc.assert(
             fc.property(arbScenarioInputs(), (scenario) => {
-                expect(() => legacyScenarioSchema.parse(scenario)).not.toThrow();
+                expect(() => scenarioSchema.parse(scenario)).not.toThrow();
             }),
         );
     });

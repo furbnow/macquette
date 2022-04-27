@@ -1,8 +1,12 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 
-import type { AssessmentMetadata } from './schemas';
-import { createAssessmentSchema, listAssessmentSchema } from './schemas';
+import type { AssessmentMetadata } from '../data-schemas/api-metadata';
+import {
+    createAssessmentSchema,
+    listAssessmentSchema,
+} from '../data-schemas/api-metadata';
+import { Library, listLibrariesSchema } from '../data-schemas/libraries';
 import { urls } from './urls';
 
 export function cameliseStr(str: string): string {
@@ -40,23 +44,49 @@ const jsonContentTypeHeader = { 'content-type': 'application/json' };
 export class HTTPClient {
     private axios: AxiosInstance;
 
-    constructor() {
-        const cookieJar = new URLSearchParams(document.cookie.replace(/; /g, '&'));
-        const csrfToken = cookieJar.get('csrftoken');
-        if (csrfToken === null || csrfToken === '') {
-            throw new Error('No CSRF token in document cookies');
+    constructor(nodeOptions?: { sessionId: string; baseURL: string }) {
+        let perEnvironmentAxiosOptionsMixin: AxiosRequestConfig<unknown>;
+        switch (jsEnvironment()) {
+            case 'node': {
+                if (nodeOptions === undefined) {
+                    throw new Error('If running in node.js, must pass options');
+                }
+                perEnvironmentAxiosOptionsMixin = {
+                    baseURL: nodeOptions.baseURL,
+                    headers: {
+                        cookie: `sessionid=${nodeOptions.sessionId}`,
+                    },
+                };
+                break;
+            }
+            case 'browser': {
+                if (nodeOptions !== undefined) {
+                    throw new Error('Must not specify nodeOptions in a browser context');
+                }
+                const cookieJar = new URLSearchParams(
+                    document.cookie.replace(/; /g, '&'),
+                );
+                const csrfToken = cookieJar.get('csrftoken');
+                if (csrfToken === null || csrfToken === '') {
+                    throw new Error('No CSRF token in document cookies');
+                }
+                perEnvironmentAxiosOptionsMixin = {
+                    headers: {
+                        'x-csrftoken': csrfToken,
+                    },
+                };
+                break;
+            }
         }
 
         this.axios = axios.create({
             responseType: 'text',
-            headers: {
-                'x-csrftoken': csrfToken,
-            },
             transitional: {
                 silentJSONParsing: false,
                 forcedJSONParsing: false,
                 clarifyTimeoutError: true,
             },
+            ...perEnvironmentAxiosOptionsMixin,
         });
     }
 
@@ -100,12 +130,19 @@ export class HTTPClient {
                 msg += error.toString();
             }
 
-            alert(msg);
+            switch (jsEnvironment()) {
+                case 'node':
+                    console.error(msg);
+                    break;
+                case 'browser':
+                    alert(msg);
+                    break;
+            }
             throw new Error(msg);
         }
     }
 
-    async listLibraries(): Promise<unknown> {
+    async listLibraries(): Promise<Library[]> {
         const response = await this.wrappedFetch({
             intent: 'listing libraries',
             url: urls.libraries(),
@@ -113,7 +150,7 @@ export class HTTPClient {
             headers: jsonContentTypeHeader,
             responseType: 'json',
         });
-        return response.data;
+        return listLibrariesSchema.parse(response.data);
     }
 
     async updateLibrary(libraryId: string, updates: unknown): Promise<void> {
@@ -395,4 +432,8 @@ export class HTTPClient {
         });
         return response.data;
     }
+}
+
+function jsEnvironment(): 'node' | 'browser' {
+    return typeof window === 'undefined' ? 'node' : 'browser';
 }

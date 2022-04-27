@@ -1,7 +1,7 @@
+import { Scenario } from '../../../data-schemas/scenario';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
 import { isTruthy } from '../../../helpers/is-truthy';
 import { sum } from '../../../helpers/sum';
-import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
 import { Fuel, FuelInput } from './fuel';
@@ -16,7 +16,7 @@ export type LightingSAPInput = {
 };
 
 export const extractLightingSAPInputFromLegacy = (
-    scenario: LegacyScenario,
+    scenario: Scenario,
 ): LightingSAPInput => {
     const { LAC } = scenario;
     // undefined => 1; empty string => 0... obviously

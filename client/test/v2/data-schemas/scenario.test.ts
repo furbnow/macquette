@@ -3,16 +3,16 @@ import assert from 'assert';
 import * as fc from 'fast-check';
 import { cloneDeep } from 'lodash';
 
+import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { emulateJsonRoundTrip } from '../../../src/v2/helpers/emulate-json-round-trip';
-import { legacyScenarioSchema } from '../../../src/v2/legacy-state-validators/scenario';
 import { calcRun } from '../../../src/v2/model/model';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import { arbScenarioInputs } from '../model/arbitraries/scenario';
 
-describe('legacy scenario validator', () => {
+describe('scenario validator', () => {
     describe('scenario inputs', () => {
         const testFn = (scenarioData: unknown) => {
-            expect(() => legacyScenarioSchema.parse(scenarioData)).not.toThrow();
+            expect(() => scenarioSchema.parse(scenarioData)).not.toThrow();
         };
         test.each(scenarios)('$displayName', (scenario) => {
             if (shouldSkipScenario(scenario)) {
@@ -28,7 +28,7 @@ describe('legacy scenario validator', () => {
     describe('after running calc.run', () => {
         const testFn = (scenarioData: unknown) => {
             const modelOutput = calcRun(cloneDeep(scenarioData));
-            expect(() => legacyScenarioSchema.parse(modelOutput)).not.toThrow();
+            expect(() => scenarioSchema.parse(modelOutput)).not.toThrow();
         };
         test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
         test('arbitrary', () => {
@@ -40,7 +40,7 @@ describe('legacy scenario validator', () => {
         const testFn = (scenarioData: unknown) => {
             const modelOutput = calcRun(cloneDeep(scenarioData));
             const jsonRoundTripped = emulateJsonRoundTrip(modelOutput);
-            expect(() => legacyScenarioSchema.parse(jsonRoundTripped)).not.toThrow();
+            expect(() => scenarioSchema.parse(jsonRoundTripped)).not.toThrow();
         };
         test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
         test('arbitrary', () => {
@@ -62,7 +62,7 @@ describe('legacy scenario validator', () => {
         }
 
         function validate(data: unknown) {
-            const res = legacyScenarioSchema.safeParse(data);
+            const res = scenarioSchema.safeParse(data);
             if (!res.success) {
                 // Throwing the ZodError here results in V8 running out of
                 // memory, so we fake it by logging the message and doing an

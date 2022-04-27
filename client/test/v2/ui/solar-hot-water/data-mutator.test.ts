@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import { cloneDeep } from 'lodash';
 
-import { legacyScenarioSchema } from '../../../../src/v2/legacy-state-validators/scenario';
+import { scenarioSchema } from '../../../../src/v2/data-schemas/scenario';
 import { solarHotWaterModule } from '../../../../src/v2/ui/modules/solar-hot-water';
 import { arbScenarioInputs } from '../../model/arbitraries/scenario';
 import { arbitraryState } from './arbitrary';
@@ -19,7 +19,7 @@ describe('solar hot water data mutator', () => {
             fc.property(arb, ({ state, scenarioInputs }) => {
                 const toMutate = cloneDeep(scenarioInputs);
                 solarHotWaterModule.dataMutator(toMutate, state);
-                expect(() => legacyScenarioSchema.parse(toMutate)).not.toThrow();
+                expect(() => scenarioSchema.parse(toMutate)).not.toThrow();
             }),
         );
     });

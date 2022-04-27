@@ -1,10 +1,10 @@
-import { LegacyScenario } from '../../../legacy-state-validators/scenario';
+import { Scenario } from '../../../data-schemas/scenario';
 import { windSpeed } from '../../datasets';
 import { Month } from '../../enums/month';
 import { Region } from '../../enums/region';
 
 export const extractVentilationInfiltrationCommonInputFromLegacy = (
-    scenario: LegacyScenario,
+    scenario: Scenario,
 ): VentilationInfiltrationCommonInput => ({
     numberOfSidesSheltered: scenario.ventilation?.number_of_sides_sheltered ?? 0,
 });

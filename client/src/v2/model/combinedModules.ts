@@ -1,4 +1,4 @@
-import { LegacyScenario } from '../legacy-state-validators/scenario';
+import { Scenario } from '../data-schemas/scenario';
 import { Region } from './enums/region';
 import { AirChangeRate } from './modules/air-change-rate';
 import {
@@ -71,7 +71,7 @@ export type Input = {
     cooking: CookingInput;
 };
 
-export const extractInputFromLegacy = (scenario: LegacyScenario): Input => {
+export const extractInputFromLegacy = (scenario: Scenario): Input => {
     return {
         fuels: extractFuelsInputFromLegacy(scenario),
         floors: extractFloorsInputFromLegacy(scenario),

@@ -1,7 +1,7 @@
+import { Scenario } from '../../../data-schemas/scenario';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
 import { isTruthy } from '../../../helpers/is-truthy';
 import { sum } from '../../../helpers/sum';
-import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
 import { Fuel, FuelInput } from './fuel';
@@ -12,7 +12,7 @@ export type AppliancesSAPInput = {
 };
 
 export const extractAppliancesSAPInputFromLegacy = (
-    scenario: LegacyScenario,
+    scenario: Scenario,
 ): AppliancesSAPInput => {
     const { LAC } = scenario;
     return {

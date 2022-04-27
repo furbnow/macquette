@@ -1,4 +1,4 @@
-import { LegacyScenario } from '../../legacy-state-validators/scenario';
+import { Scenario } from '../../data-schemas/scenario';
 import {
     CookingSAP,
     CookingSAPDependencies,
@@ -10,7 +10,7 @@ export type CookingInput =
     | { type: 'sap'; input: CookingSAPInput }
     | { type: 'carbon coop' };
 
-export const extractCookingInputFromLegacy = (scenario: LegacyScenario): CookingInput => {
+export const extractCookingInputFromLegacy = (scenario: Scenario): CookingInput => {
     switch (scenario.LAC_calculation_type) {
         case 'SAP':
         case undefined:

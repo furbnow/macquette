@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
+import {
+    nullableStringyFloat,
+    numberWithNaN,
+    stringyFloatSchema,
+    stringyIntegerSchema,
+} from '../helpers/legacy-numeric-values';
 import { fabric } from './fabric';
-import { numberWithNaN, stringyFloatSchema, stringyIntegerSchema } from './numericValues';
 import { solarHotWater } from './solar-hot-water';
 
 const legacyBoolean = z.union([z.literal(1).transform(() => true), z.boolean()]);
@@ -43,7 +48,7 @@ const LAC = z
     })
     .partial();
 
-export const legacyScenarioSchema = z
+export const scenarioSchema = z
     .object({
         floors,
         use_custom_occupancy: legacyBoolean,
@@ -92,18 +97,8 @@ export const legacyScenarioSchema = z
                 number_of_sides_sheltered: z.number(),
                 ventilation_type: z.enum(['NV', 'IE', 'MEV', 'PS', 'MVHR', 'MV', 'DEV']),
                 EVP: z.array(z.object({ ventilation_rate: stringyFloatSchema })),
-                system_air_change_rate: z.union([
-                    z.literal(null),
-                    z.literal('na').transform(() => null),
-                    z.literal('n/a').transform(() => null),
-                    stringyFloatSchema,
-                ]),
-                balanced_heat_recovery_efficiency: z.union([
-                    z.literal(null),
-                    z.literal('na').transform(() => null),
-                    z.literal('n/a').transform(() => null),
-                    stringyFloatSchema,
-                ]),
+                system_air_change_rate: nullableStringyFloat,
+                balanced_heat_recovery_efficiency: nullableStringyFloat,
 
                 // Outputs
                 // Only one of the structural_infiltration values is relevant,
@@ -175,4 +170,4 @@ export const legacyScenarioSchema = z
     })
     .partial();
 
-export type LegacyScenario = z.infer<typeof legacyScenarioSchema>;
+export type Scenario = z.infer<typeof scenarioSchema>;

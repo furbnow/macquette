@@ -1,7 +1,7 @@
+import { Scenario } from '../../../data-schemas/scenario';
 import { cache } from '../../../helpers/cache-decorators';
 import { isTruthy } from '../../../helpers/is-truthy';
 import { sum } from '../../../helpers/sum';
-import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
 import { Fuel as FuelsModuleFuel } from '../fuels';
@@ -12,9 +12,7 @@ export type CookingSAPInput = {
     fuels: FuelInput[];
 };
 
-export const extractCookingSAPInputFromLegacy = (
-    scenario: LegacyScenario,
-): CookingSAPInput => {
+export const extractCookingSAPInputFromLegacy = (scenario: Scenario): CookingSAPInput => {
     const { LAC } = scenario;
     return {
         energyEfficient: LAC?.energy_efficient_cooking ?? false,

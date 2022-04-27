@@ -1,13 +1,13 @@
+import { Scenario } from '../../data-schemas/scenario';
 import { cache } from '../../helpers/cache-decorators';
 import { sum } from '../../helpers/sum';
 import { zip } from '../../helpers/zip';
-import { LegacyScenario } from '../../legacy-state-validators/scenario';
 
 export type FloorsInput = {
     floors: Array<FloorSpec>;
 };
 
-export const extractFloorsInputFromLegacy = ({ floors }: LegacyScenario): FloorsInput => {
+export const extractFloorsInputFromLegacy = ({ floors }: Scenario): FloorsInput => {
     return { floors: floors ?? [] };
 };
 

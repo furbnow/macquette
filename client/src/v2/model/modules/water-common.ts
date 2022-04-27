@@ -1,7 +1,7 @@
+import { Scenario } from '../../data-schemas/scenario';
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
 import { isTruthy } from '../../helpers/is-truthy';
 import { sum } from '../../helpers/sum';
-import { LegacyScenario } from '../../legacy-state-validators/scenario';
 import { monthlyHotWaterTemperatureRise, monthlyHotWaterUseFactor } from '../datasets';
 import { Month } from '../enums/month';
 import { ModelError } from '../error';
@@ -12,7 +12,7 @@ export type WaterCommonInput = {
 };
 
 export const extractWaterCommonInputFromLegacy = (
-    scenario: LegacyScenario,
+    scenario: Scenario,
 ): WaterCommonInput => {
     const {
         low_water_use_design,

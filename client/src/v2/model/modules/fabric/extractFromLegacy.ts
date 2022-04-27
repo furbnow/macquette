@@ -1,7 +1,7 @@
+import { coalesceEmptyString } from '../../../data-schemas/helpers/legacy-numeric-values';
+import { Scenario } from '../../../data-schemas/scenario';
 import { findWithRest } from '../../../helpers/findWithRest';
 import { partition } from '../../../helpers/partition';
-import { coalesceEmptyString } from '../../../legacy-state-validators/numericValues';
-import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Orientation } from '../../enums/orientation';
 import { Overshading } from '../../enums/overshading';
 import { ModelError } from '../../error';
@@ -24,7 +24,7 @@ const isDeductibleSpec = (
     return ['door', 'hatch', 'roof light', 'window'].includes(element.type);
 };
 
-export const extractFabricInputFromLegacy = ({ fabric }: LegacyScenario): FabricInput => {
+export const extractFabricInputFromLegacy = ({ fabric }: Scenario): FabricInput => {
     let thermalMassParameterOverride: number | null = null;
     if (fabric?.global_TMP === true) {
         if (typeof fabric.global_TMP_value !== 'number') {
