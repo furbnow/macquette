@@ -134,6 +134,9 @@ lint-js:  ## Runs eslint with a separate config in the 'client' directory
 		--ignore-path .eslintignore \
 		--max-warnings 0 \
 		.
+	cd client && ./node_modules/.bin/prettier \
+		$$(if [ "$${CI}" != "true" ]; then echo "--write"; else echo "--check"; fi) \
+		'**/*.{ts,tsx,yml,yaml,json}'
 
 .PHONY: lint-js-legacy
 lint-js-legacy:  ## Runs eslint with a separate config on legacy (non-compiled) JS
