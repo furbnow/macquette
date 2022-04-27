@@ -20,6 +20,9 @@ repos:
           - id: prettier
             types: [file]
             files: \.(ts|tsx|yml|yaml|json)$
+            additional_dependencies:
+                - 'prettier@2.4.1'
+                - '@trivago/prettier-plugin-sort-imports@3.2.0'
 
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v4.0.1

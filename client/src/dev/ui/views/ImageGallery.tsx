@@ -1,8 +1,9 @@
 import React, { useRef, useReducer, ReactElement } from 'react';
-import { Image } from '../types/Metadata';
-import { UploadFile } from '../components/icons/upload';
-import { TrashBin } from '../components/icons/trash';
+
 import { Edit } from '../components/icons/edit';
+import { TrashBin } from '../components/icons/trash';
+import { UploadFile } from '../components/icons/upload';
+import { Image } from '../types/Metadata';
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare namespace mhep_helper {

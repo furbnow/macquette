@@ -1,6 +1,7 @@
 import React, { useContext, ReactElement } from 'react';
-import useExternalState from '../hooks/useExternalState';
+
 import { AppContext } from '../context/AppContext';
+import useExternalState from '../hooks/useExternalState';
 
 interface LongTextFieldProps {
     id: string;

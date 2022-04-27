@@ -1,4 +1,5 @@
 import { inspect } from 'util';
+
 import { CompareFloatParams, compareFloats } from './fuzzy-float-equality';
 import { flatten } from './object-flattening';
 import { compareSets } from './set-operations';

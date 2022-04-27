@@ -1,7 +1,8 @@
 import React, { ReactElement } from 'react';
+
 import House, { HouseProps } from '../components/House';
-import TargetBar from './../components/TargetBar';
 import targets from '../data/targets';
+import TargetBar from './../components/TargetBar';
 
 const fmtPrice = (price: number): string =>
     new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(price);

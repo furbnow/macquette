@@ -1,0 +1,13 @@
+# vim: ft=yaml
+trailingComma: 'all'
+tabWidth: 4
+printWidth: 90
+singleQuote: true
+
+# This is the default, but in reverse order. For some reason prettier-sort-imports reverses
+# it; I suspect it's a bug.
+importOrder: ['\..*', '<THIRD PARTY MODULES>']
+
+importOrderSeparation: true
+importOrderParserPlugins:
+    ['jsx', 'typescript', '["decorators", { "decoratorsBeforeExport": true }]']

@@ -1,8 +1,8 @@
-import { prompt } from 'inquirer';
 import axios, { AxiosInstance } from 'axios';
-import { opendir, stat, open } from 'fs/promises';
-import { join, resolve } from 'path';
 import Bottleneck from 'bottleneck';
+import { opendir, stat, open } from 'fs/promises';
+import { prompt } from 'inquirer';
+import { join, resolve } from 'path';
 
 const MAX_CONCURRENT_REQUESTS = 4;
 

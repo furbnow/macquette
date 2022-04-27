@@ -1,4 +1,5 @@
 import { defaultsDeep } from 'lodash';
+
 import { defaultFuels } from '../datasets';
 
 export const setDefaultLegacyInputs = (data: unknown) => {

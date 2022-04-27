@@ -14,19 +14,19 @@
  * - We use an element having a u-value of 0 as a heuristic for it not being an
  *   external element.
  */
+import { mapValues } from 'lodash';
 
+import { assertNever } from '../../helpers/assertNever';
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
+import { mean } from '../../helpers/mean';
 import { sum } from '../../helpers/sum';
+import { lightAccessFactor, solarAccessFactor } from '../datasets';
+import { Month } from '../enums/month';
 import { Orientation } from '../enums/orientation';
 import { Overshading } from '../enums/overshading';
-import { Month } from '../enums/month';
-import { mean } from '../../helpers/mean';
 import { Region } from '../enums/region';
-import { lightAccessFactor, solarAccessFactor } from '../datasets';
 import { calculateSolarRadiationMonthly } from '../solar-flux';
-import { assertNever } from '../../helpers/assertNever';
 import { mutateLegacyData } from './fabric/mutateLegacyData';
-import { mapValues } from 'lodash';
 
 export { extractFabricInputFromLegacy } from './fabric/extractFromLegacy';
 

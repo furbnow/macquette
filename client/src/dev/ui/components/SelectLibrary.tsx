@@ -1,8 +1,6 @@
 import React, { ReactElement, useContext, useState } from 'react';
-import { AppContext } from '../context/AppContext';
-import Dialog from './Dialog';
-import SelectField from './SelectField';
 
+import { AppContext } from '../context/AppContext';
 import {
     ClothesDryingFacilitiesLibrary,
     ClothesDryingItem,
@@ -24,6 +22,8 @@ import {
     VentilationSystemsLibrary,
     VentilationSystemsMeasuresLibrary,
 } from '../types/Library';
+import Dialog from './Dialog';
+import SelectField from './SelectField';
 
 type Row = {
     title: string;

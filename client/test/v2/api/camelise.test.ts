@@ -1,5 +1,6 @@
-import { camelise, cameliseStr } from '../../../src/v2/api/http';
 import * as fc from 'fast-check';
+
+import { camelise, cameliseStr } from '../../../src/v2/api/http';
 
 const inputNameArb = fc.stringOf(fc.constantFrom('a', 'b', 'c', 'A', 'B', 'C', '_'));
 const { tree: recursiveObjectArb } = fc.letrec((tie) => ({

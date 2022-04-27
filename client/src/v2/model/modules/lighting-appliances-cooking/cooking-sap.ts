@@ -1,11 +1,11 @@
 import { cache } from '../../../helpers/cache-decorators';
+import { isTruthy } from '../../../helpers/is-truthy';
 import { sum } from '../../../helpers/sum';
 import { LegacyScenario } from '../../../legacy-state-validators/scenario';
 import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
-import { Fuel as LACModuleFuel, FuelInput } from './fuel';
 import { Fuel as FuelsModuleFuel } from '../fuels';
-import { isTruthy } from '../../../helpers/is-truthy';
+import { Fuel as LACModuleFuel, FuelInput } from './fuel';
 
 export type CookingSAPInput = {
     energyEfficient: boolean;

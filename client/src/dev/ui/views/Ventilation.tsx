@@ -6,12 +6,11 @@ You will see code like:
 
 - Is there a ticket to fix this???
 */
-
 // floor override doesn't work.
 // boolean doesn't stick and the value doesn't stay (also on v2, see https://gitlab.com/carboncoop/macquette/-/issues/742)
 // discuss with Anna?
-
 import React, { ReactElement, useContext, useState } from 'react';
+
 import CheckboxField from '../components/CheckboxField';
 import FormRow from '../components/FormRow';
 import NumberField from '../components/NumberField';

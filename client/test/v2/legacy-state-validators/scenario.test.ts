@@ -1,12 +1,13 @@
 /* eslint-disable jest/expect-expect */
+import assert from 'assert';
+import * as fc from 'fast-check';
 import { cloneDeep } from 'lodash';
+
 import { emulateJsonRoundTrip } from '../../../src/v2/helpers/emulate-json-round-trip';
 import { legacyScenarioSchema } from '../../../src/v2/legacy-state-validators/scenario';
 import { calcRun } from '../../../src/v2/model/model';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import { arbScenarioInputs } from '../model/arbitraries/scenario';
-import * as fc from 'fast-check';
-import assert from 'assert';
 
 describe('legacy scenario validator', () => {
     describe('scenario inputs', () => {

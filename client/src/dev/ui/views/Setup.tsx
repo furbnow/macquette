@@ -1,16 +1,13 @@
 import React, { ReactElement, useState, useContext } from 'react';
-import { AssessmentMeta } from '../types/Assessment';
-
-import { regions, getRegionFromPostcode } from '../data/regions';
-
-import { AppContext } from '../context/AppContext';
-
-import { getScenarioList, getScenario } from '../lib/scenarios';
 
 import FormRow from '../components/FormRow';
 import NumberField from '../components/NumberField';
 import SelectField from '../components/SelectField';
 import TextField from '../components/TextField';
+import { AppContext } from '../context/AppContext';
+import { regions, getRegionFromPostcode } from '../data/regions';
+import { getScenarioList, getScenario } from '../lib/scenarios';
+import { AssessmentMeta } from '../types/Assessment';
 
 interface SetupProps {
     data: AssessmentMeta;

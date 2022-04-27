@@ -1,16 +1,16 @@
 import React, { useState, ReactElement, useContext } from 'react';
-import { NewAssessment, ScenarioString } from '../types/Assessment';
-import { AppContext } from '../context/AppContext';
-import { getScenario } from '../lib/scenarios';
 
-import Tooltip from '../components/Tooltip';
+import CheckboxField from '../components/CheckboxField';
 import FormRow from '../components/FormRow';
+import NumberField from '../components/NumberField';
 import Result from '../components/Result';
 import TargetBar from '../components/TargetBar';
-import NumberField from '../components/NumberField';
-import CheckboxField from '../components/CheckboxField';
-
+import Tooltip from '../components/Tooltip';
+import { AppContext } from '../context/AppContext';
 import targets from '../data/targets';
+import { getScenario } from '../lib/scenarios';
+import { NewAssessment, ScenarioString } from '../types/Assessment';
+
 interface CurrentEnergyProps {
     assessment: NewAssessment;
     scenarioId: ScenarioString;

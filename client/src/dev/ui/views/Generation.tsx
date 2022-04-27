@@ -1,18 +1,15 @@
 import React, { useState, useContext, ReactElement } from 'react';
 
-import { AppContext } from '../context/AppContext';
-import { NewAssessment, ScenarioString } from '../types/Assessment';
-import { Library, GenerationMeasuresLibrary } from '../types/Library';
-
-import { getScenario, scenarioIsBaseline } from '../lib/scenarios';
-
 import CheckboxField from '../components/CheckboxField';
 import FormRow from '../components/FormRow';
 import NumberField from '../components/NumberField';
 import Result from '../components/Result';
 import SelectField from '../components/SelectField';
-
 import { SelectGenerationMeasure } from '../components/SelectLibrary';
+import { AppContext } from '../context/AppContext';
+import { getScenario, scenarioIsBaseline } from '../lib/scenarios';
+import { NewAssessment, ScenarioString } from '../types/Assessment';
+import { Library, GenerationMeasuresLibrary } from '../types/Library';
 
 /**
  * Check if there are any generation measures that can be applied.

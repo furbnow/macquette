@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { mapValues } from 'lodash';
+import { z } from 'zod';
 
 type ZodNullableShape<T extends z.ZodRawShape> = {
     [K in keyof T]: T[K] extends z.ZodObject<z.ZodRawShape> ? T[K] : z.ZodNullable<T[K]>;

@@ -1,16 +1,15 @@
 import React, { useContext, ReactElement } from 'react';
-import { AppContext } from '../context/AppContext';
-
-import { NewAssessment, ScenarioString } from '../types/Assessment';
-import { getScenario } from '../lib/scenarios';
-import { deleteFloor, addFloor } from '../lib/dwellingdata';
 
 import FormRow from '../components/FormRow';
-import TextField from '../components/TextField';
 import NumberField from '../components/NumberField';
-import Result from '../components/Result';
 import OnOffToggleButton from '../components/OnOffToggleButton';
+import Result from '../components/Result';
+import TextField from '../components/TextField';
 import Tooltip from '../components/Tooltip';
+import { AppContext } from '../context/AppContext';
+import { deleteFloor, addFloor } from '../lib/dwellingdata';
+import { getScenario } from '../lib/scenarios';
+import { NewAssessment, ScenarioString } from '../types/Assessment';
 
 interface DwellingDataProps {
     assessment: NewAssessment;

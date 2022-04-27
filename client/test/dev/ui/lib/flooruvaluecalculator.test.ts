@@ -1,7 +1,3 @@
-import calculate, {
-    findNearestIndex,
-    lookupUValue,
-} from '../../../../src/dev/ui/lib/flooruvaluecalculator/flooruvaluecalculator';
 import {
     C1,
     C2,
@@ -9,6 +5,10 @@ import {
     C4,
     C5,
 } from '../../../../src/dev/ui/data/flooruvaluecalculator/tables';
+import calculate, {
+    findNearestIndex,
+    lookupUValue,
+} from '../../../../src/dev/ui/lib/flooruvaluecalculator/flooruvaluecalculator';
 
 describe('findNearestIndex', () => {
     const arr = [-20, -10, 0, 10, 20];

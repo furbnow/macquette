@@ -1,24 +1,25 @@
-import React from 'react';
 import { cloneDeep } from 'lodash';
+import React from 'react';
+
+import { nanToNull, orNullish } from '../../helpers/null-wrapping';
+import { PropsOf } from '../../helpers/props-of';
+import { DeepPartial, safeMerge, DeepWith } from '../../helpers/safe-merge';
+import { Shadow } from '../../helpers/shadow-object-type';
 import { LegacyScenario } from '../../legacy-state-validators/scenario';
+import { SolarHotWaterV1 } from '../../legacy-state-validators/solar-hot-water';
 import { Orientation } from '../../model/enums/orientation';
 import { Overshading } from '../../model/enums/overshading';
-import { NumericInput, NumericInputProps } from '../input-components/numeric';
 import { CheckboxInput } from '../input-components/checkbox';
+import { NumericInput, NumericInputProps } from '../input-components/numeric';
 import { Select, SelectProps } from '../input-components/select';
 import type { UiModule } from '../module-management';
-import { nanToNull, orNullish } from '../../helpers/null-wrapping';
+import { LockedWarning } from '../output-components/locked-warning';
 import {
     loading,
     noOutput,
     NumericOutput,
     NumericOutputProps,
 } from '../output-components/numeric';
-import { LockedWarning } from '../output-components/locked-warning';
-import { PropsOf } from '../../helpers/props-of';
-import { DeepPartial, safeMerge, DeepWith } from '../../helpers/safe-merge';
-import { Shadow } from '../../helpers/shadow-object-type';
-import { SolarHotWaterV1 } from '../../legacy-state-validators/solar-hot-water';
 
 type ModelOutputs = {
     aStar: number;

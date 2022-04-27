@@ -1,15 +1,16 @@
 import fc from 'fast-check';
+
+import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 import { Region } from '../../../../src/v2/model/enums/region';
 import { fcPartialRecord } from '../../../helpers/arbitraries';
+import { arbFabric } from './fabric';
+import { shwInputIsComplete, shwInputs } from './solar-hot-water';
 import {
     legacyBoolean,
     sensibleFloat,
     stringySensibleInteger,
     stringySensibleFloat,
 } from './values';
-import { arbFabric } from './fabric';
-import { shwInputIsComplete, shwInputs } from './solar-hot-water';
-import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 
 const arbFloors = () =>
     fc.array(

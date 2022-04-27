@@ -1,4 +1,5 @@
 import fc from 'fast-check';
+
 import { emulateJsonRoundTrip } from '../../src/v2/helpers/emulate-json-round-trip';
 
 describe('legacy clone deep', () => {

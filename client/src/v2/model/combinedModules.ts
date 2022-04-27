@@ -1,43 +1,6 @@
-import { extractFuelsInputFromLegacy, Fuels, FuelsDict } from './modules/fuels';
-import { extractFloorsInputFromLegacy, Floors, FloorsInput } from './modules/floors';
-import {
-    extractOccupancyInputFromLegacy,
-    Occupancy,
-    OccupancyInput,
-} from './modules/occupancy';
+import { LegacyScenario } from '../legacy-state-validators/scenario';
 import { Region } from './enums/region';
-import { extractFabricInputFromLegacy, Fabric, FabricInput } from './modules/fabric';
-import {
-    extractVentilationInfiltrationCommonInputFromLegacy,
-    VentilationInfiltrationCommon,
-    VentilationInfiltrationCommonInput,
-} from './modules/ventilation-infiltration/common-input';
-import {
-    extractVentilationInputFromLegacy,
-    Ventilation,
-    VentilationInput,
-} from './modules/ventilation-infiltration/ventilation';
-import {
-    extractInfiltrationInputFromLegacy,
-    Infiltration,
-    InfiltrationInput,
-} from './modules/ventilation-infiltration/infiltration';
-import {
-    extractWaterCommonInputFromLegacy,
-    WaterCommon,
-    WaterCommonInput,
-} from './modules/water-common';
-import {
-    extractSolarHotWaterInputFromLegacy,
-    constructSolarHotWater,
-    SolarHotWaterInput,
-    SolarHotWater,
-} from './modules/solar-hot-water';
-import {
-    extractLightingSAPInputFromLegacy,
-    LightingSAP,
-    LightingSAPInput,
-} from './modules/lighting-appliances-cooking/lighting-sap';
+import { AirChangeRate } from './modules/air-change-rate';
 import {
     Appliances,
     AppliancesInput,
@@ -50,10 +13,47 @@ import {
     CookingInput,
     extractCookingInputFromLegacy,
 } from './modules/cooking';
-import { extractRegionFromLegacy } from './modules/region';
-import { LegacyScenario } from '../legacy-state-validators/scenario';
-import { AirChangeRate } from './modules/air-change-rate';
+import { extractFabricInputFromLegacy, Fabric, FabricInput } from './modules/fabric';
+import { extractFloorsInputFromLegacy, Floors, FloorsInput } from './modules/floors';
+import { extractFuelsInputFromLegacy, Fuels, FuelsDict } from './modules/fuels';
 import { HeatLoss } from './modules/heat-loss';
+import {
+    extractLightingSAPInputFromLegacy,
+    LightingSAP,
+    LightingSAPInput,
+} from './modules/lighting-appliances-cooking/lighting-sap';
+import {
+    extractOccupancyInputFromLegacy,
+    Occupancy,
+    OccupancyInput,
+} from './modules/occupancy';
+import { extractRegionFromLegacy } from './modules/region';
+import {
+    extractSolarHotWaterInputFromLegacy,
+    constructSolarHotWater,
+    SolarHotWaterInput,
+    SolarHotWater,
+} from './modules/solar-hot-water';
+import {
+    extractVentilationInfiltrationCommonInputFromLegacy,
+    VentilationInfiltrationCommon,
+    VentilationInfiltrationCommonInput,
+} from './modules/ventilation-infiltration/common-input';
+import {
+    extractInfiltrationInputFromLegacy,
+    Infiltration,
+    InfiltrationInput,
+} from './modules/ventilation-infiltration/infiltration';
+import {
+    extractVentilationInputFromLegacy,
+    Ventilation,
+    VentilationInput,
+} from './modules/ventilation-infiltration/ventilation';
+import {
+    extractWaterCommonInputFromLegacy,
+    WaterCommon,
+    WaterCommonInput,
+} from './modules/water-common';
 
 export type Input = {
     fuels: FuelsDict;

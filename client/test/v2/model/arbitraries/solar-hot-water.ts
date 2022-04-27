@@ -1,5 +1,6 @@
 import fc from 'fast-check';
 import { pick } from 'lodash';
+
 import { SolarHotWaterV1 } from '../../../../src/v2/legacy-state-validators/solar-hot-water';
 import { solarHotWaterOvershadingFactor } from '../../../../src/v2/model/datasets';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
@@ -15,8 +16,8 @@ import {
     arbitraryOrientation,
     arbitraryOvershading,
 } from '../../../helpers/arbitrary-enums';
-import { sensibleFloat, stringySensibleFloat } from './values';
 import { flatten } from '../../../helpers/object-flattening';
+import { sensibleFloat, stringySensibleFloat } from './values';
 
 const legacyInputs = fcPartialRecord({
     pump: fc.oneof(fc.constant('PV'), fc.constant('electric')),

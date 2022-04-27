@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import React, { useContext, ReactElement } from 'react';
+
 import { AppContext } from '../context/AppContext';
 
 interface SelectFieldProps<T> {

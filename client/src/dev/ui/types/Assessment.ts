@@ -1,3 +1,13 @@
+import {
+    GenerationMeasure,
+    VentilationSystemMeasure,
+    DraughtProofingMeasure,
+    ClothesDryingItem,
+    IntentionalVentMeasure,
+    ExtractVentilationMeasure,
+} from './Library';
+import { VentilationSystem, IntentionalVent } from './Library';
+
 export interface AssessmentMeta {
     id: string;
     name: string;
@@ -155,14 +165,6 @@ export interface FabricElement {
     cost_total?: number;
 }
 
-import {
-    GenerationMeasure,
-    VentilationSystemMeasure,
-    DraughtProofingMeasure,
-    ClothesDryingItem,
-    IntentionalVentMeasure,
-    ExtractVentilationMeasure,
-} from './Library';
 export interface Measures {
     PV_generation?: {
         measure: GenerationMeasure & { quantity: number; cost_total: number };
@@ -191,7 +193,6 @@ export interface Measures {
     };
 }
 
-import { VentilationSystem, IntentionalVent } from './Library';
 export interface Ventilation extends VentilationSystem {
     // TODO: ventilation_tag, _name and system_specific_fan_power are all duplicates
     // of stuff in VentilationSystem for reasons better known to someone else.

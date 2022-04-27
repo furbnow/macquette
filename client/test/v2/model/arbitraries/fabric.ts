@@ -1,4 +1,5 @@
 import fc from 'fast-check';
+
 import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import { Overshading } from '../../../../src/v2/model/enums/overshading';

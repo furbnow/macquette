@@ -1,13 +1,10 @@
 import React, { ReactElement, useState, useRef } from 'react';
 
-import { NewAssessment } from '../types/Assessment';
-
-import useListState from '../hooks/useListState';
-
-import { getScenarioList } from '../lib/scenarios';
-
 import FormRow from '../components/FormRow';
 import TextField from '../components/TextField';
+import useListState from '../hooks/useListState';
+import { getScenarioList } from '../lib/scenarios';
+import { NewAssessment } from '../types/Assessment';
 
 declare function report_show(
     greeting: HTMLElement,

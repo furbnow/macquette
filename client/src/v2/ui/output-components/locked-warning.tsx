@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { WarningFilledIcon } from '../icons/warning';
 
 export type LockedWarningProps = {

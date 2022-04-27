@@ -1,11 +1,11 @@
 import React, { ReactElement, useContext } from 'react';
 
-import { AppContext } from '../context/AppContext';
-import { getScenarioList } from '../lib/scenarios';
-import { getOrphanedScenarioIds } from '../lib/commentary';
-import { NewAssessment } from '../types/Assessment';
 import Graphics from '../components/Graphics';
 import LongTextField from '../components/LongTextField';
+import { AppContext } from '../context/AppContext';
+import { getOrphanedScenarioIds } from '../lib/commentary';
+import { getScenarioList } from '../lib/scenarios';
+import { NewAssessment } from '../types/Assessment';
 import { houseData, targetData } from '../views/PageHeader';
 
 declare global {

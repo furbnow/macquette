@@ -1,11 +1,12 @@
+import { cloneDeep } from 'lodash';
+
+import { isRecord } from '../helpers/is-record';
 import { coalesceEmptyString } from '../legacy-state-validators/numericValues';
 import {
     legacyScenarioSchema,
     LegacyScenario,
 } from '../legacy-state-validators/scenario';
-import { cloneDeep } from 'lodash';
 import { calcRun } from '../model/model';
-import { isRecord } from '../helpers/is-record';
 
 /** Legacy project data wrapped with a safe accessor function */
 class ProjectData {

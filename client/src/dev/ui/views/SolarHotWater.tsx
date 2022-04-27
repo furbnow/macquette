@@ -1,5 +1,12 @@
 import React, { ReactElement } from 'react';
 
+import CheckboxField from '../components/CheckboxField';
+import FormRow from '../components/FormRow';
+import NumberField from '../components/NumberField';
+import Result from '../components/Result';
+import SelectField from '../components/SelectField';
+import Tooltip from '../components/Tooltip';
+import { getScenario } from '../lib/scenarios';
 import {
     NewAssessment,
     SolarHotWaterPump,
@@ -7,13 +14,6 @@ import {
     SolarHotWaterOrientation,
     ScenarioString,
 } from '../types/Assessment';
-import { getScenario } from '../lib/scenarios';
-import SelectField from '../components/SelectField';
-import NumberField from '../components/NumberField';
-import CheckboxField from '../components/CheckboxField';
-import FormRow from '../components/FormRow';
-import Result from '../components/Result';
-import Tooltip from '../components/Tooltip';
 
 // ??? - dedicated Volume vs total Volume - what's the calculation there?
 // data.SHW.Veff = data.SHW.Vs + 0.3 * (data.SHW.combined_cylinder_volume - data.SHW.Vs);

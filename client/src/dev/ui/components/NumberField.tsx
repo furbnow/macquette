@@ -1,6 +1,7 @@
 import React, { ReactElement, useContext } from 'react';
-import useExternalState from '../hooks/useExternalState';
+
 import { AppContext } from '../context/AppContext';
+import useExternalState from '../hooks/useExternalState';
 
 function decimalise(s: string): string {
     // Remove everything that isn't allowed in a decimal fraction

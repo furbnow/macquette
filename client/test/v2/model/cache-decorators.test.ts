@@ -1,4 +1,5 @@
 import fc from 'fast-check';
+
 import { cache, cacheMonth } from '../../../src/v2/helpers/cache-decorators';
 import { Month } from '../../../src/v2/model/enums/month';
 

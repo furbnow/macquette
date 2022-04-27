@@ -1,4 +1,5 @@
 import fc from 'fast-check';
+
 import { arbFloat } from '../../../helpers/arbitraries';
 
 export const sensibleFloat = fc.oneof(

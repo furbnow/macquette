@@ -1,5 +1,6 @@
-import { compareSets } from '../set-operations';
 import * as fc from 'fast-check';
+
+import { compareSets } from '../set-operations';
 
 describe('set operations', () => {
     describe('compare sets', () => {

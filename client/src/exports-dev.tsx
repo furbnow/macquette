@@ -1,14 +1,13 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 
-import { AppContext } from './dev/ui/context/AppContext';
-
 import Assessment from './dev/ui/Assessment';
-
+import Graphics from './dev/ui/components/Graphics';
+import TargetBar from './dev/ui/components/TargetBar';
+import { AppContext } from './dev/ui/context/AppContext';
 import blank from './dev/ui/lib/blank';
-import { getScenarioList } from './dev/ui/lib/scenarios';
 import { getScenarioMeasures } from './dev/ui/lib/measures';
-
+import { getScenarioList } from './dev/ui/lib/scenarios';
 import Commentary from './dev/ui/views/Commentary';
 import CurrentEnergy from './dev/ui/views/CurrentEnergy';
 import DwellingData from './dev/ui/views/DwellingData';
@@ -22,9 +21,6 @@ import Setup from './dev/ui/views/Setup';
 import Sidebar from './dev/ui/views/Sidebar';
 import SolarHotWater from './dev/ui/views/SolarHotWater';
 import Ventilation from './dev/ui/views/Ventilation';
-
-import TargetBar from './dev/ui/components/TargetBar';
-import Graphics from './dev/ui/components/Graphics';
 
 declare global {
     interface Window {

@@ -1,21 +1,22 @@
-import { calcRun } from '../../../src/v2/model/model';
-import { cloneDeep, pick } from 'lodash';
-import { calcRun as referenceCalcRun } from './reference-model';
-import { scenarios, shouldSkipScenario } from '../fixtures';
 import fc from 'fast-check';
-import { arbScenarioInputs } from './arbitraries/scenario';
+import { cloneDeep, pick } from 'lodash';
+
+import { assertNever } from '../../../src/v2/helpers/assertNever';
+import { isTruthy } from '../../../src/v2/helpers/is-truthy';
 import { legacyScenarioSchema } from '../../../src/v2/legacy-state-validators/scenario';
+import { SolarHotWaterV1 } from '../../../src/v2/legacy-state-validators/solar-hot-water';
+import { calcRun } from '../../../src/v2/model/model';
 import { FcInfer } from '../../helpers/arbitraries';
 import { CompareFloatParams, compareFloats } from '../../helpers/fuzzy-float-equality';
+import { scenarios, shouldSkipScenario } from '../fixtures';
+import { arbScenarioInputs } from './arbitraries/scenario';
 import {
     shwLegacyInputKeys,
     shwIsLegacy,
     shwInputIsComplete,
     shwInputs,
 } from './arbitraries/solar-hot-water';
-import { assertNever } from '../../../src/v2/helpers/assertNever';
-import { SolarHotWaterV1 } from '../../../src/v2/legacy-state-validators/solar-hot-water';
-import { isTruthy } from '../../../src/v2/helpers/is-truthy';
+import { calcRun as referenceCalcRun } from './reference-model';
 
 const runModel = (data: any, calcRun: (data: any) => any) => {
     // Clone the input because calcRun will modify it in-place

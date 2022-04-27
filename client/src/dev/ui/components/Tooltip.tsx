@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+
 import { Info } from './icons/info';
 
 interface TooltipProps {

@@ -1,5 +1,4 @@
 /* eslint-disable import/no-cycle */
-
 import { sum } from '../../../helpers/sum';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';

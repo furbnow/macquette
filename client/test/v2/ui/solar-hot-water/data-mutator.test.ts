@@ -1,9 +1,10 @@
 import fc from 'fast-check';
+import { cloneDeep } from 'lodash';
+
 import { legacyScenarioSchema } from '../../../../src/v2/legacy-state-validators/scenario';
 import { solarHotWaterModule } from '../../../../src/v2/ui/modules/solar-hot-water';
 import { arbScenarioInputs } from '../../model/arbitraries/scenario';
 import { arbitraryState } from './arbitrary';
-import { cloneDeep } from 'lodash';
 
 describe('solar hot water data mutator', () => {
     test('the resulting scenario object passes the legacy scenario validator', () => {

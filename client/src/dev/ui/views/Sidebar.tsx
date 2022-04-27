@@ -1,17 +1,16 @@
 import React, { useState, useContext, ReactElement } from 'react';
-import { AppContext } from '../context/AppContext';
 
-import { NewAssessment, Scenario, ScenarioString } from '../types/Assessment';
+import Result from '../components/Result';
+import { DownCaret, RightCaret } from '../components/icons/carets';
+import { LockedLock } from '../components/icons/locks';
+import { AppContext } from '../context/AppContext';
 import {
     getScenario,
     getScenarioList,
     duplicateScenario,
     scenarioHasChanged,
 } from '../lib/scenarios';
-
-import Result from '../components/Result';
-import { DownCaret, RightCaret } from '../components/icons/carets';
-import { LockedLock } from '../components/icons/locks';
+import { NewAssessment, Scenario, ScenarioString } from '../types/Assessment';
 
 interface SidebarLinkProps {
     text: string;

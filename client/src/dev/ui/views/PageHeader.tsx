@@ -1,7 +1,8 @@
 import React, { ReactElement, useState } from 'react';
-import { Scenario } from '../types/Assessment';
+
 import Graphics from '../components/Graphics';
 import { HouseProps } from '../components/House';
+import { Scenario } from '../types/Assessment';
 
 function inScenario(page: string): boolean {
     switch (page) {

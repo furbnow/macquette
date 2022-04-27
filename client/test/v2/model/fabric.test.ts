@@ -1,4 +1,5 @@
 import fc from 'fast-check';
+
 import { mean } from '../../../src/v2/helpers/mean';
 import { sum } from '../../../src/v2/helpers/sum';
 import { Month } from '../../../src/v2/model/enums/month';

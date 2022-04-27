@@ -1,5 +1,6 @@
 import assert from 'assert';
 import fc from 'fast-check';
+
 import {
     constructSolarHotWater,
     SolarHotWaterDependencies,

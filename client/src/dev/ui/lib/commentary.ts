@@ -1,6 +1,5 @@
-import { getScenarioList } from './scenarios';
-
 import { NewAssessment, ScenarioString } from '../types/Assessment';
+import { getScenarioList } from './scenarios';
 
 // List scenario commentaries that for scenarios that don't exist in the assessment
 //

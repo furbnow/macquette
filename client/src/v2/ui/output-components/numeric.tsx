@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { assertNever } from '../../helpers/assertNever';
 
 export const noOutput: unique symbol = Symbol.for('no output');
