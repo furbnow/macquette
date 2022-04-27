@@ -8,7 +8,6 @@ import { SanitisedLibrary } from './sanitise';
 import { ItemOf, LibraryItem } from './types';
 
 type CsvRow = Omit<LibraryItem, 'tags'> & {
-    library_type: string;
     tags?: string | null;
 };
 
@@ -34,14 +33,12 @@ function prepareForCsv<L extends Library>(
             tagsMixin = {};
         }
         csvData.push({
-            library_type: library.type,
             ...omit(item, 'tags'),
             ...tagsMixin,
         });
     }
 
-    // Column names which we generate values for
-    const columnNames = ['library_type'];
+    const columnNames: string[] = [];
     // Columns which we want to put first
     for (const col of ['tag', 'name', 'tags']) {
         if (collectedItemFields.delete(col)) {

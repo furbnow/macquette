@@ -1,9 +1,23 @@
 import { Library } from '../../src/v2/data-schemas/libraries';
 import { discriminateTags } from '../../src/v2/data-schemas/libraries/elements';
-import { LibraryWithSubtype } from './types';
 
-export function splitElementsLibraries(libraries: Library[]): LibraryWithSubtype[] {
-    return libraries.flatMap((library: Library): Library[] => {
+export type SplitDiscriminated<L> =
+    | {
+          type: 'unitary';
+          item: L;
+      }
+    | {
+          type: 'split';
+          subtypedItems: {
+              subtype: string;
+              item: L;
+          }[];
+      };
+
+export function splitElementsLibraries(
+    libraries: Library[],
+): SplitDiscriminated<Library>[] {
+    return libraries.map(<L extends Library>(library: L): SplitDiscriminated<L> => {
         if (library.type === 'elements' || library.type === 'elements_measures') {
             const discriminators = [
                 'Door',
@@ -16,22 +30,32 @@ export function splitElementsLibraries(libraries: Library[]): LibraryWithSubtype
                 'Loft',
                 'Roof',
             ];
-            return discriminators.map((disc) => {
+            const subtypedItems = discriminators.map((disc) => {
                 const filteredData = Object.fromEntries(
                     Object.entries(library.data).filter(([, value]) =>
                         discriminateTags(value, disc),
                     ),
                 );
-                // SAFETY: the above filter does not change the type of the Record object
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 const outLib = {
                     ...library,
                     data: filteredData,
-                } as Library;
-                return { ...outLib, subtype: disc };
+                };
+                return { item: outLib, subtype: disc };
             });
+            return { type: 'split', subtypedItems };
         } else {
-            return [library];
+            return { type: 'unitary', item: library };
+        }
+    });
+}
+
+export function flatten<T>(stuff: SplitDiscriminated<T>[]): T[] {
+    return stuff.flatMap((split): T[] => {
+        switch (split.type) {
+            case 'unitary':
+                return [split.item];
+            case 'split':
+                return split.subtypedItems.map((subtypedItem) => subtypedItem.item);
         }
     });
 }
