@@ -2,19 +2,11 @@ import assert from 'assert';
 import { cloneDeep, mapValues } from 'lodash';
 
 import { Library } from '../../src/v2/data-schemas/libraries';
-import { Shadow } from '../../src/v2/helpers/shadow-object-type';
 import type { ItemOf, LibraryItem } from './types';
 
-type SanitisedItem<Item> = Item extends { tags?: (string | null)[] | undefined }
-    ? Item & { tags?: string[] }
-    : Item;
-
-function sanitiseItem<Item extends LibraryItem>(
-    item: Item,
-    name: string,
-): SanitisedItem<Item> {
+function sanitiseItem<Item extends LibraryItem>(item: Item, name: string): Item {
     const out = cloneDeep(item);
-    if ('description' in out) {
+    if ('description' in out && out.description !== undefined) {
         out.description = out.description.replace(/"+$/, '').trim();
         if (out.description === 'undefined') {
             out.description = '';
@@ -30,22 +22,11 @@ function sanitiseItem<Item extends LibraryItem>(
         out.tags = newTags;
     }
     assert(out.tag === name);
-    // SAFETY: types checked by assertions in this function
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    return out as SanitisedItem<Item>;
+    return out;
 }
 
-export type SanitisedLibrary<L extends Library> = Shadow<
-    L,
-    {
-        data: Record<string, SanitisedItem<ItemOf<L>>>;
-    }
->;
-export function sanitiseLibrary<L extends Library>(library: L): SanitisedLibrary<L> {
-    const newData = mapValues<L['data'], SanitisedItem<ItemOf<L>>>(
-        library.data,
-        sanitiseItem,
-    );
+export function sanitiseLibrary<L extends Library>(library: L): L {
+    const newData = mapValues<L['data'], ItemOf<L>>(library.data, sanitiseItem);
     const outLibrary = {
         ...library,
         data: newData,

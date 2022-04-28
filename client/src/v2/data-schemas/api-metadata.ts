@@ -36,9 +36,8 @@ export const createAssessmentSchema = assessmentMetadataSchema;
 export const listAssessmentSchema = z.array(assessmentMetadataSchema);
 export type AssessmentMetadata = z.infer<typeof assessmentMetadataSchema>;
 
-export const libraryCommonMetadataSchema = z.object({
+export const libraryMetadataSchema = z.object({
     id: z.string(),
-    name: z.string(),
     created_at: dateSchema,
     updated_at: dateSchema,
     permissions: z.object({ can_write: z.boolean(), can_share: z.boolean() }),
@@ -48,3 +47,4 @@ export const libraryCommonMetadataSchema = z.object({
         z.object({ type: z.literal('organisation') }).merge(organisationMetaSchema),
     ]),
 });
+export type LibraryMetadata = z.infer<typeof libraryMetadataSchema>;

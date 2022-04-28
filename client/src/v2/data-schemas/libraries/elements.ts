@@ -21,7 +21,7 @@ function singleElementArray<T extends string>(value: T) {
 
 const commonFabricElement = z.object({
     source: z.string(),
-    description: z.string(),
+    description: z.string().optional(),
     uvalue: stringyFloatSchema,
     kvalue: stringyFloatSchema,
 });

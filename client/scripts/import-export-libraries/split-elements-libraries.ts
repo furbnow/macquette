@@ -1,23 +1,78 @@
+import assert from 'assert';
+import { z } from 'zod';
+
 import { Library } from '../../src/v2/data-schemas/libraries';
 import { discriminateTags } from '../../src/v2/data-schemas/libraries/elements';
+import { assertNotNever, LibraryWithOptionalId } from './types';
 
-export type SplitDiscriminated<L> =
+export function splitLibrarySchema<T>(librarySchema: z.ZodSchema<T>) {
+    return z.discriminatedUnion('fileType', [
+        z.object({
+            fileType: z.literal('single file'),
+            library: librarySchema,
+        }),
+        z.object({
+            fileType: z.literal('multiple files'),
+            library: z.array(
+                z.object({
+                    partialLibrary: librarySchema,
+                    subtype: z.string(),
+                }),
+            ),
+        }),
+    ]);
+}
+export type SplitLibrary<L> =
+    | { fileType: 'single file'; library: L }
     | {
-          type: 'unitary';
-          item: L;
-      }
-    | {
-          type: 'split';
-          subtypedItems: {
-              subtype: string;
-              item: L;
-          }[];
+          fileType: 'multiple files';
+          library: { partialLibrary: L; subtype: string }[];
       };
 
-export function splitElementsLibraries(
-    libraries: Library[],
-): SplitDiscriminated<Library>[] {
-    return libraries.map(<L extends Library>(library: L): SplitDiscriminated<L> => {
+(function typeTest() {
+    // This is a type-level check that our hand-written type for SplitLibrary
+    // matches up up with the schema, because z.infer can't work with generic
+    // functions. See https://github.com/microsoft/TypeScript/issues/40542
+    const dummySplitLibrarySchema = splitLibrarySchema(z.literal('dummy value' as const));
+    type Inferred = z.infer<typeof dummySplitLibrarySchema>;
+    type Calculated = SplitLibrary<'dummy value'>;
+    type TypesAreEqual = Inferred extends Calculated
+        ? Calculated extends Inferred
+            ? unknown
+            : never
+        : never;
+    assertNotNever<TypesAreEqual>(true);
+})();
+
+export function mapSplitLibrary<InL, OutL>(
+    input: SplitLibrary<InL>[],
+    fn: (l: InL, subtype?: string) => OutL,
+): SplitLibrary<OutL>[] {
+    return input.map((split) => {
+        switch (split.fileType) {
+            case 'single file': {
+                return {
+                    ...split,
+                    library: fn(split.library),
+                };
+            }
+            case 'multiple files': {
+                return {
+                    ...split,
+                    library: split.library.map((subItem) => ({
+                        ...subItem,
+                        partialLibrary: fn(subItem.partialLibrary, subItem.subtype),
+                    })),
+                };
+            }
+        }
+    });
+}
+
+export function splitElementsLibraries<L extends Library>(
+    libraries: L[],
+): SplitLibrary<L>[] {
+    return libraries.map(<InnerL extends L>(library: InnerL): SplitLibrary<InnerL> => {
         if (library.type === 'elements' || library.type === 'elements_measures') {
             const discriminators = [
                 'Door',
@@ -30,7 +85,7 @@ export function splitElementsLibraries(
                 'Loft',
                 'Roof',
             ];
-            const subtypedItems = discriminators.map((disc) => {
+            const splitLibrary = discriminators.map((disc) => {
                 const filteredData = Object.fromEntries(
                     Object.entries(library.data).filter(([, value]) =>
                         discriminateTags(value, disc),
@@ -40,22 +95,47 @@ export function splitElementsLibraries(
                     ...library,
                     data: filteredData,
                 };
-                return { item: outLib, subtype: disc };
+                return { partialLibrary: outLib, subtype: disc };
             });
-            return { type: 'split', subtypedItems };
+            return {
+                fileType: 'multiple files',
+                library: splitLibrary,
+            };
         } else {
-            return { type: 'unitary', item: library };
+            return {
+                fileType: 'single file',
+                library,
+            };
         }
     });
 }
 
-export function flatten<T>(stuff: SplitDiscriminated<T>[]): T[] {
-    return stuff.flatMap((split): T[] => {
-        switch (split.type) {
-            case 'unitary':
-                return [split.item];
-            case 'split':
-                return split.subtypedItems.map((subtypedItem) => subtypedItem.item);
+export function merge(
+    splits: SplitLibrary<LibraryWithOptionalId>[],
+): LibraryWithOptionalId[] {
+    return splits.map(<L extends LibraryWithOptionalId>(split: SplitLibrary<L>): L => {
+        switch (split.fileType) {
+            case 'single file':
+                return split.library;
+            case 'multiple files': {
+                type Data = L['data'];
+                const firstPartial = split.library[0]?.partialLibrary;
+                assert(firstPartial !== undefined);
+                const newData: Data = split.library
+                    .map(({ partialLibrary }): L => partialLibrary)
+                    .reduce((combinedData: Data, partialLibrary: L): Data => {
+                        assert(partialLibrary.id === firstPartial.id);
+                        assert(partialLibrary.name === firstPartial.name);
+                        return {
+                            ...combinedData,
+                            ...partialLibrary.data,
+                        };
+                    }, {});
+                return {
+                    ...firstPartial,
+                    data: newData,
+                };
+            }
         }
     });
 }

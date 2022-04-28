@@ -1,12 +1,18 @@
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 import axios from 'axios';
+import { z } from 'zod';
 
-import type { AssessmentMetadata } from '../data-schemas/api-metadata';
+import {
+    AssessmentMetadata,
+    LibraryMetadata,
+    libraryMetadataSchema,
+} from '../data-schemas/api-metadata';
 import {
     createAssessmentSchema,
     listAssessmentSchema,
 } from '../data-schemas/api-metadata';
-import { Library, listLibrariesSchema } from '../data-schemas/libraries';
+import { Library, librarySchema } from '../data-schemas/libraries';
+import { handleNonErrorError } from '../helpers/handle-non-error-errors';
 import { urls } from './urls';
 
 export function cameliseStr(str: string): string {
@@ -39,23 +45,69 @@ export function camelise(input: unknown): unknown {
     }
 }
 
+class HttpClientError extends Error {
+    public cause: unknown;
+    public intent: string;
+
+    constructor(intent: string, cause: Error) {
+        super(`Error ${intent}: ${formatErrorString(cause)}`);
+        this.intent = intent;
+        this.cause = cause;
+    }
+}
+
+function formatErrorString(error: Error): string {
+    if (
+        axios.isAxiosError(error) &&
+        error.response !== null &&
+        error.response !== undefined
+    ) {
+        // HTTP error
+        if (
+            error.response.headers['content-type'] === 'application/json' &&
+            typeof error.response.data === 'string'
+        ) {
+            try {
+                const json: unknown = JSON.parse(error.response.data);
+                console.error(json);
+            } catch (_) {
+                console.error(error.response.data);
+            }
+        }
+        return `server returned ${error.response.statusText}`;
+    } else {
+        // Something else
+        return error.toString();
+    }
+}
+
 const jsonContentTypeHeader = { 'content-type': 'application/json' };
 
 export class HTTPClient {
     private axios: AxiosInstance;
 
-    constructor(nodeOptions?: { sessionId: string; baseURL: string }) {
+    constructor(nodeOptions?: {
+        sessionId: string;
+        csrfToken?: string;
+        baseURL: string;
+    }) {
         let perEnvironmentAxiosOptionsMixin: AxiosRequestConfig<unknown>;
         switch (jsEnvironment()) {
             case 'node': {
                 if (nodeOptions === undefined) {
                     throw new Error('If running in node.js, must pass options');
                 }
+                const headers: AxiosRequestConfig<unknown>['headers'] = {
+                    cookie: `sessionid=${nodeOptions.sessionId}`,
+                };
+                if (nodeOptions.csrfToken !== undefined) {
+                    headers['cookie'] += ';';
+                    headers['cookie'] += `csrftoken=${nodeOptions.csrfToken}`;
+                    headers['x-csrftoken'] = nodeOptions.csrfToken;
+                }
                 perEnvironmentAxiosOptionsMixin = {
                     baseURL: nodeOptions.baseURL,
-                    headers: {
-                        cookie: `sessionid=${nodeOptions.sessionId}`,
-                    },
+                    headers,
                 };
                 break;
             }
@@ -108,41 +160,38 @@ export class HTTPClient {
         try {
             return await this.axios.request(params);
         } catch (error) {
-            let msg = `Error ${params.intent}: `;
-
-            if (!axios.isAxiosError(error)) {
-                // Some other error
-                if (error instanceof Error) {
-                    msg += error.toString();
-                }
-            } else if (error.response !== null && error.response !== undefined) {
-                // HTTP error
-                msg += `server returned ${error.response.statusText}`;
-
-                if (
-                    error.response.headers['content-type'] === 'application/json' &&
-                    typeof error.response.data === 'string'
-                ) {
-                    const json: unknown = JSON.parse(error.response.data);
-                    console.error(json);
-                }
-            } else if (error.request !== null && error.request !== undefined) {
-                msg += error.toString();
-            }
+            const httpClientError = new HttpClientError(
+                params.intent,
+                handleNonErrorError(error),
+            );
 
             switch (jsEnvironment()) {
                 case 'node':
-                    console.error(msg);
+                    console.error(httpClientError.message);
                     break;
                 case 'browser':
-                    alert(msg);
+                    alert(httpClientError.message);
                     break;
             }
-            throw new Error(msg);
+            throw httpClientError;
         }
     }
 
-    async listLibraries(): Promise<Library[]> {
+    async rawApiCall(method: Method, url: string, data?: unknown): Promise<string> {
+        if (process.env['NODE_ENV'] === 'production') {
+            throw new Error('This method is for debugging purposes only.');
+        }
+        const response = await this.wrappedFetch({
+            intent: 'performing raw API call',
+            url,
+            method,
+            headers: jsonContentTypeHeader,
+            data,
+        });
+        return response.data;
+    }
+
+    async listLibraries(): Promise<(Library & LibraryMetadata)[]> {
         const response = await this.wrappedFetch({
             intent: 'listing libraries',
             url: urls.libraries(),
@@ -150,7 +199,12 @@ export class HTTPClient {
             headers: jsonContentTypeHeader,
             responseType: 'json',
         });
-        return listLibrariesSchema.parse(response.data);
+        const responseItems = z.array(z.unknown()).parse(response.data);
+        return responseItems.map((unvalidatedLibrary) => {
+            const library = librarySchema.parse(unvalidatedLibrary);
+            const metadata = libraryMetadataSchema.parse(unvalidatedLibrary);
+            return { ...metadata, ...library };
+        });
     }
 
     async updateLibrary(libraryId: string, updates: unknown): Promise<void> {

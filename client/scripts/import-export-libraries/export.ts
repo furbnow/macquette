@@ -1,10 +1,12 @@
-// For some reason ESLint can't resolve this import
+// For some reason ESLint can't resolve these imports
+// eslint-disable-next-line import/no-unresolved
+import { parse as csvParse } from 'csv-parse/sync';
 // eslint-disable-next-line import/no-unresolved
 import { stringify as csvStringify } from 'csv-stringify/sync';
 import { omit } from 'lodash';
+import { z } from 'zod';
 
 import { Library } from '../../src/v2/data-schemas/libraries';
-import { SanitisedLibrary } from './sanitise';
 import { ItemOf, LibraryItem } from './types';
 
 type CsvRow = Omit<LibraryItem, 'tags'> & {
@@ -12,15 +14,21 @@ type CsvRow = Omit<LibraryItem, 'tags'> & {
 };
 
 function prepareForCsv<L extends Library>(
-    library: SanitisedLibrary<L>,
+    library: L,
 ): {
     columnNames: string[];
     csvData: CsvRow[];
 } {
     const collectedItemFields: Set<string> = new Set();
     const csvData: CsvRow[] = [];
-    const libraryData: Record<string, ItemOf<L>> = library.data;
-    for (const item of Object.values(libraryData)) {
+    const libraryItems: ItemOf<L>[] = Object.values(
+        // SAFETY: TS struggles to translate between a union of Records and a
+        // Record of unions, so we have to cast here
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        library.data as Record<string, ItemOf<L>>,
+    );
+    for (const item of libraryItems) {
         for (const key of Object.keys(item)) {
             collectedItemFields.add(key);
         }
@@ -53,7 +61,7 @@ function prepareForCsv<L extends Library>(
     return { columnNames, csvData };
 }
 
-export function getCsv(library: SanitisedLibrary<Library>) {
+export function writeCsv(library: Library): string {
     const { columnNames, csvData } = prepareForCsv(library);
     const csvString = csvStringify(csvData, {
         columns: columnNames,
@@ -65,6 +73,39 @@ export function getCsv(library: SanitisedLibrary<Library>) {
     return csvString;
 }
 
-export function getJson(library: SanitisedLibrary<Library>) {
+export function readCsv(csv: string): Record<string, unknown> {
+    const raw: unknown = csvParse(csv, { columns: true });
+    const partialSchema = z.array(
+        z
+            .object({
+                tag: z.string(),
+                tags: z.string().optional(),
+            })
+            .passthrough(),
+    );
+    const partiallyValidated = partialSchema.parse(raw);
+    const records = partiallyValidated.map((record) => {
+        if (record.tags !== undefined) {
+            return {
+                ...record,
+                tags: [record.tags],
+            };
+        } else {
+            return record;
+        }
+    });
+    const entries = records.map((record): [string, unknown] => [record.tag, record]);
+    return Object.fromEntries<unknown>(entries);
+}
+
+export function writeJson(library: Library) {
     return JSON.stringify(library);
+}
+
+export function readJson(json: string): Record<string, unknown> {
+    const raw: unknown = JSON.parse(json);
+    const dataSchema = z.object({
+        data: z.record(z.unknown()),
+    });
+    return dataSchema.parse(raw).data;
 }

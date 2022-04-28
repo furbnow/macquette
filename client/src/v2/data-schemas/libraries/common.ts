@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { libraryCommonMetadataSchema } from '../api-metadata';
 import { stringyIntegerSchema } from '../helpers/legacy-numeric-values';
 
 export const measureCommonSchema = z.object({
@@ -30,10 +29,9 @@ export function makeLibrarySchema<Type extends string, ItemT>(
     type: Type,
     itemSchema: z.ZodSchema<ItemT>,
 ) {
-    return z
-        .object({
-            type: z.literal(type),
-            data: z.record(itemSchema),
-        })
-        .merge(libraryCommonMetadataSchema);
+    return z.object({
+        name: z.string(),
+        type: z.literal(type),
+        data: z.record(itemSchema),
+    });
 }

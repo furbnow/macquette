@@ -40,5 +40,4 @@ export const librarySchema = z.discriminatedUnion('type', [
     waterUsageMeasures,
 ]);
 
-export const listLibrariesSchema = z.array(librarySchema);
 export type Library = z.infer<typeof librarySchema>;

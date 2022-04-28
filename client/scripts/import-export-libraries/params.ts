@@ -1,15 +1,17 @@
 import { prompt } from 'inquirer';
 import { resolve } from 'path';
 
-export type Params = {
+type CommonParams = {
     baseUrl: string;
-    sessionId: string;
     dataDirectory: string;
+};
+
+export type ExportParams = CommonParams & {
     outputFormat: 'csv' | 'json';
 };
 
-export const getParams = async (): Promise<Params> => {
-    const { baseUrl, sessionId, dataDirectory, outputFormat } = await prompt<Params>([
+export async function getExportParams(): Promise<ExportParams> {
+    return await prompt<ExportParams>([
         {
             type: 'input',
             name: 'baseUrl',
@@ -23,21 +25,35 @@ export const getParams = async (): Promise<Params> => {
             default: resolve(process.env['HOME'] ?? '/tmp', 'macquette-libraries'),
         },
         {
-            type: 'password',
-            name: 'sessionId',
-            message: 'Django sessionid cookie',
-        },
-        {
             type: 'list',
             name: 'outputFormat',
             choices: ['csv', 'json'],
             message: 'Output file format',
         },
     ]);
-    return {
-        baseUrl,
-        sessionId,
-        dataDirectory,
-        outputFormat,
-    };
-};
+}
+
+export type ImportParams = CommonParams & { dryRun: boolean };
+
+export async function getImportParams(): Promise<ImportParams> {
+    return await prompt<ImportParams>([
+        {
+            type: 'confirm',
+            name: 'dryRun',
+            message: 'Dry run?',
+            default: true,
+        },
+        {
+            type: 'input',
+            name: 'baseUrl',
+            message: 'Base URL to query',
+            default: 'http://localhost:8000',
+        },
+        {
+            type: 'input',
+            name: 'dataDirectory',
+            message: 'Data directory',
+            default: resolve(process.env['HOME'] ?? '/tmp', 'macquette-libraries'),
+        },
+    ]);
+}
