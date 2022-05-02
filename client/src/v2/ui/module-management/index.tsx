@@ -1,6 +1,6 @@
 import { mapValues } from 'lodash';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { Scenario, scenarioSchema } from '../../data-schemas/scenario';
 import { CommonState, commonStateReducer, initialCommonState } from '../common-state';
@@ -77,6 +77,7 @@ const initialState: AppState = {
 const store = new Store(mainReducer, initialState);
 
 export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
+    const root = createRoot(mountPoint);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rootComponent: any = modules[moduleName].rootComponent;
     const dispatch = (action: AppAction) => store.dispatch(action);
@@ -85,7 +86,7 @@ export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
             state: moduleStateView(appState, moduleName),
             dispatch,
         });
-        ReactDOM.render(element, mountPoint);
+        root.render(element);
     };
     render(store.state);
     store.subscribe(render);
@@ -107,7 +108,7 @@ export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
         unload: () => {
             console.log('in unload', { moduleName, mountPoint });
             store.unsubscribe(render);
-            ReactDOM.unmountComponentAtNode(mountPoint);
+            root.unmount();
         },
     };
 };
