@@ -29,6 +29,9 @@ function report_initUI() {
     if (newReport) {
         document.getElementById("new-report-generation").style.display = "block";
     }
+    if (oldReport) {
+        document.getElementById("old-report-generation").style.display = "block";
+    }
 
     function startFetch() {
         document.getElementById("request-spinner").style.display = "inline-block";
