@@ -48,7 +48,7 @@ class Assessment(models.Model):
         related_name="featured_on",
     )
 
-    data = models.JSONField(default=dict, validators=[validate_dict])
+    data = models.JSONField(default=dict, validators=[validate_dict], blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
