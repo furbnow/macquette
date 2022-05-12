@@ -49,9 +49,6 @@ python-test:
             - graph_results
         expire_in: 1 week
 
-        reports:
-            cobertura: coverage.xml
-
 js-test:
     stage: test
     needs: []
