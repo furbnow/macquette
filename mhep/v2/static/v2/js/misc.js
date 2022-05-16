@@ -821,7 +821,8 @@ function _extract_scenario_inputs(data) {
             disruption: data.fabric.elements[z].disruption || '',
             associated_work: data.fabric.elements[z].associated_work || '',
             notes: data.fabric.elements[z].notes || '',
-            maintenance: data.fabric.elements[z].maintenance || ''
+            maintenance: data.fabric.elements[z].maintenance || '',
+            quantity: data.fabric.elements[z].quantity,
         };
         if (data.fabric.elements[z].EWI != undefined) {
             inputdata.fabric.elements[z].EWI = data.fabric.elements[z].EWI;
