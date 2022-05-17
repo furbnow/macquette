@@ -5,8 +5,9 @@ import { stringyIntegerSchema } from '../scenario/value-schemas';
 export const measureCommonSchema = z.object({
     associated_work: z.string(),
     benefits: z.string(),
-    cost_units: z.string(),
     cost: stringyIntegerSchema,
+    cost_units: z.string(),
+    min_cost: stringyIntegerSchema.optional(),
     description: z.string(),
     disruption: z.string(),
     key_risks: z.string(),
