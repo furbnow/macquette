@@ -214,6 +214,7 @@ body .modal {
 }
 
 .clickable { cursor: pointer; }
+.clickable-hover:hover { background-color: var(--beige-900); }
 
 
 .list-unstyled { margin: 0; padding: 0; list-style: none; }
@@ -233,12 +234,17 @@ body .modal {
 
 .text-warning { color: red; }
 
+.text-tabular-nums { font-variant-numeric: tabular-nums; }
+
 
 .d-i { display: inline; }
 .d-ib { display: inline-block; }
 .d-flex { display: flex; }
 .d-b { display: block; }
 
+.flex-wrap { flex-wrap: wrap; }
+
+.align-right { text-align: right; }
 .align-items-start { align-items: start !important; }
 .align-items-center { align-items: center !important; }
 
@@ -508,4 +514,93 @@ body .modal {
 
 .form-row select {
     width: auto
+}
+
+
+/**** ARTISANAL DIALOGUE BOXES ****/
+
+/* Based on the CSS at https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html */
+
+/* Apply to body when there's a dialogue open */
+.has_dialog {
+    overflow: hidden;
+}
+
+.notbootstrap[role="alertdialog"],
+.notbootstrap[role="dialog"] {
+    box-sizing: border-box;
+    border: 1px solid #000;
+    background-color: #fff;
+    min-height: 100vh;
+}
+
+@media screen and (min-width: 640px) {
+    .notbootstrap[role="alertdialog"],
+    .notbootstrap[role="dialog"] {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 4rem;
+        left: 50vw;  /* move to the middle of the screen (assumes relative parent is the body/viewport) */
+        transform: translateX(-50%);  /* move backwards 50% of this element's width */
+        min-width: calc(640px - (15px * 2));  /* == breakpoint - left+right margin */
+        max-height: calc(100vh - 8rem); /* 4rem top and bottom */
+        min-height: auto;
+        box-shadow: 0 19px 38px rgba(0, 0, 0, 0.12), 0 15px 12px rgba(0, 0, 0, 0.22);
+        --border-radius: 6px;
+        border-radius: var(--border-radius);
+    }
+}
+
+.dialog-header {
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.dialog-header select {
+    margin-bottom: 0;
+    max-width: 30em
+}
+
+.dialog-x {
+    border: none;
+    background: none;
+}
+
+.dialog-x svg {
+    fill: #999;
+}
+
+.dialog-x:hover svg, .dialog-x:focus svg {
+    fill: #000;
+}
+
+.dialog-body {
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.dialog-footer {
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
+.dialog-backdrop {
+    position: fixed;
+    overflow-y: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+@media screen and (min-width: 640px) {
+    .dialog-backdrop {
+        background: rgba(0, 0, 0, 0.3);
+    }
 }

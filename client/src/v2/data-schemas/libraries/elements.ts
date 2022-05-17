@@ -31,71 +31,108 @@ const withWindowLike = {
     gL: stringyFloatSchema,
 };
 
-const door = commonFabricElement.extend({
-    tags: singleElementArray('Door'),
-    ...withWindowLike,
-});
+const door = commonFabricElement
+    .extend({
+        tags: singleElementArray('Door'),
+        ...withWindowLike,
+    })
+    .merge(libraryItemCommonSchema);
 
-const roofLight = commonFabricElement.extend({
-    tags: singleElementArray('Roof_light'),
-    ...withWindowLike,
-});
+const doorMeasure = door.merge(measureCommonSchema);
 
-const window_ = commonFabricElement.extend({
-    tags: singleElementArray('Window'),
-    ...withWindowLike,
-});
+const roofLight = commonFabricElement
+    .extend({
+        tags: singleElementArray('Roof_light'),
+        ...withWindowLike,
+    })
+    .merge(libraryItemCommonSchema);
 
-const wall = commonFabricElement.extend({
-    tags: singleElementArray('Wall'),
-});
+const roofLightMeasure = roofLight.merge(measureCommonSchema);
 
-const wallMeasure = wall.extend({
-    EWI: legacyBoolean,
-});
+const window_ = commonFabricElement
+    .extend({
+        tags: singleElementArray('Window'),
+        ...withWindowLike,
+    })
+    .merge(libraryItemCommonSchema);
 
-const floor = commonFabricElement.extend({
-    tags: singleElementArray('Floor'),
-});
+const windowMeasure = window_.merge(measureCommonSchema);
 
-const hatch = commonFabricElement.extend({
-    tags: singleElementArray('Hatch'),
-});
+const wall = commonFabricElement
+    .extend({
+        tags: singleElementArray('Wall'),
+    })
+    .merge(libraryItemCommonSchema);
+export type Wall = z.infer<typeof wall>;
 
-const partyWall = commonFabricElement.extend({
-    tags: singleElementArray('Party_wall'),
-});
+const wallMeasure = wall
+    .extend({
+        EWI: legacyBoolean,
+    })
+    .merge(libraryItemCommonSchema)
+    .merge(measureCommonSchema);
+export type WallMeasure = z.infer<typeof wallMeasure>;
 
-const loft = commonFabricElement.extend({
-    tags: singleElementArray('Loft'),
-});
+const floor = commonFabricElement
+    .extend({
+        tags: singleElementArray('Floor'),
+    })
+    .merge(libraryItemCommonSchema);
 
-const roof = commonFabricElement.extend({
-    tags: singleElementArray('Roof'),
-});
+const floorMeasure = floor.merge(measureCommonSchema);
+
+const hatch = commonFabricElement
+    .extend({
+        tags: singleElementArray('Hatch'),
+    })
+    .merge(libraryItemCommonSchema);
+
+const hatchMeasure = hatch.merge(measureCommonSchema);
+
+const partyWall = commonFabricElement
+    .extend({
+        tags: singleElementArray('Party_wall'),
+    })
+    .merge(libraryItemCommonSchema);
+
+const partyWallMeasure = partyWall.merge(measureCommonSchema);
+
+const loft = commonFabricElement
+    .extend({
+        tags: singleElementArray('Loft'),
+    })
+    .merge(libraryItemCommonSchema);
+
+const loftMeasure = loft.merge(measureCommonSchema);
+
+const roof = commonFabricElement
+    .extend({
+        tags: singleElementArray('Roof'),
+    })
+    .merge(libraryItemCommonSchema);
+
+const roofMeasure = roof.merge(measureCommonSchema);
 
 const elements = [
     ...(
         [wall, door, floor, hatch, partyWall, roofLight, window_, loft, roof] as const
-    ).map((s) => s.merge(libraryItemCommonSchema).passthrough()),
+    ).map((s) => s.passthrough()),
 ];
 
 const measures = [
     ...(
         [
             wallMeasure,
-            door,
-            floor,
-            hatch,
-            partyWall,
-            roofLight,
-            window_,
-            loft,
-            roof,
+            doorMeasure,
+            floorMeasure,
+            hatchMeasure,
+            partyWallMeasure,
+            roofLightMeasure,
+            windowMeasure,
+            loftMeasure,
+            roofMeasure,
         ] as const
-    ).map((s) =>
-        s.merge(libraryItemCommonSchema).merge(measureCommonSchema).passthrough(),
-    ),
+    ).map((s) => s.passthrough()),
 ];
 
 function assertAtLeastTwoElements<T>(arr: T[]): [T, T, ...T[]] {

@@ -1,3 +1,6 @@
+import { LibraryMetadata } from '../../data-schemas/api-metadata';
+import { Library } from '../../data-schemas/libraries';
+
 /* eslint-disable
     @typescript-eslint/consistent-type-assertions,
     @typescript-eslint/no-explicit-any,
@@ -6,4 +9,5 @@
 export const externals = () => ({
     data: (window as any).data as unknown,
     update: (window as any).update as () => void,
+    libraries: (window as any).libraries as (Library & LibraryMetadata)[],
 });

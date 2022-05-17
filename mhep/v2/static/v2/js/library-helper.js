@@ -3364,14 +3364,16 @@ libraryHelper.prototype.generation_measures_get_item_to_save = function () {
  * Other methods
  ***************************************************/
 libraryHelper.prototype.load_libraries = async function () {
-    const libraries = await mhep_helper.listLibraries();
+    const result = await mhep_helper.listLibraries();
+
+    window.libraries = result;
 
     let libraries_by_type = {};
     for (let type of Object.keys(libraryHelper.library_names)) {
         libraries_by_type[type] = [];
     }
 
-    for (let library of libraries) {
+    for (let library of result) {
         let type = library.type;
         libraries_by_type[type].push(library);
     }

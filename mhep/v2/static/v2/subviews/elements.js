@@ -28,22 +28,49 @@ function get_last_external_opening() {
     }
 }
 
+function showWall() {
+    // Wait until the libraries are loaded
+    if (!window.libraries) {
+        setTimeout(() => showWall(), 50)
+        return;
+    }
+
+    const mountPoint = document.querySelector("#new-selector-mountpoint");
+    window.Macquette.selectWall(mountPoint, (wall) => {
+        console.log(wall);
+        addElement(wall.tag, wall.tags[0], wall);
+    }, null);
+}
+$('#openbem').on('click', '.new-add-wall-button', showWall);
+
 // button defined in: libraryHelper:elements_library_to_html
 $('#openbem').on('click', '.add-element', function () {
-
-    var lib = $(this).attr('lib');
+    var tag = $(this).attr('lib');
     var type = $(this).attr('type');
     type = capitalise(type);
-    var item_id = 1 + get_elements_max_id();
     var library = library_helper.get_library_by_id($(this).attr('library')).data;
-    // Create default element
-    var element = {type: type, name: type, lib: lib, l: 0, h: 0, area: 0, uvalue: 0, kvalue: 0, wk: 0, id: item_id};
-    // If library is defined replace defaults with parameters from library
-    if (lib != undefined) {
-        for (z in library[lib]) {
-            element[z] = library[lib][z];
-        }
-    }
+
+    addElement(tag, type, library[tag])
+});
+
+function addElement(tag, type, libraryItem) {
+    const item_id = 1 + get_elements_max_id();
+
+    delete libraryItem.tag;
+
+    const element = {
+        type,
+        name: type,
+        lib: tag,
+        l: 0,
+        h: 0,
+        area: 0,
+        uvalue: 0,
+        kvalue: 0,
+        wk: 0,
+        id: item_id,
+        ...libraryItem
+    };
 
     if (isExternalOpening(type)) {
         open = get_last_external_opening();
@@ -75,7 +102,7 @@ $('#openbem').on('click', '.add-element', function () {
 
     update();
     $('#myModal').modal('hide');
-});
+};
 
 // button defined in: libraryHelper:elements_library_to_html
 $('#openbem').on('click', '.change-element', function () {
