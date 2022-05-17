@@ -12,6 +12,14 @@ function sanitiseItem<Item extends LibraryItem>(item: Item, name: string): Item 
             out.description = '';
         }
     }
+    if ('name' in out && out.name !== undefined) {
+        out.name = out.name.replace(/"+$/, '').trim();
+    }
+    if ('source' in out && out.source !== undefined) {
+        if (out.source === 'undefined' || out.source === '--') {
+            out.source = '';
+        }
+    }
     if (out.tag === undefined) {
         out.tag = name;
     }
