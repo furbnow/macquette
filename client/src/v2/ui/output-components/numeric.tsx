@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { assertNever } from '../../helpers/assert-never';
-
 export const noOutput: unique symbol = Symbol.for('no output');
 export const loading: unique symbol = Symbol.for('loading');
 
@@ -13,34 +11,24 @@ export type NumericOutputProps = {
 
 export function NumericOutput(props: NumericOutputProps) {
     const { value, unit, dp = 2 } = props;
+
     if (value === loading) {
         return <>[loading...]</>;
-    }
-    if (value === noOutput) {
+    } else if (value === noOutput) {
         return <>[no output]</>;
     }
-    let unitElement: JSX.Element | undefined;
-    if (typeof unit === 'string') {
-        unitElement = <>{unit}</>;
+
+    const valString = new Intl.NumberFormat('en', {
+        maximumFractionDigits: Number.isInteger(value) ? 0 : dp,
+    }).format(value);
+
+    if (unit === undefined) {
+        return <>{valString}</>;
     } else {
-        unitElement = unit;
+        return (
+            <>
+                {valString} {unit}
+            </>
+        );
     }
-    if (typeof value === 'number') {
-        let valString: string;
-        if (Number.isInteger(value)) {
-            valString = value.toString(10);
-        } else {
-            valString = value.toFixed(dp);
-        }
-        if (unitElement === undefined) {
-            return <>{valString}</>;
-        } else {
-            return (
-                <>
-                    {valString} {unitElement}
-                </>
-            );
-        }
-    }
-    return assertNever(value);
 }
