@@ -732,14 +732,7 @@ function revert_to_original(item_id, type_of_item) {
         }
         // delete measure
         delete(measures_by_id[item_id]);
-        /*var applied_in_bulk = measure_applied_in_bulk(item_id);
-         if (applied_in_bulk == false)
-         delete(measures_by_id[item_id]);
-         else
-         delete(measures_by_id[applied_in_bulk].original_elements[item_id]);*/
-
     }
-    /*elements_initUI();*/
     update();
 }
 function get_item_index_by_id(id, array) {
