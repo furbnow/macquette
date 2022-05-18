@@ -13,6 +13,7 @@
         "prettier": "^2.4.1",
         "react": "^18.0.0",
         "react-dom": "^18.0.0",
+        "validator": "^13.7.0",
         "zod": "^3.14.4"
     },
     "devDependencies": {
@@ -25,6 +26,7 @@
         "@types/object-inspect": "^1.8.1",
         "@types/react": "^18.0.0",
         "@types/react-dom": "^18.0.0",
+        "@types/validator": "^13.7.3",
         "@typescript-eslint/eslint-plugin": "^5.4.0",
         "@typescript-eslint/parser": "^5.4.0",
         "bottleneck": "^2.19.5",

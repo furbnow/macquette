@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const dateSchema = z.preprocess((arg) => {
+export const dateSchema = z.preprocess((arg) => {
     if (typeof arg === 'string' || arg instanceof Date) {
         return new Date(arg);
     } else {
@@ -8,15 +8,15 @@ const dateSchema = z.preprocess((arg) => {
     }
 }, z.date());
 
-const statusSchema = z.enum(['Complete', 'In progress', 'Test']);
+export const statusSchema = z.enum(['Complete', 'In progress', 'Test']);
 
-const userSchema = z.object({
+export const userSchema = z.object({
     id: z.string(),
     name: z.string(),
     email: z.string().optional(),
 });
 
-const organisationMetaSchema = z.object({
+export const organisationMetaSchema = z.object({
     id: z.string(),
     name: z.string(),
 });

@@ -13,7 +13,7 @@ export const commonStateReducer = (
     action: AppAction,
 ): CommonState => {
     if (action.type === 'external data update') {
-        state.locked = action.data.locked ?? false;
+        state.locked = action.currentScenario.locked ?? false;
         return state;
     }
     return state;

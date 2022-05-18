@@ -1,8 +1,9 @@
-import { mapValues } from 'lodash';
+import { cloneDeep, isEqual, mapValues } from 'lodash';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { Scenario, scenarioSchema } from '../../data-schemas/scenario';
+import { Project, projectSchema } from '../../data-schemas/project';
+import { Scenario } from '../../data-schemas/scenario';
 import { CommonState, commonStateReducer, initialCommonState } from '../common-state';
 import { ModuleAction, ModuleName, modules, ModuleStates } from '../modules';
 import { externals } from './shim';
@@ -22,7 +23,10 @@ const moduleStateView = (
 export type UiModule<StateT> = {
     initialState: StateT;
     reducer: (state: StateT, action: AppAction) => StateT;
-    dataMutator: (data: unknown, state: ModuleStateView<StateT>) => void;
+    dataMutator: (
+        externals: { project: unknown; scenarioId: unknown },
+        state: ModuleStateView<StateT>,
+    ) => void;
     rootComponent: React.FunctionComponent<{
         state: ModuleStateView<StateT>;
         dispatch: (action: AppAction) => void;
@@ -31,7 +35,9 @@ export type UiModule<StateT> = {
 
 export type ExternalDataUpdateAction = {
     type: 'external data update';
-    data: Scenario;
+    project: Project;
+    currentScenario: Scenario;
+    currentScenarioId: string;
 };
 export type AppState = {
     dirty: boolean;
@@ -92,18 +98,38 @@ export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
     store.subscribe(render);
     return {
         update: () => {
-            const parsedData = scenarioSchema.safeParse(externals().data);
-            if (!parsedData.success) {
+            const projectParseResult = projectSchema.safeParse(externals().project);
+            if (!projectParseResult.success) {
                 console.error(
-                    'Scenario validation failed! Refusing to dispatch external data update action',
-                    parsedData.error,
+                    'Project validation failed! Refusing to dispatch external data update action',
+                    projectParseResult.error,
                 );
-            } else {
-                store.dispatch({
-                    type: 'external data update',
-                    data: parsedData.data,
-                });
+                return;
             }
+            const project = projectParseResult.data;
+
+            const currentScenarioId = externals().scenarioId;
+            if (typeof currentScenarioId !== 'string') {
+                console.error(
+                    'Scenario ID validation failed! Refusing to dispatch external data update action',
+                );
+                return;
+            }
+
+            const currentScenario = project.data[currentScenarioId];
+            if (currentScenario === undefined) {
+                console.error(
+                    'Scenario ID was not present in project! Refusing to dispatch external data update action',
+                );
+                return;
+            }
+
+            store.dispatch({
+                type: 'external data update',
+                project,
+                currentScenario,
+                currentScenarioId,
+            });
         },
         unload: () => {
             console.log('in unload', { moduleName, mountPoint });
@@ -133,7 +159,7 @@ export const runDataMutators = (appState: AppState) => {
             appState,
             modName as ModuleName,
         );
-        mod.dataMutator(externals().data, view);
+        mod.dataMutator(externals().project, view);
         /* eslint-enable */
     }
 };

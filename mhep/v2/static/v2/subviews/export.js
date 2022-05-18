@@ -1,7 +1,7 @@
 console.log('Debug export.js');
 
 $('#openbem').on('click', '#import-data', function () {
-    project = JSON.parse($('#import').val());
+    p.data = project = JSON.parse($('#import').val());
     project.master.imagegallery = [];
 
     update();
@@ -45,12 +45,12 @@ $('#upload_project').submit(function (e) {
 
     function receivedText() {
         try {
-            var project_to_load = JSON.parse(fr.result); // I was worried about code injection here, but it seems that using JSON.parse is safe enough: //https://www.whitehatsec.com/blog/handling-untrusted-json-safely/
+            var project_to_load = JSON.parse(fr.result);
             try {
                 for (scenario in project_to_load) {
                     calc.run(project_to_load[scenario]);
                 } // Running all the scenarios we check if the JSON string is a valid MHEP project, if it is not we catch the exception
-                project = project_to_load;
+                p.data = project = project_to_load;
                 project.master.imagegallery = [];
                 update();
                 $('#upload-result').css('color', 'black').html('Project uploaded and imported');

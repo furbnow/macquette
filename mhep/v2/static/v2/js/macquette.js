@@ -216,7 +216,7 @@ function setupEventHandlers() {
             .forEach(function (v, i) {
                 temp_project[v] = project[v];
             });
-        project = JSON.parse(JSON.stringify(temp_project));
+        p.data = project = JSON.parse(JSON.stringify(temp_project));
 
         $('.menu-content').hide();
         redraw_scenario_menu();
@@ -275,7 +275,7 @@ function setupEventHandlers() {
     $('body').on('click', '#undo', function () {
         if (historical_index < historical.length - 1) {
             historical_index++;
-            project = JSON.parse(historical[historical_index]);
+            p.data = project = JSON.parse(historical[historical_index]);
             update(true);
         }
 
@@ -284,7 +284,7 @@ function setupEventHandlers() {
     $('body').on('click', '#redo', function () {
         if (historical_index > 0) {
             historical_index--;
-            project = JSON.parse(historical[historical_index]);
+            p.data = project = JSON.parse(historical[historical_index]);
             update(true);
         }
 

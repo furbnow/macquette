@@ -126,8 +126,8 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
     reducer: (state, action) => {
         switch (action.type) {
             case 'external data update': {
-                state.outputs = extractOutputsFromLegacy(action.data);
-                state.inputs = extractInputsFromLegacy(action.data);
+                state.outputs = extractOutputsFromLegacy(action.currentScenario);
+                state.inputs = extractInputsFromLegacy(action.currentScenario);
                 return state;
             }
             case 'solar hot water/merge input': {
@@ -142,7 +142,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
             }
         }
     },
-    dataMutator: (data, state) => {
+    dataMutator: ({ project, scenarioId }, state) => {
         const { inputs } = state.moduleState;
         const { moduleEnabled, pumpType, ...copiableInputs } = inputs;
 
@@ -157,7 +157,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
            @typescript-eslint/no-unsafe-assignment,
            @typescript-eslint/no-unsafe-member-access,
         */
-        const dataAny = data as any;
+        const dataAny = (project as any).data[scenarioId as any];
         dataAny.SHW = newSHW;
         dataAny.use_SHW = moduleEnabled;
         dataAny.water_heating = dataAny.water_heating ?? {};

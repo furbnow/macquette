@@ -7,7 +7,8 @@ import { Library } from '../../data-schemas/libraries';
     @typescript-eslint/no-unsafe-member-access,
 */
 export const externals = () => ({
-    data: (window as any).data as unknown,
+    project: (window as any).p as unknown,
+    scenarioId: (window as any).scenario as unknown,
     update: (window as any).update as () => void,
     libraries: (window as any).libraries as (Library & LibraryMetadata)[],
 });
