@@ -142,11 +142,11 @@ export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
 store.subscribe((state) => {
     if (state.dirty) {
         runDataMutators(state);
-        externals().update();
     }
 });
 
 export const runDataMutators = (appState: AppState) => {
+    const origProject = cloneDeep(externals().project);
     for (const [modName, mod] of Object.entries(modules)) {
         /* eslint-disable
            @typescript-eslint/no-explicit-any,
@@ -159,7 +159,11 @@ export const runDataMutators = (appState: AppState) => {
             appState,
             modName as ModuleName,
         );
-        mod.dataMutator(externals().project, view);
+        mod.dataMutator(externals(), view);
         /* eslint-enable */
+    }
+
+    if (!isEqual(origProject, externals().project)) {
+        externals().update();
     }
 };
