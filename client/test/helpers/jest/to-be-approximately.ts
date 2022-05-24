@@ -1,4 +1,4 @@
-import { CompareFloatParams, compareFloats } from './fuzzy-float-equality';
+import { CompareFloatParams, compareFloats } from '../fuzzy-float-equality';
 
 type Params = { tolerance?: number; absoluteToleranceAroundZero?: number };
 

@@ -1,21 +1,16 @@
 import { inspect } from 'util';
 
-import { CompareFloatParams, compareFloats } from './fuzzy-float-equality';
-import { flatten } from './object-flattening';
-import { compareSets } from './set-operations';
+import { flatten } from '../object-flattening';
+import { compareSets } from '../set-operations';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace jest {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         interface Matchers<R> {
-            /** Deep-compare two objects like .toEqual, but when encountering numeric
-             * values, compare using `compareFloat` with the provided params.
+            /** Deep-compare two objects like .toEqual, but compare primitives
+             * using the provided compare function
              */
-            toEqualApproximately: (
-                expected: unknown,
-                params?: CompareFloatParams,
-            ) => CustomMatcherResult;
             toEqualBy: (
                 expected: unknown,
                 compare: (a: unknown, b: unknown) => boolean,
@@ -25,31 +20,6 @@ declare global {
 }
 
 expect.extend({
-    toEqualApproximately(
-        received: unknown,
-        expected: unknown,
-        params?: CompareFloatParams,
-    ) {
-        const compareAnythingWithApproximateFloats = (
-            received: unknown,
-            expected: unknown,
-        ) => {
-            if (typeof received === 'number' && typeof expected === 'number') {
-                return compareFloats(params)(received, expected);
-            } else {
-                return Object.is(received, expected);
-            }
-        };
-        if (this.isNot) {
-            expect(received).not.toEqualBy(
-                expected,
-                compareAnythingWithApproximateFloats,
-            );
-        } else {
-            expect(received).toEqualBy(expected, compareAnythingWithApproximateFloats);
-        }
-        return { pass: !this.isNot, message: () => '' };
-    },
     toEqualBy(
         received: unknown,
         expected: unknown,
