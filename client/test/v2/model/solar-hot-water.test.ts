@@ -62,6 +62,7 @@ function arbitraryDependencies(): fc.Arbitrary<SolarHotWaterDependencies> {
             dailyHotWaterUsageMeanAnnual: arbFloat(),
             hotWaterEnergyContentByMonth: fc.func(arbFloat()),
             hotWaterEnergyContentAnnual: arbFloat(),
+            solarHotWater: fc.boolean(),
         }),
     });
 }

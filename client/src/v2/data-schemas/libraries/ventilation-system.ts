@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { nullableStringyFloat } from '../helpers/legacy-numeric-values';
+import { nullableStringyFloat } from '../scenario/value-schemas';
 import {
     libraryItemCommonSchema,
     makeLibrarySchema,

@@ -9,6 +9,7 @@ import { ModelError } from '../error';
 export type WaterCommonInput = {
     lowWaterUseDesign: boolean;
     annualEnergyContentOverride: false | number;
+    solarHotWater: boolean;
 };
 
 export const extractWaterCommonInputFromLegacy = (
@@ -30,9 +31,13 @@ export const extractWaterCommonInputFromLegacy = (
             override_annual_energy_content,
         });
     }
+    const solarHotWater =
+        isTruthy(scenario.use_SHW) ||
+        isTruthy(scenario.water_heating?.solar_water_heating);
     return {
         lowWaterUseDesign: low_water_use_design === true || low_water_use_design === 1,
         annualEnergyContentOverride,
+        solarHotWater,
     };
 };
 
@@ -47,6 +52,14 @@ export class WaterCommon {
         private input: WaterCommonInput,
         private dependencies: WaterCommonDependencies,
     ) {}
+
+    get solarHotWater(): boolean {
+        return this.input.solarHotWater;
+    }
+
+    get annualEnergyContentOverride(): false | number {
+        return this.input.annualEnergyContentOverride;
+    }
 
     @cache
     get dailyHotWaterUsageMeanAnnual() {

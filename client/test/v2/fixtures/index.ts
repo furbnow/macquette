@@ -51,15 +51,66 @@ export const scenarios = fixtures.flatMap((fixture) => {
     }
 });
 
+const knownBuggy: Array<{ reason: string; scenarios: Array<[string, string]> }> = [
+    {
+        reason: 'reference model outputs .ventilation.average_WK as NaN, causing bugs later',
+        scenarios: [['private/443.json', 'scenario1']],
+    },
+    {
+        reason: 'ventilation string concatenation bug',
+        scenarios: [
+            ['private/143.json', 'master'],
+            ['private/143.json', 'scenario1'],
+        ],
+    },
+    {
+        reason: 'SHW flag mismatches',
+        scenarios: [
+            ['private/2.json', 'master'],
+            ['private/137.json', 'master'],
+            ['private/137.json', 'scenario1'],
+            ['private/137.json', 'scenario2'],
+            ['private/137.json', 'scenario3'],
+            ['private/164.json', 'scenario1'],
+            ['private/226.json', 'master'],
+            ['private/226.json', 'scenario1'],
+            ['private/234.json', 'scenario2'],
+            ['private/237.json', 'scenario1'],
+            ['private/307.json', 'scenario1'],
+            ['private/307.json', 'scenario5'],
+            ['private/337.json', 'scenario4'],
+            ['private/348.json', 'scenario2'],
+            ['private/358.json', 'master'],
+        ],
+    },
+    {
+        reason: 'heating system uses a buggy value for .combi_loss',
+        scenarios: [
+            ['private/364.json', 'master'],
+            ['private/364.json', 'scenario1'],
+            ['private/364.json', 'scenario2'],
+            ['private/364.json', 'scenario3'],
+            ['private/383.json', 'master'],
+            ['private/383.json', 'scenario1'],
+            ['private/383.json', 'scenario2'],
+            ['private/383.json', 'scenario3'],
+        ],
+    },
+    {
+        reason: 'heating system specifies a combi boiler with a primary circuit (which is not valid)',
+        scenarios: [['private/170.json', 'scenario3']],
+    },
+];
+const knownBuggyFlat: Array<[string, string, string]> = knownBuggy.flatMap(
+    ({ reason, scenarios }) =>
+        scenarios.map(([p, n]): [string, string, string] => [p, n, reason]),
+);
 export const shouldSkipScenario = (scenario: Scenario): boolean => {
-    const knownBuggy: Array<[string, string]> = [
-        ['private/443.json', 'scenario1'],
-        ['private/143.json', 'master'],
-        ['private/143.json', 'scenario1'],
-    ];
-    for (const [path, name] of knownBuggy) {
+    for (const [path, name, reason] of knownBuggyFlat) {
         if (scenario.fixturePath === path && scenario.scenarioName === name) {
-            console.warn(`Skipping known buggy scenario ${scenario.displayName}`);
+            console.warn(
+                `Skipping known buggy scenario ${scenario.displayName} (${reason})`,
+            );
             return true;
         }
     }

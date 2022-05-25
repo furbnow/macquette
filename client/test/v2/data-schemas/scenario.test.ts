@@ -8,6 +8,7 @@ import { emulateJsonRoundTrip } from '../../../src/v2/helpers/emulate-json-round
 import { calcRun } from '../../../src/v2/model/model';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import { arbScenarioInputs } from '../model/arbitraries/scenario';
+import { checkInputBugs } from '../model/scenario-predicates';
 
 describe('scenario validator', () => {
     describe('scenario inputs', () => {
@@ -32,7 +33,12 @@ describe('scenario validator', () => {
         };
         test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
         test('arbitrary', () => {
-            fc.assert(fc.property(arbScenarioInputs(), testFn));
+            fc.assert(
+                fc.property(
+                    arbScenarioInputs().filter((s) => !checkInputBugs(s).bugs),
+                    testFn,
+                ),
+            );
         });
     });
 
@@ -44,7 +50,12 @@ describe('scenario validator', () => {
         };
         test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
         test('arbitrary', () => {
-            fc.assert(fc.property(arbScenarioInputs(), testFn));
+            fc.assert(
+                fc.property(
+                    arbScenarioInputs().filter((s) => !checkInputBugs(s).bugs),
+                    testFn,
+                ),
+            );
         });
     });
 
@@ -83,7 +94,12 @@ describe('scenario validator', () => {
 
         test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
         test('arbitrary', () => {
-            fc.assert(fc.property(arbScenarioInputs(), testFn));
+            fc.assert(
+                fc.property(
+                    arbScenarioInputs().filter((s) => !checkInputBugs(s).bugs),
+                    testFn,
+                ),
+            );
         });
     });
 });

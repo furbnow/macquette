@@ -29,6 +29,8 @@ module.exports = {
         'react-hooks/exhaustive-deps': 'warn',
         'no-var': 'error',
         'import/no-cycle': ['error', { ignoreExternal: true }],
+        'no-warning-comments': 'warn',
+        'eqeqeq': 'error',
     },
     settings: { react: { version: 'detect' } },
     overrides: [
@@ -54,14 +56,13 @@ module.exports = {
                         allowNullableObject: false,
                     },
                 ],
-                'eqeqeq': 'error',
             },
             parser: '@typescript-eslint/parser',
         },
 
         // dev ui work
         {
-            files: ['src/dev/ui/**/*.ts', 'src/dev/ui/**/*.tsx', 'src/exports-dev.tsx'],
+            files: ['src/dev/ui/**/*.{ts,js}', 'src/dev/ui/**/*.{tsx,jsx}', 'src/exports-dev.tsx'],
             rules: {
                 '@typescript-eslint/strict-boolean-expressions': 'off',
                 '@typescript-eslint/consistent-type-assertions': 'off',
@@ -69,6 +70,7 @@ module.exports = {
                 '@typescript-eslint/no-non-null-assertion': 'off',
                 '@typescript-eslint/explicit-module-boundary-types': 'off',
                 'eqeqeq': 'off',
+                'no-warning-comments': 'off',
             },
         },
 

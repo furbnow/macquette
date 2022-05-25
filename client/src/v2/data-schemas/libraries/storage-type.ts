@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
-import { stringyBoolean } from '../helpers/legacy-booleans';
-import { stringyFloatSchema } from '../helpers/legacy-numeric-values';
+import { legacyBoolean, stringyFloatSchema } from '../scenario/value-schemas';
 import {
     libraryItemCommonSchema,
     makeLibrarySchema,
@@ -17,7 +16,7 @@ const item = z
         storage_volume: stringyFloatSchema,
         volume_factor_b: stringyFloatSchema,
         temperature_factor_b: stringyFloatSchema,
-        manufacturer_loss_factor: stringyBoolean,
+        manufacturer_loss_factor: legacyBoolean,
     })
     .merge(libraryItemCommonSchema)
     .merge(withGenericTags)

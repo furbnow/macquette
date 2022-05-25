@@ -37,4 +37,4 @@ export const stringyNumber = (
     return fc.oneof(...poss);
 };
 
-export const legacyBoolean = () => fc.oneof(fc.constant(1), fc.boolean());
+export const legacyBoolean = () => fc.oneof(fc.constant(1 as const), fc.boolean());

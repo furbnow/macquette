@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
 import { assertNever } from '../../helpers/assertNever';
-import { stringyBoolean } from '../helpers/legacy-booleans';
-import { stringyFloatSchema } from '../helpers/legacy-numeric-values';
+import { legacyBoolean, stringyFloatSchema } from '../scenario/value-schemas';
 import {
     makeLibrarySchema,
     libraryItemCommonSchema,
@@ -52,7 +51,7 @@ const wall = commonFabricElement.extend({
 });
 
 const wallMeasure = wall.extend({
-    EWI: stringyBoolean,
+    EWI: legacyBoolean,
 });
 
 const floor = commonFabricElement.extend({

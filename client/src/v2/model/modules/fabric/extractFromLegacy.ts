@@ -1,5 +1,5 @@
-import { coalesceEmptyString } from '../../../data-schemas/helpers/legacy-numeric-values';
 import { Scenario } from '../../../data-schemas/scenario';
+import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
 import { findWithRest } from '../../../helpers/findWithRest';
 import { partition } from '../../../helpers/partition';
 import { Orientation } from '../../enums/orientation';

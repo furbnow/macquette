@@ -8,6 +8,7 @@ import { isTruthy } from '../../../src/v2/helpers/is-truthy';
 import { calcRun } from '../../../src/v2/model/model';
 import { FcInfer } from '../../helpers/arbitraries';
 import { CompareFloatParams, compareFloats } from '../../helpers/fuzzy-float-equality';
+import { stricterParseFloat } from '../../helpers/stricter-parse-float';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import { arbScenarioInputs } from './arbitraries/scenario';
 import {
@@ -17,6 +18,12 @@ import {
     shwInputs,
 } from './arbitraries/solar-hot-water';
 import { calcRun as referenceCalcRun } from './reference-model';
+import {
+    checkInputBugs,
+    checkOutputBugs,
+    hasNewBehaviour,
+    hasNewInputs,
+} from './scenario-predicates';
 
 const runModel = (data: any, calcRun: (data: any) => any) => {
     // Clone the input because calcRun will modify it in-place
@@ -30,8 +37,23 @@ const runModel = (data: any, calcRun: (data: any) => any) => {
 const runLegacyModel = (data: any) => runModel(data, referenceCalcRun);
 const runLiveModel = (data: any) => runModel(data, calcRun);
 
+// const focussedScenariosSpec: [string, string][] = [['private/170.json', 'scenario3']];
+const focussedScenariosSpec: [string, string][] = [];
+const focussedScenarios = scenarios.filter(
+    (s) =>
+        focussedScenariosSpec.length === 0 ||
+        focussedScenariosSpec.find(
+            ([path, name]) => path === s.fixturePath && name === s.scenarioName,
+        ) !== undefined,
+);
+
 describe('golden master acceptance tests', () => {
-    test.each(scenarios)('fixed data: $displayName', (scenario) => {
+    test('all scenarios are included in tests', () => {
+        // This test is to make sure we don't commit a focussed test suite to main
+        expect(focussedScenarios).toHaveLength(scenarios.length);
+    });
+
+    test.each(focussedScenarios)('fixed data: $displayName', (scenario) => {
         if (shouldSkipScenario(scenario)) {
             return;
         }
@@ -39,8 +61,13 @@ describe('golden master acceptance tests', () => {
             console.warn(`Skipping scenario for new behaviour: ${scenario.displayName}`);
             return;
         }
+        expect(checkInputBugs(scenario.data as any)).toEqual(
+            expect.objectContaining({
+                bugs: false,
+            }),
+        );
         const legacyReference = runLegacyModel(cloneDeep(scenario.data));
-        expect(hasNoKnownBugs(legacyReference)).toEqual(
+        expect(checkOutputBugs(legacyReference)).toEqual(
             expect.objectContaining({
                 bugs: false,
             }),
@@ -54,12 +81,18 @@ describe('golden master acceptance tests', () => {
 
     test('fast-check data', () => {
         const examples: Array<[FcInfer<typeof arbScenarioInputs>]> = [];
+
         fc.assert(
             fc.property(
-                arbScenarioInputs().filter((inputs) => !hasNewBehaviour(inputs)),
+                arbScenarioInputs().filter(
+                    (inputs) =>
+                        !hasNewBehaviour(inputs) &&
+                        !hasNewInputs(inputs) &&
+                        !checkInputBugs(inputs).bugs,
+                ),
                 (scenario) => {
                     const legacyReference = runLegacyModel(scenario);
-                    fc.pre(!hasNoKnownBugs(legacyReference).bugs);
+                    fc.pre(!checkOutputBugs(legacyReference).bugs);
                     const actual = runLiveModel(scenario);
                     const actualNormalised = normaliseScenario(actual);
                     const legacyReferenceNormalised = normaliseScenario(legacyReference);
@@ -84,85 +117,6 @@ describe('golden master acceptance tests', () => {
         );
     });
 });
-
-const isValidStringyFloat = (value: unknown) => {
-    return (
-        typeof value === 'number' ||
-        (typeof value === 'string' && !Number.isNaN(stricterParseFloat(value)))
-    );
-};
-
-const hasNoKnownBugs = (legacyScenario: any) => {
-    const noFabricBugs =
-        isValidStringyFloat(legacyScenario.fabric.total_external_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_floor_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_party_wall_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_roof_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_wall_area) &&
-        isValidStringyFloat(legacyScenario.fabric.total_window_area) &&
-        isValidStringyFloat(legacyScenario.TFA);
-
-    const solarHotWaterStringConcatenationBug = (): 'bug' | 'no bug' => {
-        const { a1, a2 } = legacyScenario.SHW;
-        if (typeof a1 !== 'string') return 'no bug';
-        if (a1 === '0' && a2 >= 0) return 'no bug';
-        if (a1 === '') return 'no bug';
-        return 'bug';
-    };
-
-    const ventilationStringConcatenationBug = (): 'bug' | 'no bug' => {
-        const { system_air_change_rate, ventilation_type } = legacyScenario.ventilation;
-        if (ventilation_type !== 'MV') return 'no bug';
-        if (typeof system_air_change_rate !== 'string') return 'no bug';
-        if (system_air_change_rate === '') return 'no bug';
-        return 'bug';
-    };
-
-    const floorAreaStringConcatenationBug = (): 'bug' | 'no bug' => {
-        const floorsInit: Array<{ area: string | number }> = legacyScenario.floors.slice(
-            0,
-            legacyScenario.floors.length - 1,
-        );
-        if (floorsInit.some((floor) => typeof floor.area === 'string')) return 'bug';
-        return 'no bug';
-    };
-
-    const noStringConcatenationBugs =
-        // Wide spectrum
-        !Number.isNaN(stricterParseFloat(legacyScenario.total_cost)) &&
-        // Specifics
-        solarHotWaterStringConcatenationBug() === 'no bug' &&
-        ventilationStringConcatenationBug() === 'no bug' &&
-        floorAreaStringConcatenationBug() === 'no bug';
-
-    const noVentilationBugs =
-        // if num_of_floors_override is 0, legacy treats it as undefined (i.e.
-        // no override)
-        legacyScenario.num_of_floors_override !== 0 &&
-        !Number.isNaN(legacyScenario.ventilation.average_WK);
-
-    if (!noFabricBugs) {
-        return { bugs: true, type: 'fabric bugs' };
-    }
-    if (!noStringConcatenationBugs) {
-        return { bugs: true, type: 'string concatenation bugs' };
-    }
-    if (!noVentilationBugs) {
-        return { bugs: true, type: 'ventilation bugs' };
-    }
-    return { bugs: false };
-};
-
-function hasNewBehaviour(inputs: FcInfer<typeof arbScenarioInputs>): boolean {
-    // SHW from estimate
-    const shwIsFromEstimate =
-        inputs.SHW !== undefined &&
-        isTruthy(inputs.use_SHW || inputs.water_heating?.solar_water_heating) &&
-        !shwIsLegacy(inputs.SHW) &&
-        inputs.SHW.input.collector.parameterSource === 'estimate';
-
-    return shwIsFromEstimate;
-}
 
 const heuristicTypeOf = (value: unknown) => {
     if (typeof value === 'number') {
@@ -384,9 +338,4 @@ const normaliseScenario = (scenario: any) => {
     }
 
     return castScenario;
-};
-
-const stricterParseFloat = (s: string): number => {
-    // Returns NaN in more cases than parseFloat
-    return 1.0 * (s as any);
 };

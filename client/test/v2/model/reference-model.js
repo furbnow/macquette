@@ -1198,7 +1198,12 @@ calc.heating_systems = function (data) {
             if (f_requirements[system.fuel] == undefined) {
                 f_requirements[system.fuel] = {demand: 0, fraction: 0, fuel: system.fuel, fuel_input: 0};
             }
-            let demand = system.fraction_space * data.energy_requirements.space_heating.quantity;
+            let demand;
+            if (data.energy_requirements.space_heating === undefined) {
+                demand = 0;
+            } else {
+                demand = system.fraction_space * data.energy_requirements.space_heating.quantity;
+            }
             f_requirements[system.fuel].demand += demand;
             f_requirements[system.fuel].fuel_input += demand / (system.winter_efficiency / 100);
             f_requirements[system.fuel].fraction += system.fraction_space;

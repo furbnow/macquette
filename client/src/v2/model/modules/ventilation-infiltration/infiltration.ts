@@ -1,5 +1,5 @@
-import { coalesceEmptyString } from '../../../data-schemas/helpers/legacy-numeric-values';
 import { Scenario } from '../../../data-schemas/scenario';
+import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
 import { mean } from '../../../helpers/mean';
 import { sum } from '../../../helpers/sum';

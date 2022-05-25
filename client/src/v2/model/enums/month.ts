@@ -64,4 +64,13 @@ export class Month {
                 return 31;
         }
     }
+
+    get season(): 'summer' | 'winter' {
+        return this.index0 >= JUNE.index0 && this.index0 <= SEPTEMBER.index0
+            ? 'summer'
+            : 'winter';
+    }
 }
+
+const JUNE = new Month('June');
+const SEPTEMBER = new Month('September');

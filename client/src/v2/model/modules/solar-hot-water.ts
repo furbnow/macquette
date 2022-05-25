@@ -1,6 +1,5 @@
 import { Scenario } from '../../data-schemas/scenario';
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
-import { isTruthy } from '../../helpers/is-truthy';
 import { sum } from '../../helpers/sum';
 import { solarHotWaterOvershadingFactor } from '../datasets';
 import { Month } from '../enums/month';
@@ -26,7 +25,6 @@ type CollectorParameters =
       };
 
 export type SolarHotWaterInput =
-    | 'module disabled'
     | 'incomplete input'
     | {
           collector: {
@@ -43,9 +41,6 @@ export type SolarHotWaterInput =
 export const extractSolarHotWaterInputFromLegacy = (
     data: Scenario,
 ): SolarHotWaterInput => {
-    if (!(isTruthy(data.use_SHW) || isTruthy(data.water_heating?.solar_water_heating))) {
-        return 'module disabled';
-    }
     if (data.SHW === undefined) {
         return 'incomplete input';
     }
@@ -140,6 +135,7 @@ export type SolarHotWaterDependencies = {
         dailyHotWaterUsageMeanAnnual: number;
         hotWaterEnergyContentByMonth: (month: Month) => number;
         hotWaterEnergyContentAnnual: number;
+        solarHotWater: boolean;
     };
 };
 
@@ -334,7 +330,7 @@ class SolarHotWaterEnabled {
     }
 
     @cacheMonth
-    solarInputMonthly(month: Month): number | null {
+    solarInputMonthly(month: Month): number {
         const { region } = this.dependencies;
         const { orientation, inclination } = this.input.collector;
         if (orientation === null) {
@@ -374,6 +370,10 @@ class SolarHotWaterEnabled {
 class SolarHotWaterNoop {
     solarInputAnnual = 0;
 
+    solarInputMonthly(): number {
+        return 0;
+    }
+
     /* eslint-disable
        @typescript-eslint/no-explicit-any,
        @typescript-eslint/no-unsafe-assignment,
@@ -389,7 +389,7 @@ export const constructSolarHotWater = (
     input: SolarHotWaterInput,
     dependencies: SolarHotWaterDependencies,
 ): SolarHotWaterEnabled | SolarHotWaterNoop => {
-    if (input === 'module disabled' || input === 'incomplete input') {
+    if (!dependencies.waterCommon.solarHotWater || input === 'incomplete input') {
         return new SolarHotWaterNoop();
     } else {
         return new SolarHotWaterEnabled(input, dependencies);

@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
+import { fabric } from './fabric';
+import { solarHotWater } from './solar-hot-water';
 import {
+    legacyBoolean,
     nullableStringyFloat,
     numberWithNaN,
     stringyFloatSchema,
     stringyIntegerSchema,
-} from '../helpers/legacy-numeric-values';
-import { fabric } from './fabric';
-import { solarHotWater } from './solar-hot-water';
-
-const legacyBoolean = z.union([z.literal(1).transform(() => true), z.boolean()]);
+} from './value-schemas';
+import { heatingSystems, waterHeating } from './water-heating';
 
 const floors = z.array(
     z.object({
@@ -18,16 +18,6 @@ const floors = z.array(
         name: z.string(),
     }),
 );
-
-const waterHeating = z
-    .object({
-        annual_energy_content: z.number(),
-        Vd_average: z.number(),
-        low_water_use_design: z.union([z.literal(1), z.boolean()]),
-        override_annual_energy_content: z.union([z.literal(1), z.boolean()]),
-        solar_water_heating: z.union([z.literal(1), z.boolean()]),
-    })
-    .partial();
 
 const lacFuels = z.array(
     z.object({
@@ -167,6 +157,7 @@ export const scenarioSchema = z
                 infiltration: numberWithNaN.nullable(),
             })
             .partial(),
+        heating_systems: heatingSystems,
     })
     .partial();
 

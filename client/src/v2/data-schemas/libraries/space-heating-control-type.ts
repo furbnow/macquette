@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { stringyIntegerSchema } from '../helpers/legacy-numeric-values';
+import { stringyIntegerSchema } from '../scenario/value-schemas';
 import {
     libraryItemCommonSchema,
     measureCommonSchema,

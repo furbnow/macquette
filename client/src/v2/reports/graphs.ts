@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash';
 
-import { coalesceEmptyString } from '../data-schemas/helpers/legacy-numeric-values';
 import { Scenario, scenarioSchema } from '../data-schemas/scenario';
+import { coalesceEmptyString } from '../data-schemas/scenario/value-schemas';
 import { isRecord } from '../helpers/is-record';
 import { calcRun } from '../model/model';
 

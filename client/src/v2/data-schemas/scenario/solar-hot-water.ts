@@ -3,12 +3,8 @@ import { z } from 'zod';
 import { solarHotWaterOvershadingFactorReverse } from '../../model/datasets';
 import { Orientation } from '../../model/enums/orientation';
 import { Overshading } from '../../model/enums/overshading';
-import {
-    coalesceEmptyString,
-    numberWithNaN,
-    stringyFloatSchema,
-} from '../helpers/legacy-numeric-values';
 import { zodNullableObject } from '../helpers/nullable-object';
+import { coalesceEmptyString, numberWithNaN, stringyFloatSchema } from './value-schemas';
 
 const outputsLegacy = z
     .object({

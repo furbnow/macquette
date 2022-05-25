@@ -26,6 +26,15 @@ export const setDefaultLegacyInputs = (data: unknown) => {
             EVP: [],
             CDF: [],
         },
+        water_heating: {
+            solar_water_heating: false,
+            hot_water_control_type: 'no_cylinder_thermostat',
+            pipework_insulation: 'Fully insulated primary pipework',
+            Vc: 0,
+            contains_dedicated_solar_storage_or_WWHRS: 0,
+            water_usage: [], // Not used in the model for anything, but seems important for at least one legacy view
+        },
+        heating_systems: [],
     };
     defaultsDeep(data, modelDefaults);
 };

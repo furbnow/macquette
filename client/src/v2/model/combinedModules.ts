@@ -54,6 +54,11 @@ import {
     WaterCommon,
     WaterCommonInput,
 } from './modules/water-common';
+import {
+    extractWaterHeatingInputFromLegacy,
+    WaterHeating,
+    WaterHeatingInput,
+} from './modules/water-heating';
 
 export type Input = {
     fuels: FuelsDict;
@@ -69,6 +74,7 @@ export type Input = {
     lighting: LightingSAPInput;
     appliances: AppliancesInput;
     cooking: CookingInput;
+    waterHeating: WaterHeatingInput;
 };
 
 export const extractInputFromLegacy = (scenario: Scenario): Input => {
@@ -87,6 +93,7 @@ export const extractInputFromLegacy = (scenario: Scenario): Input => {
         lighting: extractLightingSAPInputFromLegacy(scenario),
         appliances: extractAppliancesInputFromLegacy(scenario),
         cooking: extractCookingInputFromLegacy(scenario),
+        waterHeating: extractWaterHeatingInputFromLegacy(scenario),
     };
 };
 
@@ -105,6 +112,7 @@ export class CombinedModules {
         lighting: LightingSAP;
         appliances: Appliances;
         cooking: Cooking;
+        waterHeating: WaterHeating;
     };
 
     constructor(input: Input) {
@@ -145,6 +153,10 @@ export class CombinedModules {
             occupancy,
         });
         const cooking = constructCooking(input.cooking, { fuels, floors, occupancy });
+        const waterHeating = new WaterHeating(input.waterHeating, {
+            waterCommon,
+            solarHotWater,
+        });
 
         this.mutatorModules = {
             floors,
@@ -160,6 +172,7 @@ export class CombinedModules {
             lighting,
             appliances,
             cooking,
+            waterHeating,
         };
     }
 

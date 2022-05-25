@@ -43,3 +43,12 @@ export const nullableStringyFloat = z.union([
 
 export const coalesceEmptyString = <T, U>(val: T | '', default_: U) =>
     val === '' ? default_ : val;
+
+export const legacyBoolean = z.union([
+    z.boolean(),
+    z.literal(1).transform(() => true),
+    z.literal('1').transform(() => true),
+    z.literal('').transform(() => false),
+    z.literal('true').transform(() => true),
+    z.literal('false').transform(() => false),
+]);
