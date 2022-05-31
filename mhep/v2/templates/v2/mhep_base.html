@@ -20,7 +20,7 @@
           integrity="sha384-1FVbcJ5cSGdCrMNyUndHGSl0WlS+Cq5zaYdfnVF7NqkkQpU+7plvm0NomKbzcD//"
           crossorigin="anonymous"
         ></script>
-        <script>Sentry.init({ dsn: "{{ settings.sentry_url }}" });</script>
+        <script>Sentry.init({ dsn: "{{ settings.sentry_url }}", maxValueLength: 10 * 1024 });</script>
     {% endif %}
 
     <script src="{% static VERSION|add:'/js/vendor/jquery-1.11.3.min.js' %}"></script>
