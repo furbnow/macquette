@@ -35,7 +35,7 @@ export type SolarHotWaterInput =
               overshading: Overshading;
           };
           dedicatedSolarStorageVolume: number;
-          combinedCylinderVolume: number;
+          combinedCylinderVolume: number | null;
       };
 
 export const extractSolarHotWaterInputFromLegacy = (
@@ -71,8 +71,7 @@ export const extractSolarHotWaterInputFromLegacy = (
         apertureArea === null ||
         parameterSource === null ||
         inclination === null ||
-        dedicatedSolarStorageVolume === null ||
-        combinedCylinderVolume === null
+        dedicatedSolarStorageVolume === null
     ) {
         return 'incomplete input';
     }
