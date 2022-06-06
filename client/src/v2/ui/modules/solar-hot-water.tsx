@@ -48,7 +48,6 @@ type Inputs = {
 export type SolarHotWaterState = {
     outputs: null | DeepWith<typeof noOutput, ModelOutputs>;
     inputs: Inputs;
-    doneFirstRun: boolean;
 };
 
 type MergeInputAction = {
@@ -123,16 +122,12 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
             dedicatedSolarStorageVolume: null,
             combinedCylinderVolume: null,
         },
-        doneFirstRun: false,
     },
     reducer: (state, action) => {
         switch (action.type) {
             case 'external data update': {
                 state.outputs = extractOutputsFromLegacy(action.data);
-                if (!state.doneFirstRun) {
-                    state.inputs = extractInputsFromLegacy(action.data);
-                    state.doneFirstRun = true;
-                }
+                state.inputs = extractInputsFromLegacy(action.data);
                 return state;
             }
             case 'solar hot water/merge input': {
