@@ -13,6 +13,7 @@ import {
 } from '../data-schemas/api-metadata';
 import { Library, librarySchema } from '../data-schemas/libraries';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
+import { isRecord } from '../helpers/is-record';
 import { urls } from './urls';
 
 export function cameliseStr(str: string): string {
@@ -62,6 +63,7 @@ function formatErrorString(error: Error): string {
         error.response !== null &&
         error.response !== undefined
     ) {
+        let detail = '';
         // HTTP error
         if (
             error.response.headers['content-type'] === 'application/json' &&
@@ -70,11 +72,14 @@ function formatErrorString(error: Error): string {
             try {
                 const json: unknown = JSON.parse(error.response.data);
                 console.error(json);
+                if (isRecord(json) && typeof json['detail'] === 'string') {
+                    detail = ` (${json['detail']})`;
+                }
             } catch (_) {
                 console.error(error.response.data);
             }
         }
-        return `server returned ${error.response.statusText}`;
+        return `server returned ${error.response.status} ${error.response.statusText}${detail}`;
     } else {
         // Something else
         return error.toString();
