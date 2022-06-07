@@ -2,7 +2,6 @@ var selected_library = -1;
 var selected_library_tag = 'Wall';
 var page;
 var scenario;
-var locked;
 var data = {};
 var keys = {};
 
@@ -20,12 +19,11 @@ var projectid;
 var p;
 var project;
 
-async function initMacquette(api, lockedState, assessmentId, featureFlags) {
+async function initMacquette(api, assessmentId, featureFlags) {
     mhep_helper = api;
     window.features = featureFlags;
 
     projectid = assessmentId;
-    locked = lockedState;
 
     const surrounds = await subview('_surrounds');
     document.getElementById('macquette-container').innerHTML = surrounds;
@@ -77,7 +75,7 @@ async function initMacquette(api, lockedState, assessmentId, featureFlags) {
     historical_index = 0;
 
     // Warn users of locking
-    if (locked === true) {
+    if (p.status === 'Complete') {
         setTimeout(function () {
             $('#modal-assessment-locked').modal('show');
         }, 1);

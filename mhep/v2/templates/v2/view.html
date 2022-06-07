@@ -54,7 +54,7 @@
 
             const apiClient = new window.Macquette.HTTPClient();
             initOpenFUVCHelper(apiClient);
-            initMacquette(apiClient, {{ locked_javascript }}, {{ assessment.id }}, featureFlags);
+            initMacquette(apiClient, {{ assessment.id }}, featureFlags);
         }
 
         if (document.readyState === 'loading') {
