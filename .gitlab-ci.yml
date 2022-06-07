@@ -150,14 +150,21 @@ pages:
 
 trigger deploy:
     stage: deploy
-    image: curlimages/curl:latest
+    image: bitnami/git:latest
     rules:
         - if: $CI_COMMIT_BRANCH == "main"
+    before_script:
+        - eval $(ssh-agent -s)
+        - echo "${HRP_DEPLOY_KEY}" | tr -d '\r' | ssh-add - > /dev/null
+        - mkdir -p ~/.ssh
+        - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
     script:
-        - curl
-          --silent
-          --fail-with-body
-          --form token=$DEPLOY_TOKEN
-          --form ref=main
-          --form "variables[COMMIT_ID]=${CI_COMMIT_SHA}"
-          https://gitlab.com/api/v4/projects/14916939/trigger/pipeline
+        - git clone git@gitlab.com:retrofitcoop/hrp-deployment.git
+        - cd hrp-deployment
+        - git checkout staging # Should be a no-op
+        - echo $CI_COMMIT_SHA > git-id
+        - git add git-id
+        - git config user.name 'Macquette CI pipeline'
+        - git config user.email 'macquette-ci@example.com'
+        - git commit -m "Deploy ${CI_COMMIT_SHA}"':'" ${CI_COMMIT_TITLE}"
+        - git push
