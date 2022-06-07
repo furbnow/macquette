@@ -1,25 +1,15 @@
 Reports
 =======
 
-.. warning::
-    This documentation is out of date and needs rewriting to reflect the
-    early 2022 changes to report generation.
-
-
-How they works
---------------
+How they work
+-------------
 
 Report templates are stored in the database as a text field on an
-Organisation. It's a nunjucks template, rendered client-side. The report
-JavaScript produces a big context object feeding in all the relevant
-info from other places to render it, and then inserts graphs.
-
-Nunjucks is used because the syntax is a JS-y version of Django
-templates so it's familiar inside Carbon Co-op, as well as being
-supported by Mozilla.
-
-The template is rendered into an iframe so it's a standalone document,
-and is unaffected by global UI styles.
+Organisation. It's a jinja2 template, rendered server-side to either
+HTML or PDF (using Weasyprint). The server doesn't understand the
+data itself; it trusts the client to send a big context object with
+all the relevant info for rendering (including the data that is used
+to generate the graphs, which uses matplotlib).
 
 
 Liability issues
