@@ -819,20 +819,12 @@ function _extract_scenario_inputs(data) {
             associated_work: data.fabric.elements[z].associated_work || '',
             notes: data.fabric.elements[z].notes || '',
             maintenance: data.fabric.elements[z].maintenance || '',
+            EWI: data.fabric.elements[z].EWI,
+            cost_total: data.fabric.elements[z].cost_total,
             quantity: data.fabric.elements[z].quantity,
+            perFloorTypeSpec: data.fabric.elements[z].perFloorTypeSpec,
+            selectedFloorType: data.fabric.elements[z].selectedFloorType,
         };
-        if (data.fabric.elements[z].EWI != undefined) {
-            inputdata.fabric.elements[z].EWI = data.fabric.elements[z].EWI;
-        }
-        if (data.fabric.elements[z].cost_total != undefined) {
-            inputdata.fabric.elements[z].cost_total = data.fabric.elements[z].cost_total;
-        }
-        if (data.fabric.elements[z].perFloorTypeSpec !== undefined) {
-            inputdata.fabric.elements[z].perFloorTypeSpec = data.fabric.elements[z].perFloorTypeSpec;
-        }
-        if (data.fabric.elements[z].selectedFloorType !== undefined) {
-            inputdata.fabric.elements[z].selectedFloorType = data.fabric.elements[z].selectedFloorType;
-        }
     }
 
     inputdata.num_of_floors_override = data.num_of_floors_override;
