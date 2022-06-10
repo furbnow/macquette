@@ -10,6 +10,9 @@ import { isRecord } from './is-record';
  */
 export function emulateJsonRoundTrip(data: unknown): unknown {
     if (isRecord(data)) {
+        if ('toJSON' in data && safeIsFunction(data['toJSON'])) {
+            return emulateJsonRoundTrip(data['toJSON']());
+        }
         const out: Record<string, unknown> = {};
         for (const [key, val] of Object.entries(data)) {
             if (val !== undefined) {
@@ -44,4 +47,8 @@ export function emulateJsonRoundTrip(data: unknown): unknown {
 
 function safeIsArray(val: unknown): val is Array<unknown> {
     return Array.isArray(val);
+}
+
+function safeIsFunction(val: unknown): val is (...args: unknown[]) => unknown {
+    return typeof val === 'function';
 }
