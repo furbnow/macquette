@@ -28,7 +28,7 @@ export const withGenericTags = z.object({
 
 export function makeLibrarySchema<Type extends string, ItemT>(
     type: Type,
-    itemSchema: z.ZodSchema<ItemT>,
+    itemSchema: z.ZodType<ItemT, z.ZodTypeDef, unknown>,
 ) {
     return z.object({
         name: z.string(),

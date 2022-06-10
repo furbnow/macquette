@@ -6,10 +6,12 @@ import type { ItemOf, LibraryItem } from './types';
 
 function sanitiseItem<Item extends LibraryItem>(item: Item, name: string): Item {
     const out = cloneDeep(item);
-    if ('description' in out && out.description !== undefined) {
+    if ('description' in out && out.description !== null) {
         out.description = out.description.replace(/"+$/, '').trim();
-        if (out.description === 'undefined') {
-            out.description = '';
+        if (out.description === '') {
+            out.description = null;
+        } else if (out.description === 'undefined') {
+            out.description = null;
         }
     }
     if ('name' in out && out.name !== undefined) {

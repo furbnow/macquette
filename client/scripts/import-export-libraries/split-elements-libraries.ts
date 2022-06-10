@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { pickBy } from 'lodash';
 import { z } from 'zod';
 
 import { Library } from '../../src/v2/data-schemas/libraries';
@@ -86,11 +87,7 @@ export function splitElementsLibraries<L extends Library>(
                 'Roof',
             ];
             const splitLibrary = discriminators.map((disc) => {
-                const filteredData = Object.fromEntries(
-                    Object.entries(library.data).filter(([, value]) =>
-                        discriminateTags(value, disc),
-                    ),
-                );
+                const filteredData = pickBy(library.data, discriminateTags(disc));
                 const outLib = {
                     ...library,
                     data: filteredData,

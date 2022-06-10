@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { assertNever } from '../../helpers/assertNever';
+import type { Library } from '.';
 import { legacyBoolean, stringyFloatSchema } from '../scenario/value-schemas';
 import {
     makeLibrarySchema,
@@ -20,7 +20,10 @@ function singleElementArray<T extends string>(value: T) {
 
 const commonFabricElement = z.object({
     source: z.string(),
-    description: z.string().optional(),
+    description: z
+        .string()
+        .optional()
+        .transform((d) => (d === '' || d === undefined ? null : d)),
     uvalue: stringyFloatSchema,
     kvalue: stringyFloatSchema,
 });
@@ -145,40 +148,27 @@ function assertAtLeastTwoElements<T>(arr: T[]): [T, T, ...T[]] {
     }
 }
 
-const item = z.union(assertAtLeastTwoElements(elements));
+const fabricElement = z.union(assertAtLeastTwoElements(elements));
+export type FabricElement = z.infer<typeof fabricElement>;
 const measure = z.union(assertAtLeastTwoElements(measures));
 
-export const fabricElements = makeLibrarySchema('elements', item);
-export const fabricElementsMeasures = makeLibrarySchema('elements_measures', measure);
+export const fabricElements = makeLibrarySchema<'elements', FabricElement>(
+    'elements',
+    fabricElement,
+);
+export type FabricElementsLibrary = z.infer<typeof fabricElements>;
+export const isFabricElementsLibrary = (
+    library: Library,
+): library is FabricElementsLibrary => library.type === 'elements';
 
-// Example usage for discriminating on the value of tags
+export const fabricElementsMeasures = makeLibrarySchema('elements_measures', measure);
 
 export function discriminateTags<
     InputT extends { tags: [string] },
     DesiredT extends InputT & { tags: [DesiredDiscriminator] },
     DesiredDiscriminator extends string,
->(input: InputT, discriminator: DesiredDiscriminator): input is DesiredT {
-    return input.tags[0] === discriminator;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function doSomethingWithFabricElement(val: z.infer<typeof item>) {
-    if (
-        discriminateTags(val, 'Door') ||
-        discriminateTags(val, 'Window') ||
-        discriminateTags(val, 'Roof_light')
-    ) {
-        val.gL;
-    } else if (
-        discriminateTags(val, 'Wall') ||
-        discriminateTags(val, 'Party_wall') ||
-        discriminateTags(val, 'Floor') ||
-        discriminateTags(val, 'Hatch') ||
-        discriminateTags(val, 'Loft') ||
-        discriminateTags(val, 'Roof')
-    ) {
-        val.uvalue;
-    } else {
-        assertNever(val);
-    }
+>(discriminator: DesiredDiscriminator) {
+    return (input: InputT): input is DesiredT => {
+        return input.tags[0] === discriminator;
+    };
 }

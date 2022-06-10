@@ -1,11 +1,17 @@
-import React, { ReactNode, useState, useEffect, useCallback } from 'react';
+import { mapValues, pickBy } from 'lodash';
+import React, { ReactNode, useState } from 'react';
 import type { ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import { z } from 'zod';
 
-import type { LibraryMetadata } from '../../data-schemas/api-metadata';
-import { fabricElements } from '../../data-schemas/libraries/elements';
+import { Library } from '../../data-schemas/libraries';
+import {
+    isFabricElementsLibrary,
+    FabricElementsLibrary,
+    FabricElement,
+    discriminateTags,
+} from '../../data-schemas/libraries/elements';
 import type { Wall } from '../../data-schemas/libraries/elements';
+import { isNotNull } from '../../helpers/null-checking';
 import { Shadow } from '../../helpers/shadow-object-type';
 import { Select } from '../input-components/select';
 import { externals } from '../module-management/shim';
@@ -51,40 +57,36 @@ type SelectLibraryItemProps<T> = {
     currentItemTag: string | null;
 };
 
-type LibraryRowsProps<T> = Omit<
+type LibraryItemProps<T> = Omit<
     SelectLibraryItemProps<T>,
     'searchText' | 'libraries' | 'title'
 > & {
-    idx: number;
-    row: T;
-    toggleRevealed: (idx: number) => void;
-    revealedItems: number[];
+    libraryItem: T;
 };
 
-function LibraryRows<T extends MinimalLibraryItem>({
+function LibraryItem<T extends MinimalLibraryItem>({
     onSelect,
     onClose,
     tableColumns,
     getFullItemData,
     currentItemTag,
-    idx,
-    row,
-    toggleRevealed,
-    revealedItems,
-}: LibraryRowsProps<T>): JSX.Element {
-    const fullItemData = getFullItemData(row);
-    const canBeRevealed =
-        fullItemData.filter((row) => row.value !== null).length > 0 ? true : false;
+    libraryItem,
+}: LibraryItemProps<T>): JSX.Element {
+    const fullItemData = getFullItemData(libraryItem);
+    const canBeRevealed = fullItemData.length > 0;
+    const [isRevealed, setRevealed] = useState(false);
+    const toggleRevealed = () => setRevealed(!isRevealed && canBeRevealed);
+
     const classNames = [
-        currentItemTag === row.tag ? 'bg-pale-green' : null,
+        currentItemTag === libraryItem.tag ? 'bg-pale-green' : null,
         canBeRevealed === true ? 'clickable clickable-hover' : null,
-    ].filter((className): className is string => className !== null);
+    ].filter(isNotNull);
 
     return (
-        <React.Fragment key={idx}>
+        <>
             <tr
                 className={classNames.join(' ')}
-                onClick={() => canBeRevealed && toggleRevealed(idx)}
+                onClick={() => canBeRevealed && toggleRevealed()}
             >
                 <td className="pr-7">
                     {canBeRevealed && (
@@ -94,7 +96,7 @@ function LibraryRows<T extends MinimalLibraryItem>({
                             height="1em"
                             xmlns="http://www.w3.org/2000/svg"
                         >
-                            {revealedItems.includes(idx) ? (
+                            {isRevealed ? (
                                 <polygon
                                     points="75,254.6 925,254.6 500,990.7"
                                     style={{ fill: '#000' }}
@@ -108,23 +110,23 @@ function LibraryRows<T extends MinimalLibraryItem>({
                         </svg>
                     )}
                 </td>
-                <td className="pr-15">{row.tag}</td>
-                <td className="pr-15">{row.name}</td>
+                <td className="pr-15">{libraryItem.tag}</td>
+                <td className="pr-15">{libraryItem.name}</td>
 
                 {tableColumns.map(({ title, value }) => (
                     <td key={title} className="pr-15 text-tabular-nums align-right">
-                        {value(row)}
+                        {value(libraryItem)}
                     </td>
                 ))}
 
                 <td>
-                    {currentItemTag === row.tag ? (
+                    {currentItemTag === libraryItem.tag ? (
                         <div className="py-7">Current</div>
                     ) : (
                         <button
                             className="btn"
                             onClick={() => {
-                                onSelect(row);
+                                onSelect(libraryItem);
                                 onClose();
                             }}
                         >
@@ -133,7 +135,7 @@ function LibraryRows<T extends MinimalLibraryItem>({
                     )}
                 </td>
             </tr>
-            {revealedItems.includes(idx) && (
+            {isRevealed && (
                 <tr>
                     <td colSpan={6}>
                         <table
@@ -143,28 +145,26 @@ function LibraryRows<T extends MinimalLibraryItem>({
                             }}
                         >
                             <tbody>
-                                {fullItemData.map(({ title, value }) =>
-                                    value !== null ? (
-                                        <tr key={title}>
-                                            <th
-                                                className="pr-15"
-                                                style={{
-                                                    verticalAlign: 'top',
-                                                    textAlign: 'left',
-                                                }}
-                                            >
-                                                {title}
-                                            </th>
-                                            <td>{value}</td>
-                                        </tr>
-                                    ) : null,
-                                )}
+                                {fullItemData.map(({ title, value }) => (
+                                    <tr key={title}>
+                                        <th
+                                            className="pr-15"
+                                            style={{
+                                                verticalAlign: 'top',
+                                                textAlign: 'left',
+                                            }}
+                                        >
+                                            {title}
+                                        </th>
+                                        <td>{value}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </td>
                 </tr>
             )}
-        </React.Fragment>
+        </>
     );
 }
 
@@ -184,28 +184,15 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
         throw new Error('No library');
     }
     const [filterText, setFilterText] = useState('');
-    const [filteredLibrary, setFilteredLibrary] = useState(Object.entries(library.data));
 
-    const initialItems: number[] = [];
-    const [revealedItems, setRevealedItems] = useState(initialItems);
-
-    useEffect(() => {
-        setFilteredLibrary(
-            Object.entries(library.data).filter(
-                ([tag, row]) =>
-                    tag.toLowerCase().includes(filterText.toLowerCase()) ||
-                    searchText(row).toLowerCase().includes(filterText.toLowerCase()),
-            ),
-        );
-    }, [filterText, library.data, searchText]);
-
-    const toggleRevealed = (idx: number) => {
-        if (revealedItems.includes(idx)) {
-            setRevealedItems(revealedItems.filter((num) => num !== idx));
-        } else {
-            setRevealedItems([...revealedItems, idx]);
-        }
-    };
+    const filteredLibraryItems = Object.values(
+        pickBy(
+            library.data,
+            (element, tag) =>
+                tag.toLowerCase().includes(filterText.toLowerCase()) ||
+                searchText(element).toLowerCase().includes(filterText.toLowerCase()),
+        ),
+    );
 
     return (
         <Modal onClose={onClose} headerId="modal-header">
@@ -287,7 +274,7 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
             </div>
 
             <div className="dialog-body">
-                {filteredLibrary.length > 0 ? (
+                {filteredLibraryItems.length > 0 ? (
                     <table>
                         <thead>
                             <tr>
@@ -305,19 +292,19 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredLibrary.map(([, row], idx) =>
-                                LibraryRows({
-                                    idx,
-                                    currentItemTag,
-                                    row,
-                                    toggleRevealed,
-                                    revealedItems,
-                                    tableColumns,
-                                    onSelect,
-                                    onClose,
-                                    getFullItemData,
-                                }),
-                            )}
+                            {filteredLibraryItems.map((libraryItem) => (
+                                <LibraryItem
+                                    key={libraryItem.tag}
+                                    {...{
+                                        currentItemTag,
+                                        libraryItem,
+                                        tableColumns,
+                                        onSelect,
+                                        onClose,
+                                        getFullItemData,
+                                    }}
+                                />
+                            ))}
                         </tbody>
                     </table>
                 ) : (
@@ -328,13 +315,10 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
     );
 }
 
-type FabricElementLibrary = z.infer<typeof fabricElements> & LibraryMetadata;
-
 export type CompleteWall = Shadow<
     Wall,
     {
         tag: string;
-        description: string;
         uvalue: number;
         kvalue: number;
     }
@@ -355,42 +339,33 @@ export const SelectWall = ({
     onClose,
     currentItemTag = null,
 }: SelectWallParams) => {
-    const libraries = externals().libraries;
-    const [filtered] = useState(
-        libraries
-            .filter((row): row is FabricElementLibrary => row.type === 'elements')
-            .map((library) => ({
-                ...library,
-                data: Object.fromEntries(
-                    Object.entries(library.data).filter(
-                        (row): row is [string, Wall] => row[1].tags[0] === 'Wall',
-                    ),
-                ),
-            }))
-            .map((library) => ({
-                ...library,
-                data: Object.fromEntries(
-                    Object.entries(library.data).map((row): [string, CompleteWall] => [
-                        row[0],
-                        {
-                            ...row[1],
-                            tag: row[0],
-                            description: row[1].description ?? '',
-                            uvalue:
-                                row[1].uvalue === ''
-                                    ? fail(`bad uvalue: ${row[1].uvalue}`)
-                                    : row[1].uvalue,
-                            kvalue:
-                                row[1].kvalue === ''
-                                    ? fail(`bad kvalue: ${row[1].kvalue}`)
-                                    : row[1].kvalue,
-                        },
-                    ]),
-                ),
+    const libraries: Library[] = externals().libraries;
+    const filtered = libraries
+        .filter(isFabricElementsLibrary)
+        .map((library: FabricElementsLibrary) => ({
+            ...library,
+            data: pickBy<FabricElement, Wall>(
+                library.data,
+                discriminateTags<FabricElement, Wall, 'Wall'>('Wall'),
+            ),
+        }))
+        .map((library) => ({
+            ...library,
+            data: mapValues(library.data, (element, tag) => ({
+                ...element,
+                tag,
+                uvalue:
+                    element.uvalue === ''
+                        ? fail(`bad uvalue: ${element.uvalue}`)
+                        : element.uvalue,
+                kvalue:
+                    element.kvalue === ''
+                        ? fail(`bad kvalue: ${element.kvalue}`)
+                        : element.kvalue,
             })),
-    );
+        }));
 
-    const searchText = useCallback((row: CompleteWall) => row.name, []);
+    const searchText = (wall: CompleteWall) => wall.name;
 
     return SelectLibraryItem({
         title: 'wall',
@@ -400,15 +375,18 @@ export const SelectWall = ({
         libraries: filtered,
         searchText,
         tableColumns: [
-            { title: 'U', value: (row) => row.uvalue.toString() },
-            { title: 'k', value: (row) => row.kvalue.toString() },
+            { title: 'U', value: (wall) => wall.uvalue.toString() },
+            { title: 'k', value: (wall) => wall.kvalue.toString() },
         ],
-        getFullItemData: (row: CompleteWall) => [
-            {
-                title: 'Description',
-                value: row.description !== '' ? nl2br(row.description) : null,
-            },
-        ],
+        getFullItemData: (wall: CompleteWall) =>
+            wall.description === null
+                ? []
+                : [
+                      {
+                          title: 'Description',
+                          value: nl2br(wall.description),
+                      },
+                  ],
     });
 };
 
