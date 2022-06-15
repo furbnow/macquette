@@ -25,7 +25,7 @@ function report_initUI() {
             });
             const downloadLink = document.createElement('a');
             downloadLink.href = window.URL.createObjectURL(pdf);
-            downloadLink.setAttribute('download', 'test-report.pdf');
+            downloadLink.download = `report_${p.name}.pdf`;
             downloadLink.click();
             endFetch();
         } catch (err) {
