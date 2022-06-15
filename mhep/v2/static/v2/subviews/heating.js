@@ -86,11 +86,13 @@ $('#openbem').on('click', '.add-heating-system-from-lib', function () {
     library_helper.onAddItemFromLib();
 });
 $('#openbem').on('click', '.add-water_usage', function () {
-    var tag = $(this).attr('tag');
-    var library = library_helper.get_library_by_id($(this).attr('library')).data;
-    var item = library[tag];
-    item.tag = tag;
-    item.id = get_WU_max_id(data.water_heating.water_usage) + 1;
+    const tag = $(this).attr('tag');
+    const library = library_helper.get_library_by_id($(this).attr('library')).data;
+    const item = {
+        ...library[tag],
+        tag,
+        id: get_WU_max_id(data.water_heating.water_usage) + 1,
+    };
     data.water_heating.water_usage.push(item);
     update();
 });
@@ -344,8 +346,10 @@ $('#openbem').on('click', '.select-type-of-storage-from-lib', function () {
 $('#openbem').on('click', '.add-storage-type ', function () {
     var tag = $(this).attr('tag');
     var library = library_helper.get_library_by_id($(this).attr('library')).data;
-    var item = library[tag];
-    item.tag = tag;
+    const item = {
+        ...library[tag],
+        tag
+    };
     data.water_heating.storage_type = item;
     update();
     heating_initUI();
@@ -360,22 +364,26 @@ $('#openbem').on('click', '.delete-storage', function () {
     update();
 });
 $('#openbem').on('click', '.add-heating-system', function () {
-    var tag = $(this).attr('tag');
-    var library = library_helper.get_library_by_id($(this).attr('library')).data;
-    var item = library[tag];
-    item.tag = tag;
+    const tag = $(this).attr('tag');
+    const library = library_helper.get_library_by_id($(this).attr('library')).data;
+    const item = {
+        ...library[tag],
+        tag,
+        id: get_HS_max_id() + 1,
+        fuel: 'Standard Tariff',
+        fraction_space: 1,
+        fraction_water_heating: 1,
+        main_space_heating_system: 'secondaryHS',
+        temperature_adjustment: 0,
+        provides: 'heating_and_water',
+        instantaneous_water_heating: false,
+        heating_controls: 1,
+    };
+
     if (item.category = 'Warm air systems') {
         item.fans_and_supply_pumps = 0.4 * item.sfp * data.volume;
     }
-    item.id = get_HS_max_id() + 1;
-    item.fuel = 'Standard Tariff';
-    item.fraction_space = 1;
-    item.fraction_water_heating = 1;
-    item.main_space_heating_system = 'secondaryHS';
-    item.temperature_adjustment = 0;
-    item.provides = 'heating_and_water';
-    item.instantaneous_water_heating = false;
-    item.heating_controls = 1;
+
     data.heating_systems.push(item);
     update();
 });

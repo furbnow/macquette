@@ -45,7 +45,6 @@ $('#openbem').on('click', '.add-ventilation-system', function () {
     var tag = $(this).attr('tag');
     var library = library_helper.get_library_by_id($(this).attr('library')).data;
     var item = library[tag];
-    item.tag = tag;
     data.ventilation.ventilation_type = item.ventilation_type;
     data.ventilation.ventilation_name = item.name;
     data.ventilation.ventilation_tag = tag;
@@ -303,30 +302,33 @@ $('#openbem').on('click', '.add-CDF-from-lib', function () {
     library_helper.onAddItemFromLib();
 });
 $('#openbem').on('click', '.add-IVF', function () {
-    var tag = $(this).attr('tag');
-    var library = library_helper.get_library_by_id($(this).attr('library')).data;
-    var item = library[tag];
-    item.tag = tag;
-    item.id = get_IVF_max_id() + 1;
-    data.ventilation.IVF.push(item);
+    const tag = $(this).attr('tag');
+    const library = library_helper.get_library_by_id($(this).attr('library')).data;
+    data.ventilation.IVF.push({
+        ...library[tag],
+        tag,
+        id: get_IVF_max_id() + 1,
+    });
     update();
 });
 $('#openbem').on('click', '.add-EVP', function () {
-    var tag = $(this).attr('tag');
-    var library = library_helper.get_library_by_id($(this).attr('library')).data;
-    var item = library[tag];
-    item.tag = tag;
-    item.id = get_EVP_max_id() + 1;
-    data.ventilation.EVP.push(item);
+    const tag = $(this).attr('tag');
+    const library = library_helper.get_library_by_id($(this).attr('library')).data;
+    data.ventilation.EVP.push({
+        ...library[tag],
+        tag,
+        id: get_EVP_max_id() + 1,
+    });
     update();
 });
 $('#openbem').on('click', '.add-clothes-drying-facilities', function () {
-    var tag = $(this).attr('tag');
-    var library = library_helper.get_library_by_id($(this).attr('library')).data;
-    var item = library[tag];
-    item.tag = tag;
-    item.id = get_CDF_max_id() + 1;
-    data.ventilation.CDF.push(item);
+    const tag = $(this).attr('tag');
+    const library = library_helper.get_library_by_id($(this).attr('library')).data;
+    data.ventilation.CDF.push({
+        ...library[tag],
+        tag,
+        id: get_CDF_max_id() + 1,
+    });
     update();
 });
 $('#openbem').on('click', '.delete-IVF', function () {

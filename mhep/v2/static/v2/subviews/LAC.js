@@ -77,14 +77,17 @@ $('#openbem').on('click', '.add-CarbonCoop-from-lib', function () {
 $('#openbem').on('click', '.add-item-CarbonCoop', function () {
     var tag = $(this).attr('tag');
     var library = library_helper.get_library_by_id($(this).attr('library')).data;
-    var item = library[tag];
-    // Add required properties to item
-    item.tag = tag;
+    const item = {
+        ...library[tag],
+        tag: tag,
+        number_used: 1,
+        fuel: get_a_fuel(library[tag].type_of_fuel),
+    };
+
     if (item.type_of_fuel == 'Electricity') {
         item.a_plus_rated = false;
     }
-    item.number_used = 1;
-    item.fuel = get_a_fuel(item.type_of_fuel);
+
     // Push item
     data.applianceCarbonCoop.list.push(item);
     // Add appliance to the view and update
