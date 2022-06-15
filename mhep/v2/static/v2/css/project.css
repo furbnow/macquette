@@ -15,6 +15,8 @@
     --beige-900: rgb(238, 236, 229);
 
     --warning-yellow: #fcf8e3;
+
+    --sidebar-width: 290px;
 }
 
 html, body {
@@ -61,17 +63,18 @@ a:hover {
 }
 
 #sidebar {
-    max-height: calc(100% - 40px);
-    width: 290px;
-    margin-top: -15px;
+    height: calc(100% - 40px);
+    width: var(--sidebar-width);
     position: fixed;
-    overflow-y: auto;
+    overflow-y: scroll;
+    scrollbar-color: var(--beige-400) var(--beige-800);
+    background-color: var(--beige-900);
 }
 
 #wrapper {
     background: white;
     max-width: 1150px;
-    margin: 15px 15px 15px 305px;
+    margin-left: var(--sidebar-width);
 }
 
 .block-header {
@@ -90,7 +93,6 @@ a:hover {
 }
 
 .side-block {
-    background-color: white;
     border-bottom: 1px solid #edeae6;
 }
 

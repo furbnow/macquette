@@ -11,10 +11,6 @@ var library_helper;
 var historical = [];
 var historical_index;
 
-var sidebar_enabled = true;
-var sidebar_visible = true;
-var max_wrapper_width = 1150;
-
 var projectid;
 var p;
 var project;
@@ -54,7 +50,6 @@ async function initMacquette(api, assessmentId, featureFlags) {
     redraw_scenario_menu();
     toggle_scenario_menu(scenario);
     refresh_undo_redo_buttons();
-    sidebar_resize();
 
     // Don't show reports to people who can't issue reports to avoid confusion
     if (!p.organisation) {
@@ -298,8 +293,14 @@ function setupEventHandlers() {
     // Side menu
     $(window).resize(function () {
         draw_openbem_graphics('#topgraphic', data);
-        sidebar_resize();
     });
+
+    // Allow scrolling the left sidebar out of the way on smaller window sizes
+    const sidebarElem = document.querySelector('#sidebar');
+    document.addEventListener(
+        'scroll',
+        () => sidebarElem.style.left = `-${window.pageXOffset}px`
+    );
 }
 
 function update(undo_redo = false) {
@@ -591,30 +592,6 @@ function generate_hash(string) {
         hash |= 0; // Convert to 32bit integer
     }
     return hash;
-}
-
-function sidebar_resize() {
-    var width = $(window).width();
-
-    if (width < max_wrapper_width) {
-        hide_sidebar();
-    } else if (sidebar_enabled) {
-        show_sidebar();
-    }
-}
-
-function show_sidebar() {
-    var width = $(window).width();
-    sidebar_visible = true;
-
-    $('#wrapper').css('margin', '15px 15px 15px 305px');
-    $('#sidebar').show();
-}
-
-function hide_sidebar() {
-    sidebar_visible = false;
-    $('#wrapper').css('margin', '15px auto');
-    $('#sidebar').hide();
 }
 
 function toggle_scenario_menu(project_id) {
