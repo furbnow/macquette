@@ -182,7 +182,7 @@ openFUVC.prototype.add_events = function () {
         //openFUVC_helper.add_events();
 
     });
-    $('#openFUVC-modal .layer .icon-trash').on('click', function () {
+    $('#openFUVC-modal').on('click', '.layer .icon-trash', function () {
         var layer_number = $(this).attr('layer');
         $('#openFUVC-modal tr.layer[layer="' + layer_number + '"]').remove();
     });
