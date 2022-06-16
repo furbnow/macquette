@@ -1,12 +1,6 @@
 import { z } from 'zod';
 
-export const dateSchema = z.preprocess((arg) => {
-    if (typeof arg === 'string' || arg instanceof Date) {
-        return new Date(arg);
-    } else {
-        return arg;
-    }
-}, z.date());
+import { dateSchema } from './helpers/date';
 
 export const statusSchema = z.enum(['Complete', 'In progress', 'Test']);
 

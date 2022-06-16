@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-import { dateSchema, assessmentMetadataSchema } from './api-metadata';
+import { assessmentMetadataSchema } from './api-metadata';
+import { dateSchema } from './helpers/date';
 import { scenarioSchema } from './scenario';
 
 export const projectDataSchema = z.record(scenarioSchema);
