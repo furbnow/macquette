@@ -119,6 +119,7 @@ class UploadAssessmentImage(AssessmentQuerySetMixin, generics.GenericAPIView):
     @staticmethod
     def _make_thumbnail(record: Image):
         image = PIL.Image.open(record.image)
+        image = PIL.ImageOps.exif_transpose(image)
 
         record.width = image.width
         record.height = image.height
