@@ -1,5 +1,9 @@
 module.exports = {
     preset: 'ts-jest/presets/js-with-ts',
+    collectCoverageFrom: ["./src/v2/**"],
+    transform: { ".(ts|tsx)": "ts-jest" },
+    testRegex: "\\.(test|spec)\\.(ts|tsx|js)$",
+    moduleFileExtensions: ["ts", "tsx", "js"],
     testEnvironment: 'node',
     setupFilesAfterEnv: [
         '<rootDir>/test/helpers/jest/to-be-approximately.ts',
