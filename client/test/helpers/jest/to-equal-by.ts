@@ -13,7 +13,13 @@ declare global {
              */
             toEqualBy: (
                 expected: unknown,
-                compare: (a: unknown, b: unknown) => boolean,
+                isEqual: (
+                    path: string,
+                    receivedMissing: boolean,
+                    receivedValue: unknown,
+                    expectedMissing: boolean,
+                    expectedValue: unknown,
+                ) => boolean,
             ) => CustomMatcherResult;
         }
     }
@@ -23,43 +29,46 @@ expect.extend({
     toEqualBy(
         received: unknown,
         expected: unknown,
-        compare: (received: unknown, expected: unknown) => boolean,
+        isEqual: (
+            path: string,
+            receivedMissing: boolean,
+            receivedValue: unknown,
+            expectedMissing: boolean,
+            expectedValue: unknown,
+        ) => boolean,
     ) {
         const flatReceived = flatten(received);
         const flatExpected = flatten(expected);
-        const keysComparisonResult = compareSets(
-            new Set(flatReceived.keys()),
-            new Set(flatExpected.keys()),
-        );
-        if (keysComparisonResult.onlyRHS.size !== 0) {
-            return {
-                pass: false,
-                message: () =>
-                    ['Missing keys:', ...keysComparisonResult.onlyRHS].join('\n'),
-            };
-        }
-        if (keysComparisonResult.onlyLHS.size !== 0) {
-            return {
-                pass: false,
-                message: () =>
-                    ['Extraneous keys:', ...keysComparisonResult.onlyLHS].join('\n'),
-            };
-        }
-        const failures = [...keysComparisonResult.intersection].flatMap((keySequence) => {
+        const allKeys = new Set([...flatReceived.keys(), ...flatExpected.keys()]);
+
+        const failures = [...allKeys].flatMap((keySequence) => {
+            const receivedMissing = !flatReceived.has(keySequence);
             const receivedValue = flatReceived.get(keySequence);
+            const expectedMissing = !flatExpected.has(keySequence);
             const expectedValue = flatExpected.get(keySequence);
-            if (compare(receivedValue, expectedValue)) {
+            if (
+                isEqual(
+                    keySequence,
+                    receivedMissing,
+                    receivedValue,
+                    expectedMissing,
+                    expectedValue,
+                )
+            ) {
                 return [];
             } else {
                 return [
                     {
-                        keySequence: keySequence,
-                        received: receivedValue,
-                        expected: expectedValue,
+                        keySequence,
+                        receivedMissing,
+                        receivedValue,
+                        expectedMissing,
+                        expectedValue,
                     },
                 ];
             }
         });
+
         if (failures.length === 0) {
             return {
                 pass: true,
@@ -71,10 +80,22 @@ expect.extend({
                 message: () => {
                     return [
                         'Values differed',
-                        ...failures.flatMap(({ keySequence, received, expected }) => [
-                            `- ${keySequence}: ${inspect(expected)}`,
-                            `+ ${keySequence}: ${inspect(received)}`,
-                        ]),
+                        ...failures.flatMap(
+                            ({
+                                keySequence,
+                                receivedMissing,
+                                receivedValue,
+                                expectedMissing,
+                                expectedValue,
+                            }) => [
+                                `- ${keySequence}: ${
+                                    expectedMissing ? '<missing>' : inspect(expectedValue)
+                                }`,
+                                `+ ${keySequence}: ${
+                                    receivedMissing ? '<missing>' : inspect(receivedValue)
+                                }`,
+                            ],
+                        ),
                     ].join('\n');
                 },
             };

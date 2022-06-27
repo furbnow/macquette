@@ -150,8 +150,19 @@ function heuristicTypeOf(value: unknown) {
     }
     return { type: 'unknown' as const, value };
 }
+
 function modelValueComparer(compareFloatParams?: CompareFloatParams) {
-    return (receivedLive: unknown, expectedLegacy: unknown): boolean => {
+    return (
+        path: string,
+        receivedMissing: boolean,
+        receivedLive: unknown,
+        expectedMissing: boolean,
+        expectedLegacy: unknown,
+    ): boolean => {
+        if (receivedMissing || expectedMissing) {
+            return false;
+        }
+
         // First, detect some special cases
         if (expectedLegacy === '' && receivedLive === 0) {
             return true;
