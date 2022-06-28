@@ -1283,7 +1283,7 @@ libraryHelper.prototype.elements_library_to_html_edit_mode = function (origin, l
                         out += '<td index="gL"><input class="w50" type="number" min="0" step="0.01" value="' + item.gL + '" /></td>';
                         out += '<td index="ff"><input class="w50" type="number" min="0" step="0.01" value="' + item.ff + '" /></td>';
                     }
-                    out += '<td index="description" title="' + (item.description || '') + '"><textarea rows="8" class="w350">' + item.description + '"</textarea></td>';
+                    out += '<td index="description"><textarea rows="8" class="w350">' + (item.description || '') + '</textarea></td>';
                     out += '<td><i class="icon-trash if-write delete-library-item" tag="' + z + '" library="' + library_id + '" style="cursor:pointer;margin-left:10px;margin-right:20px"></i></td>';
                     out += '</tr>';
                 }
@@ -1660,7 +1660,7 @@ libraryHelper.prototype.heating_systems_measures_library_to_html_edit_mode = fun
             //out += '<td index="name" title="' + item.name + '"><input class="w350" type="text" value="' + item.name + '" /></td>';
             // Carlos remember to remove the test2 class in the table tag
             out += '<style>table.test2 td{  vertical-align:top;  padding-right:10px}</style>';
-            out += '<td index="name" title="' + item.name + '"><textarea rows=2" columns=25>' + item.name + '"</textarea></td>';
+            out += '<td index="name" title="' + item.name + '"><textarea rows=2" columns=25>' + item.name + '</textarea></td>';
             out += '<td index="category"><select class="w200" value="' + item.category + '">';
             var categories = ['Combi boilers', 'System boilers', 'Heat pumps', 'Room heaters', 'Warm air systems', 'Hot water only'];
             for (index in categories) {
