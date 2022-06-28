@@ -229,7 +229,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                     })
                                 }
                             />{' '}
-                            m<sup>2</sup>
+                            m²
                         </MyTd>
                     </tr>
                     <tr>
@@ -345,7 +345,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                     })
                                 }
                             />{' '}
-                            m<sup>2</sup>{' '}
+                            m²{' '}
                             <MySelect
                                 options={[
                                     { value: 'exact', display: 'exact' },
@@ -485,7 +485,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
 
                         <tr>
                             <MyTd>
-                                Annual solar radiation per m<sup>2</sup>
+                                Annual solar radiation per m²
                                 <br />
                                 from U3.3 in Appendix U for the orientation and tilt of
                                 the collector
