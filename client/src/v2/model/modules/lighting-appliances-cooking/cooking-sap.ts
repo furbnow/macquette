@@ -1,7 +1,7 @@
 import { Scenario } from '../../../data-schemas/scenario';
+import { sum } from '../../../helpers/array-reducers';
 import { cache } from '../../../helpers/cache-decorators';
 import { isTruthy } from '../../../helpers/is-truthy';
-import { sum } from '../../../helpers/sum';
 import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
 import { Fuel as FuelsModuleFuel } from '../fuels';

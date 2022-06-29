@@ -1,6 +1,6 @@
 import { Scenario } from '../../data-schemas/scenario';
+import { sum } from '../../helpers/array-reducers';
 import { cache } from '../../helpers/cache-decorators';
-import { sum } from '../../helpers/sum';
 import { zip } from '../../helpers/zip';
 
 export type FloorsInput = {

@@ -1,7 +1,6 @@
 import fc from 'fast-check';
 
-import { mean } from '../../../src/v2/helpers/mean';
-import { sum } from '../../../src/v2/helpers/sum';
+import { mean, sum } from '../../../src/v2/helpers/array-reducers';
 import { Month } from '../../../src/v2/model/enums/month';
 import {
     CommonSpec,

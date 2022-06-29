@@ -1,4 +1,4 @@
-import { sum } from '../helpers/sum';
+import { sum } from '../helpers/array-reducers';
 import {
     solarFluxK,
     latitudeRadians,

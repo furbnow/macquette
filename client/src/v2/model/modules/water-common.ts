@@ -1,7 +1,7 @@
 import { Scenario } from '../../data-schemas/scenario';
+import { sum } from '../../helpers/array-reducers';
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
 import { isTruthy } from '../../helpers/is-truthy';
-import { sum } from '../../helpers/sum';
 import { monthlyHotWaterTemperatureRise, monthlyHotWaterUseFactor } from '../datasets';
 import { Month } from '../enums/month';
 import { ModelError } from '../error';

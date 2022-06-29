@@ -16,10 +16,9 @@
  */
 import { mapValues } from 'lodash';
 
+import { mean, sum } from '../../helpers/array-reducers';
 import { assertNever } from '../../helpers/assert-never';
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
-import { mean } from '../../helpers/mean';
-import { sum } from '../../helpers/sum';
 import { lightAccessFactor, solarAccessFactor } from '../datasets';
 import { Month } from '../enums/month';
 import { Orientation } from '../enums/orientation';

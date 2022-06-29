@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { sum } from '../../../helpers/sum';
+import { sum } from '../../../helpers/array-reducers';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
 import { grossArea, netArea, Fabric, WallLike, WindowLike, Hatch } from '../fabric';

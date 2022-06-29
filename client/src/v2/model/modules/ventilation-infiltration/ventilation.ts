@@ -1,8 +1,8 @@
 import { Scenario } from '../../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
+import { sum } from '../../../helpers/array-reducers';
+import { mean } from '../../../helpers/array-reducers';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
-import { mean } from '../../../helpers/mean';
-import { sum } from '../../../helpers/sum';
 import { Month } from '../../enums/month';
 import { VentilationPoint } from './common-types';
 

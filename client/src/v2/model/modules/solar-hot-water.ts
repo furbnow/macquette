@@ -1,6 +1,6 @@
 import { Scenario } from '../../data-schemas/scenario';
+import { sum } from '../../helpers/array-reducers';
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
-import { sum } from '../../helpers/sum';
 import { solarHotWaterOvershadingFactor } from '../datasets';
 import { Month } from '../enums/month';
 import { Orientation } from '../enums/orientation';
