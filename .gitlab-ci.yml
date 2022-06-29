@@ -7,7 +7,7 @@ stages:
 python-test:
     stage: test
     needs: []
-    image: python:3.9-slim
+    image: python:3.10-slim
     services:
         - postgres:11
     variables:
@@ -67,7 +67,7 @@ js-test:
 pre-commit:
     stage: test
     needs: []
-    image: python:3.9-slim
+    image: python:3.10-slim
     variables:
         PIP_CACHE_DIR: '${CI_PROJECT_DIR}/.cache/pip'
         PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
