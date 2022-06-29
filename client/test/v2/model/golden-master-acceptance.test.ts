@@ -4,10 +4,13 @@ import { cloneDeep, pick } from 'lodash';
 import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { SolarHotWaterV1 } from '../../../src/v2/data-schemas/scenario/solar-hot-water';
 import { assertNever } from '../../../src/v2/helpers/assert-never';
+import {
+    CompareFloatParams,
+    compareFloats,
+} from '../../../src/v2/helpers/fuzzy-float-equality';
 import { isTruthy } from '../../../src/v2/helpers/is-truthy';
 import { calcRun } from '../../../src/v2/model/model';
 import { FcInfer } from '../../helpers/arbitraries';
-import { CompareFloatParams, compareFloats } from '../../helpers/fuzzy-float-equality';
 import { stricterParseFloat } from '../../helpers/stricter-parse-float';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import { arbScenarioInputs } from './arbitraries/scenario';
@@ -204,17 +207,19 @@ function modelValueComparer(compareFloatParams?: CompareFloatParams) {
                 ) {
                     return false;
                 } else {
-                    return compareFloats(compareFloatParams)(
+                    return compareFloats(
                         heuristicLive.value,
                         heuristicLegacy.value,
+                        compareFloatParams,
                     );
                 }
             }
             case 'number': {
                 if (heuristicLive.type === 'number') {
-                    return compareFloats(compareFloatParams)(
+                    return compareFloats(
                         heuristicLive.value,
                         heuristicLegacy.value,
+                        compareFloatParams,
                     );
                 } else {
                     return false;
@@ -331,10 +336,10 @@ function normaliseScenario(scenario: any) {
     // and if they are *close to* 0, we remove the key so that they cannot be
     // compared.
     const { space_heating } = castScenario;
-    if (compareFloats()(space_heating.annual_heating_demand, 0)) {
+    if (compareFloats(space_heating.annual_heating_demand, 0)) {
         delete castScenario.energy_requirements?.space_heating;
     }
-    if (compareFloats()(space_heating.annual_cooling_demand, 0)) {
+    if (compareFloats(space_heating.annual_cooling_demand, 0)) {
         delete castScenario.energy_requirements?.space_cooling;
     }
 

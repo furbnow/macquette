@@ -1,4 +1,7 @@
-import { CompareFloatParams, compareFloats } from '../fuzzy-float-equality';
+import {
+    CompareFloatParams,
+    compareFloats,
+} from '../../../src/v2/helpers/fuzzy-float-equality';
 
 type Params = { tolerance?: number; absoluteToleranceAroundZero?: number };
 
@@ -18,7 +21,7 @@ expect.extend({
         expected: number,
         params?: CompareFloatParams,
     ) => {
-        const pass = compareFloats(params)(received, expected);
+        const pass = compareFloats(received, expected, params);
         function message() {
             return pass
                 ? `expected ${received} to not be approximately ${expected}`
