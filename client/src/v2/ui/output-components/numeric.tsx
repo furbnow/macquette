@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { assertNever } from '../../helpers/assertNever';
+import { assertNever } from '../../helpers/assert-never';
 
 export const noOutput: unique symbol = Symbol.for('no output');
 export const loading: unique symbol = Symbol.for('loading');

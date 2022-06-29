@@ -3,7 +3,7 @@ import { cloneDeep, pick } from 'lodash';
 
 import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { SolarHotWaterV1 } from '../../../src/v2/data-schemas/scenario/solar-hot-water';
-import { assertNever } from '../../../src/v2/helpers/assertNever';
+import { assertNever } from '../../../src/v2/helpers/assert-never';
 import { isTruthy } from '../../../src/v2/helpers/is-truthy';
 import { calcRun } from '../../../src/v2/model/model';
 import { FcInfer } from '../../helpers/arbitraries';

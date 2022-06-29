@@ -16,7 +16,7 @@
  */
 import { mapValues } from 'lodash';
 
-import { assertNever } from '../../helpers/assertNever';
+import { assertNever } from '../../helpers/assert-never';
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
 import { mean } from '../../helpers/mean';
 import { sum } from '../../helpers/sum';
@@ -26,9 +26,9 @@ import { Orientation } from '../enums/orientation';
 import { Overshading } from '../enums/overshading';
 import { Region } from '../enums/region';
 import { calculateSolarRadiationMonthly } from '../solar-flux';
-import { mutateLegacyData } from './fabric/mutateLegacyData';
+import { mutateLegacyData } from './fabric/mutate-legacy-data';
 
-export { extractFabricInputFromLegacy } from './fabric/extractFromLegacy';
+export { extractFabricInputFromLegacy } from './fabric/extract-from-legacy';
 
 export type CommonSpec = {
     id: number;

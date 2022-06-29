@@ -1,6 +1,6 @@
 import { Scenario } from '../../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
-import { findWithRest } from '../../../helpers/findWithRest';
+import { findWithRest } from '../../../helpers/find-with-rest';
 import { partition } from '../../../helpers/partition';
 import { Orientation } from '../../enums/orientation';
 import { Overshading } from '../../enums/overshading';

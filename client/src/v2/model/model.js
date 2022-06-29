@@ -4,7 +4,7 @@ import { scenarioSchema } from '../data-schemas/scenario';
 import { datasets } from './datasets/legacy'
 import { setBlankLegacyOutputs, setDefaultLegacyInputs } from './modules/legacy-initialisation';
 import { emulateJsonRoundTrip } from '../helpers/emulate-json-round-trip';
-import { CombinedModules, extractInputFromLegacy } from './combinedModules';
+import { CombinedModules, extractInputFromLegacy } from './combined-modules';
 
 let g, m, x, z, fuel; // Variables used in for-loops
 
