@@ -35,7 +35,7 @@ python-test:
         - virtualenv venv
         - source venv/bin/activate
         - pip -V
-        - pip install pip-tools==6.4.0
+        - pip install pip-tools==6.7.0
         - pip-sync requirements/local.txt
     script:
         # Silence warnings
@@ -82,7 +82,7 @@ pre-commit:
     script:
         - apt-get update && apt-get install -y git
         - python -V
-        - pip install pre-commit==2.15.0
+        - pip install pre-commit==2.19.0
         - pre-commit run --all
 
 docker-build:
