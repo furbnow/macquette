@@ -109,7 +109,7 @@ class UploadAssessmentImage(AssessmentQuerySetMixin, generics.GenericAPIView):
 
         # 600x600 is a substantial size saving on bigger images while still not looking
         # super-lossy on a high DPI screen
-        image.thumbnail((600, 600), PIL.Image.ANTIALIAS)
+        image.thumbnail((600, 600))
 
         # Save thumbnail to in-memory file
         temp_thumb = io.BytesIO()
