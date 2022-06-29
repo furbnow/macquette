@@ -25,26 +25,28 @@ import {
 } from '../../helpers/arbitrary-enums';
 import { sensibleFloat } from './arbitraries/values';
 
-const arbitraryCommonSpec = (): fc.Arbitrary<CommonSpec> =>
-    fc.record({
+function arbitraryCommonSpec(): fc.Arbitrary<CommonSpec> {
+    return fc.record({
         id: fc.nat(),
         kValue: sensibleFloat,
         uValue: sensibleFloat,
     });
+}
 
-const arbitraryFloorSpec = (): fc.Arbitrary<FloorSpec> =>
-    merge(
+function arbitraryFloorSpec(): fc.Arbitrary<FloorSpec> {
+    return merge(
         arbitraryCommonSpec(),
         fc.record({
             type: fc.constant('floor' as const),
             area: sensibleFloat,
         }),
     );
+}
 
-const arbitraryWallLikeSpec = <T>(
+function arbitraryWallLikeSpec<T>(
     deductibleSpec: fc.Arbitrary<T>,
-): fc.Arbitrary<WallLikeSpec<T>> =>
-    merge(
+): fc.Arbitrary<WallLikeSpec<T>> {
+    return merge(
         arbitraryCommonSpec(),
         fc.record({
             type: fc.oneof(
@@ -57,9 +59,10 @@ const arbitraryWallLikeSpec = <T>(
             deductions: fc.array(deductibleSpec),
         }),
     );
+}
 
-const arbitraryWindowLikeSpec = (): fc.Arbitrary<WindowLikeSpec> =>
-    merge(
+function arbitraryWindowLikeSpec(): fc.Arbitrary<WindowLikeSpec> {
+    return merge(
         arbitraryCommonSpec(),
         fc.record({
             type: fc.oneof(
@@ -75,24 +78,31 @@ const arbitraryWindowLikeSpec = (): fc.Arbitrary<WindowLikeSpec> =>
             frameFactor: sensibleFloat,
         }),
     );
+}
 
-const arbitraryHatchSpec = (): fc.Arbitrary<HatchSpec> =>
-    merge(
+function arbitraryHatchSpec(): fc.Arbitrary<HatchSpec> {
+    return merge(
         arbitraryCommonSpec(),
         fc.record({
             type: fc.constant('hatch' as const),
             area: sensibleFloat,
         }),
     );
+}
 
-const arbitraryDeductibleSpec = (): fc.Arbitrary<DeductibleSpec> =>
-    fc.oneof(arbitraryWindowLikeSpec(), arbitraryHatchSpec());
+function arbitraryDeductibleSpec(): fc.Arbitrary<DeductibleSpec> {
+    return fc.oneof(arbitraryWindowLikeSpec(), arbitraryHatchSpec());
+}
 
-const arbitraryMainElementSpec = (): fc.Arbitrary<MainElementSpec> =>
-    fc.oneof(arbitraryFloorSpec(), arbitraryWallLikeSpec(arbitraryDeductibleSpec()));
+function arbitraryMainElementSpec(): fc.Arbitrary<MainElementSpec> {
+    return fc.oneof(
+        arbitraryFloorSpec(),
+        arbitraryWallLikeSpec(arbitraryDeductibleSpec()),
+    );
+}
 
-const arbitraryFabricInput = (): fc.Arbitrary<FabricInput> =>
-    fc.record({
+function arbitraryFabricInput(): fc.Arbitrary<FabricInput> {
+    return fc.record({
         elements: fc.record({
             main: fc.array(arbitraryMainElementSpec()),
             floatingDeductibles: fc.array(arbitraryDeductibleSpec()),
@@ -102,19 +112,22 @@ const arbitraryFabricInput = (): fc.Arbitrary<FabricInput> =>
             thermalMassParameter: fc.option(sensibleFloat),
         }),
     });
+}
 
-const arbitraryFabricDependencies = (): fc.Arbitrary<FabricDependencies> =>
-    fc.record({
+function arbitraryFabricDependencies(): fc.Arbitrary<FabricDependencies> {
+    return fc.record({
         region: arbitraryRegion,
         floors: fc.record({
             totalFloorArea: sensibleFloat,
         }),
     });
+}
 
-const arbitraryFabric = (): fc.Arbitrary<Fabric> =>
-    fc
+function arbitraryFabric(): fc.Arbitrary<Fabric> {
+    return fc
         .tuple(arbitraryFabricInput(), arbitraryFabricDependencies())
         .map(([input, dependencies]) => new Fabric(input, dependencies));
+}
 
 describe('fabric model module', () => {
     test('average annual solar gains = mean(sum(elements)) = sum(mean(elements))', () => {
@@ -197,5 +210,7 @@ describe('fabric model module', () => {
     });
 });
 
-const identity = <T>(val: T) => val;
+function identity<T>(val: T) {
+    return val;
+}
 const arrayContaining = expect.arrayContaining.bind(expect);

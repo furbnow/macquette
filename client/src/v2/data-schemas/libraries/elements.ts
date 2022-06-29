@@ -157,9 +157,11 @@ export const fabricElements = makeLibrarySchema<'elements', FabricElement>(
     fabricElement,
 );
 export type FabricElementsLibrary = z.infer<typeof fabricElements>;
-export const isFabricElementsLibrary = (
+export function isFabricElementsLibrary(
     library: Library,
-): library is FabricElementsLibrary => library.type === 'elements';
+): library is FabricElementsLibrary {
+    return library.type === 'elements';
+}
 
 export const fabricElementsMeasures = makeLibrarySchema('elements_measures', measure);
 

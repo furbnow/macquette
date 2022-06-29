@@ -3,11 +3,13 @@ import { windSpeed } from '../../datasets';
 import { Month } from '../../enums/month';
 import { Region } from '../../enums/region';
 
-export const extractVentilationInfiltrationCommonInputFromLegacy = (
+export function extractVentilationInfiltrationCommonInputFromLegacy(
     scenario: Scenario,
-): VentilationInfiltrationCommonInput => ({
-    numberOfSidesSheltered: scenario.ventilation?.number_of_sides_sheltered ?? 0,
-});
+): VentilationInfiltrationCommonInput {
+    return {
+        numberOfSidesSheltered: scenario.ventilation?.number_of_sides_sheltered ?? 0,
+    };
+}
 
 export type VentilationInfiltrationCommonInput = {
     numberOfSidesSheltered: number;

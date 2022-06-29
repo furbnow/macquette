@@ -12,7 +12,7 @@ export type CookingSAPInput = {
     fuels: FuelInput[];
 };
 
-export const extractCookingSAPInputFromLegacy = (scenario: Scenario): CookingSAPInput => {
+export function extractCookingSAPInputFromLegacy(scenario: Scenario): CookingSAPInput {
     const { LAC } = scenario;
     return {
         energyEfficient: LAC?.energy_efficient_cooking ?? false,
@@ -21,7 +21,7 @@ export const extractCookingSAPInputFromLegacy = (scenario: Scenario): CookingSAP
             fraction,
         })) ?? [{ name: Fuels.STANDARD_TARIFF, fraction: 1.0 }],
     };
-};
+}
 
 export type CookingSAPDependencies = {
     floors: {

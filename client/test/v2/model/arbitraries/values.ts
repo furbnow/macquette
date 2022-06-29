@@ -19,14 +19,19 @@ export const sensibleFloat = fc.oneof(
 );
 
 type StringyNumberOptions = { excludeNumericStrings?: boolean };
-export const stringySensibleFloat = (options?: StringyNumberOptions) =>
-    stringyNumber(sensibleFloat, options);
-export const stringySensibleInteger = (options?: StringyNumberOptions) =>
-    stringyNumber(fc.integer({ min: -Math.pow(2, 7), max: Math.pow(2, 7) }), options);
-export const stringyNumber = (
+export function stringySensibleFloat(options?: StringyNumberOptions) {
+    return stringyNumber(sensibleFloat, options);
+}
+export function stringySensibleInteger(options?: StringyNumberOptions) {
+    return stringyNumber(
+        fc.integer({ min: -Math.pow(2, 7), max: Math.pow(2, 7) }),
+        options,
+    );
+}
+export function stringyNumber(
     number: fc.Arbitrary<number>,
     options?: StringyNumberOptions,
-) => {
+) {
     const poss = [
         number,
         fc.constant(''),
@@ -35,6 +40,8 @@ export const stringyNumber = (
             : [number.map((f) => f.toString(10))]),
     ];
     return fc.oneof(...poss);
-};
+}
 
-export const legacyBoolean = () => fc.oneof(fc.constant(1 as const), fc.boolean());
+export function legacyBoolean() {
+    return fc.oneof(fc.constant(1 as const), fc.boolean());
+}

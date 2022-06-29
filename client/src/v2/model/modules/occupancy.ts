@@ -6,10 +6,10 @@ export type OccupancyInput = {
     customOccupancy: number | null;
 };
 
-export const extractOccupancyInputFromLegacy = ({
+export function extractOccupancyInputFromLegacy({
     use_custom_occupancy,
     custom_occupancy,
-}: Scenario): OccupancyInput => {
+}: Scenario): OccupancyInput {
     if (use_custom_occupancy === true) {
         if (custom_occupancy === undefined || custom_occupancy === '') {
             throw new ModelError(
@@ -25,7 +25,7 @@ export const extractOccupancyInputFromLegacy = ({
             customOccupancy: null,
         };
     }
-};
+}
 
 type OccupancyDependencies = {
     floors: { totalFloorArea: number };

@@ -8,8 +8,8 @@ import { sensibleFloat, stringySensibleFloat, stringyNumber } from './values';
 
 const stringyDimension = stringySensibleFloat().filter((v) => v !== '0');
 
-const commonElement = (id?: number) =>
-    fc.record({
+function commonElement(id?: number) {
+    return fc.record({
         id: id !== undefined ? fc.constant(id) : sensibleFloat,
         uvalue: stringySensibleFloat(),
         kvalue: stringySensibleFloat(),
@@ -35,9 +35,10 @@ const commonElement = (id?: number) =>
         */
         area: sensibleFloat,
     });
+}
 
-const wallLike = (id?: number) =>
-    merge(
+function wallLike(id?: number) {
+    return merge(
         commonElement(id),
         fc.record({
             type: fc.oneof(
@@ -47,8 +48,9 @@ const wallLike = (id?: number) =>
             h: stringyDimension,
         }),
     );
+}
 
-const subtractFrom = (mainElementsIds?: number[]) => {
+function subtractFrom(mainElementsIds?: number[]) {
     let arbId: fc.Arbitrary<number>;
     if (mainElementsIds === undefined) {
         arbId = sensibleFloat;
@@ -63,10 +65,10 @@ const subtractFrom = (mainElementsIds?: number[]) => {
         fc.constant('no'),
         fc.constant(undefined),
     );
-};
+}
 
-const windowLike = (id?: number) =>
-    merge(
+function windowLike(id?: number) {
+    return merge(
         commonElement(id),
         fc.record({
             type: fc.oneof(
@@ -85,9 +87,10 @@ const windowLike = (id?: number) =>
             ),
         }),
     );
+}
 
-const hatch = (id?: number) =>
-    merge(
+function hatch(id?: number) {
+    return merge(
         commonElement(id),
         fc.record({
             type: fc.constant('Hatch' as const),
@@ -95,14 +98,16 @@ const hatch = (id?: number) =>
             h: stringyDimension,
         }),
     );
+}
 
-const floor = (id?: number) =>
-    merge(
+function floor(id?: number) {
+    return merge(
         commonElement(id),
         fc.record({
             type: fc.constant('Floor' as const),
         }),
     );
+}
 
 // Build our elements arbitrary so that
 // (a) all elements have a unique ID, and
@@ -158,8 +163,8 @@ const elements = arbIds.chain((ids) => {
     return all;
 });
 
-export const arbFabric = () =>
-    fc
+export function arbFabric() {
+    return fc
         .record({
             elements: fcOptional(elements),
             thermal_bridging_yvalue: stringyNumber(sensibleFloat).filter(
@@ -177,3 +182,4 @@ export const arbFabric = () =>
                 (global_TMP_value !== null && global_TMP_value !== undefined)
             );
         });
+}

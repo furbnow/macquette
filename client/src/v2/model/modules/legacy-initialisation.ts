@@ -2,7 +2,7 @@ import { defaultsDeep } from 'lodash';
 
 import { defaultFuels } from '../datasets';
 
-export const setDefaultLegacyInputs = (data: unknown) => {
+export function setDefaultLegacyInputs(data: unknown) {
     const modelDefaults = {
         region: 0,
         altitude: 0,
@@ -12,7 +12,7 @@ export const setDefaultLegacyInputs = (data: unknown) => {
             air_permeability_test: false,
             air_permeability_value: 0,
             dwelling_construction: 'timberframe',
-            suspended_wooden_floor: 0, // 'unsealed', 'sealed', 0
+            suspended_wooden_floor: 0,
             draught_lobby: false,
             percentage_draught_proofed: 0,
             number_of_sides_sheltered: 0,
@@ -37,10 +37,10 @@ export const setDefaultLegacyInputs = (data: unknown) => {
         heating_systems: [],
     };
     defaultsDeep(data, modelDefaults);
-};
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const setBlankLegacyOutputs = (data: any) => {
+export function setBlankLegacyOutputs(data: any) {
     /* eslint-disable @typescript-eslint/no-unsafe-member-access */
     data.internal_temperature = [18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18];
     data.external_temperature = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
@@ -70,4 +70,4 @@ export const setBlankLegacyOutputs = (data: any) => {
     data.FEE = 0;
     data.SAP = {};
     /* eslint-enable */
-};
+}

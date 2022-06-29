@@ -1,9 +1,8 @@
-export const throwForNull =
-    <ArgsT extends Array<unknown>, OutT>(
-        fn: (..._: ArgsT) => OutT | null,
-        errorConstructor?: (..._: ArgsT) => Error,
-    ) =>
-    (...args: ArgsT): OutT => {
+export function throwForNull<ArgsT extends Array<unknown>, OutT>(
+    fn: (..._: ArgsT) => OutT | null,
+    errorConstructor?: (..._: ArgsT) => Error,
+) {
+    return (...args: ArgsT): OutT => {
         const resolvedErrorConstructor =
             errorConstructor ?? (() => new Error('function returned null'));
         const out = fn(...args);
@@ -12,18 +11,18 @@ export const throwForNull =
         }
         return out;
     };
+}
 
-export const nanToNull = <T>(val: T): T | null => {
+export function nanToNull<T>(val: T): T | null {
     if (typeof val === 'number' && Number.isNaN(val)) {
         return null;
     } else {
         return val;
     }
-};
+}
 
-export const orNullish =
-    <InT, OutT>(fn: (_: InT) => OutT) =>
-    (input: InT | null | undefined): OutT | null | undefined => {
+export function orNullish<InT, OutT>(fn: (_: InT) => OutT) {
+    return (input: InT | null | undefined): OutT | null | undefined => {
         if (input === null) {
             return null;
         }
@@ -32,3 +31,4 @@ export const orNullish =
         }
         return fn(input);
     };
+}

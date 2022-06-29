@@ -2,8 +2,8 @@ import fc from 'fast-check';
 
 import { stringySensibleFloat } from './values';
 
-export const arbFuels = () =>
-    fc.dictionary(
+export function arbFuels() {
+    return fc.dictionary(
         fc.string(),
         fc.record({
             category: fc.constantFrom(
@@ -21,3 +21,4 @@ export const arbFuels = () =>
         }),
         { minKeys: 1, maxKeys: 5 },
     );
+}

@@ -4,7 +4,7 @@ export type ComparisonResult<T> = {
     onlyRHS: Set<T>;
 };
 
-export const compareSets = <T>(lhs: Set<T>, rhs: Set<T>): ComparisonResult<T> => {
+export function compareSets<T>(lhs: Set<T>, rhs: Set<T>): ComparisonResult<T> {
     const onlyLHS: Set<T> = new Set();
     const intersection: Set<T> = new Set();
     const onlyRHS: Set<T> = new Set();
@@ -21,4 +21,4 @@ export const compareSets = <T>(lhs: Set<T>, rhs: Set<T>): ComparisonResult<T> =>
         }
     }
     return { onlyLHS, intersection, onlyRHS };
-};
+}

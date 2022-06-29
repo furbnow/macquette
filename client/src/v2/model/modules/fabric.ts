@@ -204,14 +204,14 @@ type MainElement = WallLike | Floor;
 type Deductible = WindowLike | Hatch;
 type FabricElement = MainElement | Deductible;
 
-const constructDeductible = (spec: DeductibleSpec, region: Region): Deductible => {
+function constructDeductible(spec: DeductibleSpec, region: Region): Deductible {
     switch (spec.type) {
         case 'hatch':
             return new Hatch(spec);
         default:
             return new WindowLike(spec, { region });
     }
-};
+}
 
 export type FabricInput = {
     elements: {
@@ -407,7 +407,7 @@ export class Fabric {
     }
 }
 
-export const grossArea = (element: FabricElement): number => {
+export function grossArea(element: FabricElement): number {
     if (element instanceof WindowLike) {
         return element.spec.area;
     } else if (element instanceof Hatch) {
@@ -418,9 +418,9 @@ export const grossArea = (element: FabricElement): number => {
         return element.spec.grossArea;
     }
     return assertNever(element);
-};
+}
 
-export const netArea = (element: FabricElement): number => {
+export function netArea(element: FabricElement): number {
     if (element instanceof WindowLike) {
         return element.spec.area;
     } else if (element instanceof Hatch) {
@@ -431,9 +431,9 @@ export const netArea = (element: FabricElement): number => {
         return element.netArea;
     }
     return assertNever(element);
-};
+}
 
-const flatten = (elements: FabricElement[]): FabricElement[] => {
+function flatten(elements: FabricElement[]): FabricElement[] {
     return elements.flatMap((element): FabricElement[] => {
         if (element instanceof WallLike) {
             return [element, ...element.spec.deductions];
@@ -441,4 +441,4 @@ const flatten = (elements: FabricElement[]): FabricElement[] => {
             return [element];
         }
     });
-};
+}

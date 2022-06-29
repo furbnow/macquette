@@ -75,7 +75,9 @@ function LibraryItem<T extends MinimalLibraryItem>({
     const fullItemData = getFullItemData(libraryItem);
     const canBeRevealed = fullItemData.length > 0;
     const [isRevealed, setRevealed] = useState(false);
-    const toggleRevealed = () => setRevealed(!isRevealed && canBeRevealed);
+    function toggleRevealed() {
+        return setRevealed(!isRevealed && canBeRevealed);
+    }
 
     const classNames = [
         currentItemTag === libraryItem.tag ? 'bg-pale-green' : null,
@@ -330,15 +332,15 @@ type SelectWallParams = {
     currentItemTag?: string | null;
 };
 
-const fail = (msg: string): never => {
+function fail(msg: string): never {
     throw new Error(msg);
-};
+}
 
-export const SelectWall = ({
+export function SelectWall({
     onSelect,
     onClose,
     currentItemTag = null,
-}: SelectWallParams) => {
+}: SelectWallParams) {
     const libraries: Library[] = externals().libraries;
     const filtered = libraries
         .filter(isFabricElementsLibrary)
@@ -365,7 +367,9 @@ export const SelectWall = ({
             })),
         }));
 
-    const searchText = (wall: CompleteWall) => wall.name;
+    function searchText(wall: CompleteWall) {
+        return wall.name;
+    }
 
     return SelectLibraryItem({
         title: 'wall',
@@ -388,13 +392,13 @@ export const SelectWall = ({
                       },
                   ],
     });
-};
+}
 
-export const selectWall = (
+export function selectWall(
     mountPoint: HTMLDivElement,
     callback: (item: CompleteWall) => void,
     currentItemTag: string | null,
-) => {
+) {
     const root = createRoot(mountPoint);
     const element = (
         <SelectWall
@@ -406,4 +410,4 @@ export const selectWall = (
         />
     );
     root.render(element);
-};
+}

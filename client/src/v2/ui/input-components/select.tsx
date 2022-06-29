@@ -16,16 +16,16 @@ export type SelectProps<T> = Shadow<PropsOf<'select'>, BasicSelectProps<T>>;
 
 const UNSELECTED_VALUE = '__unselected__';
 
-export const Select = <T extends string>({
+export function Select<T extends string>({
     options,
     callback,
     selected,
     ...passthrough
-}: SelectProps<T>) => {
-    const castTargetValue = (evt: React.ChangeEvent<HTMLSelectElement>) => {
+}: SelectProps<T>) {
+    function castTargetValue(evt: React.ChangeEvent<HTMLSelectElement>) {
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         return evt.target.value as T;
-    };
+    }
     let unselected;
     if (selected === null) {
         unselected = (
@@ -50,4 +50,4 @@ export const Select = <T extends string>({
             ))}
         </select>
     );
-};
+}

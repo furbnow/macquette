@@ -1,4 +1,4 @@
-export const zip = <U, V>(us: U[], vs: V[]): Array<[U, V]> => {
+export function zip<U, V>(us: U[], vs: V[]): Array<[U, V]> {
     const out: [U, V][] = [];
     const minLength = Math.min(us.length, vs.length);
     for (let idx = 0; idx < minLength; idx++) {
@@ -6,4 +6,4 @@ export const zip = <U, V>(us: U[], vs: V[]): Array<[U, V]> => {
         out.push([us[idx]!, vs[idx]!]);
     }
     return out;
-};
+}

@@ -13,26 +13,28 @@ import { stricterParseFloat } from '../../helpers/stricter-parse-float';
 import { arbScenarioInputs } from './arbitraries/scenario';
 import { shwIsLegacy } from './arbitraries/solar-hot-water';
 
-const isValidStringyFloat = (value: unknown) => {
+function isValidStringyFloat(value: unknown) {
     return (
         typeof value === 'number' ||
         (typeof value === 'string' && !Number.isNaN(stricterParseFloat(value)))
     );
-};
+}
 
-const bug = (message: string, context: Record<string, unknown>) => [{ message, context }];
+function bug(message: string, context: Record<string, unknown>) {
+    return [{ message, context }];
+}
 const noBug: [] = [];
 type Messages = { message: string; context: Record<string, unknown> }[];
-const combineBugCheckers = (checkers: Array<() => Messages>) => {
+function combineBugCheckers(checkers: Array<() => Messages>) {
     const messages = checkers.flatMap((checker) => checker());
     return {
         bugs: messages.length > 0,
         messages,
     };
-};
+}
 
 export function checkOutputBugs(legacyScenario: any) {
-    const fabricBugs = (): Messages => {
+    function fabricBugs(): Messages {
         const keys = [
             'total_external_area',
             'total_floor_area',
@@ -55,9 +57,9 @@ export function checkOutputBugs(legacyScenario: any) {
             return bug('.TFA was not a valid stringy float', { TFA });
         }
         return noBug;
-    };
+    }
 
-    const solarHotWaterStringConcatenationBug = (): Messages => {
+    function solarHotWaterStringConcatenationBug(): Messages {
         const { a1, a2 } = legacyScenario.SHW;
         if (typeof a1 !== 'string') return noBug;
         if (a1 === '0' && a2 >= 0) return noBug;
@@ -66,9 +68,9 @@ export function checkOutputBugs(legacyScenario: any) {
             '.SHW.a1 and .a2 were strings that could trigger string concatenation bugs',
             { a1, a2 },
         );
-    };
+    }
 
-    const ventilationStringConcatenationBug = (): Messages => {
+    function ventilationStringConcatenationBug(): Messages {
         const { system_air_change_rate, ventilation_type } = legacyScenario.ventilation;
         if (ventilation_type !== 'MV') return noBug;
         if (typeof system_air_change_rate !== 'string') return noBug;
@@ -78,9 +80,9 @@ export function checkOutputBugs(legacyScenario: any) {
                 'but .ventilation.system_air_change_rate was a potentially bug-inducing string',
             { system_air_change_rate, ventilation_type },
         );
-    };
+    }
 
-    const floorAreaStringConcatenationBug = (): Messages => {
+    function floorAreaStringConcatenationBug(): Messages {
         const floorsInit: Array<any> = legacyScenario.floors.slice(
             0,
             legacyScenario.floors.length - 1,
@@ -95,9 +97,9 @@ export function checkOutputBugs(legacyScenario: any) {
                 return noBug;
             }
         });
-    };
+    }
 
-    const wideSpectrumNaNBug = (): Messages => {
+    function wideSpectrumNaNBug(): Messages {
         if (Number.isNaN(stricterParseFloat(legacyScenario.total_cost))) {
             return bug('.total_cost was NaN or an unparseable string', {
                 total_cost: legacyScenario.total_cost,
@@ -105,9 +107,9 @@ export function checkOutputBugs(legacyScenario: any) {
         } else {
             return noBug;
         }
-    };
+    }
 
-    const ventilationFloorsOverrideBug = (): Messages => {
+    function ventilationFloorsOverrideBug(): Messages {
         // if num_of_floors_override is 0, legacy treats it as undefined (i.e.
         // no override)
         if (legacyScenario.num_of_floors_override === 0) {
@@ -118,7 +120,7 @@ export function checkOutputBugs(legacyScenario: any) {
         } else {
             return noBug;
         }
-    };
+    }
     return combineBugCheckers([
         fabricBugs,
         wideSpectrumNaNBug,
@@ -130,7 +132,7 @@ export function checkOutputBugs(legacyScenario: any) {
 }
 
 export function checkInputBugs(inputs: FcInfer<typeof arbScenarioInputs>) {
-    const spaceHeatingEnergyRequirementsBugs = (): Messages => {
+    function spaceHeatingEnergyRequirementsBugs(): Messages {
         if (
             typeof (inputs as Record<string, unknown>)['space_heating'] !== 'object' &&
             (inputs.heating_systems ?? []).length !== 0
@@ -163,9 +165,9 @@ export function checkInputBugs(inputs: FcInfer<typeof arbScenarioInputs>) {
         } else {
             return noBug;
         }
-    };
+    }
 
-    const solarHotWaterFlagBug = (): Messages => {
+    function solarHotWaterFlagBug(): Messages {
         // These two values should be kept in sync. If, for example, use_SHW is
         // truthy and water_heating.solar_water_heating is falsy, then SHW will
         // be calculated but not factored in to the main water heating module.
@@ -178,9 +180,9 @@ export function checkInputBugs(inputs: FcInfer<typeof arbScenarioInputs>) {
                   solar_water_heating: inputs.water_heating?.solar_water_heating,
               })
             : noBug;
-    };
+    }
 
-    const heatingSystemCombiTypeBug = (): Messages => {
+    function heatingSystemCombiTypeBug(): Messages {
         return (
             inputs.heating_systems?.flatMap((system) => {
                 if (system.combi_loss === 'Storage combi boiler  55 litres') {
@@ -193,9 +195,9 @@ export function checkInputBugs(inputs: FcInfer<typeof arbScenarioInputs>) {
                 }
             }) ?? noBug
         );
-    };
+    }
 
-    const heatingSystemCombiWithPrimaryCircuitBug = (): Messages => {
+    function heatingSystemCombiWithPrimaryCircuitBug(): Messages {
         // Primary circuit losses are fixed as 0 when a combi boiler is
         // configured, so primary_circuit_loss should not be 'Yes'
         return (
@@ -216,9 +218,9 @@ export function checkInputBugs(inputs: FcInfer<typeof arbScenarioInputs>) {
                 );
             }) ?? noBug
         );
-    };
+    }
 
-    const heatingSystemPrimaryCircuitInvariants = (): Messages => {
+    function heatingSystemPrimaryCircuitInvariants(): Messages {
         return (
             inputs.heating_systems?.flatMap((system) => {
                 if (system.primary_circuit_loss === 'No') {
@@ -243,7 +245,7 @@ export function checkInputBugs(inputs: FcInfer<typeof arbScenarioInputs>) {
                 return noBug;
             }) ?? noBug
         );
-    };
+    }
 
     return combineBugCheckers([
         spaceHeatingEnergyRequirementsBugs,

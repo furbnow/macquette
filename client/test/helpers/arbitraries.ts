@@ -7,27 +7,30 @@ export type FcInfer<ArbT> = ArbT extends fc.Arbitrary<infer T>
     ? T
     : never;
 
-export const merge = <
+export function merge<
     U extends Record<string, unknown>,
     V extends Record<string, unknown>,
->(
-    arbU: fc.Arbitrary<U>,
-    arbV: fc.Arbitrary<V>,
-) =>
-    fc.tuple(arbU, arbV).map(([uu, vv]) => ({
+>(arbU: fc.Arbitrary<U>, arbV: fc.Arbitrary<V>) {
+    return fc.tuple(arbU, arbV).map(([uu, vv]) => ({
         ...uu,
         ...vv,
     }));
+}
 
-export const arbFloat = (options: fc.FloatNextConstraints = {}) =>
-    fc.float({ ...options, next: true });
+export function arbFloat(options: fc.FloatNextConstraints = {}) {
+    return fc.float({ ...options, next: true });
+}
 
-export const fcOptional = <T>(arb: fc.Arbitrary<T>) => fc.option(arb, { nil: undefined });
-export const fcNullable = <T>(arb: fc.Arbitrary<T>) => fc.option(arb, { nil: null });
+export function fcOptional<T>(arb: fc.Arbitrary<T>) {
+    return fc.option(arb, { nil: undefined });
+}
+export function fcNullable<T>(arb: fc.Arbitrary<T>) {
+    return fc.option(arb, { nil: null });
+}
 
-export const fcPartialRecord = <T>(record: { [K in keyof T]: fc.Arbitrary<T[K]> }) => {
+export function fcPartialRecord<T>(record: { [K in keyof T]: fc.Arbitrary<T[K]> }) {
     return fc.record<T, { withDeletedKeys: true }>(record, { withDeletedKeys: true });
-};
+}
 
 export function recordWith<T extends Record<string | symbol, fc.Arbitrary<unknown>>, W>(
     extra: fc.Arbitrary<W>,

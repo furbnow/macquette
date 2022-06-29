@@ -11,9 +11,9 @@ export type AppliancesSAPInput = {
     fuels: FuelInput[];
 };
 
-export const extractAppliancesSAPInputFromLegacy = (
+export function extractAppliancesSAPInputFromLegacy(
     scenario: Scenario,
-): AppliancesSAPInput => {
+): AppliancesSAPInput {
     const { LAC } = scenario;
     return {
         energyEfficient: LAC?.energy_efficient_appliances ?? false,
@@ -22,7 +22,7 @@ export const extractAppliancesSAPInputFromLegacy = (
             fraction,
         })) ?? [{ name: Fuels.STANDARD_TARIFF, fraction: 1.0 }],
     };
-};
+}
 
 export type AppliancesSAPDependencies = {
     floors: {

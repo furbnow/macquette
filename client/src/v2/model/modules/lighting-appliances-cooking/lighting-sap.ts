@@ -15,13 +15,12 @@ export type LightingSAPInput = {
     fuels: FuelInput[];
 };
 
-export const extractLightingSAPInputFromLegacy = (
-    scenario: Scenario,
-): LightingSAPInput => {
+export function extractLightingSAPInputFromLegacy(scenario: Scenario): LightingSAPInput {
     const { LAC } = scenario;
     // undefined => 1; empty string => 0... obviously
-    const interpretLightOutletLegacyValue = (val: number | '' | undefined) =>
-        val === '' ? 0 : val === undefined ? 1 : val;
+    function interpretLightOutletLegacyValue(val: number | '' | undefined) {
+        return val === '' ? 0 : val === undefined ? 1 : val;
+    }
     return {
         outlets: {
             total: interpretLightOutletLegacyValue(LAC?.L),
@@ -33,7 +32,7 @@ export const extractLightingSAPInputFromLegacy = (
             fraction,
         })) ?? [{ name: Fuels.STANDARD_TARIFF, fraction: 1.0 }],
     };
-};
+}
 
 export type LightingSAPDependencies = {
     fuels: { names: string[] };

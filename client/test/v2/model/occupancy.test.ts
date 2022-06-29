@@ -2,16 +2,18 @@ import fc from 'fast-check';
 
 import { Occupancy } from '../../../src/v2/model/modules/occupancy';
 
-const arbOccupancyInput = () =>
-    fc.record({
+function arbOccupancyInput() {
+    return fc.record({
         customOccupancy: fc.option(fc.integer({ min: 0 })),
         legacyOutputMixin: fc.object(),
     });
+}
 
-const arbOccupancyFloorDependency = () =>
-    fc.record({
+function arbOccupancyFloorDependency() {
+    return fc.record({
         totalFloorArea: fc.float({ min: 0, next: true }),
     });
+}
 
 describe('occupancy', () => {
     test('if custom occupancy is specified, the returned occupancy is not dependent on the floor area', () => {

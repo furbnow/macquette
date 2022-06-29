@@ -11,7 +11,7 @@ import { grossArea, netArea, Fabric, WallLike, WindowLike, Hatch } from '../fabr
    @typescript-eslint/no-unsafe-member-access,
    @typescript-eslint/consistent-type-assertions,
 */
-export const mutateLegacyData = (fabric: Fabric, data: any) => {
+export function mutateLegacyData(fabric: Fabric, data: any) {
     if (data.fabric === undefined) {
         data.fabric = {};
     }
@@ -95,5 +95,5 @@ export const mutateLegacyData = (fabric: Fabric, data: any) => {
     data.losses_WK.fabric = new Array(12).fill(fabric.heatLoss);
     data.gains_W['solar'] = Month.all.map((month) => fabric.solarGainByMonth(month));
     data.GL = fabric.naturalLight;
-};
+}
 /* eslint-enable */

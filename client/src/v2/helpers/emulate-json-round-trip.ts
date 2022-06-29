@@ -8,7 +8,7 @@ import { isRecord } from './is-record';
  * e.g., NaN and Infinity become null, -0 becomes 0, undefined object
  * properties are dropped, undefined array elements become null.
  */
-export const emulateJsonRoundTrip = (data: unknown): unknown => {
+export function emulateJsonRoundTrip(data: unknown): unknown {
     if (isRecord(data)) {
         const out: Record<string, unknown> = {};
         for (const [key, val] of Object.entries(data)) {
@@ -40,8 +40,8 @@ export const emulateJsonRoundTrip = (data: unknown): unknown => {
     } else {
         return data;
     }
-};
+}
 
-const safeIsArray = (val: unknown): val is Array<unknown> => {
+function safeIsArray(val: unknown): val is Array<unknown> {
     return Array.isArray(val);
-};
+}

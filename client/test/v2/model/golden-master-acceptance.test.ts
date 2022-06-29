@@ -25,7 +25,7 @@ import {
     hasNewInputs,
 } from './scenario-predicates';
 
-const runModel = (data: any, calcRun: (data: any) => any) => {
+function runModel(data: any, calcRun: (data: any) => any) {
     // Clone the input because calcRun will modify it in-place
     let out: any = cloneDeep(data);
     // We run the models twice because the legacy parts have some circular data
@@ -33,9 +33,13 @@ const runModel = (data: any, calcRun: (data: any) => any) => {
     out = calcRun(out);
     out = calcRun(out);
     return out;
-};
-const runLegacyModel = (data: any) => runModel(data, referenceCalcRun);
-const runLiveModel = (data: any) => runModel(data, calcRun);
+}
+function runLegacyModel(data: any) {
+    return runModel(data, referenceCalcRun);
+}
+function runLiveModel(data: any) {
+    return runModel(data, calcRun);
+}
 
 // const focussedScenariosSpec: [string, string][] = [['private/170.json', 'scenario3']];
 const focussedScenariosSpec: [string, string][] = [];
@@ -118,7 +122,7 @@ describe('golden master acceptance tests', () => {
     });
 });
 
-const heuristicTypeOf = (value: unknown) => {
+function heuristicTypeOf(value: unknown) {
     if (typeof value === 'number') {
         return { type: 'number' as const, value };
     }
@@ -137,10 +141,9 @@ const heuristicTypeOf = (value: unknown) => {
         }
     }
     return { type: 'unknown' as const, value };
-};
-const modelValueComparer =
-    (compareFloatParams?: CompareFloatParams) =>
-    (receivedLive: unknown, expectedLegacy: unknown): boolean => {
+}
+function modelValueComparer(compareFloatParams?: CompareFloatParams) {
+    return (receivedLive: unknown, expectedLegacy: unknown): boolean => {
         // First, detect some special cases
         if (expectedLegacy === '' && receivedLive === 0) {
             return true;
@@ -229,9 +232,10 @@ const modelValueComparer =
             }
         }
     };
+}
 
 // Mutate the scenario rather than deep-cloning it, for performance
-const normaliseScenario = (scenario: any) => {
+function normaliseScenario(scenario: any) {
     type SHWOutputs = Omit<SolarHotWaterV1, 'input' | 'pump' | 'version'>;
     const castScenario = scenario as {
         SHW: FcInfer<typeof shwInputs> & SHWOutputs;
@@ -257,7 +261,6 @@ const normaliseScenario = (scenario: any) => {
             // compute them, whereas it is more convenient for the new model to
             // simply skip the whole calculation. We preserve the inputs just
             // to make sure nothing untoward is happening with them.
-
             if (shwIsLegacy(castScenario.SHW)) {
                 castScenario.SHW = pick(castScenario.SHW, ...shwLegacyInputKeys);
             } else {
@@ -308,7 +311,6 @@ const normaliseScenario = (scenario: any) => {
     }
 
     // Space heating
-
     // Becaues the space heating module involves subtracting floating point
     // numbers of arbitrary magnitude, it is easy for FP precision errors to
     // become significant.
@@ -328,7 +330,6 @@ const normaliseScenario = (scenario: any) => {
     // Therefore we check the annual space heating and cooling demands here,
     // and if they are *close to* 0, we remove the key so that they cannot be
     // compared.
-
     const { space_heating } = castScenario;
     if (compareFloats()(space_heating.annual_heating_demand, 0)) {
         delete castScenario.energy_requirements?.space_heating;
@@ -338,4 +339,4 @@ const normaliseScenario = (scenario: any) => {
     }
 
     return castScenario;
-};
+}

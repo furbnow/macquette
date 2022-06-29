@@ -7,9 +7,9 @@ export type FloorsInput = {
     floors: Array<FloorSpec>;
 };
 
-export const extractFloorsInputFromLegacy = ({ floors }: Scenario): FloorsInput => {
+export function extractFloorsInputFromLegacy({ floors }: Scenario): FloorsInput {
     return { floors: floors ?? [] };
-};
+}
 
 type FloorSpec = { area: number; height: number; name: string };
 

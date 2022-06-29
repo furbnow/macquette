@@ -10,7 +10,7 @@ export type NumericOutputProps = {
     unit?: string | JSX.Element;
 };
 
-export const NumericOutput = (props: NumericOutputProps) => {
+export function NumericOutput(props: NumericOutputProps) {
     const { value, unit } = props;
     if (value === loading) {
         return <>[loading...]</>;
@@ -42,4 +42,4 @@ export const NumericOutput = (props: NumericOutputProps) => {
         }
     }
     return assertNever(value);
-};
+}

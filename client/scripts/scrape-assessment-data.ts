@@ -14,7 +14,7 @@ type Params = {
     dataDirectory: string;
 };
 
-const getParams = async (): Promise<Params> => {
+async function getParams(): Promise<Params> {
     type PromptResult = {
         baseUrl: string;
         sessionid: string;
@@ -46,7 +46,7 @@ const getParams = async (): Promise<Params> => {
         },
         dataDirectory,
     };
-};
+}
 
 type AssessmentMetadata = {
     id: string;
@@ -92,9 +92,9 @@ class AssessmentClient {
     }
 }
 
-const listExistingScrapedData = async ({
+async function listExistingScrapedData({
     dataDirectory,
-}: Params): Promise<AssessmentMetadata[]> => {
+}: Params): Promise<AssessmentMetadata[]> {
     const dir = await opendir(dataDirectory);
     const out = [];
     const jsonSuffix = /\.json$/;
@@ -111,13 +111,13 @@ const listExistingScrapedData = async ({
         });
     }
     return out;
-};
+}
 
-const isSameSecond = (a: Date, b: Date) => {
+function isSameSecond(a: Date, b: Date) {
     return a.getTime() % 1000 === b.getTime() % 1000;
-};
+}
 
-const main = async () => {
+async function main() {
     const params = await getParams();
     const client = new AssessmentClient(params);
     const metadata = await client.listMetadata();
@@ -152,6 +152,6 @@ const main = async () => {
         }),
     );
     console.log(' done 😻');
-};
+}
 
 main().catch(console.error);

@@ -5,6 +5,6 @@
  * TypeScript is not clever enough to allow you to elide the final return
  * statement.
  */
-export const assertNever = (val: never): never => {
+export function assertNever(val: never): never {
     return val;
-};
+}

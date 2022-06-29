@@ -6,7 +6,7 @@ export type LockedWarningProps = {
     locked: boolean;
 };
 
-export const LockedWarning = ({ locked }: LockedWarningProps) => {
+export function LockedWarning({ locked }: LockedWarningProps) {
     if (!locked) {
         return <></>;
     } else {
@@ -17,4 +17,4 @@ export const LockedWarning = ({ locked }: LockedWarningProps) => {
             </div>
         );
     }
-};
+}

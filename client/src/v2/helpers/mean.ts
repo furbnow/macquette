@@ -1,3 +1,5 @@
 import { sum } from './sum';
 
-export const mean = (arr: number[]) => sum(arr) / arr.length;
+export function mean(arr: number[]) {
+    return sum(arr) / arr.length;
+}

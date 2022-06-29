@@ -15,7 +15,7 @@ export type AppliancesInput =
           type: 'carbon coop';
       };
 
-export const extractAppliancesInputFromLegacy = (scenario: Scenario): AppliancesInput => {
+export function extractAppliancesInputFromLegacy(scenario: Scenario): AppliancesInput {
     switch (scenario.LAC_calculation_type) {
         case 'SAP':
         case undefined:
@@ -28,22 +28,22 @@ export const extractAppliancesInputFromLegacy = (scenario: Scenario): Appliances
                 type: 'carbon coop',
             };
     }
-};
+}
 
 export type AppliancesDependencies = AppliancesSAPDependencies & unknown;
 
 export type Appliances = AppliancesSAP | AppliancesNoop;
-export const constructAppliances = (
+export function constructAppliances(
     input: AppliancesInput,
     dependencies: AppliancesDependencies,
-): Appliances => {
+): Appliances {
     switch (input.type) {
         case 'sap':
             return new AppliancesSAP(input.input, dependencies);
         case 'carbon coop':
             return new AppliancesNoop();
     }
-};
+}
 
 class AppliancesNoop {
     mutateLegacyData() {

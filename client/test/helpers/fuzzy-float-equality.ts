@@ -8,8 +8,8 @@ export type CompareFloatParams = {
     absoluteToleranceAroundZero?: number;
 };
 
-export const compareFloats =
-    (params?: CompareFloatParams) => (received: number, expected: number) => {
+export function compareFloats(params?: CompareFloatParams) {
+    return (received: number, expected: number) => {
         // Edge cases
         if (!Number.isFinite(expected)) {
             return Object.is(received, expected);
@@ -24,3 +24,4 @@ export const compareFloats =
         const normalisedDifference = Math.abs((expected - received) / expected);
         return normalisedDifference < tolerance;
     };
+}

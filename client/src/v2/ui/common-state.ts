@@ -8,13 +8,10 @@ export const initialCommonState: CommonState = {
     locked: false,
 };
 
-export const commonStateReducer = (
-    state: CommonState,
-    action: AppAction,
-): CommonState => {
+export function commonStateReducer(state: CommonState, action: AppAction): CommonState {
     if (action.type === 'external data update') {
         state.locked = action.currentScenario.locked ?? false;
         return state;
     }
     return state;
-};
+}

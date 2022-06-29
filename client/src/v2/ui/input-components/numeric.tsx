@@ -10,20 +10,20 @@ type BasicNumericInputProps = {
 
 export type NumericInputProps = Shadow<PropsOf<'input'>, BasicNumericInputProps>;
 
-export const NumericInput = ({
+export function NumericInput({
     value: outerValue,
     callback,
     style: styleProp,
     ...passthroughProps
-}: NumericInputProps) => {
+}: NumericInputProps) {
     // Use a nested inner component to make sure internal state gets reset when
     // props are updated
-    const Inner = () => {
+    function Inner() {
         const [modifiedValue, setModifiedValue] = useState<string | null>(null);
         const parseable =
             modifiedValue !== null && /^-?([1-9]\d*|0)(\.\d*[1-9])?$/.test(modifiedValue);
         const valid = modifiedValue === null || modifiedValue === '' || parseable;
-        const handleBlur = () => {
+        function handleBlur() {
             if (modifiedValue !== null) {
                 if (modifiedValue === '') {
                     callback(null);
@@ -31,7 +31,7 @@ export const NumericInput = ({
                     callback(parseFloat(modifiedValue));
                 }
             }
-        };
+        }
         const style: React.CSSProperties = {
             ...(styleProp ?? {}),
             ...(valid ? {} : { borderColor: 'red' }),
@@ -46,6 +46,6 @@ export const NumericInput = ({
                 {...passthroughProps}
             />
         );
-    };
+    }
     return <Inner />;
-};
+}

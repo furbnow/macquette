@@ -10,7 +10,7 @@ export type CookingInput =
     | { type: 'sap'; input: CookingSAPInput }
     | { type: 'carbon coop' };
 
-export const extractCookingInputFromLegacy = (scenario: Scenario): CookingInput => {
+export function extractCookingInputFromLegacy(scenario: Scenario): CookingInput {
     switch (scenario.LAC_calculation_type) {
         case 'SAP':
         case undefined:
@@ -23,22 +23,22 @@ export const extractCookingInputFromLegacy = (scenario: Scenario): CookingInput 
                 type: 'carbon coop',
             };
     }
-};
+}
 
 export type CookingDependencies = CookingSAPDependencies & unknown;
 
 export type Cooking = CookingSAP | CookingNoop;
-export const constructCooking = (
+export function constructCooking(
     input: CookingInput,
     dependencies: CookingDependencies,
-): CookingSAP | CookingNoop => {
+): CookingSAP | CookingNoop {
     switch (input.type) {
         case 'sap':
             return new CookingSAP(input.input, dependencies);
         case 'carbon coop':
             return new CookingNoop();
     }
-};
+}
 
 class CookingNoop {
     mutateLegacyData() {

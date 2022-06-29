@@ -77,7 +77,7 @@ export type Input = {
     waterHeating: WaterHeatingInput;
 };
 
-export const extractInputFromLegacy = (scenario: Scenario): Input => {
+export function extractInputFromLegacy(scenario: Scenario): Input {
     return {
         fuels: extractFuelsInputFromLegacy(scenario),
         floors: extractFloorsInputFromLegacy(scenario),
@@ -95,7 +95,7 @@ export const extractInputFromLegacy = (scenario: Scenario): Input => {
         cooking: extractCookingInputFromLegacy(scenario),
         waterHeating: extractWaterHeatingInputFromLegacy(scenario),
     };
-};
+}
 
 export class CombinedModules {
     private mutatorModules: {

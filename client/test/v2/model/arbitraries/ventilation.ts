@@ -3,8 +3,8 @@ import fc from 'fast-check';
 import { fcPartialRecord } from '../../../helpers/arbitraries';
 import { legacyBoolean, sensibleFloat, stringySensibleFloat } from './values';
 
-export const arbVentilation = () =>
-    fcPartialRecord({
+export function arbVentilation() {
+    return fcPartialRecord({
         IVF: fc.array(fc.record({ ventilation_rate: stringySensibleFloat() })),
         air_permeability_test: legacyBoolean(),
         air_permeability_value: stringySensibleFloat(),
@@ -32,3 +32,4 @@ export const arbVentilation = () =>
             stringySensibleFloat(),
         ),
     });
+}

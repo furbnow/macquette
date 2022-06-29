@@ -12,9 +12,7 @@ export type WaterCommonInput = {
     solarHotWater: boolean;
 };
 
-export const extractWaterCommonInputFromLegacy = (
-    scenario: Scenario,
-): WaterCommonInput => {
+export function extractWaterCommonInputFromLegacy(scenario: Scenario): WaterCommonInput {
     const {
         low_water_use_design,
         annual_energy_content,
@@ -39,7 +37,7 @@ export const extractWaterCommonInputFromLegacy = (
         annualEnergyContentOverride,
         solarHotWater,
     };
-};
+}
 
 type WaterCommonDependencies = {
     occupancy: {

@@ -56,10 +56,10 @@ type MergeInputAction = {
 };
 export type SolarHotWaterAction = MergeInputAction;
 
-const extractOutputsFromLegacy = ({
+function extractOutputsFromLegacy({
     SHW,
     water_heating,
-}: Scenario): SolarHotWaterState['outputs'] => {
+}: Scenario): SolarHotWaterState['outputs'] {
     return {
         aStar: nanToNull(SHW?.a) ?? noOutput,
         collectorPerformanceRatio:
@@ -79,12 +79,12 @@ const extractOutputsFromLegacy = ({
             annualSolarInput: nanToNull(SHW?.Qs) ?? noOutput,
         },
     };
-};
+}
 
-const extractInputsFromLegacy = ({
+function extractInputsFromLegacy({
     SHW,
     use_SHW,
-}: Scenario): SolarHotWaterState['inputs'] => {
+}: Scenario): SolarHotWaterState['inputs'] {
     const refactoredScenarioInputs: RefactoredScenarioInputs =
         SHW?.input ?? solarHotWaterModule.initialState.inputs;
     const moduleEnabled =
@@ -95,7 +95,7 @@ const extractInputsFromLegacy = ({
         moduleEnabled,
         pumpType,
     };
-};
+}
 
 export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
     initialState: {
@@ -167,40 +167,47 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
     rootComponent: ({ state, dispatch }) => {
         const { commonState, moduleState } = state;
         const { inputs, outputs } = moduleState;
-        const dispatchInput = (input: MergeInputAction['input']) =>
-            dispatch({
+        function dispatchInput(input: MergeInputAction['input']) {
+            return dispatch({
                 type: 'solar hot water/merge input',
                 input,
             });
+        }
         const moduleEnabled = inputs.moduleEnabled ?? false;
-        const MySelect = <T extends string>(
+        function MySelect<T extends string>(
             props: Omit<SelectProps<T>, 'disabled' | 'style'>,
-        ) => (
-            <Select
-                {...props}
-                disabled={!moduleEnabled || commonState.locked}
-                style={{ width: 'max-content', marginBottom: 0 }}
-            />
-        );
-        const MyNumericInput = (props: Omit<NumericInputProps, 'readOnly' | 'style'>) => (
-            <NumericInput
-                {...props}
-                readOnly={!moduleEnabled || commonState.locked}
-                style={{ width: '50px', marginBottom: 0 }}
-            />
-        );
-        const MyNumericOutput = (
+        ) {
+            return (
+                <Select
+                    {...props}
+                    disabled={!moduleEnabled || commonState.locked}
+                    style={{ width: 'max-content', marginBottom: 0 }}
+                />
+            );
+        }
+        function MyNumericInput(props: Omit<NumericInputProps, 'readOnly' | 'style'>) {
+            return (
+                <NumericInput
+                    {...props}
+                    readOnly={!moduleEnabled || commonState.locked}
+                    style={{ width: '50px', marginBottom: 0 }}
+                />
+            );
+        }
+        function MyNumericOutput(
             props: Shadow<
                 NumericOutputProps,
                 {
                     value: number | typeof noOutput | undefined;
                 }
             >,
-        ) => <NumericOutput {...props} value={props.value ?? loading} />;
-        const MyTd = (props: Omit<PropsOf<'td'>, 'style'>) => (
-            <td {...props} style={{ verticalAlign: 'middle' }} />
-        );
-        const TestCertificateParameters = () => {
+        ) {
+            return <NumericOutput {...props} value={props.value ?? loading} />;
+        }
+        function MyTd(props: Omit<PropsOf<'td'>, 'style'>) {
+            return <td {...props} style={{ verticalAlign: 'middle' }} />;
+        }
+        function TestCertificateParameters() {
             if (
                 inputs.collector === undefined ||
                 inputs.collector.parameterSource !== 'test certificate'
@@ -294,8 +301,8 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                     </tr>
                 </>
             );
-        };
-        const EstimatedParameters = () => {
+        }
+        function EstimatedParameters() {
             if (inputs.collector.parameterSource !== 'estimate') {
                 return <></>;
             }
@@ -357,7 +364,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                     </tr>
                 </>
             );
-        };
+        }
         return (
             <>
                 <LockedWarning locked={commonState.locked} />

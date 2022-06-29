@@ -18,13 +18,11 @@ type AnnotatedDeductibleSpec = DeductibleSpec & {
 };
 type FlatElementSpec = WallLikeSpec<never> | FloorSpec | AnnotatedDeductibleSpec;
 
-const isDeductibleSpec = (
-    element: FlatElementSpec,
-): element is AnnotatedDeductibleSpec => {
+function isDeductibleSpec(element: FlatElementSpec): element is AnnotatedDeductibleSpec {
     return ['door', 'hatch', 'roof light', 'window'].includes(element.type);
-};
+}
 
-export const extractFabricInputFromLegacy = ({ fabric }: Scenario): FabricInput => {
+export function extractFabricInputFromLegacy({ fabric }: Scenario): FabricInput {
     let thermalMassParameterOverride: number | null = null;
     if (fabric?.global_TMP === true) {
         if (typeof fabric.global_TMP_value !== 'number') {
@@ -168,4 +166,4 @@ export const extractFabricInputFromLegacy = ({ fabric }: Scenario): FabricInput 
             thermalMassParameter: thermalMassParameterOverride,
         },
     };
-};
+}

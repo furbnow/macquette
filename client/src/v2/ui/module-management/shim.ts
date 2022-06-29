@@ -6,9 +6,11 @@ import { Library } from '../../data-schemas/libraries';
     @typescript-eslint/no-explicit-any,
     @typescript-eslint/no-unsafe-member-access,
 */
-export const externals = () => ({
-    project: (window as any).p as unknown,
-    scenarioId: (window as any).scenario as unknown,
-    update: (window as any).update as () => void,
-    libraries: (window as any).libraries as (Library & LibraryMetadata)[],
-});
+export function externals() {
+    return {
+        project: (window as any).p as unknown,
+        scenarioId: (window as any).scenario as unknown,
+        update: (window as any).update as () => void,
+        libraries: (window as any).libraries as (Library & LibraryMetadata)[],
+    };
+}

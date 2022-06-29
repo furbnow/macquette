@@ -13,14 +13,14 @@ export type Fuel = {
 
 export type FuelsDict = Record<string, Fuel>;
 
-export const extractFuelsInputFromLegacy = (scenario: Scenario): FuelsDict => {
+export function extractFuelsInputFromLegacy(scenario: Scenario): FuelsDict {
     const legacyFuels = Object.assign({}, defaultFuels, scenario.fuels);
     type LegacyFuelData = typeof legacyFuels[''];
     type FuelData = FuelsDict[''];
     const legacyEntries = Object.entries(legacyFuels);
-    const sanitiseCategory = (
+    function sanitiseCategory(
         legacyCategory: LegacyFuelData['category'],
-    ): FuelData['category'] => {
+    ): FuelData['category'] {
         switch (legacyCategory) {
             case 'Gas':
                 return 'gas';
@@ -34,7 +34,7 @@ export const extractFuelsInputFromLegacy = (scenario: Scenario): FuelsDict => {
             case 'Electricity':
                 return 'electricity';
         }
-    };
+    }
     const newEntries: Array<[string, FuelData]> = legacyEntries.map(
         ([
             name,
@@ -51,7 +51,7 @@ export const extractFuelsInputFromLegacy = (scenario: Scenario): FuelsDict => {
         ],
     );
     return Object.fromEntries(newEntries);
-};
+}
 
 export class Fuels {
     public static STANDARD_TARIFF = 'Standard Tariff';

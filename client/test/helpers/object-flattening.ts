@@ -9,28 +9,32 @@ export type Opaque =
     // eslint-disable-next-line @typescript-eslint/ban-types
     | Function;
 
-const isIndexable = (val: unknown): val is Record<string, unknown> =>
-    typeof val === 'object' && val !== null;
+function isIndexable(val: unknown): val is Record<string, unknown> {
+    return typeof val === 'object' && val !== null;
+}
 
-const isOpaque = (val: unknown): val is Opaque =>
-    typeof val === 'string' ||
-    typeof val === 'number' ||
-    typeof val === 'bigint' ||
-    typeof val === 'boolean' ||
-    val === undefined ||
-    typeof val === 'symbol' ||
-    val === null ||
-    typeof val === 'function';
+function isOpaque(val: unknown): val is Opaque {
+    return (
+        typeof val === 'string' ||
+        typeof val === 'number' ||
+        typeof val === 'bigint' ||
+        typeof val === 'boolean' ||
+        val === undefined ||
+        typeof val === 'symbol' ||
+        val === null ||
+        typeof val === 'function'
+    );
+}
 
 export type KeySequence = string;
 type Pair = [KeySequence, Opaque];
 export type FlattenedObject = Map<KeySequence, Opaque>;
 
-export const flatten = (input: unknown): FlattenedObject => {
+export function flatten(input: unknown): FlattenedObject {
     return new Map(flattenInner(input, ''));
-};
+}
 
-const flattenInner = (input: unknown, prefix: string): Pair[] => {
+function flattenInner(input: unknown, prefix: string): Pair[] {
     if (isOpaque(input)) {
         return [[prefix, input]];
     } else if (isIndexable(input)) {
@@ -40,4 +44,4 @@ const flattenInner = (input: unknown, prefix: string): Pair[] => {
     } else {
         throw new Error('unreachable');
     }
-};
+}

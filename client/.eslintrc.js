@@ -30,7 +30,9 @@ module.exports = {
         'no-var': 'error',
         'import/no-cycle': ['error', { ignoreExternal: true }],
         'no-warning-comments': 'warn',
-        'eqeqeq': 'error',
+        eqeqeq: 'error',
+        'func-style': ['warn', 'declaration'], // Declaration functions have obligatory names, which makes stack traces easier to read
+        'no-inner-declarations': 'off',
     },
     settings: { react: { version: 'detect' } },
     overrides: [
@@ -62,15 +64,20 @@ module.exports = {
 
         // dev ui work
         {
-            files: ['src/dev/ui/**/*.{ts,js}', 'src/dev/ui/**/*.{tsx,jsx}', 'src/exports-dev.tsx'],
+            files: [
+                'src/dev/ui/**/*.{ts,js}',
+                'src/dev/ui/**/*.{tsx,jsx}',
+                'src/exports-dev.tsx',
+            ],
             rules: {
                 '@typescript-eslint/strict-boolean-expressions': 'off',
                 '@typescript-eslint/consistent-type-assertions': 'off',
                 '@typescript-eslint/no-explicit-any': 'off',
                 '@typescript-eslint/no-non-null-assertion': 'off',
                 '@typescript-eslint/explicit-module-boundary-types': 'off',
-                'eqeqeq': 'off',
+                eqeqeq: 'off',
                 'no-warning-comments': 'off',
+                'func-style': 'off',
             },
         },
 

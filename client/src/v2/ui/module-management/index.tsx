@@ -13,13 +13,13 @@ type ModuleStateView<StateT> = {
     commonState: CommonState;
     moduleState: StateT;
 };
-const moduleStateView = (
+function moduleStateView(
     appState: AppState,
     moduleName: ModuleName,
-): ModuleStateView<unknown> => {
+): ModuleStateView<unknown> {
     const { moduleStates, commonState } = appState;
     return { commonState, moduleState: moduleStates[moduleName] };
-};
+}
 export type UiModule<StateT> = {
     initialState: StateT;
     reducer: (state: StateT, action: AppAction) => StateT;
@@ -46,7 +46,7 @@ export type AppState = {
 };
 export type AppAction = ExternalDataUpdateAction | ModuleAction;
 
-const mainReducer = (state: AppState, action: AppAction): AppState => {
+function mainReducer(state: AppState, action: AppAction): AppState {
     state.dirty = action.type !== 'external data update';
     state.commonState = commonStateReducer(state.commonState, action);
     for (const moduleName of Object.keys(modules)) {
@@ -56,7 +56,6 @@ const mainReducer = (state: AppState, action: AppAction): AppState => {
         //
         // This is sound as long as the module state type in `ModuleStates` is
         // consistent with the type of the first parameter of the reducer.
-
         /* eslint-disable
            @typescript-eslint/no-explicit-any,
            @typescript-eslint/no-unsafe-member-access,
@@ -72,7 +71,7 @@ const mainReducer = (state: AppState, action: AppAction): AppState => {
         /* eslint-enable */
     }
     return state;
-};
+}
 
 const initialState: AppState = {
     dirty: false,
@@ -82,18 +81,18 @@ const initialState: AppState = {
 };
 const store = new Store(mainReducer, initialState);
 
-export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
+export function mount(moduleName: ModuleName, mountPoint: HTMLElement) {
     const root = createRoot(mountPoint);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rootComponent: any = modules[moduleName].rootComponent;
-    const dispatch = (action: AppAction) => store.dispatch(action);
-    const render = (appState: AppState) => {
+    const dispatch = store.dispatch.bind(store);
+    function render(appState: AppState) {
         const element = React.createElement(rootComponent, {
             state: moduleStateView(appState, moduleName),
             dispatch,
         });
         root.render(element);
-    };
+    }
     render(store.state);
     store.subscribe(render);
     return {
@@ -137,7 +136,7 @@ export const mount = (moduleName: ModuleName, mountPoint: HTMLElement) => {
             root.unmount();
         },
     };
-};
+}
 
 store.subscribe((state) => {
     if (state.dirty) {
@@ -145,7 +144,7 @@ store.subscribe((state) => {
     }
 });
 
-export const runDataMutators = (appState: AppState) => {
+export function runDataMutators(appState: AppState) {
     const origProject = cloneDeep(externals().project);
     for (const [modName, mod] of Object.entries(modules)) {
         /* eslint-disable
@@ -166,4 +165,4 @@ export const runDataMutators = (appState: AppState) => {
     if (!isEqual(origProject, externals().project)) {
         externals().update();
     }
-};
+}

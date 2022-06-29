@@ -4,19 +4,20 @@ import { z } from 'zod';
 
 const fixturesRoot = join(__filename, '..');
 
-const collectFromDirectory = (dir: string) => {
+function collectFromDirectory(dir: string) {
     return readdirSync(dir)
         .filter((filename) => filename.endsWith('.json') && !filename.startsWith('.'))
         .map((filename) => join(dir, filename));
-};
+}
 
 const fixturePaths = [
     ...collectFromDirectory(fixturesRoot),
     ...collectFromDirectory(join(fixturesRoot, 'private')),
 ];
 
-const safeJsonParse = (...args: Parameters<typeof JSON.parse>): unknown =>
-    JSON.parse(...args);
+function safeJsonParse(...args: Parameters<typeof JSON.parse>): unknown {
+    return JSON.parse(...args);
+}
 
 export class Scenario {
     public displayName: string;
@@ -105,7 +106,7 @@ const knownBuggyFlat: Array<[string, string, string]> = knownBuggy.flatMap(
     ({ reason, scenarios }) =>
         scenarios.map(([p, n]): [string, string, string] => [p, n, reason]),
 );
-export const shouldSkipScenario = (scenario: Scenario): boolean => {
+export function shouldSkipScenario(scenario: Scenario): boolean {
     for (const [path, name, reason] of knownBuggyFlat) {
         if (scenario.fixturePath === path && scenario.scenarioName === name) {
             console.warn(
@@ -123,4 +124,4 @@ export const shouldSkipScenario = (scenario: Scenario): boolean => {
         return true;
     }
     return false;
-};
+}

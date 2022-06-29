@@ -2,8 +2,8 @@ import * as fc from 'fast-check';
 
 import { Floor, Floors } from '../../../src/v2/model/modules/floors';
 
-const positiveRationalFloat = () =>
-    fc
+function positiveRationalFloat() {
+    return fc
         .float({
             min: 0,
             next: true,
@@ -11,19 +11,23 @@ const positiveRationalFloat = () =>
             noDefaultInfinity: true,
         })
         .filter((x) => x !== 0);
-const arbFloorSpec = () =>
-    fc.record({
+}
+function arbFloorSpec() {
+    return fc.record({
         area: positiveRationalFloat(),
         height: positiveRationalFloat(),
         name: fc.string(),
     });
-const arbFloorsInput = () =>
-    fc.record({
+}
+function arbFloorsInput() {
+    return fc.record({
         floors: fc.array(arbFloorSpec()),
         legacyStrings: fc.boolean(),
     });
-const arbShuffle = <T>(arr: T[]) =>
-    fc.shuffledSubarray(arr, { minLength: arr.length, maxLength: arr.length });
+}
+function arbShuffle<T>(arr: T[]) {
+    return fc.shuffledSubarray(arr, { minLength: arr.length, maxLength: arr.length });
+}
 
 describe('floors', () => {
     describe('floor', () => {

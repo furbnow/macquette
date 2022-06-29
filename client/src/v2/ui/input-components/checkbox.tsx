@@ -10,7 +10,7 @@ type BasicCheckboxProps = {
 
 export type CheckboxProps = Shadow<PropsOf<'input'>, BasicCheckboxProps>;
 
-export const CheckboxInput = ({ checked, callback, ...passthrough }: CheckboxProps) => {
+export function CheckboxInput({ checked, callback, ...passthrough }: CheckboxProps) {
     return (
         <input
             type="checkbox"
@@ -25,4 +25,4 @@ export const CheckboxInput = ({ checked, callback, ...passthrough }: CheckboxPro
             {...passthrough}
         />
     );
-};
+}

@@ -11,12 +11,12 @@ import { Region } from './enums/region';
 
 /** Calculate the solar radiation on an inclined surface of unit area,
     according to SAP Appendix U section U3.2 */
-export const calculateSolarRadiationMonthly = (
+export function calculateSolarRadiationMonthly(
     region: Region,
     orientation: Orientation,
     tiltDegrees: number,
     month: Month,
-): number => {
+): number {
     const radians = (tiltDegrees / 360.0) * 2.0 * Math.PI;
     const sinp = Math.sin(radians / 2.0); // sinp = sin(p/2)
     const sin2p = sinp * sinp;
@@ -41,13 +41,13 @@ export const calculateSolarRadiationMonthly = (
     const R_h_inc = A * cos2 + B * cos1 + C;
     const irradiance = meanGlobalSolarIrradianceHorizontal(region, month);
     return irradiance * R_h_inc;
-};
+}
 
-export const calculateSolarRadiationAnnual = (
+export function calculateSolarRadiationAnnual(
     region: Region,
     orientation: Orientation,
     tiltDegrees: number,
-): number => {
+): number {
     return (
         0.024 *
         sum(
@@ -63,4 +63,4 @@ export const calculateSolarRadiationAnnual = (
             ),
         )
     );
-};
+}

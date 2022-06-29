@@ -23,9 +23,9 @@ export type InfiltrationInput = {
     intentionalVentsFlues: VentilationPoint[];
 };
 
-export const extractInfiltrationInputFromLegacy = (
+export function extractInfiltrationInputFromLegacy(
     scenario: Scenario,
-): InfiltrationInput => {
+): InfiltrationInput {
     const { ventilation } = scenario;
     const intentionalVentsFlues =
         ventilation?.IVF?.map(({ ventilation_rate }) => ({
@@ -40,7 +40,7 @@ export const extractInfiltrationInputFromLegacy = (
         };
     } else {
         const { dwelling_construction, suspended_wooden_floor } = ventilation ?? {};
-        const interpretWalls = (legacyValue: typeof dwelling_construction) => {
+        function interpretWalls(legacyValue: typeof dwelling_construction) {
             switch (legacyValue) {
                 case 'timberframe':
                 case undefined:
@@ -48,8 +48,8 @@ export const extractInfiltrationInputFromLegacy = (
                 case 'masonry':
                     return 'masonry';
             }
-        };
-        const interpretFloor = (legacyValue: typeof suspended_wooden_floor) => {
+        }
+        function interpretFloor(legacyValue: typeof suspended_wooden_floor) {
             switch (legacyValue) {
                 case 0:
                 case undefined:
@@ -59,7 +59,7 @@ export const extractInfiltrationInputFromLegacy = (
                 case 'unsealed':
                     return 'suspended unsealed';
             }
-        };
+        }
         estimateFrom = {
             type: 'fabric elements',
             numberOfFloorsOverride: scenario.num_of_floors_override ?? null,
@@ -71,7 +71,7 @@ export const extractInfiltrationInputFromLegacy = (
         };
     }
     return { intentionalVentsFlues, estimateFrom };
-};
+}
 
 export type InfiltrationDependencies = {
     floors: { totalVolume: number; numberOfFloors: number };

@@ -11,17 +11,18 @@ import { legacyBoolean, sensibleFloat } from './values';
 import { arbVentilation } from './ventilation';
 import { heatingSystemInputs, waterHeatingInputs } from './water-heating';
 
-const arbFloors = () =>
-    fc.array(
+function arbFloors() {
+    return fc.array(
         fc.record({
             area: fc.oneof(sensibleFloat, fc.constant('')),
             height: fc.oneof(sensibleFloat, fc.constant('')),
             name: fc.string(),
         }),
     );
+}
 
-export const arbScenarioInputs = () =>
-    arbFuels()
+export function arbScenarioInputs() {
+    return arbFuels()
         .chain((fuels) =>
             merge(
                 fc.record({
@@ -77,3 +78,4 @@ export const arbScenarioInputs = () =>
 
             return true;
         });
+}

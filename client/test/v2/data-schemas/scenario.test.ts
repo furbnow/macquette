@@ -12,9 +12,9 @@ import { checkInputBugs } from '../model/scenario-predicates';
 
 describe('scenario validator', () => {
     describe('scenario inputs', () => {
-        const testFn = (scenarioData: unknown) => {
+        function testFn(scenarioData: unknown) {
             expect(() => scenarioSchema.parse(scenarioData)).not.toThrow();
-        };
+        }
         test.each(scenarios)('$displayName', (scenario) => {
             if (shouldSkipScenario(scenario)) {
                 return;
@@ -27,10 +27,10 @@ describe('scenario validator', () => {
     });
 
     describe('after running calc.run', () => {
-        const testFn = (scenarioData: unknown) => {
+        function testFn(scenarioData: unknown) {
             const modelOutput = calcRun(cloneDeep(scenarioData));
             expect(() => scenarioSchema.parse(modelOutput)).not.toThrow();
-        };
+        }
         test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
         test('arbitrary', () => {
             fc.assert(
@@ -43,11 +43,11 @@ describe('scenario validator', () => {
     });
 
     describe('after running calc.run and then JSON round-trip', () => {
-        const testFn = (scenarioData: unknown) => {
+        function testFn(scenarioData: unknown) {
             const modelOutput = calcRun(cloneDeep(scenarioData));
             const jsonRoundTripped = emulateJsonRoundTrip(modelOutput);
             expect(() => scenarioSchema.parse(jsonRoundTripped)).not.toThrow();
-        };
+        }
         test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
         test('arbitrary', () => {
             fc.assert(

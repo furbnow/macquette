@@ -48,9 +48,7 @@ export type VentilationDependencies = {
     };
 };
 
-export const extractVentilationInputFromLegacy = (
-    scenario: Scenario,
-): VentilationInput => {
+export function extractVentilationInputFromLegacy(scenario: Scenario): VentilationInput {
     const { ventilation } = scenario;
     const extractVentilationPoints =
         ventilation?.EVP?.map(({ ventilation_rate }) => ({
@@ -97,7 +95,7 @@ export const extractVentilationInputFromLegacy = (
             };
         }
     }
-};
+}
 
 export class Ventilation {
     constructor(

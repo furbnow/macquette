@@ -3,8 +3,8 @@ import fc from 'fast-check';
 import { fcPartialRecord } from '../../../helpers/arbitraries';
 import { legacyBoolean, sensibleFloat, stringySensibleFloat } from './values';
 
-export const heatingSystemInputs = (fuelNames: string[]) =>
-    fc.array(
+export function heatingSystemInputs(fuelNames: string[]) {
+    return fc.array(
         fc.record({
             provides: fc.constantFrom('water', 'heating_and_water', 'heating'),
             fraction_water_heating: fc.integer({ min: 0, max: 10 }).map((i) => i / 10.0),
@@ -23,6 +23,7 @@ export const heatingSystemInputs = (fuelNames: string[]) =>
             fuel: fc.constantFrom(...fuelNames),
         }),
     );
+}
 
 export const waterHeatingInputs = fcPartialRecord({
     annual_energy_content: sensibleFloat,

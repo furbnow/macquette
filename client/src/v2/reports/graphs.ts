@@ -71,54 +71,59 @@ type LineGraph = {
     }[];
 };
 
-const scenarioName = (scenarioId: string, idx: number) =>
-    scenarioId === 'master' ? 'Baseline' : `Scenario ${idx}`;
+function scenarioName(scenarioId: string, idx: number) {
+    return scenarioId === 'master' ? 'Baseline' : `Scenario ${idx}`;
+}
 
-const heatBalance = (project: ProjectData, scenarioIds: string[]): BarChart => ({
-    type: 'bar',
-    stacked: true,
-    units: 'kWh per m² per year',
-    bins: scenarioIds.map((id, idx) => ({
-        label: scenarioName(id, idx),
-        data: [
-            project.scenario(id).annual_useful_gains_kWh_m2?.Solar ?? 0,
-            project.scenario(id).annual_useful_gains_kWh_m2?.Internal ?? 0,
-            project.scenario(id).space_heating?.annual_heating_demand_m2 ?? 0,
-            -(project.scenario(id).annual_losses_kWh_m2?.fabric ?? 0),
-            -(
-                (project.scenario(id).annual_losses_kWh_m2?.ventilation ?? 0) +
-                (project.scenario(id).annual_losses_kWh_m2?.infiltration ?? 0)
-            ),
+function heatBalance(project: ProjectData, scenarioIds: string[]): BarChart {
+    return {
+        type: 'bar',
+        stacked: true,
+        units: 'kWh per m² per year',
+        bins: scenarioIds.map((id, idx) => ({
+            label: scenarioName(id, idx),
+            data: [
+                project.scenario(id).annual_useful_gains_kWh_m2?.Solar ?? 0,
+                project.scenario(id).annual_useful_gains_kWh_m2?.Internal ?? 0,
+                project.scenario(id).space_heating?.annual_heating_demand_m2 ?? 0,
+                -(project.scenario(id).annual_losses_kWh_m2?.fabric ?? 0),
+                -(
+                    (project.scenario(id).annual_losses_kWh_m2?.ventilation ?? 0) +
+                    (project.scenario(id).annual_losses_kWh_m2?.infiltration ?? 0)
+                ),
+            ],
+        })),
+        categoryLabels: [
+            'Solar gains',
+            'Internal gains',
+            'Space heating requirement',
+            'Fabric losses',
+            'Ventilation and infiltration losses',
         ],
-    })),
-    categoryLabels: [
-        'Solar gains',
-        'Internal gains',
-        'Space heating requirement',
-        'Fabric losses',
-        'Ventilation and infiltration losses',
-    ],
-    categoryColours: ['#e89d25', '#f5bd76', '#4286f4', '#68ab20', '#b5d490'],
-});
+        categoryColours: ['#e89d25', '#f5bd76', '#4286f4', '#68ab20', '#b5d490'],
+    };
+}
 
-const spaceHeatingDemand = (project: ProjectData, scenarioIds: string[]): BarChart => ({
-    type: 'bar',
-    units: 'kWh per m² per year',
-    bins: scenarioIds.map((id, idx) => ({
-        label: scenarioName(id, idx),
-        data: [
-            getStandardisedSpaceHeatingDemand(project.scenarioRaw(id)),
-            project.scenario(id).space_heating_demand_m2 ?? 0,
+function spaceHeatingDemand(project: ProjectData, scenarioIds: string[]): BarChart {
+    return {
+        type: 'bar',
+        units: 'kWh per m² per year',
+        bins: scenarioIds.map((id, idx) => ({
+            label: scenarioName(id, idx),
+            data: [
+                getStandardisedSpaceHeatingDemand(project.scenarioRaw(id)),
+                project.scenario(id).space_heating_demand_m2 ?? 0,
+            ],
+        })),
+        categoryLabels: [
+            'With standardised heating pattern',
+            'With your current heating pattern',
         ],
-    })),
-    categoryLabels: [
-        'With standardised heating pattern',
-        'With your current heating pattern',
-    ],
-    categoryColours: ['#9cbdfc', '#4286f4'],
-    lines: [{ value: 120, label: 'UK average' }],
-    areas: [{ label: 'Target', interval: [20, 70] }],
-});
+        categoryColours: ['#9cbdfc', '#4286f4'],
+        lines: [{ value: 120, label: 'UK average' }],
+        areas: [{ label: 'Target', interval: [20, 70] }],
+    };
+}
 
 function standardisedHeating(scenario: unknown): Record<string, unknown> {
     const scenarioCopy = cloneDeep(scenario);
@@ -175,27 +180,29 @@ function getStandardisedSpaceHeatingDemand(scenario: unknown): number {
     return typeof shd === 'number' ? shd : 0;
 }
 
-const peakHeatingLoad = (project: ProjectData, scenarioIds: string[]): BarChart => ({
-    type: 'bar',
-    units: 'kW',
-    bins: scenarioIds.map((id, idx) => ({
-        label: scenarioName(id, idx),
-        data: [getHeatingLoad(project.scenarioRaw(id)).peak_heat],
-    })),
-    areas: [
-        { interval: [3, 6], label: 'Small' },
-        { interval: [6, 10], label: 'Medium' },
-        { interval: [10, 15], label: 'Large' },
-        { interval: [15, 21], label: 'Very large' },
-    ],
-});
+function peakHeatingLoad(project: ProjectData, scenarioIds: string[]): BarChart {
+    return {
+        type: 'bar',
+        units: 'kW',
+        bins: scenarioIds.map((id, idx) => ({
+            label: scenarioName(id, idx),
+            data: [getHeatingLoad(project.scenarioRaw(id)).peak_heat],
+        })),
+        areas: [
+            { interval: [3, 6], label: 'Small' },
+            { interval: [6, 10], label: 'Medium' },
+            { interval: [10, 15], label: 'Large' },
+            { interval: [15, 21], label: 'Very large' },
+        ],
+    };
+}
 
-const fuelUse = (project: ProjectData, scenarioIds: string[]): BarChart => {
+function fuelUse(project: ProjectData, scenarioIds: string[]): BarChart {
     const fuelList = project.scenario('master').fuels;
 
-    const getScenarioData = (
+    function getScenarioData(
         fuelTotals: Record<string, { name: string; quantity: number | null }>,
-    ): number[] => {
+    ): number[] {
         const result = [0, 0, 0, 0];
 
         for (const { name, quantity } of Object.values(fuelTotals)) {
@@ -221,7 +228,7 @@ const fuelUse = (project: ProjectData, scenarioIds: string[]): BarChart => {
         }
 
         return result;
-    };
+    }
 
     const currentFuelUse = project.scenario('master').currentenergy?.use_by_fuel ?? {};
     const transformed = Object.fromEntries(
@@ -262,9 +269,9 @@ const fuelUse = (project: ProjectData, scenarioIds: string[]): BarChart => {
         ].filter((row): row is BarChart['bins'][0] => row !== null),
         categoryLabels: ['Electricity', 'Gas', 'Oil', 'Solid fuels'],
     };
-};
+}
 
-const energyUseIntensity = (project: ProjectData, scenarioIds: string[]): BarChart => {
+function energyUseIntensity(project: ProjectData, scenarioIds: string[]): BarChart {
     const baseline = project.scenario('master');
     if (baseline.currentenergy === undefined) {
         throw new Error('No current energy data');
@@ -322,32 +329,34 @@ const energyUseIntensity = (project: ProjectData, scenarioIds: string[]): BarCha
         ],
         areas: [{ interval: [0, 35], label: 'Target' }],
     };
-};
+}
 
-const cumulativeCo2 = (project: ProjectData, scenarioIds: string[]): LineGraph => ({
-    type: 'line',
-    xAxis: { units: 'years' },
-    yAxis: { units: 'kgCO₂' },
-    rows: scenarioIds.map((id, idx) => {
-        const annualCo2 = project.scenario(id).annualco2 ?? 0;
-        return {
-            label: scenarioName(id, idx),
-            data: [
-                [0, 0],
-                [1, annualCo2],
-                [2, annualCo2 * 2],
-                [3, annualCo2 * 3],
-                [4, annualCo2 * 4],
-                [5, annualCo2 * 5],
-                [6, annualCo2 * 6],
-                [7, annualCo2 * 7],
-                [8, annualCo2 * 8],
-                [9, annualCo2 * 9],
-                [10, annualCo2 * 10],
-            ],
-        };
-    }),
-});
+function cumulativeCo2(project: ProjectData, scenarioIds: string[]): LineGraph {
+    return {
+        type: 'line',
+        xAxis: { units: 'years' },
+        yAxis: { units: 'kgCO₂' },
+        rows: scenarioIds.map((id, idx) => {
+            const annualCo2 = project.scenario(id).annualco2 ?? 0;
+            return {
+                label: scenarioName(id, idx),
+                data: [
+                    [0, 0],
+                    [1, annualCo2],
+                    [2, annualCo2 * 2],
+                    [3, annualCo2 * 3],
+                    [4, annualCo2 * 4],
+                    [5, annualCo2 * 5],
+                    [6, annualCo2 * 6],
+                    [7, annualCo2 * 7],
+                    [8, annualCo2 * 8],
+                    [9, annualCo2 * 9],
+                    [10, annualCo2 * 10],
+                ],
+            };
+        }),
+    };
+}
 
 function getUsedFuelNames(project: ProjectData, scenarioIds: string[]): Set<string> {
     const fuelNames: Set<string> = new Set();
@@ -399,7 +408,7 @@ function selectColourPair(idx: number): [string, string] {
     }
 }
 
-const energyCosts = (project: ProjectData, scenarioIds: string[]): BarChart => {
+function energyCosts(project: ProjectData, scenarioIds: string[]): BarChart {
     const baselineScenario = project.scenario('master');
     const billsData = baselineScenario.currentenergy?.total_cost ?? 0;
 
@@ -524,7 +533,7 @@ const energyCosts = (project: ProjectData, scenarioIds: string[]): BarChart => {
         ],
         categoryColours: [...costEntries.map(({ colour }) => colour), '#bbbbbb'],
     };
-};
+}
 
 // Remove NaNs to work around the model sometimes outputting NaNs.
 // NaNs get serialized to null, which trips up the server-side type checker - it's

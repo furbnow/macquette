@@ -38,9 +38,7 @@ export type SolarHotWaterInput =
           combinedCylinderVolume: number | null;
       };
 
-export const extractSolarHotWaterInputFromLegacy = (
-    data: Scenario,
-): SolarHotWaterInput => {
+export function extractSolarHotWaterInputFromLegacy(data: Scenario): SolarHotWaterInput {
     if (data.SHW === undefined) {
         return 'incomplete input';
     }
@@ -126,7 +124,7 @@ export const extractSolarHotWaterInputFromLegacy = (
         combinedCylinderVolume,
         dedicatedSolarStorageVolume,
     };
-};
+}
 
 export type SolarHotWaterDependencies = {
     region: Region;
@@ -384,13 +382,13 @@ class SolarHotWaterNoop {
     /* eslint-enable */
 }
 
-export const constructSolarHotWater = (
+export function constructSolarHotWater(
     input: SolarHotWaterInput,
     dependencies: SolarHotWaterDependencies,
-): SolarHotWaterEnabled | SolarHotWaterNoop => {
+): SolarHotWaterEnabled | SolarHotWaterNoop {
     if (!dependencies.waterCommon.solarHotWater || input === 'incomplete input') {
         return new SolarHotWaterNoop();
     } else {
         return new SolarHotWaterEnabled(input, dependencies);
     }
-};
+}
