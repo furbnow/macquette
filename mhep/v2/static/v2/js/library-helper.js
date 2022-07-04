@@ -3392,7 +3392,6 @@ libraryHelper.prototype.get_library_by_id = function (id) {
 libraryHelper.prototype.populate_measure_new_item = function (type_of_library) {
     var item_index = $('#replace-from-lib-items').val();
     var library = this.get_library_by_id($('#replace-from-lib').val()).data;
-    var original_item = JSON.parse($('#apply-measure-ok').attr('item'));
     var new_item = library[item_index];
     $('#apply-measure-item-fields').html('');
     var function_name = type_of_library + '_item_to_html';
