@@ -1,19 +1,8 @@
-import { SandboxAction, sandboxModule, SandboxState } from './modules/sandbox';
-import {
-    SolarHotWaterAction,
-    solarHotWaterModule,
-    SolarHotWaterState,
-} from './modules/solar-hot-water';
+import { UiModuleShim } from './module-management/shim';
+import { sandboxModule } from './modules/sandbox';
+import { solarHotWaterModule } from './modules/solar-hot-water';
 
 export const modules = {
-    sandbox: sandboxModule,
-    solarHotWater: solarHotWaterModule,
+    sandbox: new UiModuleShim(sandboxModule),
+    solarHotWater: new UiModuleShim(solarHotWaterModule),
 };
-
-export type ModuleStates = {
-    sandbox: SandboxState;
-    solarHotWater: SolarHotWaterState;
-};
-export type ModuleAction = SandboxAction | SolarHotWaterAction;
-
-export type ModuleName = keyof typeof modules;

@@ -1,13 +1,12 @@
-let uiModule = null;
-
 function solarhotwater_initUI() {
-    uiModule = Macquette.uiModules.mount('solarHotWater', document.querySelector('#content'));
+    const element = document.querySelector('#content');
+    window.Macquette.uiModules.solarHotWater.init(element, '');
 }
 
 function solarhotwater_UpdateUI() {
-    uiModule.update();
+    window.Macquette.uiModules.solarHotWater.update();
 }
 
 function solarhotwater_UnloadUI() {
-    uiModule.unload();
+    window.Macquette.uiModules.solarHotWater.unmountAll();
 }

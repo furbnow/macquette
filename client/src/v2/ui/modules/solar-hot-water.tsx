@@ -1,10 +1,10 @@
-import { cloneDeep } from 'lodash';
 import React from 'react';
 
 import { Scenario } from '../../data-schemas/scenario';
 import { SolarHotWaterV1 } from '../../data-schemas/scenario/solar-hot-water';
-import { nanToNull, orNullish } from '../../helpers/null-wrapping';
+import { nanToNull } from '../../helpers/null-wrapping';
 import { PropsOf } from '../../helpers/props-of';
+import { Result } from '../../helpers/result';
 import { DeepPartial, safeMerge, DeepWith } from '../../helpers/safe-merge';
 import { Shadow } from '../../helpers/shadow-object-type';
 import { Orientation } from '../../model/enums/orientation';
@@ -12,7 +12,7 @@ import { Overshading } from '../../model/enums/overshading';
 import { CheckboxInput } from '../input-components/checkbox';
 import { NumericInput, NumericInputProps } from '../input-components/numeric';
 import { Select, SelectProps } from '../input-components/select';
-import type { UiModule } from '../module-management';
+import { UiModule } from '../module-management/module-type';
 import { LockedWarning } from '../output-components/locked-warning';
 import {
     loading,
@@ -39,27 +39,18 @@ type ModelOutputs = {
     };
 };
 
-type RefactoredScenarioInputs = SolarHotWaterV1['input'];
-type Inputs = {
+export type LoadedState = {
+    scenarioLocked: boolean;
     moduleEnabled: boolean;
+    modelOutput: null | DeepWith<typeof noOutput, ModelOutputs>;
+    modelInput: SolarHotWaterV1['input'];
     pumpType: 'PV' | 'electric' | null;
-} & RefactoredScenarioInputs;
-
-export type SolarHotWaterState = {
-    outputs: null | DeepWith<typeof noOutput, ModelOutputs>;
-    inputs: Inputs;
 };
 
-type MergeInputAction = {
-    type: 'solar hot water/merge input';
-    input: DeepPartial<Inputs>;
-};
-export type SolarHotWaterAction = MergeInputAction;
-
-function extractOutputsFromLegacy({
+function extractModelOutputsFromLegacy({
     SHW,
     water_heating,
-}: Scenario): SolarHotWaterState['outputs'] {
+}: Scenario): LoadedState['modelOutput'] {
     return {
         aStar: nanToNull(SHW?.a) ?? noOutput,
         collectorPerformanceRatio:
@@ -81,106 +72,107 @@ function extractOutputsFromLegacy({
     };
 }
 
-function extractInputsFromLegacy({
-    SHW,
-    use_SHW,
-}: Scenario): SolarHotWaterState['inputs'] {
-    const refactoredScenarioInputs: RefactoredScenarioInputs =
-        SHW?.input ?? solarHotWaterModule.initialState.inputs;
-    const moduleEnabled =
-        orNullish((v: 1 | boolean) => v === 1 || v === true)(use_SHW) ?? false;
-    const pumpType = SHW?.pump ?? null;
-    return {
-        ...cloneDeep(refactoredScenarioInputs),
-        moduleEnabled,
-        pumpType,
-    };
-}
-
-export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
-    initialState: {
-        outputs: null,
-        inputs: {
-            moduleEnabled: false,
-            pumpType: null,
-            collector: {
-                parameterSource: null,
-                apertureArea: null,
-                testCertificate: {
-                    zeroLossEfficiency: null,
-                    linearHeatLossCoefficient: null,
-                    secondOrderHeatLossCoefficient: null,
-                },
-                estimate: {
-                    collectorType: null,
-                    apertureAreaType: null,
-                },
-                orientation: null,
-                inclination: null,
-                overshading: null,
-            },
-            dedicatedSolarStorageVolume: null,
-            combinedCylinderVolume: null,
+const emptyModelInput: SolarHotWaterV1['input'] = {
+    collector: {
+        parameterSource: null,
+        apertureArea: null,
+        testCertificate: {
+            zeroLossEfficiency: null,
+            linearHeatLossCoefficient: null,
+            secondOrderHeatLossCoefficient: null,
         },
+        estimate: {
+            collectorType: null,
+            apertureAreaType: null,
+        },
+        orientation: null,
+        inclination: null,
+        overshading: null,
+    },
+    dedicatedSolarStorageVolume: null,
+    combinedCylinderVolume: null,
+};
+
+type Action =
+    | { type: 'external data update'; newState: LoadedState }
+    | {
+          type: 'merge state';
+          toMerge: DeepPartial<Exclude<LoadedState, 'scenarioLocked'>>;
+      };
+
+export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action> = {
+    name: 'solar hot water',
+    initialState: () => {
+        return 'loading';
     },
     reducer: (state, action) => {
         switch (action.type) {
-            case 'external data update': {
-                state.outputs = extractOutputsFromLegacy(action.currentScenario);
-                state.inputs = extractInputsFromLegacy(action.currentScenario);
-                return state;
-            }
-            case 'solar hot water/merge input': {
-                const { inputs } = state;
-                if (inputs !== null) {
-                    state.inputs = safeMerge(inputs, action.input);
+            case 'external data update':
+                return action.newState;
+            case 'merge state': {
+                if (state === 'loading') {
+                    return state;
                 }
-                return state;
-            }
-            default: {
-                return state;
+                return safeMerge(state, action.toMerge);
             }
         }
     },
-    dataMutator: ({ project, scenarioId }, state) => {
-        const { inputs } = state.moduleState;
-        const { moduleEnabled, pumpType, ...copiableInputs } = inputs;
-
-        const newSHW: SolarHotWaterV1 = {
-            version: 1,
-            input: copiableInputs,
-            pump: pumpType ?? undefined,
-        };
-        /* eslint-disable
+    shims: {
+        extractUpdateAction: ({ currentScenario }) => {
+            const { SHW, use_SHW } = currentScenario;
+            const scenarioLocked = currentScenario.locked ?? false;
+            const moduleEnabled = use_SHW === true;
+            const modelInput: SolarHotWaterV1['input'] = SHW?.input ?? emptyModelInput;
+            const pumpType = SHW?.pump ?? null;
+            const modelOutput = extractModelOutputsFromLegacy(currentScenario);
+            return Result.ok({
+                type: 'external data update',
+                newState: {
+                    scenarioLocked,
+                    moduleEnabled,
+                    modelOutput,
+                    modelInput,
+                    pumpType,
+                },
+            });
+        },
+        mutateLegacyData: ({ project, scenarioId }, state) => {
+            if (state === 'loading') return;
+            const { moduleEnabled, pumpType, modelInput } = state;
+            const newSHW: SolarHotWaterV1 = {
+                version: 1,
+                input: modelInput,
+                pump: pumpType ?? undefined,
+            };
+            /* eslint-disable
            @typescript-eslint/consistent-type-assertions,
            @typescript-eslint/no-explicit-any,
            @typescript-eslint/no-unsafe-assignment,
            @typescript-eslint/no-unsafe-member-access,
         */
-        const dataAny = (project as any).data[scenarioId as any];
-        dataAny.SHW = newSHW;
-        dataAny.use_SHW = moduleEnabled;
-        dataAny.water_heating = dataAny.water_heating ?? {};
-        dataAny.water_heating.solar_water_heating = moduleEnabled;
-        /* eslint-enable */
+            const dataAny = (project as any).data[scenarioId as any];
+            dataAny.SHW = newSHW;
+            dataAny.use_SHW = moduleEnabled;
+            dataAny.water_heating = dataAny.water_heating ?? {};
+            dataAny.water_heating.solar_water_heating = moduleEnabled;
+            /* eslint-enable */
+        },
     },
-    rootComponent: ({ state, dispatch }) => {
-        const { commonState, moduleState } = state;
-        const { inputs, outputs } = moduleState;
-        function dispatchInput(input: MergeInputAction['input']) {
-            return dispatch({
-                type: 'solar hot water/merge input',
-                input,
-            });
+    component: function SolarHotWater({ state, dispatch }) {
+        function dispatchMerge(partialNewState: DeepPartial<LoadedState>) {
+            return dispatch({ type: 'merge state', toMerge: partialNewState });
         }
-        const moduleEnabled = inputs.moduleEnabled ?? false;
+        if (state === 'loading') {
+            return <>Loading...</>;
+        }
+        const { moduleEnabled, scenarioLocked, modelOutput } = state;
         function MySelect<T extends string>(
             props: Omit<SelectProps<T>, 'disabled' | 'style'>,
         ) {
             return (
                 <Select
                     {...props}
-                    disabled={!moduleEnabled || commonState.locked}
+                    disabled={!moduleEnabled || scenarioLocked}
                     style={{ width: 'max-content', marginBottom: 0 }}
                 />
             );
@@ -189,7 +181,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
             return (
                 <NumericInput
                     {...props}
-                    readOnly={!moduleEnabled || commonState.locked}
+                    readOnly={!moduleEnabled || scenarioLocked}
                     style={{ width: '50px', marginBottom: 0 }}
                 />
             );
@@ -209,8 +201,9 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
         }
         function TestCertificateParameters() {
             if (
-                inputs.collector === undefined ||
-                inputs.collector.parameterSource !== 'test certificate'
+                state === 'loading' ||
+                state.modelInput.collector === undefined ||
+                state.modelInput.collector.parameterSource !== 'test certificate'
             ) {
                 return <></>;
             }
@@ -220,11 +213,13 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                         <MyTd>Aperture area of solar collector</MyTd>
                         <MyTd>
                             <MyNumericInput
-                                value={inputs.collector.apertureArea}
+                                value={state.modelInput.collector.apertureArea}
                                 callback={(value) =>
-                                    dispatchInput({
-                                        collector: {
-                                            apertureArea: value,
+                                    dispatchMerge({
+                                        modelInput: {
+                                            collector: {
+                                                apertureArea: value,
+                                            },
                                         },
                                     })
                                 }
@@ -239,13 +234,16 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                         <MyTd>
                             <MyNumericInput
                                 value={
-                                    inputs.collector.testCertificate.zeroLossEfficiency
+                                    state.modelInput.collector.testCertificate
+                                        .zeroLossEfficiency
                                 }
                                 callback={(value) =>
-                                    dispatchInput({
-                                        collector: {
-                                            testCertificate: {
-                                                zeroLossEfficiency: value,
+                                    dispatchMerge({
+                                        modelInput: {
+                                            collector: {
+                                                testCertificate: {
+                                                    zeroLossEfficiency: value,
+                                                },
                                             },
                                         },
                                     })
@@ -261,14 +259,16 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                         <MyTd>
                             <MyNumericInput
                                 value={
-                                    inputs.collector.testCertificate
+                                    state.modelInput.collector.testCertificate
                                         .linearHeatLossCoefficient
                                 }
                                 callback={(value) =>
-                                    dispatchInput({
-                                        collector: {
-                                            testCertificate: {
-                                                linearHeatLossCoefficient: value,
+                                    dispatchMerge({
+                                        modelInput: {
+                                            collector: {
+                                                testCertificate: {
+                                                    linearHeatLossCoefficient: value,
+                                                },
                                             },
                                         },
                                     })
@@ -284,14 +284,16 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                         <MyTd>
                             <MyNumericInput
                                 value={
-                                    inputs.collector.testCertificate
+                                    state.modelInput.collector.testCertificate
                                         .secondOrderHeatLossCoefficient
                                 }
                                 callback={(value) =>
-                                    dispatchInput({
-                                        collector: {
-                                            testCertificate: {
-                                                secondOrderHeatLossCoefficient: value,
+                                    dispatchMerge({
+                                        modelInput: {
+                                            collector: {
+                                                testCertificate: {
+                                                    secondOrderHeatLossCoefficient: value,
+                                                },
                                             },
                                         },
                                     })
@@ -303,7 +305,10 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
             );
         }
         function EstimatedParameters() {
-            if (inputs.collector.parameterSource !== 'estimate') {
+            if (
+                state === 'loading' ||
+                state.modelInput.collector.parameterSource !== 'estimate'
+            ) {
                 return <></>;
             }
             return (
@@ -323,10 +328,16 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                     },
                                     { value: 'unglazed', display: 'Unglazed' },
                                 ]}
-                                selected={inputs.collector.estimate.collectorType}
+                                selected={
+                                    state.modelInput.collector.estimate.collectorType
+                                }
                                 callback={(value) =>
-                                    dispatchInput({
-                                        collector: { estimate: { collectorType: value } },
+                                    dispatchMerge({
+                                        modelInput: {
+                                            collector: {
+                                                estimate: { collectorType: value },
+                                            },
+                                        },
                                     })
                                 }
                             />
@@ -336,11 +347,13 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                         <MyTd>Aperture area of solar collector</MyTd>
                         <MyTd>
                             <MyNumericInput
-                                value={inputs.collector.apertureArea}
+                                value={state.modelInput.collector.apertureArea}
                                 callback={(value) =>
-                                    dispatchInput({
-                                        collector: {
-                                            apertureArea: value,
+                                    dispatchMerge({
+                                        modelInput: {
+                                            collector: {
+                                                apertureArea: value,
+                                            },
                                         },
                                     })
                                 }
@@ -351,11 +364,15 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                     { value: 'exact', display: 'exact' },
                                     { value: 'gross', display: 'gross' },
                                 ]}
-                                selected={inputs.collector.estimate.apertureAreaType}
+                                selected={
+                                    state.modelInput.collector.estimate.apertureAreaType
+                                }
                                 callback={(value) =>
-                                    dispatchInput({
-                                        collector: {
-                                            estimate: { apertureAreaType: value },
+                                    dispatchMerge({
+                                        modelInput: {
+                                            collector: {
+                                                estimate: { apertureAreaType: value },
+                                            },
                                         },
                                     })
                                 }
@@ -367,7 +384,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
         }
         return (
             <>
-                <LockedWarning locked={commonState.locked} />
+                <LockedWarning locked={scenarioLocked} />
                 <h3>Solar Hot Water system</h3>
 
                 <table className="table" style={{ width: 'initial' }}>
@@ -378,11 +395,11 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                 <CheckboxInput
                                     checked={moduleEnabled}
                                     callback={(checked) =>
-                                        dispatchInput({
+                                        dispatchMerge({
                                             moduleEnabled: checked,
                                         })
                                     }
-                                    readOnly={commonState.locked}
+                                    readOnly={scenarioLocked}
                                 />
                             </MyTd>
                         </tr>
@@ -397,9 +414,9 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                             display: 'Electrically powered',
                                         },
                                     ]}
-                                    selected={inputs.pumpType}
+                                    selected={state.pumpType}
                                     callback={(value) =>
-                                        dispatchInput({
+                                        dispatchMerge({
                                             pumpType: value,
                                         })
                                     }
@@ -417,10 +434,12 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                         },
                                         { value: 'estimate', display: 'Estimated' },
                                     ]}
-                                    selected={inputs.collector.parameterSource}
+                                    selected={state.modelInput.collector.parameterSource}
                                     callback={(value) =>
-                                        dispatchInput({
-                                            collector: { parameterSource: value },
+                                        dispatchMerge({
+                                            modelInput: {
+                                                collector: { parameterSource: value },
+                                            },
                                         })
                                     }
                                 />
@@ -435,7 +454,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                 a* = 0.892 (a<sub>1</sub> + 45 a<sub>2</sub>)
                             </MyTd>
                             <MyTd>
-                                <MyNumericOutput value={outputs?.aStar} />
+                                <MyNumericOutput value={modelOutput?.aStar} />
                             </MyTd>
                         </tr>
 
@@ -445,7 +464,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             </MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.collectorPerformanceRatio}
+                                    value={modelOutput?.collectorPerformanceRatio}
                                 />
                             </MyTd>
                         </tr>
@@ -458,10 +477,12 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                         value: orientationName,
                                         display: orientationName,
                                     }))}
-                                    selected={inputs.collector.orientation}
+                                    selected={state.modelInput.collector.orientation}
                                     callback={(value) =>
-                                        dispatchInput({
-                                            collector: { orientation: value },
+                                        dispatchMerge({
+                                            modelInput: {
+                                                collector: { orientation: value },
+                                            },
                                         })
                                     }
                                 />
@@ -472,10 +493,12 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             <MyTd>Collector inclination (e.g. 35 degrees)</MyTd>
                             <MyTd>
                                 <MyNumericInput
-                                    value={inputs.collector.inclination}
+                                    value={state.modelInput.collector.inclination}
                                     callback={(value) =>
-                                        dispatchInput({
-                                            collector: { inclination: value },
+                                        dispatchMerge({
+                                            modelInput: {
+                                                collector: { inclination: value },
+                                            },
                                         })
                                     }
                                 />{' '}
@@ -492,7 +515,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             </MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.annualSolarRadiation}
+                                    value={modelOutput?.annualSolarRadiation}
                                     unit={'kWh'}
                                 />
                             </MyTd>
@@ -506,10 +529,12 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                                         value: name,
                                         display,
                                     }))}
-                                    selected={inputs.collector.overshading}
+                                    selected={state.modelInput.collector.overshading}
                                     callback={(value) =>
-                                        dispatchInput({
-                                            collector: { overshading: value },
+                                        dispatchMerge({
+                                            modelInput: {
+                                                collector: { overshading: value },
+                                            },
                                         })
                                     }
                                 />
@@ -520,7 +545,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             <MyTd>Solar energy available</MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.availableSolarEnergy}
+                                    value={modelOutput?.availableSolarEnergy}
                                     unit={'kWh'}
                                 />
                             </MyTd>
@@ -544,7 +569,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             <MyTd>Load</MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.utilisation.load}
+                                    value={modelOutput?.utilisation.load}
                                     unit={'kWh'}
                                 />
                             </MyTd>
@@ -554,7 +579,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             <MyTd>Solar-to-load ratio</MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.utilisation.solarToLoadRatio}
+                                    value={modelOutput?.utilisation.solarToLoadRatio}
                                 />
                             </MyTd>
                         </tr>
@@ -563,7 +588,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             <MyTd>Utilisation factor</MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.utilisation.utilisationFactor}
+                                    value={modelOutput?.utilisation.utilisationFactor}
                                 />
                             </MyTd>
                         </tr>
@@ -573,7 +598,8 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             <MyTd>
                                 <MyNumericOutput
                                     value={
-                                        outputs?.utilisation.collectorPerformanceFactor
+                                        modelOutput?.utilisation
+                                            .collectorPerformanceFactor
                                     }
                                 />
                             </MyTd>
@@ -585,10 +611,12 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             </MyTd>
                             <MyTd>
                                 <MyNumericInput
-                                    value={inputs.dedicatedSolarStorageVolume}
+                                    value={state.modelInput.dedicatedSolarStorageVolume}
                                     callback={(value) =>
-                                        dispatchInput({
-                                            dedicatedSolarStorageVolume: value,
+                                        dispatchMerge({
+                                            modelInput: {
+                                                dedicatedSolarStorageVolume: value,
+                                            },
                                         })
                                     }
                                 />
@@ -601,10 +629,10 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             </MyTd>
                             <MyTd>
                                 <MyNumericInput
-                                    value={inputs.combinedCylinderVolume}
+                                    value={state.modelInput.combinedCylinderVolume}
                                     callback={(value) =>
-                                        dispatchInput({
-                                            combinedCylinderVolume: value,
+                                        dispatchMerge({
+                                            modelInput: { combinedCylinderVolume: value },
                                         })
                                     }
                                 />
@@ -617,7 +645,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             </MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.utilisation.effectiveSolarVolume}
+                                    value={modelOutput?.utilisation.effectiveSolarVolume}
                                     unit={'litres'}
                                 />
                             </MyTd>
@@ -630,7 +658,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             </MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.utilisation.dailyHotWaterDemand}
+                                    value={modelOutput?.utilisation.dailyHotWaterDemand}
                                     unit={'litres'}
                                 />
                             </MyTd>
@@ -642,7 +670,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             </MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.utilisation.volumeRatio}
+                                    value={modelOutput?.utilisation.volumeRatio}
                                 />
                             </MyTd>
                         </tr>
@@ -654,7 +682,9 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             </MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.utilisation.solarStorageVolumeFactor}
+                                    value={
+                                        modelOutput?.utilisation.solarStorageVolumeFactor
+                                    }
                                 />
                             </MyTd>
                         </tr>
@@ -665,7 +695,7 @@ export const solarHotWaterModule: UiModule<SolarHotWaterState> = {
                             </MyTd>
                             <MyTd>
                                 <MyNumericOutput
-                                    value={outputs?.utilisation.annualSolarInput}
+                                    value={modelOutput?.utilisation.annualSolarInput}
                                     unit={'kWh'}
                                 />
                             </MyTd>

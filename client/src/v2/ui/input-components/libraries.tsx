@@ -14,8 +14,8 @@ import type { Wall } from '../../data-schemas/libraries/elements';
 import { isNonEmpty, NonEmptyArray } from '../../helpers/non-empty-array';
 import { isNotNull } from '../../helpers/null-checking';
 import { Shadow } from '../../helpers/shadow-object-type';
+import { externals } from '../../shims/typed-globals';
 import { Select } from '../input-components/select';
-import { externals } from '../module-management/shim';
 import { ErrorModal, Modal } from '../output-components/modal';
 
 function nl2br(input: string): ReactNode {

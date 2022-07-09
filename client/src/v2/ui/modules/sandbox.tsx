@@ -1,24 +1,16 @@
 import React from 'react';
 
-import type { UiModule } from '../module-management';
+import { Result } from '../../helpers/result';
+import type { UiModule } from '../module-management/module-type';
 
-export type SandboxState = { donks: number };
-export type SandboxAction = { type: 'sandbox/put a donk on it' };
+type State = { donks: number };
+type Action = { type: 'put a donk on it' };
 
-export const sandboxModule: UiModule<SandboxState> = {
-    initialState: {
-        donks: 0,
-    },
-    reducer: (state, action) => {
-        switch (action.type) {
-            case 'sandbox/put a donk on it':
-                state.donks += 1;
-                break;
-        }
-        return state;
-    },
-    rootComponent: ({ state, dispatch }) => {
-        const { donks } = state.moduleState;
+export const sandboxModule: UiModule<State, Action> = {
+    name: 'sandbox',
+    component: function Sandbox({ state, dispatch }) {
+        const { donks } = state;
+
         let display: string;
         if (donks === 0) {
             display = 'hello world';
@@ -29,16 +21,26 @@ export const sandboxModule: UiModule<SandboxState> = {
             <div>
                 <div>{display}</div>
                 <div>
-                    <button
-                        onClick={() => dispatch({ type: 'sandbox/put a donk on it' })}
-                    >
+                    <button onClick={() => dispatch({ type: 'put a donk on it' })}>
                         put a donk on it
                     </button>
                 </div>
             </div>
         );
     },
-    dataMutator: () => {
-        // Pass
+    initialState: () => {
+        return { donks: 0 };
+    },
+    reducer: (state, action) => {
+        switch (action.type) {
+            case 'put a donk on it':
+                return { donks: state.donks + 1 };
+        }
+    },
+    shims: {
+        extractUpdateAction: () => {
+            return Result.err(new Error('external update handling not implemented'));
+        },
+        mutateLegacyData: () => undefined,
     },
 };

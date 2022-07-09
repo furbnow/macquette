@@ -1,15 +1,12 @@
-const content = () => document.querySelector('#content');
-
-let uiModule = null;
-
 function sandbox_initUI() {
-    uiModule = Macquette.uiModules.mount('sandbox', document.querySelector('#content'));
+    const element = document.querySelector('#content');
+    window.Macquette.uiModules.sandbox.init(element, '');
 }
 
 function sandbox_UpdateUI() {
-    uiModule.update();
+    window.Macquette.uiModules.sandbox.update();
 }
 
 function sandbox_UnloadUI() {
-    uiModule.unload();
+    window.Macquette.uiModules.sandbox.unmountAll();
 }
