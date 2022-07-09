@@ -205,11 +205,24 @@ export class HTTPClient {
             responseType: 'json',
         });
         const responseItems = z.array(z.unknown()).parse(response.data);
-        return responseItems.map((unvalidatedLibrary) => {
-            const library = librarySchema.parse(unvalidatedLibrary);
-            const metadata = libraryMetadataSchema.parse(unvalidatedLibrary);
-            return { ...metadata, ...library };
-        });
+        return responseItems.flatMap(
+            (unvalidatedLibrary): [Library & LibraryMetadata] | [] => {
+                try {
+                    const library = librarySchema.parse(unvalidatedLibrary);
+                    const metadata = libraryMetadataSchema.parse(unvalidatedLibrary);
+                    return [{ ...metadata, ...library }];
+                } catch (e) {
+                    if (e instanceof z.ZodError) {
+                        console.warn(
+                            'Server returned a library which did not pass the validator',
+                        );
+                        return [];
+                    } else {
+                        throw e;
+                    }
+                }
+            },
+        );
     }
 
     async updateLibrary(libraryId: string, updates: unknown): Promise<void> {
