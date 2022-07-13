@@ -504,6 +504,14 @@ function add_window(z) {
 }
 
 function elements_initUI() {
+    if (window.features.includes("new-fabric-page")) {
+        const element = document.querySelector('#react-container');
+        window.Macquette.uiModules.fabric.init(element, '');
+    } else {
+        // Set up TMP value workaround
+        initTMPChoices();
+    }
+
     library_helper.type = 'elements';
     // Normally this is done in model-rX.js. The model is intended for calculations so i prefer to initialize data.fabric.measures here
     if (data.fabric.measures == undefined) {
@@ -577,9 +585,6 @@ function elements_initUI() {
         $('#TB-measured-applied').show();
     }
 
-    // Set up TMP value workaround
-    initTMPChoices();
-
     if (!window.features.includes('new-fuvc')) {
         const headerRowTypeCell = document.querySelector('.floors-table__type-column-header')
         if (headerRowTypeCell) {
@@ -609,7 +614,13 @@ function elements_UpdateUI() {
         option.innerHTML = subtractOptions;
     }
 
+    window.Macquette.uiModules.fabric.update();
     window.Macquette.uiModules.floorRow.update();
+}
+
+function elements_UnloadUI() {
+    window.Macquette.uiModules.fabric.unmountAll();
+    window.Macquette.uiModules.floorRow.unmountAll();
 }
 
 function get_elements_max_id() {
