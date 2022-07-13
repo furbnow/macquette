@@ -57,7 +57,10 @@ export function MaterialSelector(props: Props) {
             </div>
             {showSelector && (
                 <SelectFloorInsulationMaterial
-                    onSelect={(material) => props.onChange(material)}
+                    onSelect={(material) => {
+                        setShowSelector(false);
+                        props.onChange(material);
+                    }}
                     onClose={() => setShowSelector(false)}
                 />
             )}

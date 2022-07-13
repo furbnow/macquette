@@ -70,14 +70,13 @@ type SelectLibraryItemProps<T> = {
 
 type LibraryItemProps<T> = Omit<
     SelectLibraryItemProps<T>,
-    'searchText' | 'libraries' | 'title'
+    'searchText' | 'libraries' | 'title' | 'onClose'
 > & {
     libraryItem: T;
 };
 
 function LibraryItem<T extends MinimalLibraryItem>({
     onSelect,
-    onClose,
     hideTags = false,
     tableColumns,
     getFullItemData,
@@ -146,7 +145,6 @@ function LibraryItem<T extends MinimalLibraryItem>({
                             className="btn"
                             onClick={() => {
                                 onSelect(libraryItem);
-                                onClose();
                             }}
                         >
                             Select
@@ -187,6 +185,11 @@ function LibraryItem<T extends MinimalLibraryItem>({
     );
 }
 
+/**
+ * Allow the user to select a library item from a library.
+ *
+ * If the user aborts, onClose is called; if the user selects something, onSelect is.
+ */
 export function SelectLibraryItem<T extends MinimalLibraryItem>({
     title,
     libraries,
@@ -297,7 +300,6 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
                                         hideTags,
                                         tableColumns,
                                         onSelect,
-                                        onClose,
                                         getFullItemData,
                                     }}
                                 />
@@ -459,7 +461,10 @@ export function selectWall(
     const root = createRoot(mountPoint);
     const element = (
         <SelectWall
-            onSelect={callback}
+            onSelect={(item) => {
+                callback(item);
+                root.unmount();
+            }}
             onClose={() => {
                 root.unmount();
             }}
