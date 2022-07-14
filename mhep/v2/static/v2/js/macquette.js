@@ -37,7 +37,8 @@ async function initMacquette(api, assessmentId, featureFlags) {
     }
     project = p.data;
     if (project.master.fuels === undefined) {
-        project.master.fuels = JSON.parse(JSON.stringify(datasets.fuels));
+        // project.master.fuels = JSON.parse(JSON.stringify(datasets.fuels));
+        project.master.fuels = window.Macquette.emulateJsonRoundTrip(datasets.fuels);
     }
     for (let s in project) {
         project[s].fuels = project.master.fuels;
@@ -197,7 +198,8 @@ function setupEventHandlers() {
             n++;
         }
         var s = 'scenario' + n;
-        project[s] = JSON.parse(JSON.stringify(project[$('#select-scenario').val()]));
+        // project[s] = JSON.parse(JSON.stringify(project[$('#select-scenario').val()]));
+        project[s] = window.Macquette.emulateJsonRoundTrip(project[$('#select-scenario').val()]);
         project[s].locked = false;
         project[s].creation_hash = generate_hash(JSON.stringify(project[s]));
         project[s].measures = {};
@@ -216,7 +218,8 @@ function setupEventHandlers() {
             .forEach(function (v, i) {
                 temp_project[v] = project[v];
             });
-        p.data = project = JSON.parse(JSON.stringify(temp_project));
+        // p.data = project = JSON.parse(JSON.stringify(temp_project));
+        p.data = project = window.Macquette.emulateJsonRoundTrip(temp_project);
 
         $('.menu-content').hide();
         redraw_scenario_menu();
@@ -364,7 +367,8 @@ function has_changed_base_scenario(scenario_id) {
     }
 
     const created_from = project[scenario_id].created_from;
-    let original_scenario = JSON.parse(JSON.stringify(project[created_from]));
+    // let original_scenario = JSON.parse(JSON.stringify(project[created_from]));
+    let original_scenario = window.Macquette.emulateJsonRoundTrip(project[created_from]);
     original_scenario.locked = false;
     let current_hash = generate_hash(JSON.stringify(original_scenario));
 

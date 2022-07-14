@@ -1,7 +1,8 @@
 console.log('debug elements.js');
 
 // Deep-clone an object of simple values
-const cloneObj = obj => JSON.parse(JSON.stringify(obj));
+// const cloneObj = obj => JSON.parse(JSON.stringify(obj));
+const cloneObj = obj => window.Macquette.emulateJsonRoundTrip(obj)
 
 // Capitalise first letter
 const capitalise = str => str.charAt(0).toUpperCase() + str.slice(1);
