@@ -828,3 +828,85 @@ body .modal {
         background: rgba(0, 0, 0, 0.3);
     }
 }
+
+.input--number {
+    width: 50px;
+}
+
+.input--auto-width {
+    width: auto;
+}
+
+.form-grid__root input,
+.form-grid__root select,
+.form-grid__root textarea {
+    /* Need to break out of BEM in order to undo Bootstrap margins */
+    margin-bottom: 0;
+}
+
+.notbootstrap td {
+    padding: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    vertical-align: inherit;
+    border-top: inherit;
+}
+
+.form-grid__root {
+    display: grid;
+    grid-template-columns: minmax(max-content, 120px) max-content;
+    grid-auto-rows: minmax(30px, auto);
+    grid-gap: 7px 30px;
+    margin-bottom: 15px;
+}
+
+.floor-u-value-calculator__root {
+    margin-bottom: 15px;
+}
+
+.combined-method-input__root {
+    margin-bottom: 15px;
+}
+
+.combined-method-input__table {
+    border-top: solid 1px var(--beige-400);
+    margin-bottom: 7px;
+}
+
+.combined-method-input__heading-row {
+    border-bottom: solid 1px var(--beige-400);
+}
+
+.combined-method-input__layer-row--stripe {
+    background-color: var(--brown-4);
+}
+
+.combined-method-input__layer-id-heading-cell,
+.combined-method-input__layer-id-cell {
+    border-right: solid 1px var(--beige-400);
+}
+
+.combined-method-input__layer-id-heading-cell,
+.combined-method-input__thickness-heading-cell,
+.combined-method-input__bridging-proportion-heading-cell {
+    width: 0;
+}
+
+.combined-method-input__main-material-heading-cell,
+.combined-method-input__bridging-material-heading-cell {
+    width: 50%;
+}
+
+.floor-insulation-material-selector__root {
+    display: flex;
+    min-height: 40px;
+}
+
+.floor-insulation-material-selector__material-view {
+    flex: none;
+    padding-right: 10px;
+}
+
+.floor-insulation-material-selector__buttons {
+    flex: auto;
+}

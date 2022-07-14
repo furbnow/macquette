@@ -11,12 +11,16 @@ import {
     discriminateTags,
 } from '../../data-schemas/libraries/elements';
 import type { Wall } from '../../data-schemas/libraries/elements';
+import {
+    FloorInsulationMaterial,
+    isFloorInsulationMaterialLibrary,
+} from '../../data-schemas/libraries/floor-insulation';
 import { isNonEmpty, NonEmptyArray } from '../../helpers/non-empty-array';
 import { isNotNull } from '../../helpers/null-checking';
 import { Shadow } from '../../helpers/shadow-object-type';
 import { externals } from '../../shims/typed-globals';
 import { Select } from '../input-components/select';
-import { ErrorModal, Modal } from '../output-components/modal';
+import { ErrorModal, Modal, ModalBody, ModalHeader } from '../output-components/modal';
 
 function nl2br(input: string): ReactNode {
     const lines = input.split('\n');
@@ -203,33 +207,7 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
 
     return (
         <Modal onClose={onClose} headerId="modal-header">
-            <div className="dialog-header">
-                <div className="d-flex justify-content-between">
-                    <h4 className="mt-0 mb-7" id="modal-header">
-                        Select {title}
-                    </h4>
-
-                    <div>
-                        <button
-                            type="button"
-                            aria-label="Close"
-                            onClick={onClose}
-                            className="dialog-x"
-                        >
-                            <svg
-                                width="22"
-                                height="22"
-                                viewBox="0 0 44 44"
-                                aria-hidden="true"
-                                focusable="false"
-                            >
-                                <path d="M0.549989 4.44999L4.44999 0.549988L43.45 39.55L39.55 43.45L0.549989 4.44999Z" />
-                                <path d="M39.55 0.549988L43.45 4.44999L4.44999 43.45L0.549988 39.55L39.55 0.549988Z" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
+            <ModalHeader onClose={onClose} title={`Select ${title}`}>
                 <div className="d-flex">
                     <div>
                         <label htmlFor="field_library_filter" className="small-caps">
@@ -276,9 +254,8 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
                         )}
                     </div>
                 </div>
-            </div>
-
-            <div className="dialog-body">
+            </ModalHeader>
+            <ModalBody>
                 {filteredLibraryItems.length > 0 ? (
                     <table>
                         <thead>
@@ -315,7 +292,7 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
                 ) : (
                     <p>Nothing matching this filter</p>
                 )}
-            </div>
+            </ModalBody>
         </Modal>
     );
 }
@@ -423,4 +400,54 @@ export function selectWall(
         />
     );
     root.render(element);
+}
+
+type SelectFloorInsulationMaterialParams = {
+    onSelect: (item: FloorInsulationMaterial) => void;
+    onClose: () => void;
+    currentItemTag?: string | null;
+};
+
+export function SelectFloorInsulationMaterial({
+    onSelect,
+    onClose,
+    currentItemTag = null,
+}: SelectFloorInsulationMaterialParams) {
+    const libraries: Library[] = externals().libraries;
+    const filtered = libraries.filter(isFloorInsulationMaterialLibrary);
+    if (!isNonEmpty(filtered)) {
+        return (
+            <ErrorModal onClose={onClose} title={'Library missing error'}>
+                No floor insulation material libraries found
+            </ErrorModal>
+        );
+    }
+
+    function searchText(material: FloorInsulationMaterial) {
+        return material.name;
+    }
+
+    return SelectLibraryItem<FloorInsulationMaterial>({
+        title: 'floor insulation material',
+        onSelect,
+        onClose,
+        currentItemTag,
+        libraries: filtered,
+        searchText,
+        tableColumns: [
+            {
+                title: 'Conductivity',
+                value: (material) => material.conductivity.toString(),
+            },
+        ],
+        getFullItemData: (item) =>
+            item.description === ''
+                ? []
+                : [
+                      {
+                          title: 'Description',
+                          value: nl2br(item.description),
+                      },
+                  ],
+    });
 }

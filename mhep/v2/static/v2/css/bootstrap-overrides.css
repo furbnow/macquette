@@ -1,0 +1,14 @@
+/* Colour contrast to meet WCAG AA */
+.alert-danger,
+.alert-error {
+    color: #8c3534;
+}
+
+.alert-danger h4,
+.alert-error h4 {
+    color: #8c3534;
+}
+
+.alert {
+    margin-bottom: auto;
+}

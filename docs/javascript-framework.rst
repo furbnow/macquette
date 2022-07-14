@@ -213,8 +213,6 @@ In the Django app:
       graphics.js       # Draws the house and some bar graphs
       library-helper.js # UI functions related to using or editing libraries
       misc.js           # Some of the JS framework; other bits in templates/VERSION/view.html
-      openfuvc-ui-helper.js  # UI functions related to the floor u-value calculator
-      openfuvc.js       # Floor u-value calculation model
 
     subviews/           # Pairs of files containing HTML + JS for each view
       [name].{js,html}

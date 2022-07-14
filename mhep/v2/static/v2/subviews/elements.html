@@ -249,11 +249,13 @@
         <tr>
             <td style="width: 0">
             </td>
-            <td colspan="5">
+            <td class="floors-table__floor-summary-cell" colspan="6">
                 <b>
                     <span data-key="lib"></span> - <span data-key="name"></span>
                 </b>
                 <br>
+                U-value:
+                <span data-key="uvalue" dp="2"></span> <span class="text-units">W/K.m²</span>,
                 k-value:
                 <span data-key="kvalue"></span> <span class="text-units">kJ/K.m²</span>
 
@@ -283,7 +285,9 @@
                 </button>
             </td>
         </tr>
-        <tr class="tr-no-top-border">
+        <tr class="tr-no-top-border react-floor-data-row"></tr>
+        <tr class="tr-no-top-border react-fuvc-row"></tr>
+        <tr class="tr-no-top-border legacy-row">
             <td></td>
             <td>
                 <input type="text" data-key="location" style="width: 15rem">
@@ -335,8 +339,9 @@
             <tr class="bg-lighter">
                 <th></th>
                 <th>Label/Location</th>
-                <th>U-value</th>
-                <th>Exposed perimeter</th>
+                <th class='floors-table__type-column-header'>Type</th>
+                <th>U value</th>
+                <th>Exposed<br>perimeter</th>
                 <th>Area</th>
                 <th>Loss</th>
                 <th></th>
@@ -348,14 +353,14 @@
         <tfoot>
             <tr class="bg-lighter">
                 <td></td>
-                <td colspan="3" class="font-bold">Totals</td>
+                <td colspan="4" class="floors-table__footer-totals-cell">Totals</td>
                 <td class="text-right">
                     <span key="data.fabric.total_floor_area" dp="1">0.0</span>m²
                 </td>
                 <td class="text-right">
                     <span key="data.fabric.total_floor_WK" dp="2">0.00</span> W/K
                 </td>
-                <td colspan="1"></td>
+                <td></td>
             </tr>
         </tfoot>
     </table>

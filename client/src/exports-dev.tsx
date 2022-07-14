@@ -24,8 +24,7 @@ import Ventilation from './dev/ui/views/Ventilation';
 
 declare global {
     interface Window {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Macquette: any;
+        Macquette?: Record<string, unknown>;
     }
 }
 

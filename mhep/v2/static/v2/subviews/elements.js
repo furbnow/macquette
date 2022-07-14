@@ -131,6 +131,9 @@ $('#openbem').on('click', '.delete-element', function () {
     var row = $(this).attr('row');
     var item_id = 1.0 * $(this).attr('item_id');
     $(this).closest('tr').remove();
+    if (window.features.includes('new-fuvc')) {
+        window.Macquette.uiModules.floorRow.unmount(item_id);
+    }
     data.fabric.elements.splice(row, 1);
     elements_initUI();
     update();
@@ -435,6 +438,21 @@ function add_floor(z) {
         root.querySelector('input.floor-uvalue').classList.add('text-warning');
     }
 
+    const reactFloorDataRow = root.querySelector('.react-floor-data-row')
+    if (window.features.includes('new-fuvc')) {
+        const reactFuvcRow = root.querySelector('.react-fuvc-row');
+        reactFuvcRow.setAttribute('data-element-id', element.id);
+        const legacyRow = root.querySelector('.legacy-row')
+        root.removeChild(legacyRow)
+        window.Macquette.uiModules.floorRow.init(reactFloorDataRow, element.id);
+    } else {
+        root.removeChild(reactFloorDataRow)
+        const summaryCell = root.querySelector('.floors-table__floor-summary-cell')
+        if (summaryCell) {
+            summaryCell.setAttribute('colspan', 5);
+        }
+    }
+
     $(id).append(root);
 }
 
@@ -560,6 +578,17 @@ function elements_initUI() {
 
     // Set up TMP value workaround
     initTMPChoices();
+
+    if (!window.features.includes('new-fuvc')) {
+        const headerRowTypeCell = document.querySelector('.floors-table__type-column-header')
+        if (headerRowTypeCell) {
+            headerRowTypeCell.remove();
+        }
+        const footerTotalsCell = document.querySelector('.floors-table__footer-totals-cell')
+        if (footerTotalsCell) {
+            footerTotalsCell.setAttribute('colspan', 3);
+        }
+    }
 }
 
 function getSubtractOptions(data) {
@@ -578,6 +607,8 @@ function elements_UpdateUI() {
     for (let option of document.querySelectorAll('.subtractfrom')) {
         option.innerHTML = subtractOptions;
     }
+
+    window.Macquette.uiModules.floorRow.update();
 }
 
 function get_elements_max_id() {

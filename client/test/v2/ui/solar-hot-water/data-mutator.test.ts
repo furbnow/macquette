@@ -46,7 +46,7 @@ describe('solar hot water data mutator', () => {
 
     test('the resulting scenario object has version: 1 under SHW', () => {
         const arb = fc.record({
-            state: arbitraryState(),
+            state: arbitraryState().filter((s) => s !== 'loading'),
             externals,
             moduleKey: fc.string(),
         });

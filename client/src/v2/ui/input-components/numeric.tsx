@@ -6,6 +6,7 @@ import { Shadow } from '../../helpers/shadow-object-type';
 type BasicNumericInputProps = {
     value: number | null;
     callback: (value: number | null) => void;
+    unit?: string;
 };
 
 export type NumericInputProps = Shadow<PropsOf<'input'>, BasicNumericInputProps>;
@@ -14,6 +15,7 @@ export function NumericInput({
     value: outerValue,
     callback,
     style: styleProp,
+    unit,
     ...passthroughProps
 }: NumericInputProps) {
     // Use a nested inner component to make sure internal state gets reset when
@@ -36,15 +38,24 @@ export function NumericInput({
             ...(styleProp ?? {}),
             ...(valid ? {} : { borderColor: 'red' }),
         };
+        let unitFragment: JSX.Element | null = null;
+        if (unit !== undefined) {
+            unitFragment = <>&nbsp;{unit}</>;
+        }
+        const { className, ...rest } = passthroughProps;
         return (
-            <input
-                type="text"
-                value={modifiedValue ?? outerValue?.toString(10) ?? ''}
-                onChange={(evt) => setModifiedValue(evt.target.value)}
-                onBlur={handleBlur}
-                style={style}
-                {...passthroughProps}
-            />
+            <span style={{ whiteSpace: 'nowrap' }} className={className}>
+                <input
+                    type="text"
+                    className="input--number"
+                    value={modifiedValue ?? outerValue?.toString(10) ?? ''}
+                    onChange={(evt) => setModifiedValue(evt.target.value)}
+                    onBlur={handleBlur}
+                    style={style}
+                    {...rest}
+                />
+                {unitFragment}
+            </span>
         );
     }
     return <Inner />;

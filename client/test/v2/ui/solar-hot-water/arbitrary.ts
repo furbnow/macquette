@@ -6,6 +6,7 @@ import { LoadedState } from '../../../../src/v2/ui/modules/solar-hot-water';
 import { noOutput } from '../../../../src/v2/ui/output-components/numeric';
 import { arbFloat, fcEnum, merge } from '../../../helpers/arbitraries';
 import { recordWith } from '../../../helpers/arbitraries';
+import { sensibleFloat } from '../../model/arbitraries/values';
 
 export function arbModelInput(): fc.Arbitrary<
     Pick<LoadedState, 'pumpType' | 'moduleEnabled' | 'modelInput'>
@@ -16,21 +17,21 @@ export function arbModelInput(): fc.Arbitrary<
         modelInput: fc.record({
             collector: fc.record({
                 ...recordWith(fc.constant(null), {
-                    apertureArea: arbFloat(),
+                    apertureArea: sensibleFloat,
                     apertureAreaType: fcEnum('exact' as const, 'gross' as const),
                     parameterSource: fcEnum(
                         'test certificate' as const,
                         'estimate' as const,
                     ),
                     orientation: fcEnum(...Orientation.names),
-                    inclination: arbFloat(),
+                    inclination: sensibleFloat,
                     overshading: fcEnum(...Overshading.names),
                 }),
                 testCertificate: fc.record(
                     recordWith(fc.constant(null), {
-                        zeroLossEfficiency: arbFloat(),
-                        linearHeatLossCoefficient: arbFloat(),
-                        secondOrderHeatLossCoefficient: arbFloat(),
+                        zeroLossEfficiency: sensibleFloat,
+                        linearHeatLossCoefficient: sensibleFloat,
+                        secondOrderHeatLossCoefficient: sensibleFloat,
                     }),
                 ),
                 estimate: fc.record(
@@ -44,8 +45,8 @@ export function arbModelInput(): fc.Arbitrary<
                     }),
                 ),
             }),
-            dedicatedSolarStorageVolume: arbFloat(),
-            combinedCylinderVolume: arbFloat(),
+            dedicatedSolarStorageVolume: arbFloat({ noNaN: true }),
+            combinedCylinderVolume: arbFloat({ noNaN: true }),
         }),
     });
 }
@@ -55,22 +56,22 @@ export function arbitraryState(): fc.Arbitrary<LoadedState | 'loading'> {
         fc.constant(null),
         fc.record({
             ...recordWith(fc.constant(noOutput), {
-                aStar: arbFloat({ noNaN: true }),
-                collectorPerformanceRatio: arbFloat({ noNaN: true }),
-                annualSolarRadiation: arbFloat({ noNaN: true }),
-                availableSolarEnergy: arbFloat({ noNaN: true }),
+                aStar: arbFloat(),
+                collectorPerformanceRatio: arbFloat(),
+                annualSolarRadiation: arbFloat(),
+                availableSolarEnergy: arbFloat(),
             }),
             utilisation: fc.record(
                 recordWith(fc.constant(noOutput), {
-                    load: arbFloat({ noNaN: true }),
-                    solarToLoadRatio: arbFloat({ noNaN: true }),
-                    utilisationFactor: arbFloat({ noNaN: true }),
-                    collectorPerformanceFactor: arbFloat({ noNaN: true }),
-                    effectiveSolarVolume: arbFloat({ noNaN: true }),
-                    dailyHotWaterDemand: arbFloat({ noNaN: true }),
-                    volumeRatio: arbFloat({ noNaN: true }),
-                    solarStorageVolumeFactor: arbFloat({ noNaN: true }),
-                    annualSolarInput: arbFloat({ noNaN: true }),
+                    load: arbFloat(),
+                    solarToLoadRatio: arbFloat(),
+                    utilisationFactor: arbFloat(),
+                    collectorPerformanceFactor: arbFloat(),
+                    effectiveSolarVolume: arbFloat(),
+                    dailyHotWaterDemand: arbFloat(),
+                    volumeRatio: arbFloat(),
+                    solarStorageVolumeFactor: arbFloat(),
+                    annualSolarInput: arbFloat(),
                 }),
             ),
         }),
