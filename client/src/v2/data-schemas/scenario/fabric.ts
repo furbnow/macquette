@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { isRecord } from '../../helpers/is-record';
+import { zodPredicateUnion } from '../helpers/zod-predicate-union';
 import { stringyFloatSchema, stringyIntegerSchema } from './value-schemas';
 
 const subtractFrom = z.union([
@@ -78,8 +80,44 @@ const floor = commonElement.extend({
     type: z.enum(['floor', 'Floor']).transform(() => 'floor' as const),
 });
 
+function typeFieldMatches(validTypes: string[]) {
+    return (elem: unknown) =>
+        isRecord(elem) &&
+        typeof elem['type'] === 'string' &&
+        validTypes.includes(elem['type']);
+}
+export const fabricElement = zodPredicateUnion([
+    {
+        predicate: typeFieldMatches([
+            'external wall',
+            'party wall',
+            'loft',
+            'roof',
+            'Wall',
+            'Party_wall',
+            'Loft',
+            'Roof',
+        ]),
+        schema: wallLike,
+    },
+    {
+        predicate: typeFieldMatches([
+            'door',
+            'roof light',
+            'window',
+            'Door',
+            'Roof_light',
+            'window',
+            'Window',
+        ]),
+        schema: windowLike,
+    },
+    { predicate: typeFieldMatches(['hatch', 'Hatch']), schema: hatch },
+    { predicate: typeFieldMatches(['floor', 'Floor']), schema: floor },
+]);
+
 export const fabric = z.object({
-    elements: z.array(z.union([wallLike, windowLike, hatch, floor])).optional(),
+    elements: z.array(fabricElement).optional(),
     thermal_bridging_yvalue: stringyFloatSchema
         .refine((v) => v !== '', 'empty string is not allowed here')
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

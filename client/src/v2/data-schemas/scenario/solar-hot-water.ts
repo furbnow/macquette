@@ -1,9 +1,11 @@
 import { z } from 'zod';
 
+import { isRecord } from '../../helpers/is-record';
 import { solarHotWaterOvershadingFactorReverse } from '../../model/datasets';
 import { Orientation } from '../../model/enums/orientation';
 import { Overshading } from '../../model/enums/overshading';
 import { zodNullableObject } from '../helpers/nullable-object';
+import { zodPredicateUnion } from '../helpers/zod-predicate-union';
 import { coalesceEmptyString, numberWithNaN, stringyFloatSchema } from './value-schemas';
 
 const outputsLegacy = z
@@ -131,4 +133,15 @@ function migrateLegacyToV1(legacy: z.infer<typeof shwLegacy>): z.infer<typeof sh
     };
 }
 
-export const solarHotWater = z.union([shwV1, shwLegacy.transform(migrateLegacyToV1)]);
+export const solarHotWater = zodPredicateUnion([
+    {
+        name: 'v1',
+        predicate: (val) => isRecord(val) && val['version'] === 1,
+        schema: shwV1,
+    },
+    {
+        name: 'legacy',
+        predicate: (val) => isRecord(val) && !('version' in val),
+        schema: shwLegacy.transform(migrateLegacyToV1),
+    },
+]);
