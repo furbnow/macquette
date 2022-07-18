@@ -2,6 +2,7 @@
 import assert from 'assert';
 import * as fc from 'fast-check';
 import { cloneDeep } from 'lodash';
+import { z } from 'zod';
 
 import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { emulateJsonRoundTrip } from '../../../src/v2/helpers/emulate-json-round-trip';
@@ -100,6 +101,21 @@ describe('scenario validator', () => {
                     testFn,
                 ),
             );
+        });
+
+        test('type level idempotence check', () => {
+            // Test that output is assignable to input. We don't want to
+            // actually generate a runtime value of the schema output, so we
+            // write the test inside a function that assumes we are given one.
+
+            // It is fine that this function and the inner assignment are
+            // unused at runtime, since this test is at the type-level.
+
+            /* eslint-disable @typescript-eslint/no-unused-vars */
+            function test(schemaParseOutput: z.output<typeof scenarioSchema>) {
+                const input: z.input<typeof scenarioSchema> = schemaParseOutput;
+            }
+            /* eslint-enable */
         });
     });
 });
