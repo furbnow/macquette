@@ -14,8 +14,14 @@
  */
 import { mapValues } from 'lodash';
 
+import {
+    FloorUValueError,
+    FloorUValueWarning,
+} from '../../../data-schemas/scenario/fabric/floor-u-value';
 import { sum } from '../../../helpers/array-reducers';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
+import { Result } from '../../../helpers/result';
+import { WarningCollector, WithWarnings } from '../../../helpers/with-warnings';
 import { Month } from '../../enums/month';
 import { Region } from '../../enums/region';
 import {
@@ -33,6 +39,9 @@ import {
 import { mutateLegacyData } from './mutate-legacy-data';
 
 export { extractFabricInputFromLegacy } from './extract-from-legacy';
+
+export type FabricWarning = FloorUValueWarning | 'unspecified fabric warning';
+export type FabricError = FloorUValueError | 'unspecified fabric error';
 
 export type FabricInput = {
     elements: {
@@ -112,7 +121,14 @@ export class Fabric {
         // behaviour.
         const areas = this.flatElements
             .filter((e) => e.type !== 'party wall')
-            .filter((e) => e.spec.uValue !== 0) // Legacy
+            .filter((e) => {
+                // Replicate legacy behaviour
+                if (e.type === 'floor') {
+                    return e.spec.uValueLegacyField !== 0;
+                } else {
+                    return e.spec.uValue !== 0;
+                }
+            })
             .map(netArea);
         return sum(areas);
     }
@@ -146,9 +162,20 @@ export class Fabric {
     }
 
     @cache
-    get heatLossTotals(): Record<ElementCategory, number> {
-        return mapValues(this.elementsByCategory, (elements) =>
-            sum(elements.map((elements) => elements.heatLoss)),
+    get heatLossTotals(): WithWarnings<
+        Record<ElementCategory, Result<number, FabricError>>,
+        FabricWarning
+    > {
+        const wc = new WarningCollector<FabricWarning>();
+        return wc.out(
+            mapValues(this.elementsByCategory, (elements) => {
+                const lossesR = Result.mapArray(elements, (element) =>
+                    Result.fromUnion(
+                        WithWarnings.fromUnion(element.heatLoss).unwrap(wc.sink()),
+                    ),
+                );
+                return lossesR.mapOk((losses) => sum(losses));
+            }),
         );
     }
 
@@ -158,9 +185,15 @@ export class Fabric {
     }
 
     @cache
-    get fabricElementsHeatLoss(): number {
-        const losses = this.flatElements.map((e) => e.heatLoss);
-        return sum(losses);
+    get fabricElementsHeatLoss(): WithWarnings<
+        Result<number, FabricError>,
+        FabricWarning
+    > {
+        const wc = new WarningCollector<FabricWarning>();
+        const lossesR = Result.mapArray(this.flatElements, (element) =>
+            Result.fromUnion(WithWarnings.fromUnion(element.heatLoss).unwrap(wc.sink())),
+        );
+        return wc.out(lossesR.mapOk((losses) => sum(losses)));
     }
 
     @cache
@@ -169,8 +202,13 @@ export class Fabric {
     }
 
     @cache
-    get heatLoss(): number {
-        return this.thermalBridgingHeatLoss + this.fabricElementsHeatLoss;
+    get heatLoss(): WithWarnings<Result<number, FabricError>, FabricWarning> {
+        return this.fabricElementsHeatLoss.map((fabricElementsHeatLoss) =>
+            fabricElementsHeatLoss.map(
+                (fabricElementsHeatLoss) =>
+                    this.thermalBridgingHeatLoss + fabricElementsHeatLoss,
+            ),
+        );
     }
 
     @cache

@@ -18,7 +18,8 @@ const LIBRARY_NAMES = {
     'hot_water_control_type': 'Storage control types',
     'space_heating_control_type': 'Space heating control types',
     'clothes_drying_facilities': 'Clothes drying facilities',
-    'generation_measures': 'Generation measures'
+    'generation_measures': 'Generation measures',
+    'floor_insulation_materials': 'Floor insulation materials',
 };
 
 function libraryHelper(type, container) {

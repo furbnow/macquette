@@ -252,7 +252,17 @@ function normaliseScenario(scenario: any) {
             space_heating?: any;
             space_cooling?: any;
         };
+        fabric?: {
+            elements?: Array<{ uValueModelOutput?: unknown }>;
+        };
     };
+
+    // Delete new U-value model output
+    if (castScenario.fabric !== undefined && castScenario.fabric.elements !== undefined) {
+        for (const element of castScenario.fabric.elements) {
+            delete element.uValueModelOutput;
+        }
+    }
 
     // SHW normalisation
     if (castScenario.SHW !== undefined) {

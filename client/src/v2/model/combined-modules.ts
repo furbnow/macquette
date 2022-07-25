@@ -1,4 +1,4 @@
-import { Scenario } from '../data-schemas/scenario';
+import { scenarioSchema } from '../data-schemas/scenario';
 import { Region } from './enums/region';
 import { AirChangeRate } from './modules/air-change-rate';
 import {
@@ -77,7 +77,8 @@ export type Input = {
     waterHeating: WaterHeatingInput;
 };
 
-export function extractInputFromLegacy(scenario: Scenario): Input {
+export function extractInputFromLegacy(rawScenario: unknown): Input {
+    const scenario = scenarioSchema.parse(rawScenario);
     return {
         fuels: extractFuelsInputFromLegacy(scenario),
         floors: extractFloorsInputFromLegacy(scenario),

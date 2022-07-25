@@ -5,6 +5,7 @@
  */
 import fc, { toStringMethod } from 'fast-check';
 
+import { Proportion } from '../../src/v2/helpers/proportion';
 import { Month } from '../../src/v2/model/enums/month';
 import { Orientation } from '../../src/v2/model/enums/orientation';
 import { Overshading } from '../../src/v2/model/enums/overshading';
@@ -28,4 +29,9 @@ import { Region } from '../../src/v2/model/enums/region';
 (Month.prototype as any)[toStringMethod] = function () {
     const input = fc.stringify((this as Month).name);
     return `new Month(${input})`;
+};
+
+(Proportion.prototype as any)[toStringMethod] = function () {
+    const ratio = fc.stringify((this as Proportion).asRatio);
+    return `Proportion.fromRatio(${ratio}).unwrap()`;
 };

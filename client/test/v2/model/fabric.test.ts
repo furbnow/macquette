@@ -1,5 +1,9 @@
 import fc from 'fast-check';
 
+import {
+    FloorType,
+    PerFloorTypeSpec,
+} from '../../../src/v2/data-schemas/scenario/fabric/floor-u-value';
 import { mean, sum } from '../../../src/v2/helpers/array-reducers';
 import { Month } from '../../../src/v2/model/enums/month';
 import {
@@ -24,6 +28,10 @@ import {
     arbitraryOvershading,
     arbitraryRegion,
 } from '../../helpers/arbitrary-enums';
+import {
+    arbFloorType,
+    arbPerFloorTypeSpec,
+} from './arbitraries/floor-u-value-calculator/scenario-spec';
 import { sensibleFloat } from './arbitraries/values';
 
 function arbitraryCommonSpec(): fc.Arbitrary<CommonSpec> {
@@ -35,13 +43,21 @@ function arbitraryCommonSpec(): fc.Arbitrary<CommonSpec> {
 }
 
 function arbitraryFloorSpec(): fc.Arbitrary<FloorSpec> {
-    return merge(
-        arbitraryCommonSpec(),
-        fc.record({
-            type: fc.constant('floor' as const),
-            area: sensibleFloat,
-        }),
-    );
+    const arbitraryFloorType: fc.Arbitrary<FloorType | null> = fc.option(arbFloorType);
+    const arbitraryPerFloorTypeSpec: fc.Arbitrary<PerFloorTypeSpec | null> =
+        fc.option(arbPerFloorTypeSpec);
+    const common = arbitraryCommonSpec().map(({ uValue, ...rest }) => ({
+        ...rest,
+        uValueLegacyField: uValue,
+    }));
+    const remaining = fc.record({
+        type: fc.constant('floor' as const),
+        area: sensibleFloat,
+        exposedPerimeter: sensibleFloat,
+        selectedFloorType: arbitraryFloorType,
+        perFloorTypeSpec: arbitraryPerFloorTypeSpec,
+    });
+    return merge(common, remaining);
 }
 
 function arbitraryWallLikeSpec<T>(
@@ -177,7 +193,12 @@ describe('fabric model module', () => {
 
                 // Skip if some element has a u-value of 0, as this triggers
                 // legacy behaviour replication
-                fc.pre(fabric.flatElements.every((e) => e.spec.uValue !== 0));
+                fc.pre(
+                    fabric.flatElements.every((e) => {
+                        if (e.type === 'floor') return e.spec.uValueLegacyField !== 0;
+                        else return e.spec.uValue !== 0;
+                    }),
+                );
 
                 expect(fabric.externalArea).toBeApproximately(
                     fabric.areaTotals.externalWall +

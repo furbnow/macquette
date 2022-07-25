@@ -53,8 +53,7 @@ let calc = {data: {}};
  *
  ******************************************************************/
 calc.run = function (datain) {
-    const validatedScenario = scenarioSchema.parse(datain)
-    const combinedModules = new CombinedModules(extractInputFromLegacy(validatedScenario))
+    const combinedModules = new CombinedModules(extractInputFromLegacy(datain))
     calc.data = datain;
     setDefaultLegacyInputs(calc.data)
     setBlankLegacyOutputs(calc.data)

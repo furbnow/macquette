@@ -18,3 +18,13 @@ export function mapNonEmpty<T, U>(
 ): NonEmptyArray<U> {
     return assertNonEmpty(arr.map(fn));
 }
+
+export function first<T>(vals: NonEmptyArray<T>): T {
+    return vals[0];
+}
+
+export function last<T>(vals: NonEmptyArray<T>): T {
+    // SAFETY: If vals is non-empty, it must have a last element
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return vals[vals.length - 1]!;
+}

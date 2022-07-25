@@ -1,6 +1,8 @@
 import fc from 'fast-check';
 import { mapValues } from 'lodash';
 
+import { NonEmptyArray } from '../../src/v2/helpers/non-empty-array';
+
 export type FcInfer<ArbT> = ArbT extends fc.Arbitrary<infer T>
     ? T
     : ArbT extends (...args: unknown[]) => fc.Arbitrary<infer T>
@@ -42,4 +44,17 @@ export function recordWith<T extends Record<string | symbol, fc.Arbitrary<unknow
 /** @deprecated use fc.constantFrom instead */
 export function fcEnum<Value>(...vals: Value[]): fc.Arbitrary<Value> {
     return fc.constantFrom(...vals);
+}
+
+export function fcNonEmptyArray<T>(
+    arb: fc.Arbitrary<T>,
+    options: Omit<fc.ArrayConstraints, 'minLength'> = {},
+): fc.Arbitrary<NonEmptyArray<T>> {
+    return (
+        fc
+            .array(arb, { ...options, minLength: 1 })
+            // SAFETY: We passed minLength: 1
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            .map((arr: T[]) => arr as NonEmptyArray<T>)
+    );
 }

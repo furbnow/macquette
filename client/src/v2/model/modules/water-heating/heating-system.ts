@@ -66,7 +66,7 @@ export function extractHeatingSystemHelper(
         | NonCombiNoPrimaryCircuitInput;
     if (legacySystem.instantaneous_water_heating) {
         specific = { type: 'instantaneous' };
-    } else
+    } else {
         switch (legacySystem.combi_loss) {
             case '0':
             case 0: {
@@ -117,6 +117,7 @@ export function extractHeatingSystemHelper(
                 };
                 break;
         }
+    }
     return {
         ...common,
         ...specific,

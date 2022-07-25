@@ -33,6 +33,7 @@ module.exports = {
         eqeqeq: 'error',
         'func-style': ['warn', 'declaration'], // Declaration functions have obligatory names, which makes stack traces easier to read
         'no-inner-declarations': 'off',
+        curly: ['warn', 'multi-line'],
     },
     settings: { react: { version: 'detect' } },
     overrides: [

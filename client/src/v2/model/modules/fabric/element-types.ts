@@ -1,12 +1,23 @@
+import {
+    FloorType,
+    FloorUValueError,
+    FloorUValueWarning,
+    PerFloorTypeSpec,
+} from '../../../data-schemas/scenario/fabric/floor-u-value';
 import { mean, sum } from '../../../helpers/array-reducers';
 import { assertNever } from '../../../helpers/assert-never';
-import { cacheMonth } from '../../../helpers/cache-decorators';
+import { cache, cacheMonth } from '../../../helpers/cache-decorators';
+import { featureFlags } from '../../../helpers/feature-flags';
+import { Result } from '../../../helpers/result';
+import { WarningCollector, WithWarnings } from '../../../helpers/with-warnings';
 import { lightAccessFactor, solarAccessFactor } from '../../datasets';
 import { Month } from '../../enums/month';
 import { Orientation } from '../../enums/orientation';
 import { Overshading } from '../../enums/overshading';
 import { Region } from '../../enums/region';
 import { calculateSolarRadiationMonthly } from '../../solar-flux';
+import { constructFloorUValueModel } from './floor-u-value-calculator';
+import { validate } from './floor-u-value-calculator/validate-input';
 
 export type CommonSpec = {
     id: number;
@@ -47,9 +58,13 @@ export class WallLike {
     }
 }
 
-export type FloorSpec = CommonSpec & {
+export type FloorSpec = Omit<CommonSpec, 'uValue'> & {
     type: 'floor';
     area: number;
+    exposedPerimeter: number;
+    uValueLegacyField: number;
+    selectedFloorType: FloorType | null;
+    perFloorTypeSpec: PerFloorTypeSpec | null;
 };
 
 export class Floor {
@@ -63,8 +78,35 @@ export class Floor {
         return this.spec.kValue * this.spec.area;
     }
 
-    get heatLoss(): number {
-        return this.spec.uValue * this.spec.area;
+    @cache
+    get uValue(): WithWarnings<Result<number, FloorUValueError>, FloorUValueWarning> {
+        if (!featureFlags.has('new-fuvc')) {
+            return WithWarnings.empty(Result.ok(this.spec.uValueLegacyField));
+        }
+        if (this.spec.perFloorTypeSpec !== null && this.spec.selectedFloorType !== null) {
+            const common = {
+                area: this.spec.area,
+                exposedPerimeter: this.spec.exposedPerimeter,
+            };
+            const wc = new WarningCollector<FloorUValueWarning>();
+            return wc.out(
+                validate(
+                    this.spec.selectedFloorType,
+                    common,
+                    this.spec.perFloorTypeSpec,
+                ).map((input) =>
+                    constructFloorUValueModel(input).uValue.unwrap(wc.sink()),
+                ),
+            );
+        } else {
+            return WithWarnings.empty(Result.ok(this.spec.uValueLegacyField));
+        }
+    }
+
+    get heatLoss(): WithWarnings<Result<number, FloorUValueError>, FloorUValueWarning> {
+        return this.uValue.map((uValue) =>
+            uValue.map((uValue) => uValue * this.spec.area),
+        );
     }
 }
 

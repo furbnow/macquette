@@ -116,9 +116,12 @@ export function extractFabricInputFromLegacy({ fabric }: Scenario): FabricInput 
                 return {
                     type: element.type,
                     id: element.id,
-                    uValue: coalesceEmptyString(element.uvalue, 0),
+                    uValueLegacyField: coalesceEmptyString(element.uvalue, 0),
                     kValue: coalesceEmptyString(element.kvalue, 0),
                     area: coalesceEmptyString(element.area, 0),
+                    exposedPerimeter: coalesceEmptyString(element.perimeter, null) ?? 0,
+                    selectedFloorType: element.selectedFloorType ?? null,
+                    perFloorTypeSpec: element.perFloorTypeSpec ?? null,
                 };
             }
         }

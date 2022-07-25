@@ -8,7 +8,7 @@ import { sensibleFloat, stringySensibleFloat, stringyNumber } from './values';
 
 const stringyDimension = stringySensibleFloat().filter((v) => v !== '0');
 
-function commonElement(id?: number) {
+export function arbCommonElement(id?: number) {
     return fc.record({
         id: id !== undefined ? fc.constant(id) : sensibleFloat,
         uvalue: stringySensibleFloat(),
@@ -39,7 +39,7 @@ function commonElement(id?: number) {
 
 function wallLike(id?: number) {
     return merge(
-        commonElement(id),
+        arbCommonElement(id),
         fc.record({
             type: fc.oneof(
                 ...(['Wall', 'Party_wall', 'Loft', 'Roof'] as const).map(fc.constant),
@@ -69,7 +69,7 @@ function subtractFrom(mainElementsIds?: number[]) {
 
 function windowLike(id?: number) {
     return merge(
-        commonElement(id),
+        arbCommonElement(id),
         fc.record({
             type: fc.oneof(
                 ...(['Door', 'Roof_light', 'window', 'Window'] as const).map(fc.constant),
@@ -91,7 +91,7 @@ function windowLike(id?: number) {
 
 function hatch(id?: number) {
     return merge(
-        commonElement(id),
+        arbCommonElement(id),
         fc.record({
             type: fc.constant('Hatch' as const),
             l: stringyDimension,
@@ -102,7 +102,7 @@ function hatch(id?: number) {
 
 function floor(id?: number) {
     return merge(
-        commonElement(id),
+        arbCommonElement(id),
         fc.record({
             type: fc.constant('Floor' as const),
         }),

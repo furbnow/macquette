@@ -823,6 +823,9 @@ function _extract_scenario_inputs(data) {
         if (data.fabric.elements[z].cost_total != undefined) {
             inputdata.fabric.elements[z].cost_total = data.fabric.elements[z].cost_total;
         }
+        if (data.fabric.elements[z].perFloorTypeSpec !== undefined) {
+            inputdata.fabric.elements[z].perFloorTypeSpec = data.fabric.elements[z].perFloorTypeSpec;
+        }
     }
 
     inputdata.num_of_floors_override = data.num_of_floors_override;
