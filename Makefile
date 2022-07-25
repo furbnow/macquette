@@ -115,7 +115,7 @@ test-python:  ## Run Python tests
 	flake8 mhep
 
 .PHONY: test-js
-test-js: check-types lint-js lint-js-legacy  ## Run non-browser JS tests
+test-js:  ## Run non-browser JS tests
 	cd client && ./node_modules/.bin/jest
 
 .PHONY: check-types
@@ -134,6 +134,9 @@ lint-js:  ## Runs eslint with a separate config in the 'client' directory
 		--ignore-path .eslintignore \
 		--max-warnings 0 \
 		.
+
+.PHONY: format-prettier
+format-prettier: ## Run prettier on all non-ignored files
 	./client/node_modules/.bin/prettier \
 		$$(if [ "$${CI}" != "true" ]; then echo "--write"; else echo "--check"; fi) \
 		'.'

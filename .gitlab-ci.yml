@@ -62,7 +62,7 @@ js-test:
     before_script:
         - (cd client && yarn install)
     script:
-        - make test-js
+        - make check-types lint-js format-prettier test-js
 
 pre-commit:
     stage: test
