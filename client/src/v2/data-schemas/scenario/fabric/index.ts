@@ -1,8 +1,16 @@
 import { z } from 'zod';
 
-import { isIndexable } from '../../helpers/is-indexable';
-import { zodPredicateUnion } from '../helpers/zod-predicate-union';
-import { stringyFloatSchema, stringyIntegerSchema } from './value-schemas';
+import { isIndexable } from '../../../helpers/is-indexable';
+import { resultSchema } from '../../helpers/result';
+import { withWarningsSchema } from '../../helpers/with-warnings';
+import { zodPredicateUnion } from '../../helpers/zod-predicate-union';
+import { stringyFloatSchema, stringyIntegerSchema } from '../value-schemas';
+import {
+    perFloorTypeSpecSchema,
+    floorUValueErrorSchema,
+    floorUValueWarningSchema,
+    floorType,
+} from './floor-u-value';
 
 const subtractFrom = z.union([
     z.number(),
@@ -16,6 +24,9 @@ const commonElement = z.object({
     uvalue: stringyFloatSchema,
     kvalue: stringyFloatSchema,
     area: stringyFloatSchema,
+    location: z
+        .union([z.string(), z.number().transform((n) => n.toString(10))])
+        .optional(),
 });
 const wallLike = commonElement.extend({
     type: z
@@ -78,6 +89,16 @@ const hatch = commonElement.extend({
 });
 const floor = commonElement.extend({
     type: z.enum(['floor', 'Floor']).transform(() => 'floor' as const),
+    perimeter: stringyFloatSchema.optional(),
+    selectedFloorType: floorType.optional(),
+    perFloorTypeSpec: perFloorTypeSpecSchema.optional(),
+
+    // Output fields
+    wk: stringyFloatSchema.optional(),
+    uValueModelOutput: withWarningsSchema(
+        resultSchema(z.number(), floorUValueErrorSchema),
+        floorUValueWarningSchema,
+    ).optional(),
 });
 
 function typeFieldMatches(validTypes: string[]) {
@@ -131,3 +152,6 @@ export const fabric = z.object({
         .optional(),
     global_TMP_value: z.number().nullable().optional(),
 });
+
+export const floorSchema = floor;
+export type Floor = z.infer<typeof floorSchema>;

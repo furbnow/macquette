@@ -13,4 +13,4 @@ export const projectSchema = assessmentMetadataSchema
         data: projectDataSchema,
     });
 
-export type Project = z.infer<typeof projectSchema>;
+export type Project = z.output<typeof projectSchema>;
