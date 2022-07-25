@@ -99,7 +99,12 @@ const knownBuggy: Array<{ reason: string; scenarios: Array<[string, string]> }> 
     },
     {
         reason: 'heating system specifies a combi boiler with a primary circuit (which is not valid)',
-        scenarios: [['private/170.json', 'scenario3']],
+        scenarios: [
+            ['private/170.json', 'scenario3'],
+            ['private/598.json', 'master'],
+            ['private/598.json', 'scenario1'],
+            ['private/598.json', 'scenario2'],
+        ],
     },
 ];
 const knownBuggyFlat: Array<[string, string, string]> = knownBuggy.flatMap(
