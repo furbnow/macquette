@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash';
 
 import { Scenario, scenarioSchema } from '../data-schemas/scenario';
 import { coalesceEmptyString } from '../data-schemas/scenario/value-schemas';
-import { isRecord } from '../helpers/is-record';
+import { isIndexable } from '../helpers/is-indexable';
 import { calcRun } from '../model/model';
 
 /** Legacy project data wrapped with a safe accessor function */
@@ -11,7 +11,7 @@ class ProjectData {
     private cache: Record<string, Scenario> = {};
 
     constructor(data: unknown) {
-        if (!isRecord(data)) {
+        if (!isIndexable(data)) {
             throw new Error('Project data is not an object');
         }
         this.data = data;
@@ -127,12 +127,12 @@ function spaceHeatingDemand(project: ProjectData, scenarioIds: string[]): BarCha
 
 function standardisedHeating(scenario: unknown): Record<string, unknown> {
     const scenarioCopy = cloneDeep(scenario);
-    if (!isRecord(scenarioCopy)) {
+    if (!isIndexable(scenarioCopy)) {
         throw new Error('Scenario unreadable');
     }
 
     scenarioCopy['temperature'] = scenarioCopy['temperature'] ?? {};
-    if (!isRecord(scenarioCopy['temperature'])) {
+    if (!isIndexable(scenarioCopy['temperature'])) {
         throw new Error('Scenario temperature unreadable');
     }
 
@@ -144,7 +144,7 @@ function standardisedHeating(scenario: unknown): Record<string, unknown> {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const result: unknown = calcRun(scenarioCopy);
-    if (isRecord(result)) {
+    if (isIndexable(result)) {
         return result;
     } else {
         throw new Error('Calc running failed');

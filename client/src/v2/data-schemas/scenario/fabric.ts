@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { isRecord } from '../../helpers/is-record';
+import { isIndexable } from '../../helpers/is-indexable';
 import { zodPredicateUnion } from '../helpers/zod-predicate-union';
 import { stringyFloatSchema, stringyIntegerSchema } from './value-schemas';
 
@@ -82,7 +82,7 @@ const floor = commonElement.extend({
 
 function typeFieldMatches(validTypes: string[]) {
     return (elem: unknown) =>
-        isRecord(elem) &&
+        isIndexable(elem) &&
         typeof elem['type'] === 'string' &&
         validTypes.includes(elem['type']);
 }

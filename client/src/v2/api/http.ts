@@ -13,7 +13,7 @@ import {
 } from '../data-schemas/api-metadata';
 import { Library, librarySchema } from '../data-schemas/libraries';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
-import { isRecord } from '../helpers/is-record';
+import { isIndexable } from '../helpers/is-indexable';
 import { urls } from './urls';
 
 export function cameliseStr(str: string): string {
@@ -72,7 +72,7 @@ function formatErrorString(error: Error): string {
             try {
                 const json: unknown = JSON.parse(error.response.data);
                 console.error(json);
-                if (isRecord(json) && typeof json['detail'] === 'string') {
+                if (isIndexable(json) && typeof json['detail'] === 'string') {
                     detail = ` (${json['detail']})`;
                 }
             } catch (_) {

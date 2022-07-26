@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { isRecord } from '../../helpers/is-record';
+import { isIndexable } from '../../helpers/is-indexable';
 import { solarHotWaterOvershadingFactorReverse } from '../../model/datasets';
 import { Orientation } from '../../model/enums/orientation';
 import { Overshading } from '../../model/enums/overshading';
@@ -136,12 +136,12 @@ function migrateLegacyToV1(legacy: z.infer<typeof shwLegacy>): z.infer<typeof sh
 export const solarHotWater = zodPredicateUnion([
     {
         name: 'v1',
-        predicate: (val) => isRecord(val) && val['version'] === 1,
+        predicate: (val) => isIndexable(val) && val['version'] === 1,
         schema: shwV1,
     },
     {
         name: 'legacy',
-        predicate: (val) => isRecord(val) && !('version' in val),
+        predicate: (val) => isIndexable(val) && !('version' in val),
         schema: shwLegacy.transform(migrateLegacyToV1),
     },
 ]);

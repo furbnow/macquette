@@ -1,4 +1,4 @@
-import { isRecord } from './is-record';
+import { isIndexable } from './is-indexable';
 
 /** Deep-clone an object, emulating a JSON round-trip
  *
@@ -9,7 +9,7 @@ import { isRecord } from './is-record';
  * properties are dropped, undefined array elements become null.
  */
 export function emulateJsonRoundTrip(data: unknown): unknown {
-    if (isRecord(data)) {
+    if (isIndexable(data)) {
         if ('toJSON' in data && safeIsFunction(data['toJSON'])) {
             return emulateJsonRoundTrip(data['toJSON']());
         }
