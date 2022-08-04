@@ -12,7 +12,10 @@ export type DeepWith<U, T> = T extends Record<string, unknown>
       }
     : T | U;
 
-/** Lodash merge, but with stricter type checking and does not mutate its inputs */
+/** Lodash merge, but with stricter type checking and does not mutate its inputs
+ *
+ * @warning This will merge arrays, which is often not the desired behaviour.
+ */
 export function safeMerge<
     Source extends Dest,
     Dest extends Record<string | symbol, unknown>,
