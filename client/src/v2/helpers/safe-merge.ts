@@ -1,12 +1,12 @@
 import { cloneDeep, merge } from 'lodash';
 
-export type DeepPartial<T> = T extends object
+export type DeepPartial<T> = T extends Record<string, unknown>
     ? {
           [K in keyof T]?: DeepPartial<T[K]>;
       }
     : T;
 
-export type DeepWith<U, T> = T extends object
+export type DeepWith<U, T> = T extends Record<string, unknown>
     ? {
           [K in keyof T]: DeepWith<U, T[K]>;
       }
