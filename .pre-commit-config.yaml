@@ -19,7 +19,7 @@ repos:
       hooks:
           - id: prettier
             types: [file]
-            files: \.(ts|tsx|yml|yaml|json)$
+            files: \.(ts|tsx|yml|yaml|json|css)$
             additional_dependencies:
                 - 'prettier@2.7.1'
                 - '@trivago/prettier-plugin-sort-imports@3.2.0'
