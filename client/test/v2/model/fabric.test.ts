@@ -3,11 +3,13 @@ import fc from 'fast-check';
 import { mean, sum } from '../../../src/v2/helpers/array-reducers';
 import { Month } from '../../../src/v2/model/enums/month';
 import {
-    CommonSpec,
-    DeductibleSpec,
     Fabric,
     FabricDependencies,
     FabricInput,
+} from '../../../src/v2/model/modules/fabric';
+import {
+    CommonSpec,
+    DeductibleSpec,
     FloorSpec,
     HatchSpec,
     MainElementSpec,
@@ -15,7 +17,7 @@ import {
     WallLikeSpec,
     WindowLike,
     WindowLikeSpec,
-} from '../../../src/v2/model/modules/fabric';
+} from '../../../src/v2/model/modules/fabric/element-types';
 import { FcInfer, merge } from '../../helpers/arbitraries';
 import {
     arbitraryOrientation,

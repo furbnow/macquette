@@ -1,5 +1,3 @@
-/* eslint-disable import/no-cycle */
-
 /* There are a number of problems with the legacy implementation of these
  * calculations. We reproduce them here for the sake of keeping fidelity
  * through the refactor, but at some point we should fix them. The ones I have
@@ -16,201 +14,25 @@
  */
 import { mapValues } from 'lodash';
 
-import { mean, sum } from '../../helpers/array-reducers';
-import { assertNever } from '../../helpers/assert-never';
-import { cache, cacheMonth } from '../../helpers/cache-decorators';
-import { lightAccessFactor, solarAccessFactor } from '../datasets';
-import { Month } from '../enums/month';
-import { Orientation } from '../enums/orientation';
-import { Overshading } from '../enums/overshading';
-import { Region } from '../enums/region';
-import { calculateSolarRadiationMonthly } from '../solar-flux';
-import { mutateLegacyData } from './fabric/mutate-legacy-data';
+import { sum } from '../../../helpers/array-reducers';
+import { cache, cacheMonth } from '../../../helpers/cache-decorators';
+import { Month } from '../../enums/month';
+import { Region } from '../../enums/region';
+import {
+    CommonSpec,
+    constructDeductible,
+    Deductible,
+    DeductibleSpec,
+    FabricElement,
+    Floor,
+    MainElementSpec,
+    netArea,
+    WallLike,
+    WindowLike,
+} from './element-types';
+import { mutateLegacyData } from './mutate-legacy-data';
 
-export { extractFabricInputFromLegacy } from './fabric/extract-from-legacy';
-
-export type CommonSpec = {
-    id: number;
-    kValue: number;
-    uValue: number;
-};
-
-export type WallLikeSpec<DeductibleT> = CommonSpec & {
-    type: 'external wall' | 'roof' | 'party wall' | 'loft';
-    deductions: DeductibleT[];
-    grossArea: number;
-};
-
-export class WallLike {
-    constructor(public spec: WallLikeSpec<WindowLike | Hatch>) {}
-
-    get type(): WallLike['spec']['type'] {
-        return this.spec.type;
-    }
-
-    get deductibleArea(): number {
-        const deductibleAreas = this.spec.deductions.map(
-            (deductible) => deductible.spec.area,
-        );
-        return sum(deductibleAreas);
-    }
-
-    get netArea(): number {
-        return this.spec.grossArea - this.deductibleArea;
-    }
-
-    get heatLoss(): number {
-        return this.spec.uValue * this.netArea;
-    }
-
-    get thermalCapacity(): number {
-        return this.spec.kValue * this.spec.grossArea;
-    }
-}
-
-export type FloorSpec = CommonSpec & {
-    type: 'floor';
-    area: number;
-};
-
-export class Floor {
-    constructor(public spec: FloorSpec) {}
-
-    get type(): Floor['spec']['type'] {
-        return this.spec.type;
-    }
-
-    get thermalCapacity(): number {
-        return this.spec.kValue * this.spec.area;
-    }
-
-    get heatLoss(): number {
-        return this.spec.uValue * this.spec.area;
-    }
-}
-
-export type HatchSpec = CommonSpec & {
-    type: 'hatch';
-    area: number;
-};
-
-export class Hatch {
-    constructor(public spec: HatchSpec) {}
-
-    get type(): Hatch['spec']['type'] {
-        return this.spec.type;
-    }
-
-    get thermalCapacity(): number {
-        return this.spec.kValue * this.spec.area;
-    }
-
-    get heatLoss(): number {
-        return this.spec.uValue * this.spec.area;
-    }
-}
-
-export type WindowLikeSpec = CommonSpec & {
-    type: 'window' | 'door' | 'roof light';
-    area: number;
-    orientation: Orientation;
-    overshading: Overshading;
-    gHeat: number; // g_⟂ in SAP (Section 6)
-    gLight: number; // g_L in SAP (Appendix L)
-    frameFactor: number; // FF in SAP (Section 6)
-};
-
-export class WindowLike {
-    constructor(public spec: WindowLikeSpec, private dependencies: { region: Region }) {}
-
-    static isWindowLike(this: void, val: unknown): val is WindowLike {
-        return val instanceof WindowLike;
-    }
-
-    get type(): WindowLike['spec']['type'] {
-        return this.spec.type;
-    }
-
-    get heatLoss(): number {
-        switch (this.spec.type) {
-            case 'window':
-            case 'roof light': {
-                // SAP assumes we are using curtains: paragraph 3.2, p. 15, SAP2012
-                const curtainAdjustedUValue = 1 / (1 / this.spec.uValue + 0.04);
-                return curtainAdjustedUValue * this.spec.area;
-            }
-            case 'door': {
-                return this.spec.uValue * this.spec.area;
-            }
-        }
-    }
-
-    get thermalCapacity(): number {
-        return this.spec.kValue * this.spec.area;
-    }
-
-    @cacheMonth
-    solarGainByMonth(month: Month): number {
-        const solarFlux = calculateSolarRadiationMonthly(
-            this.dependencies.region,
-            this.spec.orientation,
-            90,
-            month,
-        );
-        const season = 'winter'; // For heating, use winter values all year round (as per note in Table 6d)
-
-        // We apply the same solar access factor to roof lights as any other windows.
-        // This is a deviation from SAP2012 (p.216, table 6d, note 2) where solar
-        // access factors for roof lights are always 1, independent of overshading.
-        const accessFactor = solarAccessFactor(this.spec.overshading, season);
-        const gain =
-            0.9 *
-            this.spec.area *
-            solarFlux *
-            this.spec.gHeat *
-            this.spec.frameFactor *
-            accessFactor;
-        return gain;
-    }
-
-    get meanSolarGain(): number {
-        const gainsByMonth = Month.all.map((month) => this.solarGainByMonth(month));
-        return mean(gainsByMonth);
-    }
-
-    get naturalLight(): number {
-        // Summand of numerator of G_L in SAP Appendix L
-
-        // We apply the same light access factor to roof lights as any other windows.
-        // This is a deviation from SAP2012 (p.216, table 6d, note 2) where light
-        // access factors for roof lights are always 1, independent of overshading.
-        const accessFactor = lightAccessFactor(this.spec.overshading);
-        const light =
-            0.9 *
-            this.spec.area *
-            this.spec.gLight *
-            this.spec.frameFactor *
-            accessFactor;
-        return light;
-    }
-}
-
-export type MainElementSpec = WallLikeSpec<DeductibleSpec> | FloorSpec;
-export type DeductibleSpec = WindowLikeSpec | HatchSpec;
-export type ElementType = MainElementSpec['type'] | DeductibleSpec['type'];
-
-type MainElement = WallLike | Floor;
-type Deductible = WindowLike | Hatch;
-type FabricElement = MainElement | Deductible;
-
-function constructDeductible(spec: DeductibleSpec, region: Region): Deductible {
-    switch (spec.type) {
-        case 'hatch':
-            return new Hatch(spec);
-        default:
-            return new WindowLike(spec, { region });
-    }
-}
+export { extractFabricInputFromLegacy } from './extract-from-legacy';
 
 export type FabricInput = {
     elements: {
@@ -228,7 +50,6 @@ export type FabricInput = {
         thermalMassParameter: number | null;
     };
 };
-
 export type FabricDependencies = {
     region: Region;
     floors: { totalFloorArea: number };
@@ -404,32 +225,6 @@ export class Fabric {
     mutateLegacyData(data: unknown) {
         mutateLegacyData(this, data);
     }
-}
-
-export function grossArea(element: FabricElement): number {
-    if (element instanceof WindowLike) {
-        return element.spec.area;
-    } else if (element instanceof Hatch) {
-        return element.spec.area;
-    } else if (element instanceof Floor) {
-        return element.spec.area;
-    } else if (element instanceof WallLike) {
-        return element.spec.grossArea;
-    }
-    return assertNever(element);
-}
-
-export function netArea(element: FabricElement): number {
-    if (element instanceof WindowLike) {
-        return element.spec.area;
-    } else if (element instanceof Hatch) {
-        return element.spec.area;
-    } else if (element instanceof Floor) {
-        return element.spec.area;
-    } else if (element instanceof WallLike) {
-        return element.netArea;
-    }
-    return assertNever(element);
 }
 
 function flatten(elements: FabricElement[]): FabricElement[] {

@@ -1,8 +1,8 @@
-/* eslint-disable import/no-cycle */
+import type { Fabric } from '.';
 import { sum } from '../../../helpers/array-reducers';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
-import { grossArea, netArea, Fabric, WallLike, WindowLike, Hatch } from '../fabric';
+import { grossArea, Hatch, netArea, WallLike, WindowLike } from './element-types';
 
 /* eslint-disable
    @typescript-eslint/no-explicit-any,

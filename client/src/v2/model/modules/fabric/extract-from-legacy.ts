@@ -5,13 +5,13 @@ import { partition } from '../../../helpers/partition';
 import { Orientation } from '../../enums/orientation';
 import { Overshading } from '../../enums/overshading';
 import { ModelError } from '../../error';
+import type { FabricInput } from '../fabric';
 import {
-    MainElementSpec,
     DeductibleSpec,
-    FabricInput,
     FloorSpec,
+    MainElementSpec,
     WallLikeSpec,
-} from '../fabric';
+} from './element-types';
 
 type AnnotatedDeductibleSpec = DeductibleSpec & {
     subtractFrom: MainElementSpec['id'] | null;
