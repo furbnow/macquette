@@ -43,8 +43,8 @@ const v1Inputs: fc.Arbitrary<SolarHotWaterV1> = merge(
         version: fc.constant(1 as const),
         input: fc.record({
             ...recordWith(fc.constant(null), {
-                dedicatedSolarStorageVolume: arbFloat(),
-                combinedCylinderVolume: arbFloat(),
+                dedicatedSolarStorageVolume: arbFloat({ noNaN: true }),
+                combinedCylinderVolume: arbFloat({ noNaN: true }),
             }),
             collector: fc.record({
                 ...recordWith(fc.constant(null), {
@@ -52,16 +52,16 @@ const v1Inputs: fc.Arbitrary<SolarHotWaterV1> = merge(
                         'test certificate' as const,
                         'estimate' as const,
                     ),
-                    apertureArea: arbFloat(),
+                    apertureArea: arbFloat({ noNaN: true }),
                     orientation: arbitraryOrientation.map((or) => or.name),
-                    inclination: arbFloat(),
+                    inclination: arbFloat({ noNaN: true }),
                     overshading: arbitraryOvershading.map((ov) => ov.name),
                 }),
                 testCertificate: fc.record(
                     recordWith(fc.constant(null), {
-                        zeroLossEfficiency: arbFloat(),
-                        linearHeatLossCoefficient: arbFloat(),
-                        secondOrderHeatLossCoefficient: arbFloat(),
+                        zeroLossEfficiency: arbFloat({ noNaN: true }),
+                        linearHeatLossCoefficient: arbFloat({ noNaN: true }),
+                        secondOrderHeatLossCoefficient: arbFloat({ noNaN: true }),
                     }),
                 ),
                 estimate: fc.record(
