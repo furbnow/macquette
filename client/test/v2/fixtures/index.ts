@@ -106,6 +106,17 @@ const knownBuggy: Array<{ reason: string; scenarios: Array<[string, string]> }> 
             ['private/598.json', 'scenario2'],
         ],
     },
+    {
+        reason: 'some fuel contains a stringy value for standingcharge, which causes string concatenation bugs',
+        scenarios: [
+            ['private/333.json', 'master'],
+            ['private/333.json', 'scenario1'],
+            ['private/333.json', 'scenario2'],
+            ['private/333.json', 'scenario3'],
+            ['private/393.json', 'master'],
+            ['private/393.json', 'scenario1'],
+        ],
+    },
 ];
 const knownBuggyFlat: Array<[string, string, string]> = knownBuggy.flatMap(
     ({ reason, scenarios }) =>

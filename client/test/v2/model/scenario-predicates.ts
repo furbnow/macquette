@@ -247,12 +247,25 @@ export function checkInputBugs(inputs: FcInfer<typeof arbScenarioInputs>) {
         );
     }
 
+    function fuelBugs(): Messages {
+        return Object.entries(inputs.fuels).flatMap(([fuelName, fuelData]) => {
+            if (typeof fuelData.standingcharge === 'string') {
+                return bug(
+                    'some fuel had a stringy number for its standing charge, which causes string concatenation errors if this fuel is used for anything',
+                    { fuelName },
+                );
+            }
+            return noBug;
+        });
+    }
+
     return combineBugCheckers([
         spaceHeatingEnergyRequirementsBugs,
         solarHotWaterFlagBug,
         heatingSystemCombiTypeBug,
         heatingSystemCombiWithPrimaryCircuitBug,
         heatingSystemPrimaryCircuitInvariants,
+        fuelBugs,
     ]);
 }
 
