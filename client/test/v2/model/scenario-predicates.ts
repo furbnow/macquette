@@ -7,11 +7,13 @@
     @typescript-eslint/no-explicit-any,
     @typescript-eslint/no-unsafe-member-access,
 */
+import { z } from 'zod';
+
+import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { isTruthy } from '../../../src/v2/helpers/is-truthy';
 import { FcInfer } from '../../helpers/arbitraries';
 import { stricterParseFloat } from '../../helpers/stricter-parse-float';
 import { arbScenarioInputs } from './arbitraries/scenario';
-import { shwIsLegacy } from './arbitraries/solar-hot-water';
 
 function isValidStringyFloat(value: unknown) {
     return (
@@ -131,7 +133,7 @@ export function checkOutputBugs(legacyScenario: any) {
     ]);
 }
 
-export function checkInputBugs(inputs: FcInfer<typeof arbScenarioInputs>) {
+export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
     function spaceHeatingEnergyRequirementsBugs(): Messages {
         if (
             typeof (inputs as Record<string, unknown>)['space_heating'] !== 'object' &&
@@ -248,6 +250,9 @@ export function checkInputBugs(inputs: FcInfer<typeof arbScenarioInputs>) {
     }
 
     function fuelBugs(): Messages {
+        if (inputs.fuels === undefined) {
+            return noBug;
+        }
         return Object.entries(inputs.fuels).flatMap(([fuelName, fuelData]) => {
             if (typeof fuelData.standingcharge === 'string') {
                 return bug(
@@ -274,7 +279,8 @@ export function hasNewBehaviour(inputs: FcInfer<typeof arbScenarioInputs>): bool
     const shwIsFromEstimate =
         inputs.SHW !== undefined &&
         isTruthy(inputs.use_SHW || inputs.water_heating?.solar_water_heating) &&
-        !shwIsLegacy(inputs.SHW) &&
+        'version' in inputs.SHW &&
+        inputs.SHW.version >= 1 &&
         inputs.SHW.input.collector.parameterSource === 'estimate';
 
     return shwIsFromEstimate;

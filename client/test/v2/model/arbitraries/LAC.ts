@@ -4,7 +4,7 @@ import { fcPartialRecord } from '../../../helpers/arbitraries';
 import { legacyBoolean, stringyNumber, stringySensibleInteger } from './values';
 
 export function arbLAC_calculation_type() {
-    return fc.constantFrom('SAP', 'carboncoop_SAPlighting');
+    return fc.constantFrom(...(['SAP', 'carboncoop_SAPlighting'] as const));
 }
 
 function arbLACFuels(fuelNames: string[]) {

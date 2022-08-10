@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { fabric } from './fabric';
-import { solarHotWater } from './solar-hot-water';
+import { solarHotWaterSchema } from './solar-hot-water';
 import {
     legacyBoolean,
     nullableStringyFloat,
@@ -46,7 +46,7 @@ export const scenarioSchema = z
         region: z.number(),
         fabric,
         water_heating: waterHeating,
-        SHW: solarHotWater,
+        SHW: solarHotWaterSchema,
         use_SHW: legacyBoolean,
         locked: z.boolean(),
         fuels: z.record(

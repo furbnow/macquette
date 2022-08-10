@@ -133,7 +133,7 @@ function migrateLegacyToV1(legacy: z.infer<typeof shwLegacy>): z.infer<typeof sh
     };
 }
 
-export const solarHotWater = zodPredicateUnion([
+export const solarHotWaterSchema = zodPredicateUnion([
     {
         name: 'v1',
         predicate: (val) => isIndexable(val) && val['version'] === 1,

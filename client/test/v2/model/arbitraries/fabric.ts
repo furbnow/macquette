@@ -171,7 +171,7 @@ export function arbFabric() {
                 (sn) => sn !== '',
             ),
             global_TMP: fcOptional(
-                fc.oneof(fc.boolean(), fc.integer({ min: 0, max: 1 })),
+                fc.oneof(fc.boolean(), fc.constant(0 as const), fc.constant(1 as const)),
             ),
             global_TMP_value: fcOptional(fc.option(sensibleFloat, { nil: null })),
         })

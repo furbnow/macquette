@@ -16,7 +16,6 @@ import { scenarios, shouldSkipScenario } from '../fixtures';
 import { arbScenarioInputs } from './arbitraries/scenario';
 import {
     shwLegacyInputKeys,
-    shwIsLegacy,
     shwInputIsComplete,
     shwInputs,
 } from './arbitraries/solar-hot-water';
@@ -266,7 +265,7 @@ function normaliseScenario(scenario: any) {
             // compute them, whereas it is more convenient for the new model to
             // simply skip the whole calculation. We preserve the inputs just
             // to make sure nothing untoward is happening with them.
-            if (shwIsLegacy(castScenario.SHW)) {
+            if (!('version' in castScenario.SHW)) {
                 castScenario.SHW = pick(castScenario.SHW, ...shwLegacyInputKeys);
             } else {
                 switch (castScenario.SHW.version) {

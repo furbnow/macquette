@@ -1,7 +1,11 @@
 import fc from 'fast-check';
 import { pick } from 'lodash';
+import { z } from 'zod';
 
-import { SolarHotWaterV1 } from '../../../../src/v2/data-schemas/scenario/solar-hot-water';
+import {
+    solarHotWaterSchema,
+    SolarHotWaterV1,
+} from '../../../../src/v2/data-schemas/scenario/solar-hot-water';
 import { solarHotWaterOvershadingFactor } from '../../../../src/v2/model/datasets';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import {
@@ -19,8 +23,9 @@ import {
 import { flatten } from '../../../helpers/object-flattening';
 import { sensibleFloat, stringySensibleFloat } from './values';
 
+const arbPump = fc.constantFrom(...(['PV', 'electric'] as const));
 const legacyInputs = fcPartialRecord({
-    pump: fc.oneof(fc.constant('PV'), fc.constant('electric')),
+    pump: arbPump,
     A: sensibleFloat,
     n0: sensibleFloat,
     a1: stringySensibleFloat(),
@@ -37,7 +42,7 @@ const legacyInputs = fcPartialRecord({
 
 const v1Inputs: fc.Arbitrary<SolarHotWaterV1> = merge(
     fcPartialRecord({
-        pump: fcEnum('PV' as const, 'electric' as const),
+        pump: arbPump,
     }),
     fc.record({
         version: fc.constant(1 as const),
@@ -79,16 +84,13 @@ const v1Inputs: fc.Arbitrary<SolarHotWaterV1> = merge(
     }),
 );
 
-export function shwIsLegacy(
-    SHW: FcInfer<typeof shwInputs>,
-): SHW is FcInfer<typeof legacyInputs> {
-    return !('version' in SHW);
-}
-
-export const shwInputs = fc.oneof(v1Inputs, legacyInputs);
+export const shwInputs: fc.Arbitrary<z.input<typeof solarHotWaterSchema>> = fc.oneof(
+    v1Inputs,
+    legacyInputs,
+);
 
 export function shwInputIsComplete(SHW: FcInfer<typeof shwInputs>): boolean {
-    if (shwIsLegacy(SHW)) {
+    if (!('version' in SHW)) {
         const inputs = pick(SHW, ...shwLegacyInputKeys);
         const isComplete = shwLegacyInputKeys.reduce(
             (allInputsWerePresent, key) =>

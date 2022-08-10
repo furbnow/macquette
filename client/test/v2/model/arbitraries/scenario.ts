@@ -1,5 +1,7 @@
 import fc from 'fast-check';
+import { z } from 'zod';
 
+import { scenarioSchema } from '../../../../src/v2/data-schemas/scenario';
 import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 import { Region } from '../../../../src/v2/model/enums/region';
 import { fcPartialRecord, merge } from '../../../helpers/arbitraries';
@@ -14,14 +16,14 @@ import { heatingSystemInputs, waterHeatingInputs } from './water-heating';
 function arbFloors() {
     return fc.array(
         fc.record({
-            area: fc.oneof(sensibleFloat, fc.constant('')),
-            height: fc.oneof(sensibleFloat, fc.constant('')),
+            area: fc.oneof(sensibleFloat, fc.constant('' as const)),
+            height: fc.oneof(sensibleFloat, fc.constant('' as const)),
             name: fc.string(),
         }),
     );
 }
 
-export function arbScenarioInputs() {
+export function arbScenarioInputs(): fc.Arbitrary<z.input<typeof scenarioSchema>> {
     return arbFuels()
         .chain((fuels) =>
             merge(
@@ -31,12 +33,12 @@ export function arbScenarioInputs() {
                 fcPartialRecord({
                     floors: arbFloors(),
                     use_custom_occupancy: legacyBoolean(),
-                    custom_occupancy: fc.oneof(fc.nat(), fc.constant('')),
+                    custom_occupancy: fc.oneof(fc.nat(), fc.constant('' as const)),
                     region: fc.integer({ min: 0, max: Region.names.length - 1 }),
                     fabric: arbFabric(),
                     water_heating: waterHeatingInputs,
                     SHW: shwInputs,
-                    use_SHW: fc.oneof(fc.boolean(), fc.constant(1)),
+                    use_SHW: fc.oneof(fc.boolean(), fc.constant(1 as const)),
                     LAC_calculation_type: arbLAC_calculation_type(),
                     LAC: arbLAC(Object.keys(fuels)),
                     ventilation: arbVentilation(),

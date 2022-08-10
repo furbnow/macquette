@@ -39,6 +39,7 @@ export function recordWith<T extends Record<string | symbol, fc.Arbitrary<unknow
     return mapValues(source, (val) => fc.oneof(val, extra));
 }
 
+/** @deprecated use fc.constantFrom instead */
 export function fcEnum<Value>(...vals: Value[]): fc.Arbitrary<Value> {
-    return fc.oneof(...vals.map((val) => fc.constant(val)));
+    return fc.constantFrom(...vals);
 }
