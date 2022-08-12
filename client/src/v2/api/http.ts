@@ -224,9 +224,23 @@ export class HTTPClient {
                     return [{ ...metadata, ...library }];
                 } catch (e) {
                     if (e instanceof z.ZodError) {
-                        console.warn(
-                            'Server returned a library which did not pass the validator',
-                        );
+                        if (
+                            e.errors[0] !== undefined &&
+                            e.errors[0].code === 'invalid_union_discriminator'
+                        ) {
+                            console.warn(
+                                'Server returned a library of an unknown type:',
+                                isIndexable(unvalidatedLibrary)
+                                    ? unvalidatedLibrary['type']
+                                    : 'library not indexable',
+                            );
+                        } else {
+                            console.warn(
+                                'Server returned a library which did not pass the validator',
+                                unvalidatedLibrary,
+                                e,
+                            );
+                        }
                         return [];
                     } else {
                         throw e;
