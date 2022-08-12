@@ -393,7 +393,7 @@ export function SelectWall({
             { title: 'k', value: (wall) => wall.kvalue.toString() },
         ],
         getFullItemData: (wall: CompleteWall) =>
-            wall.description === null
+            wall.description === ''
                 ? []
                 : [
                       {

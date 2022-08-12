@@ -8,10 +8,8 @@ function sanitiseItem<Item extends LibraryItem>(item: Item, name: string): Item 
     const out = cloneDeep(item);
     if ('description' in out && out.description !== null) {
         out.description = out.description.replace(/"+$/, '').trim();
-        if (out.description === '') {
-            out.description = null;
-        } else if (out.description === 'undefined') {
-            out.description = null;
+        if (out.description === 'undefined') {
+            out.description = '';
         }
     }
     if ('name' in out && out.name !== undefined) {

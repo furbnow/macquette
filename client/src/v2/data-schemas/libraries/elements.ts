@@ -25,7 +25,10 @@ const commonFabricElement = z.object({
     description: z
         .string()
         .optional()
-        .transform((d) => (d === '' || d === undefined ? null : d)),
+        .nullable()
+        // Coalesce null-ish values to '' so as not to break legacy code (e.g.
+        // libraries manager)
+        .transform((d) => (d === undefined || d === null ? '' : d)),
     uvalue: stringyFloatSchema,
     kvalue: stringyFloatSchema,
 });
