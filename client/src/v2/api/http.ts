@@ -1,4 +1,10 @@
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import type {
+    AxiosError,
+    AxiosInstance,
+    AxiosRequestConfig,
+    AxiosResponse,
+    Method,
+} from 'axios';
 import axios from 'axios';
 import { z } from 'zod';
 
@@ -46,14 +52,18 @@ export function camelise(input: unknown): unknown {
     }
 }
 
-class HttpClientError extends Error {
-    public cause: unknown;
+export class HttpClientError<Cause extends Error = Error> extends Error {
+    public cause: Cause;
     public intent: string;
 
-    constructor(intent: string, cause: Error) {
+    constructor(intent: string, cause: Cause) {
         super(`Error ${intent}: ${formatErrorString(cause)}`);
         this.intent = intent;
         this.cause = cause;
+    }
+
+    causeIsAxiosError(): this is HttpClientError<AxiosError<unknown, unknown>> {
+        return isIndexable(this.cause) && this.cause['isAxiosError'] === true;
     }
 }
 

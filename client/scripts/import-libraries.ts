@@ -5,6 +5,7 @@ import { join } from 'path';
 
 import { HTTPClient } from '../src/v2/api/http';
 import { librarySchema } from '../src/v2/data-schemas/libraries';
+import { finalErrorHandler } from './import-export-libraries/error-handling';
 import { readCsv, readJson } from './import-export-libraries/export';
 import {
     Manifest,
@@ -143,4 +144,4 @@ async function main() {
     }
 }
 
-main().catch(console.error);
+main().catch(finalErrorHandler).catch(console.error);

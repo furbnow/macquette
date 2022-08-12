@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 import { HTTPClient } from '../src/v2/api/http';
+import { finalErrorHandler } from './import-export-libraries/error-handling';
 import { writeCsv, writeJson } from './import-export-libraries/export';
 import { generateManifest } from './import-export-libraries/manifest';
 import { getExportParams } from './import-export-libraries/params';
@@ -49,4 +50,4 @@ async function main() {
     }
 }
 
-main().catch(console.error);
+main().catch(finalErrorHandler).catch(console.error);
