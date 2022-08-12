@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 import type { Library } from '.';
+import { isIndexable } from '../../helpers/is-indexable';
+import { zodPredicateUnion } from '../helpers/zod-predicate-union';
 import { legacyBoolean, stringyFloatSchema } from '../scenario/value-schemas';
 import {
     makeLibrarySchema,
@@ -116,41 +118,46 @@ const roof = commonFabricElement
 
 const roofMeasure = roof.merge(measureCommonSchema);
 
-const elements = [
-    ...(
-        [wall, door, floor, hatch, partyWall, roofLight, window_, loft, roof] as const
-    ).map((s) => s.passthrough()),
-];
-
-const measures = [
-    ...(
-        [
-            wallMeasure,
-            doorMeasure,
-            floorMeasure,
-            hatchMeasure,
-            partyWallMeasure,
-            roofLightMeasure,
-            windowMeasure,
-            loftMeasure,
-            roofMeasure,
-        ] as const
-    ).map((s) => s.passthrough()),
-];
-
-function assertAtLeastTwoElements<T>(arr: T[]): [T, T, ...T[]] {
-    if (arr.length < 2) {
-        throw new Error('Assertion failed: array had fewer than 2 elements');
-    } else {
-        // SAFETY: Checked by length check
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        return arr as [T, T, ...T[]];
-    }
+function tagsFieldContains(validTags: string[]) {
+    return (elem: unknown) =>
+        isIndexable(elem) &&
+        Array.isArray(elem['tags']) &&
+        elem['tags'].some(
+            (tag: unknown) => typeof tag === 'string' && validTags.includes(tag),
+        );
 }
 
-const fabricElement = z.union(assertAtLeastTwoElements(elements));
+const fabricElement = zodPredicateUnion([
+    { predicate: tagsFieldContains(['Wall']), schema: wall.passthrough() },
+    { predicate: tagsFieldContains(['Door']), schema: door.passthrough() },
+    { predicate: tagsFieldContains(['Floor']), schema: floor.passthrough() },
+    { predicate: tagsFieldContains(['Hatch']), schema: hatch.passthrough() },
+    { predicate: tagsFieldContains(['Party_wall']), schema: partyWall.passthrough() },
+    { predicate: tagsFieldContains(['Roof_light']), schema: roofLight.passthrough() },
+    { predicate: tagsFieldContains(['Window']), schema: window_.passthrough() },
+    { predicate: tagsFieldContains(['Loft']), schema: loft.passthrough() },
+    { predicate: tagsFieldContains(['Roof']), schema: roof.passthrough() },
+]);
+
+const measure = zodPredicateUnion([
+    { predicate: tagsFieldContains(['Wall']), schema: wallMeasure.passthrough() },
+    { predicate: tagsFieldContains(['Door']), schema: doorMeasure.passthrough() },
+    { predicate: tagsFieldContains(['Floor']), schema: floorMeasure.passthrough() },
+    { predicate: tagsFieldContains(['Hatch']), schema: hatchMeasure.passthrough() },
+    {
+        predicate: tagsFieldContains(['Party_wall']),
+        schema: partyWallMeasure.passthrough(),
+    },
+    {
+        predicate: tagsFieldContains(['Roof_light']),
+        schema: roofLightMeasure.passthrough(),
+    },
+    { predicate: tagsFieldContains(['Window']), schema: windowMeasure.passthrough() },
+    { predicate: tagsFieldContains(['Loft']), schema: loftMeasure.passthrough() },
+    { predicate: tagsFieldContains(['Roof']), schema: roofMeasure.passthrough() },
+]);
+
 export type FabricElement = z.infer<typeof fabricElement>;
-const measure = z.union(assertAtLeastTwoElements(measures));
 
 export const fabricElements = makeLibrarySchema<'elements', FabricElement>(
     'elements',
