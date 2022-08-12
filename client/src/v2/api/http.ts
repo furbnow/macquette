@@ -114,6 +114,7 @@ export class HTTPClient {
                 }
                 const headers: AxiosRequestConfig<unknown>['headers'] = {
                     cookie: `sessionid=${nodeOptions.sessionId}`,
+                    referer: nodeOptions.baseURL,
                 };
                 if (nodeOptions.csrfToken !== undefined) {
                     headers['cookie'] += ';';
