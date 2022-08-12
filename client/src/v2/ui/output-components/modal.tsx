@@ -1,11 +1,11 @@
-import React, { useEffect, useCallback, ReactElement } from 'react';
+import React, { useEffect, useCallback, ReactElement, ReactNode } from 'react';
 
 interface ModalProps {
     /** HTML id for the header that labels this dialog */
     headerId: string;
     /** Function to be called when dialog closes */
     onClose: () => void;
-    children: ReactElement | ReactElement[];
+    children: ReactNode;
 }
 
 export function Modal({ headerId, onClose, children }: ModalProps): ReactElement {
@@ -55,4 +55,51 @@ export function Modal({ headerId, onClose, children }: ModalProps): ReactElement
             </div>
         </div>
     );
+}
+
+type ModalHeaderProps = {
+    title: string;
+    children?: ReactNode;
+    onClose: () => void;
+};
+
+export function ModalHeader({ title, children, onClose }: ModalHeaderProps) {
+    return (
+        <div className="dialog-header">
+            <div className="d-flex justify-content-between">
+                <h4 className="mt-0 mb-7" id="modal-header">
+                    {title}
+                </h4>
+
+                <div>
+                    <button
+                        type="button"
+                        aria-label="Close"
+                        onClick={onClose}
+                        className="dialog-x"
+                    >
+                        <svg
+                            width="22"
+                            height="22"
+                            viewBox="0 0 44 44"
+                            aria-hidden="true"
+                            focusable="false"
+                        >
+                            <path d="M0.549989 4.44999L4.44999 0.549988L43.45 39.55L39.55 43.45L0.549989 4.44999Z" />
+                            <path d="M39.55 0.549988L43.45 4.44999L4.44999 43.45L0.549988 39.55L39.55 0.549988Z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {children}
+        </div>
+    );
+}
+
+type ModalBodyProps = {
+    children: ReactNode;
+};
+
+export function ModalBody({ children }: ModalBodyProps) {
+    return <div className="dialog-body">{children}</div>;
 }
