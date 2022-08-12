@@ -1,5 +1,5 @@
 import { mapValues, pickBy } from 'lodash';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useReducer, useState } from 'react';
 import type { ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -11,11 +11,12 @@ import {
     discriminateTags,
 } from '../../data-schemas/libraries/elements';
 import type { Wall } from '../../data-schemas/libraries/elements';
+import { isNonEmpty, NonEmptyArray } from '../../helpers/non-empty-array';
 import { isNotNull } from '../../helpers/null-checking';
 import { Shadow } from '../../helpers/shadow-object-type';
 import { Select } from '../input-components/select';
 import { externals } from '../module-management/shim';
-import { Modal } from '../output-components/modal';
+import { ErrorModal, Modal } from '../output-components/modal';
 
 function nl2br(input: string): ReactNode {
     const lines = input.split('\n');
@@ -33,6 +34,7 @@ function nl2br(input: string): ReactNode {
 }
 
 type LibraryOf<T> = {
+    id: string;
     name: string;
     type: string;
     data: Record<string, T>;
@@ -45,7 +47,7 @@ type MinimalLibraryItem = {
 
 type SelectLibraryItemProps<T> = {
     title: string;
-    libraries: LibraryOf<T>[];
+    libraries: NonEmptyArray<LibraryOf<T>>;
     onSelect: (item: T) => void;
     onClose: () => void;
     tableColumns: { title: string; value: (item: T) => ReactNode }[];
@@ -180,16 +182,19 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
     currentItemTag,
     searchText,
 }: SelectLibraryItemProps<T>): ReactElement {
-    const [selectedLibrary, setSelectedLibrary] = useState(0);
-    const library = libraries[selectedLibrary];
-    if (library === undefined) {
-        throw new Error('No library');
-    }
+    const [selectedLibrary, selectLibraryById] = useReducer(
+        (current: LibraryOf<T>, newId: string): LibraryOf<T> => {
+            const newLibrary = libraries.find((lib) => lib.id === newId);
+            if (newLibrary !== undefined) return newLibrary;
+            else return current;
+        },
+        libraries[0],
+    );
     const [filterText, setFilterText] = useState('');
 
     const filteredLibraryItems = Object.values(
         pickBy(
-            library.data,
+            selectedLibrary.data,
             (element, tag) =>
                 tag.toLowerCase().includes(filterText.toLowerCase()) ||
                 searchText(element).toLowerCase().includes(filterText.toLowerCase()),
@@ -251,14 +256,12 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
                         {libraries.length > 1 ? (
                             <Select
                                 id="field_library_select"
-                                options={libraries.map((lib, i) => ({
-                                    value: i.toString(),
+                                options={libraries.map((lib) => ({
+                                    value: lib.id,
                                     display: lib.name,
                                 }))}
-                                selected={selectedLibrary.toString()}
-                                callback={(idx: string) => {
-                                    setSelectedLibrary(parseInt(idx, 10));
-                                }}
+                                selected={selectedLibrary.id}
+                                callback={selectLibraryById}
                             />
                         ) : (
                             <div
@@ -268,7 +271,7 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
                                     display: 'table-cell',
                                 }}
                             >
-                                {library.name}
+                                {selectedLibrary.name}
                             </div>
                         )}
                     </div>
@@ -366,6 +369,13 @@ export function SelectWall({
                         : element.kvalue,
             })),
         }));
+    if (!isNonEmpty(filtered)) {
+        return (
+            <ErrorModal onClose={onClose} title={'Library missing'}>
+                No wall libraries found
+            </ErrorModal>
+        );
+    }
 
     function searchText(wall: CompleteWall) {
         return wall.name;

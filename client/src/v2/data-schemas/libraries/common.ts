@@ -31,6 +31,7 @@ export function makeLibrarySchema<Type extends string, ItemT>(
     itemSchema: z.ZodType<ItemT, z.ZodTypeDef, unknown>,
 ) {
     return z.object({
+        id: z.string(),
         name: z.string(),
         type: z.literal(type),
         data: z.record(itemSchema),

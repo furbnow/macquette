@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, ReactElement, ReactNode } from 'react';
+import React, { useEffect, useCallback, ReactElement, ReactNode, useId } from 'react';
 
 interface ModalProps {
     /** HTML id for the header that labels this dialog */
@@ -102,4 +102,31 @@ type ModalBodyProps = {
 
 export function ModalBody({ children }: ModalBodyProps) {
     return <div className="dialog-body">{children}</div>;
+}
+
+type ModalFooterProps = {
+    children: ReactNode;
+};
+export function ModalFooter({ children }: ModalFooterProps) {
+    return <div className="modal-footer">{children}</div>;
+}
+
+type ErrorModalProps = {
+    onClose: () => void;
+    title: string;
+    children: ReactNode;
+};
+export function ErrorModal({ onClose, children, title }: ErrorModalProps) {
+    const headerId = useId();
+    return (
+        <Modal headerId={headerId} onClose={onClose}>
+            <ModalHeader title={title} onClose={onClose} />
+            <ModalBody>{children}</ModalBody>
+            <ModalFooter>
+                <button onClick={onClose} className="btn btn-danger">
+                    Close
+                </button>
+            </ModalFooter>
+        </Modal>
+    );
 }
