@@ -381,27 +381,30 @@ export function SelectWall({
         return wall.name;
     }
 
-    return SelectLibraryItem({
-        title: 'wall',
-        onSelect,
-        onClose,
-        currentItemTag,
-        libraries: filtered,
-        searchText,
-        tableColumns: [
-            { title: 'U', value: (wall) => wall.uvalue.toString() },
-            { title: 'k', value: (wall) => wall.kvalue.toString() },
-        ],
-        getFullItemData: (wall: CompleteWall) =>
-            wall.description === ''
-                ? []
-                : [
-                      {
-                          title: 'Description',
-                          value: nl2br(wall.description),
-                      },
-                  ],
-    });
+    return (
+        <SelectLibraryItem
+            title="wall"
+            onSelect={onSelect}
+            onClose={onClose}
+            currentItemTag={currentItemTag}
+            libraries={filtered}
+            searchText={searchText}
+            tableColumns={[
+                { title: 'U', value: (wall) => wall.uvalue.toString() },
+                { title: 'k', value: (wall) => wall.kvalue.toString() },
+            ]}
+            getFullItemData={(wall: CompleteWall) =>
+                wall.description === ''
+                    ? []
+                    : [
+                          {
+                              title: 'Description',
+                              value: nl2br(wall.description),
+                          },
+                      ]
+            }
+        />
+    );
 }
 
 export function selectWall(
