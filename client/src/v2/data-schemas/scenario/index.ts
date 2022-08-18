@@ -102,6 +102,9 @@ export const scenarioSchema = z
         total_cost: stringyFloatSchema.nullable(),
         annualco2: z.number().nullable(),
         totalWK: numberWithNaN.nullable(),
+        kwhdpp: numberWithNaN.nullable(),
+        kgco2perm2: numberWithNaN.nullable(),
+        primary_energy_use_m2: numberWithNaN.nullable(),
         TFA: stringyFloatSchema,
         fuel_requirements: z.record(
             z.object({
@@ -122,18 +125,30 @@ export const scenarioSchema = z
         ),
         currentenergy: z
             .object({
+                primaryenergy_annual_kwh: numberWithNaN,
+                primaryenergy_annual_kwhm2: numberWithNaN.nullable(),
+                total_co2m2: numberWithNaN.nullable(),
                 total_cost: numberWithNaN,
+                annual_net_cost: numberWithNaN.nullable(),
+                energyuseperperson: numberWithNaN.nullable(),
                 enduse_annual_kwh: stringyFloatSchema,
                 use_by_fuel: z.record(
                     z.object({
                         annual_use: stringyFloatSchema,
+                        annual_co2: numberWithNaN,
+                        primaryenergy: numberWithNaN,
+                        annualcost: numberWithNaN,
                     }),
                 ),
+                onsite_generation: legacyBoolean,
                 generation: z
                     .object({
-                        fraction_used_onsite: numberWithNaN,
-                        annual_generation: numberWithNaN,
+                        annual_CO2: numberWithNaN,
+                        primaryenergy: numberWithNaN,
                         annual_savings: numberWithNaN,
+                        annual_FIT_income: numberWithNaN,
+                        annual_generation: numberWithNaN,
+                        fraction_used_onsite: numberWithNaN,
                     })
                     .partial(),
             })

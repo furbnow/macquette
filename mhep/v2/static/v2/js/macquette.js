@@ -508,14 +508,15 @@ function load_page_from_hash() {
     // Render page
     load_view('#content', page)
         .catch((err) => {
-            console.error(`Failed to load view ${page}`);
+            console.error(`Failed to load view ${page}`, err);
         })
         .then(() => {
             if (
                 page == 'report' ||
                 page == 'householdquestionnaire' ||
                 page == 'commentary' ||
-                page == 'scopeofworks'
+                page == 'scopeofworks' ||
+                page == 'currentenergy'
             ) {
                 hide_house_graphic();
             } else {

@@ -312,7 +312,7 @@ body .modal {
 }
 
 .align-right {
-    text-align: right;
+    text-align: right !important;
 }
 .align-items-start {
     align-items: start !important;
@@ -565,6 +565,43 @@ body .modal {
     color: #fff;
 }
 
+.fill-beige-000 {
+    fill: var(--beige-000);
+}
+.fill-beige-200 {
+    fill: var(--beige-200);
+}
+.fill-beige-400 {
+    fill: var(--beige-400);
+}
+.fill-beige-500 {
+    fill: var(--beige-500);
+}
+.fill-beige-700 {
+    fill: var(--beige-700);
+}
+.fill-beige-800 {
+    fill: var(--beige-800);
+}
+.stroke-beige-000 {
+    stroke: var(--beige-000);
+}
+.stroke-beige-200 {
+    stroke: var(--beige-200);
+}
+.stroke-beige-400 {
+    stroke: var(--beige-400);
+}
+.stroke-beige-500 {
+    stroke: var(--beige-500);
+}
+.stroke-beige-700 {
+    stroke: var(--beige-700);
+}
+.stroke-beige-800 {
+    stroke: var(--beige-800);
+}
+
 .btn--icon {
     display: inline-flex;
 }
@@ -611,6 +648,16 @@ body .modal {
 button.demote-role {
     cursor: pointer;
     margin-left: 0.5rem;
+}
+
+/*** Disclosure ***/
+
+summary {
+    background-color: #f3f3f3;
+    cursor: pointer;
+    padding: 7px;
+    width: max-content;
+    margin-bottom: 7px;
 }
 
 /**** FORMS ****/

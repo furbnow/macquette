@@ -54,7 +54,12 @@ type SelectLibraryItemProps<T> = {
     libraries: NonEmptyArray<LibraryOf<T>>;
     onSelect: (item: T) => void;
     onClose: () => void;
-    tableColumns: { title: string; value: (item: T) => ReactNode }[];
+    hideTags?: boolean;
+    tableColumns: {
+        title: string;
+        type: 'text' | 'number';
+        value: (item: T) => ReactNode;
+    }[];
     getFullItemData: (item: T) => {
         title: string;
         value: ReactNode | ReactNode[];
@@ -73,6 +78,7 @@ type LibraryItemProps<T> = Omit<
 function LibraryItem<T extends MinimalLibraryItem>({
     onSelect,
     onClose,
+    hideTags = false,
     tableColumns,
     getFullItemData,
     currentItemTag,
@@ -118,11 +124,16 @@ function LibraryItem<T extends MinimalLibraryItem>({
                         </svg>
                     )}
                 </td>
-                <td className="pr-15">{libraryItem.tag}</td>
+                {hideTags !== true && <td className="pr-15">{libraryItem.tag}</td>}
                 <td className="pr-15">{libraryItem.name}</td>
 
-                {tableColumns.map(({ title, value }) => (
-                    <td key={title} className="pr-15 text-tabular-nums align-right">
+                {tableColumns.map(({ title, type, value }) => (
+                    <td
+                        key={title}
+                        className={`pr-15 text-tabular-nums ${
+                            type === 'number' ? 'align-right' : ''
+                        }`}
+                    >
                         {value(libraryItem)}
                     </td>
                 ))}
@@ -181,6 +192,7 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
     libraries,
     onSelect,
     onClose,
+    hideTags = false,
     tableColumns,
     getFullItemData,
     currentItemTag,
@@ -257,13 +269,15 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
             </ModalHeader>
             <ModalBody>
                 {filteredLibraryItems.length > 0 ? (
-                    <table>
+                    <table style={{ width: '100%' }}>
                         <thead>
                             <tr>
                                 <td style={{ width: 0 }}></td>
-                                <th align="left" style={{ width: 0 }}>
-                                    Tag
-                                </th>
+                                {hideTags !== true && (
+                                    <th align="left" style={{ width: 0 }}>
+                                        Tag
+                                    </th>
+                                )}
                                 <th align="left">Name</th>
                                 {tableColumns.map(({ title }) => (
                                     <th key={title} align="left" style={{ width: 0 }}>
@@ -280,6 +294,7 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
                                     {...{
                                         currentItemTag,
                                         libraryItem,
+                                        hideTags,
                                         tableColumns,
                                         onSelect,
                                         onClose,
@@ -367,8 +382,8 @@ export function SelectWall({
             libraries={filtered}
             searchText={searchText}
             tableColumns={[
-                { title: 'U', value: (wall) => wall.uvalue.toString() },
-                { title: 'k', value: (wall) => wall.kvalue.toString() },
+                { title: 'U', type: 'number', value: (wall) => wall.uvalue.toString() },
+                { title: 'k', type: 'number', value: (wall) => wall.kvalue.toString() },
             ]}
             getFullItemData={(wall: CompleteWall) =>
                 wall.description === ''
@@ -380,6 +395,58 @@ export function SelectWall({
                           },
                       ]
             }
+        />
+    );
+}
+
+export type Fuel = {
+    tag: string;
+    name: string;
+    category: string;
+};
+
+type SelectFuelProps = {
+    fuels: Record<string, Fuel>;
+    onSelect: (item: Fuel) => void;
+    onClose: () => void;
+};
+
+export function SelectFuel({ fuels, onSelect, onClose }: SelectFuelProps) {
+    const fuelList = Object.entries(fuels);
+    fuelList.sort(([, a], [, b]) => {
+        if (a.category === b.category) {
+            return 0;
+        } else {
+            if (b.category < a.category) {
+                return 1;
+            } else if (b.category === a.category) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    });
+
+    const builtinFuelLibrary = {
+        id: 'builtin-dataset-fuels',
+        name: 'Fuel list',
+        type: 'fuels',
+        data: Object.fromEntries(fuelList),
+    };
+
+    return (
+        <SelectLibraryItem
+            title="fuel"
+            onSelect={onSelect}
+            onClose={onClose}
+            currentItemTag={null}
+            libraries={[builtinFuelLibrary]}
+            searchText={(fuel) => `${fuel.name} ${fuel.category}`}
+            tableColumns={[
+                { title: 'Category', type: 'text', value: (fuel) => fuel.category },
+            ]}
+            hideTags
+            getFullItemData={() => []}
         />
     );
 }
@@ -435,9 +502,10 @@ export function SelectFloorInsulationMaterial({
         libraries: filtered,
         searchText,
         tableColumns: [
-            { title: 'Type', value: (material) => material.type },
+            { title: 'Type', type: 'text', value: (material) => material.type },
             {
                 title: 'Conductivity',
+                type: 'text',
                 value: (material) => material.conductivity.toString(),
             },
         ],

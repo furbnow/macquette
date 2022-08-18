@@ -8,10 +8,11 @@ export const loading: unique symbol = Symbol.for('loading');
 export type NumericOutputProps = {
     value: number | typeof noOutput | typeof loading;
     unit?: string | JSX.Element;
+    dp?: number;
 };
 
 export function NumericOutput(props: NumericOutputProps) {
-    const { value, unit } = props;
+    const { value, unit, dp = 2 } = props;
     if (value === loading) {
         return <>[loading...]</>;
     }
@@ -29,7 +30,7 @@ export function NumericOutput(props: NumericOutputProps) {
         if (Number.isInteger(value)) {
             valString = value.toString(10);
         } else {
-            valString = value.toFixed(2);
+            valString = value.toFixed(dp);
         }
         if (unitElement === undefined) {
             return <>{valString}</>;
