@@ -666,6 +666,14 @@ label input[type='radio'] {
     margin-top: 0;
 }
 
+.input--number {
+    width: 50px;
+}
+
+.input--auto-width {
+    width: auto;
+}
+
 /**** NAVIGATION ****/
 
 .nav-container {
@@ -804,6 +812,14 @@ body .modal {
     min-height: 100vh;
 }
 
+.notbootstrap td {
+    padding: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    vertical-align: inherit;
+    border-top: inherit;
+}
+
 @media screen and (min-width: 640px) {
     .notbootstrap[role='alertdialog'],
     .notbootstrap[role='dialog'] {
@@ -876,12 +892,14 @@ body .modal {
     }
 }
 
-.input--number {
-    width: 50px;
-}
+/*** Form grid ***/
 
-.input--auto-width {
-    width: auto;
+.form-grid__root {
+    display: grid;
+    grid-template-columns: minmax(max-content, 120px) max-content;
+    grid-auto-rows: minmax(30px, auto);
+    grid-gap: 7px 30px;
+    margin-bottom: 15px;
 }
 
 .form-grid__root input,
@@ -891,21 +909,7 @@ body .modal {
     margin-bottom: 0;
 }
 
-.notbootstrap td {
-    padding: inherit;
-    line-height: inherit;
-    text-align: inherit;
-    vertical-align: inherit;
-    border-top: inherit;
-}
-
-.form-grid__root {
-    display: grid;
-    grid-template-columns: minmax(max-content, 120px) max-content;
-    grid-auto-rows: minmax(30px, auto);
-    grid-gap: 7px 30px;
-    margin-bottom: 15px;
-}
+/*** FUVC ***/
 
 .floor-u-value-calculator__root {
     margin-bottom: 15px;
