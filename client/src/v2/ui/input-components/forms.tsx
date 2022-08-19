@@ -82,6 +82,7 @@ export function InfoTooltip({ children }: InfoTooltip) {
         borderRadius: '6px',
         position: 'absolute',
         zIndex: '100',
+        fontWeight: 'normal',
     };
     return (
         <div style={containerStyle}>

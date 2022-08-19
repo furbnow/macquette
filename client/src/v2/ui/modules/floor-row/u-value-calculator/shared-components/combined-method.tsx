@@ -6,6 +6,7 @@ import { isNonEmpty, NonEmptyArray } from '../../../../../helpers/non-empty-arra
 import { Proportion } from '../../../../../helpers/proportion';
 import { safeMerge } from '../../../../../helpers/safe-merge';
 import { partialBem } from '../../../../bem';
+import { InfoTooltip } from '../../../../input-components/forms';
 import { NumericInput } from '../../../../input-components/numeric';
 import { MaterialSelector } from './material-selector';
 
@@ -91,6 +92,27 @@ export function CombinedMethod({ layers, onChange }: Props) {
                             )}
                         >
                             Bridging proportion
+                            <InfoTooltip>
+                                <p>
+                                    The bridging portion of a suspended ground floor or
+                                    exposed upper floor is made up of the timber structure
+                                    that passes through the insulation layer. The amount
+                                    of bridging can vary significantly, and sometimes
+                                    timbers are added to deal with structural problems or
+                                    accommodate alterations and hatches, increasing the
+                                    amount of bridging.
+                                </p>
+                                <p>
+                                    In a standard floor with 70mm wide joists at 600mm
+                                    centres it can be assumed to be around 12%, or
+                                    approximately 16% in a timber floor with 70mm joists
+                                    at 450mm centres. You find this percentage by dividing
+                                    the width of the joist (usually 75-100mm) by the
+                                    distance between centres (usually 450-600mm). If this
+                                    is unknown because you cannot access the floor
+                                    structure, then assume 600mm centres and 75mm joists.
+                                </p>
+                            </InfoTooltip>
                         </th>
                         <th></th>
                     </tr>

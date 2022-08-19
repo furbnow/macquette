@@ -887,9 +887,12 @@ body .modal {
 }
 
 .combined-method-input__layer-id-heading-cell,
-.combined-method-input__thickness-heading-cell,
-.combined-method-input__bridging-proportion-heading-cell {
+.combined-method-input__thickness-heading-cell {
     width: 0;
+}
+
+.combined-method-input__bridging-proportion-heading-cell {
+    min-width: 150px;
 }
 
 .combined-method-input__main-material-heading-cell,

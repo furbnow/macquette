@@ -45,10 +45,18 @@ export function Component({ state, dispatch }: Props) {
                     htmlFor={ventilationId}
                     infoText={
                         <>
-                            This is the sum of the ventilation area of each individual
-                            underfloor ventilation point. For example two air bricks of
-                            1300 mm² free air space each equates to 2600 mm² in this
-                            input.
+                            <p>
+                                The total area of ventilation below a suspended floor is
+                                the total &lsquo;equivalent area&rsquo; provided by
+                                subfloor air bricks or other vents and openings. You can
+                                work this out for a given floor by counting all the air
+                                bricks and vents present multiplying this by the estimated
+                                area of ventilation they provide.
+                            </p>
+                            <p>
+                                For example four air bricks of 1300 mm² free air space
+                                each equates to 5200 mm² in this input.
+                            </p>
                         </>
                     }
                 >
@@ -76,8 +84,13 @@ export function Component({ state, dispatch }: Props) {
                     htmlFor={underFloorId}
                     infoText={
                         <>
-                            This is the <b>entire underfloor perimeter</b>, as opposed to
-                            just the exposed perimeter.
+                            The perimeter of an underfloor space should be measured as the
+                            entire perimeter of the space, including any party walls, as
+                            it is assumed these will also give onto unheated space. Note
+                            that this differs from the <em>exposed</em> perimeter of a
+                            ground floor, which does not include party walls and only
+                            includes the perimeter adjacent to the external environment or
+                            unheated spaces.
                         </>
                     }
                 >
