@@ -11,6 +11,7 @@ export const floorInsulationMaterialItem = z
             z.number(),
             zodUnwrapResult(z.string().transform(parseFloatResult)),
         ]),
+        type: z.string().optional(),
         tag: z.string(),
         description: z.string(),
     })

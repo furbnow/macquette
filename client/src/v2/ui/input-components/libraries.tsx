@@ -435,6 +435,7 @@ export function SelectFloorInsulationMaterial({
         libraries: filtered,
         searchText,
         tableColumns: [
+            { title: 'Type', value: (material) => material.type },
             {
                 title: 'Conductivity',
                 value: (material) => material.conductivity.toString(),
