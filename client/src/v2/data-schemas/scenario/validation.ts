@@ -22,3 +22,21 @@ export const valueRangeWarning = z.object({
     ]),
 });
 export type ValueRangeWarning = z.infer<typeof valueRangeWarning>;
+
+export const zeroDivisionWarning = z.object({
+    type: z.literal('zero division warning'),
+    namespace: modelNamespace,
+    path: valuePath,
+    outputReplacedWith: z.number(),
+});
+export type ZeroDivisionWarning = z.infer<typeof zeroDivisionWarning>;
+
+export const miscellaneousNonFiniteNumberWarning = z.object({
+    type: z.literal('miscellaneous non-finite number'),
+    namespace: modelNamespace,
+    path: valuePath,
+    outputReplacedWith: z.number(),
+});
+export type MiscellaneousNonFiniteNumberWarning = z.infer<
+    typeof miscellaneousNonFiniteNumberWarning
+>;

@@ -1,5 +1,7 @@
 import fc from 'fast-check';
+import { z } from 'zod';
 
+import { floorSchema } from '../../../../src/v2/data-schemas/scenario/fabric';
 import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import { Overshading } from '../../../../src/v2/model/enums/overshading';
@@ -100,11 +102,13 @@ function hatch(id?: number) {
     );
 }
 
-function floor(id?: number) {
+function floor(id?: number): fc.Arbitrary<z.input<typeof floorSchema>> {
     return merge(
         arbCommonElement(id),
         fc.record({
             type: fc.constant('Floor' as const),
+            area: sensibleFloat,
+            perimeter: sensibleFloat,
         }),
     );
 }

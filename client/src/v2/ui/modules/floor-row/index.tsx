@@ -24,6 +24,7 @@ import * as fuvcState from './u-value-calculator/state';
 type LoadedState = {
     // Read-only
     elementId: string;
+    scenarioIsBaseline: boolean;
 
     // Model outputs
     modelOutput: {
@@ -59,6 +60,7 @@ type Action =
               uValue: WithWarnings<Result<number, FloorUValueError>, FloorUValueWarning>;
               elementLoss: number;
           };
+          scenarioIsBaseline: boolean;
       }
     | { type: 'set per-floor-type state'; perFloorTypeSpec: PerFloorTypeSpec }
     | { type: 'set custom u-value'; uValue: number }
@@ -110,12 +112,13 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action> = {
                     ]),
                     modelOutput: action.modelOutput,
                     loaded: true,
+                    scenarioIsBaseline: action.scenarioIsBaseline,
                     perFloorTypeSpec: action.floorSpec.perFloorTypeSpec,
                 };
         }
     },
     shims: {
-        extractUpdateAction: ({ currentScenario }, instanceKey) => {
+        extractUpdateAction: ({ currentScenario, scenarioId }, instanceKey) => {
             const elementId = instanceKey;
             return extractFloorElement(currentScenario, elementId).chain((element) => {
                 let selectedFloorType: FloorType;
@@ -156,6 +159,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action> = {
                         elementLoss: coalesceEmptyString(element.wk, undefined) ?? 0,
                         uValue: uValueModelOutput,
                     },
+                    scenarioIsBaseline: scenarioId === 'master',
                 };
                 return Result.ok(action);
             });
@@ -185,9 +189,9 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action> = {
                                     perFloorTypeSpec,
                                 });
                             }}
-                            elementId={''}
                             modelUValueOutput={state.modelOutput.uValue}
                             selectedFloorType={state.selectedFloorType}
+                            scenarioIsBaseline={state.scenarioIsBaseline}
                         />
                     </td>
                 </>

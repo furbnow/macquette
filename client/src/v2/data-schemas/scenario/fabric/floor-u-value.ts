@@ -4,7 +4,12 @@ import { NonEmptyArray } from '../../../helpers/non-empty-array';
 import { zodNonEmptyArray } from '../../helpers/non-empty-array';
 import { proportionSchema } from '../../helpers/proportion';
 import { floorInsulationMaterialItem } from '../../libraries/floor-insulation';
-import { requiredValueMissingErrorSchema, valueRangeWarning } from '../validation';
+import {
+    miscellaneousNonFiniteNumberWarning,
+    requiredValueMissingErrorSchema,
+    valueRangeWarning,
+    zeroDivisionWarning,
+} from '../validation';
 
 const insulationSpecSchema = z.object({
     thickness: z.number().nullable(),
@@ -97,5 +102,9 @@ export type PerFloorTypeSpec = z.infer<typeof perFloorTypeSpecSchema>;
 export const floorUValueErrorSchema = requiredValueMissingErrorSchema;
 export type FloorUValueError = z.infer<typeof floorUValueErrorSchema>;
 
-export const floorUValueWarningSchema = valueRangeWarning;
+export const floorUValueWarningSchema = z.discriminatedUnion('type', [
+    valueRangeWarning,
+    zeroDivisionWarning,
+    miscellaneousNonFiniteNumberWarning,
+]);
 export type FloorUValueWarning = z.infer<typeof floorUValueWarningSchema>;

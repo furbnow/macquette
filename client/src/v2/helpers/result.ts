@@ -66,8 +66,9 @@ export class Result<T, E> {
         }
     }
 
-    /** Unwrap and feed into a Result-y function, like a Promise's `.then`. The
-     * function is not executed if `this` is an error value. */
+    /** Unwrap and feed into a Result-y function, like a Promise's `.then` or
+     * fast-check's `.chain`. The function is not executed if `this` is an
+     * error value. */
     chain<NewT, NewE>(fn: (value: T) => Result<NewT, NewE>): Result<NewT, E | NewE> {
         switch (this._inner.type) {
             case 'ok': {

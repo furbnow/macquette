@@ -24,7 +24,7 @@ type ControlledComponentProps<S> = {
 };
 
 type FUVCProps = ControlledComponentProps<PerFloorTypeSpec> & {
-    elementId: string;
+    scenarioIsBaseline: boolean;
     modelUValueOutput: WithWarnings<Result<number, FloorUValueError>, FloorUValueWarning>;
     selectedFloorType: Exclude<FloorType, 'custom'>;
 };
@@ -34,6 +34,7 @@ const fuvcBem = partialBem('floor-u-value-calculator');
 export function FUVC({
     value,
     onChange,
+    scenarioIsBaseline,
     modelUValueOutput,
     selectedFloorType,
 }: FUVCProps) {
@@ -42,6 +43,23 @@ export function FUVC({
     }
     const calculatedUValue = modelUValueOutput;
     const uValueWarnings = Array.from(calculatedUValue.inner()[1])
+        .filter((warning) => {
+            if (
+                !scenarioIsBaseline &&
+                warning.type === 'zero division warning' &&
+                warning.path.join('.') === 'perimeter-area-ratio'
+            ) {
+                // Hack: sometimes an assessor will want to remove an element
+                // in a non-baseline scenario (e.g., to model replacing a
+                // floor). We do not yet support this, so as a workaround we
+                // tell them to set the area to 0. Therefore we must suppress
+                // division-by-zero warnings for the P/A ratio in non-baseline
+                // scenarios.
+                return false;
+            } else {
+                return true;
+            }
+        })
         .map((warning) =>
             warningDisplay(warning)
                 .mapErr(() => objectInspect(warning))
