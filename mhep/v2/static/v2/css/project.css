@@ -78,7 +78,7 @@ a:hover {
     color: var(--app-color);
 }
 
-#sidebar {
+#editor__sidebar {
     height: calc(100% - 40px);
     width: var(--sidebar-width);
     position: fixed;
@@ -87,10 +87,12 @@ a:hover {
     background-color: var(--beige-900);
 }
 
-#wrapper {
+#editor__main {
     background: white;
     max-width: 1150px;
     margin-left: var(--sidebar-width);
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.15);
+    padding: 30px;
 }
 
 .block-header {

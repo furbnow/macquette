@@ -297,7 +297,7 @@ function setupEventHandlers() {
     });
 
     // Allow scrolling the left sidebar out of the way on smaller window sizes
-    const sidebarElem = document.querySelector('#sidebar');
+    const sidebarElem = document.querySelector('#editor__sidebar');
     document.addEventListener(
         'scroll',
         () => sidebarElem.style.left = `-${window.pageXOffset}px`
@@ -351,10 +351,10 @@ function show_house_graphic() {
 
 function show_hide_if_master() {
     if (scenario == 'master') {
-        $('#content .if-not-master').hide();
+        $('#editor__main-content .if-not-master').hide();
     } else {
-        $('#content .if-master').hide();
-        $('#content .disabled-if-not-master').attr('disabled', 'true');
+        $('#editor__main-content .if-master').hide();
+        $('#editor__main-content .disabled-if-not-master').attr('disabled', 'true');
     }
 }
 
@@ -504,7 +504,7 @@ function load_page_from_hash() {
     data = project[scenario];
 
     // Render page
-    load_view('#content', page)
+    load_view('#editor__main-content', page)
         .catch((err) => {
             console.error(`Failed to load view ${page}`, err);
         })
@@ -536,9 +536,9 @@ function load_page_from_hash() {
                 page != 'commentary' &&
                 page != 'report'
             ) {
-                $('#content button').addClass('if-not-locked');
-                $('#content i').addClass('if-not-locked');
-                $('#content .revert-to-original').each(function () {
+                $('#editor__main-content button').addClass('if-not-locked');
+                $('#editor__main-content i').addClass('if-not-locked');
+                $('#editor__main-content .revert-to-original').each(function () {
                     if ($(this).css('display') != 'none') {
                         $(this).addClass('if-not-locked');
                     }

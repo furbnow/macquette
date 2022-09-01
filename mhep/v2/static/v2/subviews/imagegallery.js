@@ -259,7 +259,7 @@ let __imagegallery = null;
 
 function imagegallery_initUI() {
     if (reactifiedImageGallery) {
-        const element = document.querySelector('#content');
+        const element = document.querySelector('#editor__main-content');
         window.Macquette.uiModules.imageGallery.init(element, '');
     } else {
         data = project['master'];

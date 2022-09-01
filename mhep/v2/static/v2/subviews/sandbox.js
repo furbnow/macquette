@@ -1,5 +1,5 @@
 function sandbox_initUI() {
-    const element = document.querySelector('#content');
+    const element = document.querySelector('#editor__main-content');
     window.Macquette.uiModules.sandbox.init(element, '');
 }
 

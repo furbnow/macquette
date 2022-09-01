@@ -2,7 +2,7 @@ let currEnergyReactified = window.features.includes('new-current-energy');
 
 function currentenergy_initUI() {
     if (currEnergyReactified) {
-        const element = document.querySelector('#content');
+        const element = document.querySelector('#editor__main-content');
         window.Macquette.uiModules.currentEnergy.init(element, '');
     } else {
         data = project['master'];
