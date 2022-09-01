@@ -427,7 +427,7 @@ libraryHelper.prototype.onCreateNewLibrary = function () {
             $('#cancelnewlibrary').hide('fast');
             $('#newlibrary').hide('fast');
             $('#finishcreatelibrary').show('fast');
-            UpdateUI(data);
+            librariesmanager_UpdateUI();
         });
     });
 
@@ -794,7 +794,7 @@ libraryHelper.prototype.onDeleteLibraryOk = async function (library_id) {
     await mhep_helper.deleteLibrary(library_id);
     $('#confirm-delete-library-modal').modal('hide');
     await this.load_libraries();
-    UpdateUI();
+    librariesmanager_UpdateUI();
 };
 libraryHelper.prototype.onShowLibraryItemsEditMode = function (library_id) {
     var library = this.get_library_by_id(library_id);
@@ -3403,7 +3403,7 @@ libraryHelper.prototype.set_library_name = function (library_id, name) {
     mhep_helper.updateLibrary(library_id, { name }).then(() => {
         var library = library_helper.get_library_by_id(library_id);
         library.name = name;
-        UpdateUI(data);
+        librariesmanager_UpdateUI();
         $('.modal').modal('hide');
     });
 };
