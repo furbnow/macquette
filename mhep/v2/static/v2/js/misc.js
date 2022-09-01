@@ -186,7 +186,7 @@ function varget(key) {
     return val;
 }
 
-function UpdateUI(data) {
+function UpdateUI() {
     // Call page specific updateui function
     var functionname = page + '_UpdateUI';
     if (window[functionname] != undefined) {

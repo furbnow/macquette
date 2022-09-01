@@ -324,7 +324,7 @@ function update(undo_redo = false) {
         refresh_undo_redo_buttons();
     }
 
-    UpdateUI(data);
+    UpdateUI();
     draw_openbem_graphics('#topgraphic', data);
 
     redraw_emissions();
@@ -585,7 +585,7 @@ function load_page_from_hash() {
                 window[functionname]();
             }
 
-            UpdateUI(data);
+            UpdateUI();
 
             legacy_page_setup();
         });
