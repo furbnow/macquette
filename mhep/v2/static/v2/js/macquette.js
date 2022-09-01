@@ -480,6 +480,37 @@ function redraw_emissions() {
     }
 }
 
+function init_page_header() {
+    if (
+        page == 'report' ||
+        page == 'householdquestionnaire' ||
+        page == 'commentary' ||
+        page == 'scopeofworks' ||
+        page == 'currentenergy' ||
+        page == 'imagegallery'
+    ) {
+        hide_house_graphic();
+    } else {
+        show_house_graphic();
+        draw_openbem_graphics('#topgraphic', data);
+    }
+
+    if (page == 'householdquestionnaire') {
+        $('.scenario-name').html('Household Questionnaire');
+    } else if (page == 'commentary') {
+        $('.scenario-name').html('Commentary');
+    } else if (page == 'report') {
+        $('.scenario-name').html('Generate Report');
+    } else if (page == 'currentenergy') {
+        $('.scenario-name').html('Current Energy');
+    } else if (page == 'imagegallery') {
+        $('.scenario-name').html('Image Gallery');
+    } else {
+        $('.scenario-name').html(scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name);
+    }
+
+}
+
 function load_page_from_hash() {
     let oldPage = page;
     let oldScenario = scenario;
@@ -509,19 +540,7 @@ function load_page_from_hash() {
             console.error(`Failed to load view ${page}`, err);
         })
         .then(() => {
-            if (
-                page == 'report' ||
-                page == 'householdquestionnaire' ||
-                page == 'commentary' ||
-                page == 'scopeofworks' ||
-                page == 'currentenergy' ||
-                page == 'imagegallery'
-            ) {
-                hide_house_graphic();
-            } else {
-                show_house_graphic();
-                draw_openbem_graphics('#topgraphic', data);
-            }
+            init_page_header();
 
             InitUI();
             UpdateUI(data);
