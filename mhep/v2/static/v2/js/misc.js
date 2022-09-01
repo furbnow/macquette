@@ -186,13 +186,7 @@ function varget(key) {
     return val;
 }
 
-function UpdateUI() {
-    // Call page specific updateui function
-    var functionname = page + '_UpdateUI';
-    if (window[functionname] != undefined) {
-        window[functionname]();
-    }
-
+function legacy_update_page_from_data() {
     getkeys('data', data);
 
     let elems = document.querySelectorAll('[key]');
@@ -244,6 +238,16 @@ function UpdateUI() {
             }
         }
     }
+}
+
+function UpdateUI() {
+    // Call page specific updateui function
+    var functionname = page + '_UpdateUI';
+    if (window[functionname] != undefined) {
+        window[functionname]();
+    }
+
+    legacy_update_page_from_data();
 }
 
 function getkeys(key, val) {
