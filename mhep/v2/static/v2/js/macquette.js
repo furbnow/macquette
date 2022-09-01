@@ -304,6 +304,17 @@ function setupEventHandlers() {
     );
 }
 
+function save_project() {
+    $('#saving_status').text('Saving...');
+
+    const inputs = extract_assessment_inputs(project);
+    mhep_helper.updateAssessment(projectid, { data: inputs }).then(() => {
+        $('#saving_status').text('Saved');
+    }).catch(err => {
+        $('#saving_status').text('Failed to save');
+    });
+}
+
 function update(undo_redo = false) {
     // We need to calculate the periods of heating off here because if we try to do it in household.js it happens after the update
     if (project.master.household != undefined) {
@@ -328,15 +339,7 @@ function update(undo_redo = false) {
     draw_openbem_graphics('#topgraphic', data);
 
     redraw_emissions();
-
-    $('#saving_status').text('Saving...');
-
-    const inputs = extract_assessment_inputs(project);
-    mhep_helper.updateAssessment(projectid, { data: inputs }).then(() => {
-        $('#saving_status').text('Saved');
-    }).catch(err => {
-        $('#saving_status').text('Failed to save');
-    });
+    save_project();
 }
 
 function hide_house_graphic() {
