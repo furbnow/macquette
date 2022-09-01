@@ -768,33 +768,6 @@ body .modal {
     margin-left: -280px;
 }
 
-.form-row {
-    display: flex;
-    align-items: first baseline;
-    min-height: 40px;
-    --form-row-width: 38ch;
-}
-
-.form-row > :first-child {
-    width: var(--form-row-width);
-    padding-right: 1ch;
-    padding-bottom: 10px;
-}
-
-.form-row select,
-.form-row input,
-.form-row label {
-    margin-bottom: 0;
-}
-
-.form-row i {
-    margin-left: 1ch;
-}
-
-.form-row select {
-    width: auto;
-}
-
 /**** ARTISANAL DIALOGUE BOXES ****/
 
 /* Based on the CSS at https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html */

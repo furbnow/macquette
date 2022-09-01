@@ -524,42 +524,42 @@ function add_heating_systems() {
                     <section>
                         <h4 class="mt-0">Space Heating</h4>
 
-                        <div class="form-row">
+                        <div class="form-grid__root">
                             <label>Space heating / Winter efficiency</label>
-                            <div class="form-control">${item.winter_efficiency}</div>
-                        </div>
+                            <div class="form-control">
+                                ${item.winter_efficiency}
+                            </div>
 
-                        <div class="form-row">
                             <label>
                                 Main heating system?
                                 <i class='icon-question-sign' title='The main heating system is that which heats the largest proportion of the dwelling, and often provided hot water as well as space heating. If there is more than one main heating system identified, main system 1 always heats the living space. Secondary heating systems are room heaters - such as open fires or wood-stoves. If portable room heaters are used, they should be included in the calculations (note this is a deviation from standard SAP - ref p.40 SAP 9.92)'></i>
                             </label>
-                            <select class="form-control" style="width: 200px" key="data.heating_systems.${z}.main_space_heating_system">
-                                ${get_heating_system_options(mainHSs)}
-                            </select>
-                        </div>
+                            <div>
+                                <select style="width: 200px" key="data.heating_systems.${z}.main_space_heating_system">
+                                    ${get_heating_system_options(mainHSs)}
+                                </select>
+                            </div>
 
-                        <div class="form-row">
                             <label>
                                 Fraction of space heating provided
                                 <i class='icon-question-sign' title='This defines what proportion of the space heating or water heating for a home is provided by the system listed. For example, a standard assumption might be that a gas boiler provides 90% (0.9) of the space heating, and an open fire or room stove provides 10% (0.1). However, this can be adjusted using assessors informed judgement as required - and as many systems as are present can be included. If there are two main heating systems identified, the proportion of heat provided by each system should be taken as the relative heated floor area served by each system'></i>
                             </label>
-                            <input class="form-control" style="width: 55px" type="number" key="data.heating_systems.${z}.fraction_space" max="1" step="0.01" min="0">
-                        </div>
+                            <div>
+                                <input style="width: 55px" type="number" key="data.heating_systems.${z}.fraction_space" max="1" step="0.01" min="0">
+                            </div>
 
-                        <div class="form-row">
                             <label>Responsiveness <i class='icon-question-sign' title='Refer to Table 4d, p.209 SAP 9.92'></i></label>
-                            <input class="form-control" style="width: 55px" type="number" key="data.heating_systems.${z}.responsiveness" max="1" step="0.01" min="0">
-                        </div>
+                            <div>
+                                <input style="width: 55px" type="number" key="data.heating_systems.${z}.responsiveness" max="1" step="0.01" min="0">
+                            </div>
 
-                        <div class="form-row">
                             <label>Temperature adjustment <i class='icon-question-sign' title='SAP2012, table 4e, p.210'></i></label>
-                            <input class="form-control" style="width: 55px" type="number" key="data.heating_systems.${z}.temperature_adjustment" max="1" step="0.01" min="0">
-                        </div>
+                            <div>
+                                <input style="width: 55px" type="number" key="data.heating_systems.${z}.temperature_adjustment" max="1" step="0.01" min="0">
+                            </div>
 
-                        <div class="form-row">
                             <label>Space heating controls <i class='icon-question-sign' title='Refer to Table 4e, p.210 SAP 9.92'></i></label>
-                            <div class="form-control">
+                            <div>
                                 <input type="number" key="data.heating_systems.${z}.heating_controls" ${isMaster ? '' : 'readonly'} style="width: 55px">
                                 <button class="btn if-not-locked apply-water-heating-measure if-not-master" type="space_heating_control_type" item-index="${z}">
                                     Apply measure
@@ -569,11 +569,11 @@ function add_heating_systems() {
                                     Measure applied
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="form-row">
                             <label>Central heating pump inside dwelling?</label>
-                            <input class="form-control" type="checkbox" key="data.heating_systems.${z}.central_heating_pump_inside">
+                            <div>
+                                <input type="checkbox" key="data.heating_systems.${z}.central_heating_pump_inside">
+                            </div>
                         </div>
                     </section>
                     ` : ''}
@@ -582,22 +582,22 @@ function add_heating_systems() {
                     <section>
                         <h4 class="mt-0">Water Heating</h4>
 
-                        <div class="form-row">
+                        <div class="form-grid__root">
                             <label>Water heating / Summer efficiency</label>
                             <span>${item.summer_efficiency}</span>
-                        </div>
 
-                        <div class="form-row">
                             <label>
                                 Fraction of water heating provided
                                 <i class='icon-question-sign' title='This defines what proportion of the space heating or water heating for a home is provided by the system listed. For example, a standard assumption might be that a gas boiler provides 90% (0.9) of the space heating, and an open fire or room stove provides 10% (0.1). However, this can be adjusted using assessors informed judgement as required - and as many systems as are present can be included. If there are two main heating systems identified, the proportion of heat provided by each system should be taken as the relative heated floor area served by each system'></i>
                             </label>
-                            <input class="form-control" style="width: 55px" type="number" key="data.heating_systems.${z}.fraction_water_heating">
-                        </div>
+                            <div>
+                                <input class="form-control" style="width: 55px" type="number" key="data.heating_systems.${z}.fraction_water_heating">
+                            </div>
 
-                        <div class="form-row">
                             <label>Instantaneous water heating?</label>
-                            <input type="checkbox" key="data.heating_systems.${z}.instantaneous_water_heating">
+                            <div>
+                                <input type="checkbox" key="data.heating_systems.${z}.instantaneous_water_heating">
+                            </div>
                         </div>
                     </section>
                     `: ''}
