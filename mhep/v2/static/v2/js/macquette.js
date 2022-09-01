@@ -508,7 +508,42 @@ function init_page_header() {
     } else {
         $('.scenario-name').html(scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name);
     }
+}
 
+function legacy_page_setup() {
+    // Add lock functionality to buttons and icons
+    if (
+        page != 'librariesmanager' &&
+        page != 'imagegallery' &&
+        page != 'export' &&
+        page != 'householdquestionnaire' &&
+        page != 'currentenergy' &&
+        page != 'commentary' &&
+        page != 'report'
+    ) {
+        $('#editor__main-content button').addClass('if-not-locked');
+        $('#editor__main-content i').addClass('if-not-locked');
+        $('#editor__main-content .revert-to-original').each(function () {
+            if ($(this).css('display') != 'none') {
+                $(this).addClass('if-not-locked');
+            }
+        });
+    }
+
+    if (data.locked) {
+        $('.if-not-locked').hide();
+    } else {
+        $('.if-not-locked').show();
+    }
+
+    // Disable measures if master
+    show_hide_if_master();
+
+    // Make modals draggable
+    $('#openbem .modal-header').css('cursor', 'move');
+    $('#openbem .modal').draggable({
+        handle: '.modal-header',
+    });
 }
 
 function load_page_from_hash() {
@@ -545,39 +580,7 @@ function load_page_from_hash() {
             InitUI();
             UpdateUI(data);
 
-            // Add lock functionality to buttons and icons
-            if (
-                page != 'librariesmanager' &&
-                page != 'imagegallery' &&
-                page != 'export' &&
-                page != 'householdquestionnaire' &&
-                page != 'currentenergy' &&
-                page != 'commentary' &&
-                page != 'report'
-            ) {
-                $('#editor__main-content button').addClass('if-not-locked');
-                $('#editor__main-content i').addClass('if-not-locked');
-                $('#editor__main-content .revert-to-original').each(function () {
-                    if ($(this).css('display') != 'none') {
-                        $(this).addClass('if-not-locked');
-                    }
-                });
-            }
-
-            if (data.locked) {
-                $('.if-not-locked').hide();
-            } else {
-                $('.if-not-locked').show();
-            }
-
-            // Disable measures if master
-            show_hide_if_master();
-
-            // Make modals draggable
-            $('#openbem .modal-header').css('cursor', 'move');
-            $('#openbem .modal').draggable({
-                handle: '.modal-header',
-            });
+            legacy_page_setup();
         });
 }
 
