@@ -549,7 +549,7 @@ function legacy_page_setup() {
     });
 }
 
-function load_page_from_hash() {
+async function load_page_from_hash() {
     let oldPage = page;
     let oldScenario = scenario;
 
@@ -575,23 +575,22 @@ function load_page_from_hash() {
 
     data = project[scenario];
 
-    // Render page
-    load_view('#editor__main-content', page)
-        .catch((err) => {
-            console.error(`Failed to load view ${page}`, err);
-        })
-        .then(() => {
-            init_page_header();
+    try {
+        await load_view('#editor__main-content', page);
+    } catch (err) {
+        console.error(`Failed to load view ${page}`, err);
+    }
 
-            var functionname = page + '_initUI';
-            if (window[functionname] != undefined) {
-                window[functionname]();
-            }
+    init_page_header();
 
-            UpdateUI();
+    var initFn = page + '_initUI';
+    if (window[initFn] != undefined) {
+        window[initFn]();
+    }
 
-            legacy_page_setup();
-        });
+    UpdateUI();
+
+    legacy_page_setup();
 }
 
 function refresh_undo_redo_buttons() {
