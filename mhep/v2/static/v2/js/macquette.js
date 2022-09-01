@@ -564,7 +564,10 @@ function load_page_from_hash() {
 
     // Unload previous view
     if (oldPage && oldScenario) {
-        UnloadUI(oldPage);
+        var functionname = oldPage + '_UnloadUI';
+        if (window[functionname] != undefined) {
+            window[functionname]();
+        }
     }
 
     data = project[scenario];

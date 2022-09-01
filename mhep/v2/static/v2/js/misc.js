@@ -186,14 +186,6 @@ function varget(key) {
     return val;
 }
 
-function UnloadUI(oldPage) {
-    // Call page specific updateui function
-    var functionname = oldPage + '_UnloadUI';
-    if (window[functionname] != undefined) {
-        window[functionname]();
-    }
-}
-
 function UpdateUI(data) {
     // Call page specific updateui function
     var functionname = page + '_UpdateUI';
