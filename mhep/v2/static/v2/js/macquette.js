@@ -577,7 +577,11 @@ function load_page_from_hash() {
         .then(() => {
             init_page_header();
 
-            InitUI();
+            var functionname = page + '_initUI';
+            if (window[functionname] != undefined) {
+                window[functionname]();
+            }
+
             UpdateUI(data);
 
             legacy_page_setup();
