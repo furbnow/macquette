@@ -564,9 +564,6 @@ function load_page_from_hash() {
                 });
             }
 
-            // Disable measures if master
-            show_hide_if_master();
-
             if (data.locked) {
                 $('.if-not-locked').hide();
             } else {
