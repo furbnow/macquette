@@ -23,7 +23,7 @@ export function MaterialSelector(props: Props) {
                     <div>{props.value.conductivity.toFixed(2)} W/m.K</div>
                 </div>
             )}
-            <div className={materialSelectorBem('buttons')}>
+            <div>
                 {props.value === null && (
                     <button
                         className={

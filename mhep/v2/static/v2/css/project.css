@@ -930,10 +930,5 @@ body .modal {
 }
 
 .floor-insulation-material-selector__material-view {
-    flex: none;
     padding-right: 10px;
-}
-
-.floor-insulation-material-selector__buttons {
-    flex: auto;
 }
