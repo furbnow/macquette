@@ -3,6 +3,7 @@ import os
 
 import PIL
 from django.core.files.base import ContentFile
+from rest_framework import exceptions
 from rest_framework import generics
 from rest_framework import parsers
 from rest_framework import serializers
@@ -117,8 +118,7 @@ class UploadAssessmentImage(AssessmentQuerySetMixin, generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     @staticmethod
-    def _make_thumbnail(record: Image):
-        image = PIL.Image.open(record.image)
+    def _make_thumbnail(image: PIL.Image, record: Image):
         image = PIL.ImageOps.exif_transpose(image)
 
         record.width = image.width
@@ -160,7 +160,13 @@ class UploadAssessmentImage(AssessmentQuerySetMixin, generics.GenericAPIView):
         assessment = self.get_object()
         file = request.FILES["file"]
         record = Image(assessment=assessment, image=file)
-        self._make_thumbnail(record)
+
+        try:
+            image = PIL.Image.open(record.image)
+        except PIL.UnidentifiedImageError:
+            raise exceptions.ParseError(detail="Could not process image format")
+
+        self._make_thumbnail(image, record)
         self._set_note(record)
         record.save()
         response = ImageSerializer(record).data
