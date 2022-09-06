@@ -91,7 +91,7 @@ function currentenergy_UnloadUI() {
 }
 
 if (!currEnergyReactified) {
-    $('#openbem').on('click', '#add_use_by_fuel').click(function () {
+    $('#openbem').on('click', '#add_use_by_fuel', function () {
         var fuel_type = $('#type_of_fuel_select').val();
         data.currentenergy.use_by_fuel[fuel_type] = {annual_use: 0, annual_co2: 0, primaryenergy: 0, annualcost: 0};
         currentenergy_initUI();
