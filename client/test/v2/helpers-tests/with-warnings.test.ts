@@ -13,7 +13,10 @@ function arbWithWarnings<V, W>(val: fc.Arbitrary<V>, warning: fc.Arbitrary<W>) {
 
 describe('with warnings type', () => {
     it('survives a JSON and Zod-parse round-trip', () => {
-        const arb = arbWithWarnings(fc.jsonValue(), fc.jsonValue());
+        const arb = arbWithWarnings(
+            fc.jsonValue().filter((v) => !Object.is(v, -0)),
+            fc.jsonValue().filter((v) => !Object.is(v, -0)),
+        );
         fc.assert(
             fc.property(arb, (original) => {
                 const roundTripped = withWarningsSchema(z.unknown(), z.unknown()).parse(
