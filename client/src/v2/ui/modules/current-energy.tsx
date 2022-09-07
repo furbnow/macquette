@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { Scenario } from '../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../data-schemas/scenario/value-schemas';
+import { assertNever } from '../../helpers/assert-never';
 import { filterValues } from '../../helpers/filter-values';
 import { PropsOf } from '../../helpers/props-of';
 import { Result } from '../../helpers/result';
@@ -700,7 +701,7 @@ function extractOutputsFromLegacy(scenario: Scenario): Partial<State> {
     };
 }
 
-export const currentEnergyModule: UiModule<State, Action> = {
+export const currentEnergyModule: UiModule<State, Action, never> = {
     name: 'current energy',
     initialState: () => ({
         modal: null,
@@ -730,10 +731,12 @@ export const currentEnergyModule: UiModule<State, Action> = {
     reducer: (state, action) => {
         switch (action.type) {
             case 'external data update': {
-                return {
-                    ...state,
-                    ...action.state,
-                };
+                return [
+                    {
+                        ...state,
+                        ...action.state,
+                    },
+                ];
             }
 
             case 'current energy/add fuel use': {
@@ -750,7 +753,7 @@ export const currentEnergyModule: UiModule<State, Action> = {
                     },
                 };
                 state.modal = null;
-                return state;
+                return [state];
             }
 
             case 'current energy/update fuel use': {
@@ -764,25 +767,26 @@ export const currentEnergyModule: UiModule<State, Action> = {
                         return energySource;
                     }
                 });
-                return state;
+                return [state];
             }
 
             case 'current energy/delete fuel use': {
                 delete state.consumption[action.key];
-                return state;
+                return [state];
             }
 
             case 'current energy/update generation': {
                 state.generation = safeMerge(state.generation, action.value);
-                return state;
+                return [state];
             }
 
             case 'current energy/show modal': {
                 state.modal = action.modal;
-                return state;
+                return [state];
             }
         }
     },
+    effector: assertNever,
     component: function CurrentEnergy({ state, dispatch }) {
         return (
             <>

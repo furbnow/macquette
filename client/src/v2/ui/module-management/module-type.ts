@@ -2,23 +2,27 @@ import type { Result } from '../../helpers/result';
 import type { Externals } from '../../shims/typed-globals';
 import type { LegacyContext } from './shim';
 
+export type Dispatcher<Action> = (action: Action) => void;
+
 export type BasicProps<State, Action> = {
     state: State;
-    dispatch: (action: Action) => void;
+    dispatch: Dispatcher<Action>;
 };
 
 export type ReducerComponent<
     State,
     Action,
+    Effect,
     Props extends BasicProps<State, Action> = BasicProps<State, Action>,
 > = {
     name: string;
     initialState: (instanceKey: string) => State;
-    reducer: (state: State, action: Action) => State;
+    reducer: (state: State, action: Action) => [State, Array<Effect>?];
     component: React.FC<Props>;
+    effector: (effect: Effect, dispatch: Dispatcher<Action>) => Promise<void>;
 };
 
-export type UiModule<State, Action> = ReducerComponent<State, Action> & {
+export type UiModule<State, Action, Effect> = ReducerComponent<State, Action, Effect> & {
     shims: {
         extractUpdateAction: (
             legacyContext: LegacyContext,

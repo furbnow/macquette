@@ -1,12 +1,13 @@
 import React from 'react';
 
+import { assertNever } from '../../helpers/assert-never';
 import { Result } from '../../helpers/result';
 import type { UiModule } from '../module-management/module-type';
 
 type State = { donks: number };
 type Action = { type: 'put a donk on it' };
 
-export const sandboxModule: UiModule<State, Action> = {
+export const sandboxModule: UiModule<State, Action, never> = {
     name: 'sandbox',
     component: function Sandbox({ state, dispatch }) {
         const { donks } = state;
@@ -34,9 +35,10 @@ export const sandboxModule: UiModule<State, Action> = {
     reducer: (state, action) => {
         switch (action.type) {
             case 'put a donk on it':
-                return { donks: state.donks + 1 };
+                return [{ donks: state.donks + 1 }];
         }
     },
+    effector: assertNever,
     shims: {
         extractUpdateAction: () => {
             return Result.err(new Error('external update handling not implemented'));

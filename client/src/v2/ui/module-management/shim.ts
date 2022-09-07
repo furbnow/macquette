@@ -15,10 +15,10 @@ export type LegacyContext = {
     currentScenario: Scenario;
 };
 
-export class UiModuleShim<State, Action> {
+export class UiModuleShim<State, Action, Effect> {
     private keyedInstances: Record<string, { root: ReactRoot; state: State }> = {};
 
-    constructor(private module_: UiModule<State, Action>) {}
+    constructor(private module_: UiModule<State, Action, Effect>) {}
 
     private getInstance(
         instanceKey: string,
@@ -78,7 +78,16 @@ export class UiModuleShim<State, Action> {
 
     private reduceModuleInstance(action: Action, instanceKey: string) {
         const instance = this.getInstance(instanceKey).unwrap();
-        instance.state = this.module_.reducer(instance.state, action);
+        const result = this.module_.reducer(instance.state, action);
+
+        const [state, effects = []] = result;
+        instance.state = state;
+
+        for (const effect of effects) {
+            this.module_
+                .effector(effect, (action) => this.dispatch(action, instanceKey, true))
+                .catch((err) => console.error(err));
+        }
     }
 
     private render(instanceKey: string) {

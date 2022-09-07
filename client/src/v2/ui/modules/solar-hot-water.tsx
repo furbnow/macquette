@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Scenario } from '../../data-schemas/scenario';
 import { SolarHotWaterV1 } from '../../data-schemas/scenario/solar-hot-water';
+import { assertNever } from '../../helpers/assert-never';
 import { nanToNull } from '../../helpers/null-wrapping';
 import { PropsOf } from '../../helpers/props-of';
 import { Result } from '../../helpers/result';
@@ -100,7 +101,7 @@ type Action =
           toMerge: DeepPartial<Exclude<LoadedState, 'scenarioLocked'>>;
       };
 
-export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action> = {
+export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, never> = {
     name: 'solar hot water',
     initialState: () => {
         return 'loading';
@@ -108,15 +109,16 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action> = {
     reducer: (state, action) => {
         switch (action.type) {
             case 'external data update':
-                return action.newState;
+                return [action.newState];
             case 'merge state': {
                 if (state === 'loading') {
-                    return state;
+                    return [state];
                 }
-                return safeMerge(state, action.toMerge);
+                return [safeMerge(state, action.toMerge)];
             }
         }
     },
+    effector: assertNever,
     shims: {
         extractUpdateAction: ({ currentScenario }) => {
             const { SHW, use_SHW } = currentScenario;

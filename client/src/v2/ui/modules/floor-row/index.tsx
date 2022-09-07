@@ -9,6 +9,7 @@ import {
     PerFloorTypeSpec,
 } from '../../../data-schemas/scenario/fabric/floor-u-value';
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
+import { assertNever } from '../../../helpers/assert-never';
 import { Result } from '../../../helpers/result';
 import { safeMerge } from '../../../helpers/safe-merge';
 import { WithWarnings } from '../../../helpers/with-warnings';
@@ -74,7 +75,7 @@ type Action =
           >;
       };
 
-export const floorRowModule: UiModule<LoadingState | LoadedState, Action> = {
+export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never> = {
     name: 'floor row',
     initialState: (instanceKey) => ({
         loaded: false,
@@ -83,40 +84,45 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action> = {
     reducer: (state, action) => {
         switch (action.type) {
             case 'set per-floor-type state': {
-                if (!state.loaded) return state;
+                if (!state.loaded) return [state];
                 const newState = { ...state };
                 newState.perFloorTypeSpec = action.perFloorTypeSpec;
-                return newState;
+                return [newState];
             }
             case 'set custom u-value': {
-                if (!state.loaded) return state;
-                return {
-                    ...state,
-                    perFloorTypeSpec: {
-                        ...state.perFloorTypeSpec,
-                        custom: { uValue: action.uValue },
+                if (!state.loaded) return [state];
+                return [
+                    {
+                        ...state,
+                        perFloorTypeSpec: {
+                            ...state.perFloorTypeSpec,
+                            custom: { uValue: action.uValue },
+                        },
                     },
-                };
+                ];
             }
             case 'merge state':
-                if (!state.loaded) return state;
-                return safeMerge(state, action.toMerge);
+                if (!state.loaded) return [state];
+                return [safeMerge(state, action.toMerge)];
             case 'external data update':
-                return {
-                    ...state,
-                    ...pick(action.floorSpec, [
-                        'location',
-                        'area',
-                        'exposedPerimeter',
-                        'selectedFloorType',
-                    ]),
-                    modelOutput: action.modelOutput,
-                    loaded: true,
-                    scenarioIsBaseline: action.scenarioIsBaseline,
-                    perFloorTypeSpec: action.floorSpec.perFloorTypeSpec,
-                };
+                return [
+                    {
+                        ...state,
+                        ...pick(action.floorSpec, [
+                            'location',
+                            'area',
+                            'exposedPerimeter',
+                            'selectedFloorType',
+                        ]),
+                        modelOutput: action.modelOutput,
+                        loaded: true,
+                        scenarioIsBaseline: action.scenarioIsBaseline,
+                        perFloorTypeSpec: action.floorSpec.perFloorTypeSpec,
+                    },
+                ];
         }
     },
+    effector: assertNever,
     shims: {
         extractUpdateAction: ({ currentScenario, scenarioId }, instanceKey) => {
             const elementId = instanceKey;
