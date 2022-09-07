@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 
 import { fcPartialRecord } from '../../../helpers/arbitraries';
-import { legacyBoolean, sensibleFloat, stringySensibleFloat } from './values';
+import { legacyBoolean, stringySensibleFloat } from './values';
 
 export function arbVentilation() {
     return fcPartialRecord({
@@ -14,7 +14,7 @@ export function arbVentilation() {
         suspended_wooden_floor: fc.oneof(
             ...([0, 'sealed', 'unsealed'] as const).map(fc.constant),
         ),
-        percentage_draught_proofed: sensibleFloat,
+        percentage_draught_proofed: stringySensibleFloat(),
         draught_lobby: legacyBoolean(),
         number_of_sides_sheltered: fc.nat(),
         ventilation_type: fc.oneof(

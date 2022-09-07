@@ -82,7 +82,7 @@ export const scenarioSchema = z
                     z.literal(0),
                     z.enum(['sealed', 'unsealed']),
                 ]),
-                percentage_draught_proofed: z.number(),
+                percentage_draught_proofed: stringyFloatSchema,
                 draught_lobby: legacyBoolean,
                 number_of_sides_sheltered: z.number(),
                 ventilation_type: z.enum(['NV', 'IE', 'MEV', 'PS', 'MVHR', 'MV', 'DEV']),

@@ -66,7 +66,8 @@ export function extractInfiltrationInputFromLegacy(
             walls: interpretWalls(dwelling_construction),
             floor: interpretFloor(suspended_wooden_floor),
             draughtProofedProportion:
-                (ventilation?.percentage_draught_proofed ?? 0) / 100,
+                coalesceEmptyString(ventilation?.percentage_draught_proofed ?? 0, 0) /
+                100,
             draughtLobby: ventilation?.draught_lobby ?? false,
         };
     }
