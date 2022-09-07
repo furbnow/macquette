@@ -516,7 +516,8 @@ function load_page_from_hash() {
                 page == 'householdquestionnaire' ||
                 page == 'commentary' ||
                 page == 'scopeofworks' ||
-                page == 'currentenergy'
+                page == 'currentenergy' ||
+                page == 'imagegallery'
             ) {
                 hide_house_graphic();
             } else {

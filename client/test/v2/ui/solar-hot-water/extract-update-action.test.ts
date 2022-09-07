@@ -12,6 +12,7 @@ const FAKE_PROJECT_DATA = {
     updated_at: new Date(),
     owner: { id: '1', name: 'Fred' },
     organisation: null,
+    images: [],
 };
 
 describe('solar hot water update action extractor', () => {

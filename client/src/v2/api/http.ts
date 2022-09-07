@@ -17,6 +17,7 @@ import {
     createAssessmentSchema,
     listAssessmentSchema,
 } from '../data-schemas/api-metadata';
+import { Image, imageSchema } from '../data-schemas/image';
 import { Library, librarySchema } from '../data-schemas/libraries';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
 import { isIndexable } from '../helpers/is-indexable';
@@ -475,7 +476,7 @@ export class HTTPClient {
         });
     }
 
-    async uploadImage(assessmentId: string, image: string): Promise<unknown> {
+    async uploadImage(assessmentId: string, image: File): Promise<Image> {
         const formData = new FormData();
         formData.append('file', image);
         const response = await this.wrappedFetch({
@@ -485,10 +486,10 @@ export class HTTPClient {
             data: formData,
             responseType: 'json',
         });
-        return response.data;
+        return imageSchema.parse(response.data);
     }
 
-    async setFeaturedImage(assessmentId: string, imageId: string): Promise<void> {
+    async setFeaturedImage(assessmentId: string, imageId: number): Promise<void> {
         await this.wrappedFetch({
             intent: 'setting featured image',
             url: urls.setFeaturedImage(assessmentId),
@@ -498,7 +499,7 @@ export class HTTPClient {
         });
     }
 
-    async setImageNote(id: string, note: string): Promise<unknown> {
+    async setImageNote(id: number, note: string): Promise<Image> {
         const response = await this.wrappedFetch({
             intent: 'setting image note',
             url: urls.image(id),
@@ -507,10 +508,10 @@ export class HTTPClient {
             data: { note },
             responseType: 'json',
         });
-        return response.data;
+        return imageSchema.parse(response.data);
     }
 
-    async deleteImage(id: string): Promise<void> {
+    async deleteImage(id: number): Promise<void> {
         await this.wrappedFetch({
             intent: 'deleting image',
             url: urls.image(id),

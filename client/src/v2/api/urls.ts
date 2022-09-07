@@ -19,7 +19,7 @@ export const urls = {
         return `/v2/api/assessments/${assessmentId}/images/featured/`;
     },
 
-    image(imageId: string): string {
+    image(imageId: number): string {
         return `/v2/api/images/${imageId}/`;
     },
 

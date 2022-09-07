@@ -219,6 +219,8 @@ function InitUI() {
         $('.scenario-name').html('Generate Report');
     } else if (page == 'currentenergy') {
         $('.scenario-name').html('Current Energy');
+    } else if (page == 'imagegallery') {
+        $('.scenario-name').html('Image Gallery');
     } else {
         $('.scenario-name').html(scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name);
     }

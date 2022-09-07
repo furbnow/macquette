@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-export function Edit(props: React.SVGProps<SVGSVGElement>): ReactElement {
+export function EditIcon(props: React.SVGProps<SVGSVGElement>): ReactElement {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

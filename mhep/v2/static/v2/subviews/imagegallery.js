@@ -254,18 +254,33 @@ class ImageGallery {
     }
 }
 
+let reactifiedImageGallery = window.features.includes('new-image-gallery');
 let __imagegallery = null;
 
 function imagegallery_initUI() {
-    data = project['master'];
-
-    __imagegallery = new ImageGallery({
-        root: document.querySelector('.gallery'),
-        id: p.id,
-        data: p.images,
-    });
+    if (reactifiedImageGallery) {
+        const element = document.querySelector('#content');
+        window.Macquette.uiModules.imageGallery.init(element, '');
+    } else {
+        data = project['master'];
+        __imagegallery = new ImageGallery({
+            root: document.querySelector('.gallery'),
+            id: p.id,
+            data: p.images,
+        });
+    }
 }
 
-function imagegallery_updateUI() {
-    __imagegallery.view();
+function imagegallery_UpdateUI() {
+    if (reactifiedImageGallery) {
+        window.Macquette.uiModules.imageGallery.update();
+    } else {
+        __imagegallery.view();
+    }
+}
+
+function imagegallery_UnloadUI() {
+    if (reactifiedImageGallery) {
+        window.Macquette.uiModules.imageGallery.unmountAll();
+    }
 }
