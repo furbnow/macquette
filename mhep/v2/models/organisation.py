@@ -27,10 +27,6 @@ class Organisation(models.Model):
         User, blank=True, related_name="%(app_label)s_organisations_where_admin"
     )
 
-    # Old style template; soon to be removed
-    report_template = models.TextField(blank=True)
-
-    # New style template
     report = models.ForeignKey(
         to="ReportTemplate",
         related_name="%(app_label)s_organisations",

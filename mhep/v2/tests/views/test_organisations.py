@@ -66,7 +66,6 @@ class TestListOrganisations(APITestCase):
                     "can_add_remove_members": False,
                     "can_promote_demote_librarians": False,
                 },
-                "report_template": "",
             }
         ]
 

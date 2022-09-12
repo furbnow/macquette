@@ -30,7 +30,6 @@ class OrganisationSerializer(serializers.ModelSerializer):
             "assessments",
             "members",
             "permissions",
-            "report_template",
         ]
 
     def get_assessments(self, org):
