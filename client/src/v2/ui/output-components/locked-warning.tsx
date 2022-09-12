@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { WarningFilledIcon } from '../icons/warning';
+import { WarningFilledIcon } from '../icons';
 
 export type LockedWarningProps = {
     locked: boolean;

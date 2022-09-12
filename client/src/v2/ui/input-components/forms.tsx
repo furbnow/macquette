@@ -1,7 +1,7 @@
 import React, { CSSProperties, ReactNode, useId, useState } from 'react';
 
 import { partialBem } from '../bem';
-import { InfoIcon } from '../icons/info';
+import { InfoIcon } from '../icons';
 import { CheckboxInput } from './checkbox';
 import { Select } from './select';
 

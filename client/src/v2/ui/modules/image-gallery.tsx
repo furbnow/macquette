@@ -4,9 +4,7 @@ import React, { useId, useEffect, useState, ReactElement } from 'react';
 import { HTTPClient } from '../../api/http';
 import type { Image as ServerImage } from '../../data-schemas/image';
 import { Result } from '../../helpers/result';
-import { EditIcon } from '../icons/edit';
-import { DeleteIcon } from '../icons/trash';
-import { UploadIcon } from '../icons/upload';
+import { EditIcon, DeleteIcon, UploadIcon } from '../icons';
 import type { UiModule, Dispatcher } from '../module-management/module-type';
 
 type Image = {
