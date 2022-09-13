@@ -203,11 +203,12 @@ $('#openbem').on('click', '#bulk-measure-next', function () {
         for (var wall in window_by_wall) { // We display them
             for (var index in window_by_wall[wall]) {
                 var element = window_by_wall[wall][index].element;
+                const wallElement = get_element_by_id(element.subtractfrom);
                 if (element.type == $(this).attr('tags')) {
                     out += "<tr><td><input type='checkbox' class='bulk-element' element-row='" + window_by_wall[wall][index].row + "' /></td>";
                     out += '<td>' + element.name + '</td>';
-                    out += '<td>' + element.location + '</td>';
-                    out += '<td>' + get_element_by_id(element.subtractfrom).location + '</td>';
+                    out += '<td>' + (element.location ?? '') + '</td>';
+                    out += '<td>' + (wallElement ? wallElement.location : '') + '</td>';
                     out += '</tr>';
                 }
             }
