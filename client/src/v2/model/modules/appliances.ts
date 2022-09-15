@@ -1,5 +1,11 @@
 import { Scenario } from '../../data-schemas/scenario';
 import {
+    AppliancesCookingCarbonCoop,
+    AppliancesCookingCarbonCoopDependencies,
+    AppliancesCookingCarbonCoopInput,
+    extractAppliancesCarbonCoopInputFromLegacy,
+} from './lighting-appliances-cooking/appliances-cooking-carbon-coop';
+import {
     AppliancesSAPDependencies,
     AppliancesSAP,
     AppliancesSAPInput,
@@ -13,6 +19,7 @@ export type AppliancesInput =
       }
     | {
           type: 'carbon coop';
+          input: AppliancesCookingCarbonCoopInput;
       };
 
 export function extractAppliancesInputFromLegacy(scenario: Scenario): AppliancesInput {
@@ -26,13 +33,15 @@ export function extractAppliancesInputFromLegacy(scenario: Scenario): Appliances
         case 'carboncoop_SAPlighting':
             return {
                 type: 'carbon coop',
+                input: extractAppliancesCarbonCoopInputFromLegacy(scenario),
             };
     }
 }
 
-export type AppliancesDependencies = AppliancesSAPDependencies & unknown;
+export type AppliancesDependencies = AppliancesSAPDependencies &
+    AppliancesCookingCarbonCoopDependencies;
 
-export type Appliances = AppliancesSAP | AppliancesNoop;
+export type Appliances = AppliancesSAP | AppliancesCookingCarbonCoop;
 export function constructAppliances(
     input: AppliancesInput,
     dependencies: AppliancesDependencies,
@@ -41,12 +50,6 @@ export function constructAppliances(
         case 'sap':
             return new AppliancesSAP(input.input, dependencies);
         case 'carbon coop':
-            return new AppliancesNoop();
-    }
-}
-
-class AppliancesNoop {
-    mutateLegacyData() {
-        // pass
+            return new AppliancesCookingCarbonCoop(input.input, dependencies);
     }
 }

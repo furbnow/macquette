@@ -5,7 +5,7 @@ import { isTruthy } from '../../../helpers/is-truthy';
 import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
 import { Fuel as FuelsModuleFuel } from '../fuels';
-import { Fuel as LACModuleFuel, FuelInput } from './fuel';
+import { Fuel as LACModuleFuel, FuelInput } from './fuel-sap';
 
 export type CookingSAPInput = {
     energyEfficient: boolean;
@@ -121,7 +121,6 @@ export class CookingSAP {
             const fuelsLegacyArray = this.fuelDemand.map(({ fuel, demand }) => ({
                 fuel: fuel.name,
                 fraction: fuel.fraction,
-                system_efficiency: 1,
                 demand,
                 fuel_input: demand,
             }));

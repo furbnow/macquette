@@ -1,5 +1,5 @@
 import fc from 'fast-check';
-import { cloneDeep, pick } from 'lodash';
+import { cloneDeep, defaults, pick } from 'lodash';
 
 import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { SolarHotWaterV1 } from '../../../src/v2/data-schemas/scenario/solar-hot-water';
@@ -251,9 +251,34 @@ function normaliseScenario(scenario: any) {
         energy_requirements?: {
             space_heating?: any;
             space_cooling?: any;
+            appliances?: any;
+            cooking?: any;
         };
         fabric?: {
             elements?: Array<{ uValueModelOutput?: unknown }>;
+        };
+        applianceCarbonCoop?: {
+            energy_demand_by_type_of_fuel: unknown;
+            gains_W?: unknown;
+            gains_W_monthly?: unknown;
+        };
+        gains_W?: Record<string, unknown>;
+        fuel_requirements?: {
+            lighting?: {
+                list?: Array<{
+                    system_efficiency?: number;
+                }>;
+            };
+            appliances?: {
+                list?: Array<{
+                    system_efficiency?: number;
+                }>;
+            };
+            cooking?: {
+                list?: Array<{
+                    system_efficiency?: number;
+                }>;
+            };
         };
     };
 
@@ -295,9 +320,9 @@ function normaliseScenario(scenario: any) {
         }
     }
 
-    // If using carbon coop mode for the appliances and cooking modules, remove
-    // variables that are added by legacy but never used
     if (castScenario.LAC_calculation_type === 'carboncoop_SAPlighting') {
+        // If using carbon coop mode for the appliances and cooking modules,
+        // remove variables that are added by legacy but never used
         const { LAC } = castScenario;
         delete LAC.EA;
         delete LAC.energy_efficient_appliances;
@@ -307,6 +332,53 @@ function normaliseScenario(scenario: any) {
         delete LAC.GC;
         delete LAC.energy_efficient_cooking;
         delete LAC.fuels_cooking;
+
+        // The old model conditionally sets various things if they are
+        // non-zero, whereas the new one sets them to 0 explicitly. So if the
+        // things in question are undefined, set them to 0 for parity between
+        // old and new models.
+        defaults(castScenario.applianceCarbonCoop!.energy_demand_by_type_of_fuel, {
+            Electricity: 0,
+            Oil: 0,
+            Gas: 0,
+        });
+
+        if (castScenario.gains_W!['Appliances'] === undefined) {
+            castScenario.gains_W!['Appliances'] = new Array<number>(12).fill(0);
+        }
+        if (castScenario.gains_W!['Cooking'] === undefined) {
+            castScenario.gains_W!['Cooking'] = new Array<number>(12).fill(0);
+        }
+        if (castScenario.energy_requirements!.appliances === undefined) {
+            castScenario.energy_requirements!.appliances = {
+                name: 'Appliances',
+                quantity: 0,
+                monthly: new Array<number>(12).fill(0),
+            };
+        }
+        if (castScenario.energy_requirements!.cooking === undefined) {
+            castScenario.energy_requirements!.cooking = {
+                name: 'Cooking',
+                quantity: 0,
+                monthly: new Array<number>(12).fill(0),
+            };
+        }
+        delete castScenario.applianceCarbonCoop!.gains_W;
+        delete castScenario.applianceCarbonCoop!.gains_W_monthly;
+    } else if (castScenario.LAC_calculation_type === 'SAP') {
+        // Vice versa for SAP mode
+        delete castScenario.applianceCarbonCoop;
+    }
+    // In any case, delete "system_efficiency" key on fuels because it's set weirdly and nothing looks at it
+    for (const item of [
+        ...(castScenario.fuel_requirements?.lighting?.list ?? []),
+        ...(castScenario.fuel_requirements?.appliances?.list ?? []),
+        ...(castScenario.fuel_requirements?.cooking?.list ?? []),
+        ...(castScenario.LAC?.fuels_lighting ?? []),
+        ...(castScenario.LAC?.fuels_appliances ?? []),
+        ...(castScenario.LAC?.fuels_cooking ?? []),
+    ]) {
+        delete item.system_efficiency;
     }
 
     // Legacy property added by removed LAC "detailedlist" module

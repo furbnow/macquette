@@ -4,7 +4,7 @@ import { cache, cacheMonth } from '../../../helpers/cache-decorators';
 import { isTruthy } from '../../../helpers/is-truthy';
 import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
-import { Fuel, FuelInput } from './fuel';
+import { Fuel, FuelInput } from './fuel-sap';
 
 export type AppliancesSAPInput = {
     energyEfficient: boolean;
@@ -127,7 +127,6 @@ export class AppliancesSAP {
             const legacyFuelDemandArray = this.fuelDemand.map(({ fuel, demand }) => ({
                 fuel: fuel.name,
                 fraction: fuel.fraction,
-                system_efficiency: 1,
                 demand,
                 fuel_input: demand,
             }));

@@ -35,8 +35,15 @@ export function setDefaultLegacyInputs(data: unknown) {
             water_usage: [], // Not used in the model for anything, but seems important for at least one legacy view
         },
         heating_systems: [],
+        applianceCarbonCoop: {
+            list: [],
+        },
     };
     defaultsDeep(data, modelDefaults);
+}
+
+function twelveZeroes(): number[] {
+    return new Array<number>(12).fill(0);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,5 +76,26 @@ export function setBlankLegacyOutputs(data: any) {
     data.totalWK = 0;
     data.FEE = 0;
     data.SAP = {};
+    data.applianceCarbonCoop.energy_demand_total = {
+        appliances: 0,
+        cooking: 0,
+        total: 0,
+    };
+    data.applianceCarbonCoop.energy_demand_monthly = {
+        appliances: twelveZeroes(),
+        cooking: twelveZeroes(),
+        total: twelveZeroes(),
+    };
+    data.applianceCarbonCoop.energy_demand_by_type_of_fuel = {
+        Electricity: 0,
+        Gas: 0,
+        Oil: 0,
+    };
+    data.applianceCarbonCoop.fuel_input_total = {
+        appliances: 0,
+        cooking: 0,
+    };
+    data.applianceCarbonCoop.gains_W = {};
+    data.applianceCarbonCoop.gains_W_monthly = {};
     /* eslint-enable */
 }

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { applianceCarbonCoop } from './appliance-carbon-coop';
 import { fabric } from './fabric';
 import { solarHotWaterSchema } from './solar-hot-water';
 import {
@@ -173,6 +174,7 @@ export const scenarioSchema = z
             })
             .partial(),
         heating_systems: heatingSystems,
+        applianceCarbonCoop: applianceCarbonCoop,
     })
     .partial();
 
