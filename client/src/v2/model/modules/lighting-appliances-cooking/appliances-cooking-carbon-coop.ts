@@ -248,7 +248,18 @@ class LoadCollection {
             .mapValues((loads) => {
                 const energyDemand = sum(loads.map((load) => load.energyDemandAnnual));
                 const fuelInput = sum(loads.map((load) => load.fuelInputAnnual));
-                const fraction = energyDemand / this.fuelInputAnnual;
+                let fraction;
+                if (
+                    fuelInput !== energyDemand &&
+                    !this.flags.useFuelInputForFuelFraction
+                ) {
+                    console.warn(
+                        'Reproducing buggy fuel fraction calc. This does not have an effect on the scenario headline numbers.',
+                    );
+                    fraction = energyDemand / this.fuelInputAnnual;
+                } else {
+                    fraction = fuelInput / this.fuelInputAnnual;
+                }
                 return {
                     energyDemand,
                     fuelInput,

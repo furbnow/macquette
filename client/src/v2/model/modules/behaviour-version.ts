@@ -3,6 +3,7 @@ type ModelBehaviourVersion = 'legacy' | 1;
 export type ModelBehaviourFlags = {
     carbonCoopAppliancesCooking: {
         convertGainsToWatts: boolean; // Severe bug
+        useFuelInputForFuelFraction: boolean; // Minor bug
         useWeightedMonthsForEnergyDemand: boolean; // Minor improvement
     };
 };
@@ -14,6 +15,7 @@ export function constructModelBehaviourFlags(
         return {
             carbonCoopAppliancesCooking: {
                 convertGainsToWatts: false,
+                useFuelInputForFuelFraction: false,
                 useWeightedMonthsForEnergyDemand: false,
             },
         };
@@ -21,6 +23,7 @@ export function constructModelBehaviourFlags(
     return {
         carbonCoopAppliancesCooking: {
             convertGainsToWatts: true,
+            useFuelInputForFuelFraction: true,
             useWeightedMonthsForEnergyDemand: true,
         },
     };
