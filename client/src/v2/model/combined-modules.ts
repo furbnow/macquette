@@ -1,4 +1,4 @@
-import { scenarioSchema } from '../data-schemas/scenario';
+import { ModelBehaviourVersion, scenarioSchema } from '../data-schemas/scenario';
 import { Region } from './enums/region';
 import { AirChangeRate } from './modules/air-change-rate';
 import {
@@ -7,6 +7,7 @@ import {
     constructAppliances,
     extractAppliancesInputFromLegacy,
 } from './modules/appliances';
+import { constructModelBehaviourFlags } from './modules/behaviour-version';
 import {
     constructCooking,
     Cooking,
@@ -61,6 +62,7 @@ import {
 } from './modules/water-heating';
 
 export type Input = {
+    modelBehaviourVersion: ModelBehaviourVersion;
     fuels: FuelsDict;
     floors: FloorsInput;
     occupancy: OccupancyInput;
@@ -80,6 +82,7 @@ export type Input = {
 export function extractInputFromLegacy(rawScenario: unknown): Input {
     const scenario = scenarioSchema.parse(rawScenario);
     return {
+        modelBehaviourVersion: scenario.modelBehaviourVersion ?? 'legacy',
         fuels: extractFuelsInputFromLegacy(scenario),
         floors: extractFloorsInputFromLegacy(scenario),
         occupancy: extractOccupancyInputFromLegacy(scenario),
@@ -118,6 +121,9 @@ export class CombinedModules {
 
     constructor(input: Input) {
         const { region } = input;
+        const modelBehaviourFlags = constructModelBehaviourFlags(
+            input.modelBehaviourVersion,
+        );
         const fuels = new Fuels(input.fuels);
         const floors = new Floors(input.floors);
         const occupancy = new Occupancy(input.occupancy, { floors });
@@ -149,6 +155,7 @@ export class CombinedModules {
             occupancy,
         });
         const appliances = constructAppliances(input.appliances, {
+            modelBehaviourFlags,
             fuels,
             floors,
             occupancy,

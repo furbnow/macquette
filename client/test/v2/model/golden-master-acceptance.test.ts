@@ -54,6 +54,12 @@ const focussedScenarios = scenarios.filter(
 );
 
 describe('golden master acceptance tests', () => {
+    beforeAll(() => {
+        // Suppress warnings for this test suite. Jest runs each suite in its
+        // own process, so no need to clean up.
+        console.warn = jest.fn();
+    });
+
     test('all scenarios are included in tests', () => {
         // This test is to make sure we don't commit a focussed test suite to main
         expect(focussedScenarios).toHaveLength(scenarios.length);

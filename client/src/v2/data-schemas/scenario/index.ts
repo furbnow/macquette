@@ -39,8 +39,12 @@ const LAC = z
     })
     .partial();
 
+export const modelBehaviourVersionSchema = z.union([z.literal('legacy'), z.literal(1)]);
+export type ModelBehaviourVersion = z.infer<typeof modelBehaviourVersionSchema>;
+
 export const scenarioSchema = z
     .object({
+        modelBehaviourVersion: modelBehaviourVersionSchema,
         floors,
         use_custom_occupancy: legacyBoolean,
         custom_occupancy: z.union([z.number(), z.literal('')]),

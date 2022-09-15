@@ -33,7 +33,7 @@ async function initMacquette(api, assessmentId, featureFlags) {
     // Various project initialisation stuff
     p = await mhep_helper.getAssessment(projectid);
     if (p.data == false || p.data == null || Object.keys(p.data).length == 0) {
-        p.data = { master: { scenario_name: 'Baseline' } };
+        p.data = { master: { scenario_name: 'Baseline', modelBehaviourVersion: 1 } };
     }
     project = p.data;
     if (project.master.fuels === undefined) {

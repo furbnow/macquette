@@ -3,8 +3,10 @@ import _ from 'lodash';
 import { Scenario } from '../../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
 import { sum } from '../../../helpers/array-reducers';
+import { cache } from '../../../helpers/cache-decorators';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
+import { ModelBehaviourFlags } from '../behaviour-version';
 
 export type AppliancesCookingCarbonCoopInput = Array<LoadInput>;
 type FuelType = 'electricity' | 'gas' | 'oil';
@@ -72,6 +74,7 @@ export type AppliancesCookingCarbonCoopDependencies = {
     fuels: {
         names: string[];
     };
+    modelBehaviourFlags: ModelBehaviourFlags;
 };
 
 export class AppliancesCookingCarbonCoop {
@@ -175,6 +178,7 @@ export class AppliancesCookingCarbonCoop {
 
 class LoadCollection {
     public loads: Array<Load>;
+    private flags: ModelBehaviourFlags['carbonCoopAppliancesCooking'];
 
     constructor(
         public input: Array<LoadInput>,
@@ -188,15 +192,20 @@ class LoadCollection {
             );
         }
         this.loads = input.map((i) => new Load(i, dependencies));
+        this.flags = dependencies.modelBehaviourFlags.carbonCoopAppliancesCooking;
     }
 
+    @cache
     get energyDemandAnnual(): number {
         return sum(this.loads.map((load) => load.energyDemandAnnual));
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    energyDemandMonthly(_month: Month): number {
-        return this.energyDemandAnnual / Month.all.length;
+    energyDemandMonthly(month: Month): number {
+        if (this.flags.useWeightedMonthsForEnergyDemand) {
+            return this.energyDemandAnnual * (month.days / 365);
+        } else {
+            return this.energyDemandAnnual / Month.all.length;
+        }
     }
 
     energyDemandAnnualByFuelType(fuelType: FuelType): number {
@@ -208,7 +217,15 @@ class LoadCollection {
     }
 
     get heatGainAnnual(): number {
-        return this.energyDemandAnnual;
+        if (this.flags.convertGainsToWatts) {
+            const kWhPerYearToWatts = 1000 / (24 * 365);
+            return this.energyDemandAnnual * kWhPerYearToWatts;
+        } else {
+            console.warn(
+                'Reproducing buggy behaviour in appliances & cooking gains calculation. This will introduce a significant error (5-40%) in the final space heating demand figure.',
+            );
+            return this.energyDemandAnnual;
+        }
     }
 
     heatGainMonthly(month: Month): number {
@@ -216,10 +233,12 @@ class LoadCollection {
         return this.heatGainAnnual * monthWeight;
     }
 
+    @cache
     get fuelInputAnnual(): number {
         return sum(this.loads.map((app) => app.fuelInputAnnual));
     }
 
+    @cache
     get fuelInfoAnnualByFuel(): Record<
         string,
         { energyDemand: number; fuelInput: number; fraction: number }
