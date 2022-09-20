@@ -145,8 +145,10 @@ export class AppliancesCookingCarbonCoop {
         };
 
         const { gains_W } = data;
-        gains_W['Appliances'] = Month.all.map((m) => this.appliances.heatGainMonthly(m));
-        gains_W['Cooking'] = Month.all.map((m) => this.cooking.heatGainMonthly(m));
+        gains_W['Appliances'] = Month.all.map((m) =>
+            this.appliances.heatGainAverageMonthly(m),
+        );
+        gains_W['Cooking'] = Month.all.map((m) => this.cooking.heatGainAverageMonthly(m));
 
         applianceCarbonCoop.fuel_input_total['appliances'] =
             this.appliances.fuelInputAnnual;
@@ -216,21 +218,35 @@ class LoadCollection {
         );
     }
 
-    get heatGainAnnual(): number {
+    // Watts
+    get heatGainAverageAnnual(): number {
         if (this.flags.convertGainsToWatts) {
             const kWhPerYearToWatts = 1000 / (24 * 365);
             return this.energyDemandAnnual * kWhPerYearToWatts;
         } else {
             console.warn(
-                'Reproducing buggy behaviour in appliances & cooking gains calculation. This will introduce a significant error (5-40%) in the final space heating demand figure.',
+                'Reproducing buggy behaviour in appliances & cooking gains calculation. (convertGainsToWatts)',
             );
             return this.energyDemandAnnual;
         }
     }
 
-    heatGainMonthly(month: Month): number {
-        const monthWeight = month.days / 365;
-        return this.heatGainAnnual * monthWeight;
+    heatGainAverageMonthly(month: Month): number {
+        // Gain is expressed in power (Watts) and therefore expresses a rate,
+        // meaning we should not divide by 12 here as we would with energy.
+        //
+        // If you sail around the world in a year and you sail at an annual
+        // average speed of 12 knots, how many knots on average do you do a
+        // month? Correct answer: 12 knots. Incorrect answer: 1 knot.
+
+        if (this.flags.treatMonthlyGainAsPower) {
+            return this.heatGainAverageAnnual;
+        } else {
+            console.warn(
+                'Reproducing buggy behaviour in appliances & cooking gains calculation. (treatMonthlyGainAsPower)',
+            );
+            return (this.heatGainAverageAnnual * month.days) / 365.0;
+        }
     }
 
     @cache
@@ -254,7 +270,7 @@ class LoadCollection {
                     !this.flags.useFuelInputForFuelFraction
                 ) {
                     console.warn(
-                        'Reproducing buggy fuel fraction calc. This does not have an effect on the scenario headline numbers.',
+                        'Reproducing buggy fuel fraction calc. (useFuelInputForFuelFraction)',
                     );
                     fraction = energyDemand / this.fuelInputAnnual;
                 } else {
