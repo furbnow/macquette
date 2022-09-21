@@ -233,16 +233,13 @@ function validateExposedFloor(spec: ExposedFloorSpec): RVMR<ExposedFloorInput> {
     if (exposedTo === null) {
         return error(['exposed', 'exposed-to']);
     }
-    let insulationLayersR: RVMR<ExposedFloorInput['insulationLayers']>;
-    if (spec.insulation.enabled) {
-        insulationLayersR = validateCombinedMethodLayers(spec.insulation.layers);
-    } else {
-        insulationLayersR = Result.ok(null);
-    }
-    return insulationLayersR.map((insulationLayers) => ({
+    const layersR: RVMR<ExposedFloorInput['layers']> = validateCombinedMethodLayers(
+        spec.layers,
+    );
+    return layersR.map((layers) => ({
         floorType: 'exposed',
         exposedTo,
-        insulationLayers,
+        layers,
     }));
 }
 

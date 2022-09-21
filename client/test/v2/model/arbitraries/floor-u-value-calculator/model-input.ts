@@ -89,7 +89,7 @@ export function arbExposedFloorInput(): fc.Arbitrary<ExposedFloorInput> {
     return fc.record({
         floorType: fc.constant('exposed' as const),
         exposedTo: fc.constantFrom('outside air', 'unheated space'),
-        insulationLayers: fc.option(fcNonEmptyArray(arbFloorLayerInput())),
+        layers: fcNonEmptyArray(arbFloorLayerInput()),
     });
 }
 

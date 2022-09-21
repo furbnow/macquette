@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
+import { isIndexable } from '../../../helpers/is-indexable';
 import { NonEmptyArray } from '../../../helpers/non-empty-array';
 import { zodNonEmptyArray } from '../../helpers/non-empty-array';
 import { proportionSchema } from '../../helpers/proportion';
+import { zodPredicateUnion } from '../../helpers/zod-predicate-union';
 import { floorInsulationMaterialItem } from '../../libraries/floor-insulation';
 import {
     miscellaneousNonFiniteNumberWarning,
@@ -61,13 +63,36 @@ const heatedBasementFloorSpecSchema = z.object({
 });
 export type HeatedBasementFloorSpec = z.infer<typeof heatedBasementFloorSpecSchema>;
 
-const exposedFloorSpecSchema = z.object({
+const exposedFloorV1SpecSchema = z.object({
     exposedTo: z.enum(['outside air', 'unheated space']).nullable(),
     insulation: z.object({
         enabled: z.boolean(),
         layers: zodNonEmptyArray(floorLayerSpecSchema),
     }),
 });
+const exposedFloorV2SpecSchema = z.object({
+    version: z.literal(2),
+    exposedTo: z.enum(['outside air', 'unheated space']).nullable(),
+    layers: zodNonEmptyArray(floorLayerSpecSchema),
+});
+const exposedFloorSpecSchema = zodPredicateUnion([
+    {
+        name: 'v1',
+        predicate: (spec) => isIndexable(spec) && !('version' in spec),
+        schema: exposedFloorV1SpecSchema.transform(
+            ({ exposedTo, insulation }): z.infer<typeof exposedFloorV2SpecSchema> => ({
+                version: 2,
+                exposedTo,
+                layers: insulation.layers,
+            }),
+        ),
+    },
+    {
+        name: 'v2',
+        predicate: (spec) => isIndexable(spec) && spec['version'] === 2,
+        schema: exposedFloorV2SpecSchema,
+    },
+]);
 export type ExposedFloorSpec = z.infer<typeof exposedFloorSpecSchema>;
 
 const customFloorSpecSchema = z.object({

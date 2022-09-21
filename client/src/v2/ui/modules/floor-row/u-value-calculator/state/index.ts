@@ -39,11 +39,9 @@ export function initialPerFloorTypeSpec(): PerFloorTypeSpec {
             insulation: { ...nullInsulation, enabled: false },
         },
         exposed: {
+            version: 2,
             exposedTo: null,
-            insulation: {
-                enabled: false,
-                layers: initialCombinedMethodLayers,
-            },
+            layers: initialCombinedMethodLayers,
         },
     };
 }

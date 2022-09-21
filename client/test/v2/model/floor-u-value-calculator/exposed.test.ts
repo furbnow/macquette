@@ -41,7 +41,7 @@ const arbFloorLayerInput: fc.Arbitrary<FloorLayerInput> = fc.record({
 const arbInput: fc.Arbitrary<ExposedFloorInput> = fc.record({
     floorType: fc.constant('exposed'),
     exposedTo: fc.constantFrom('outside air', 'unheated space'),
-    insulationLayers: fc.option(fcNonEmptyArray(arbFloorLayerInput)),
+    layers: fcNonEmptyArray(arbFloorLayerInput),
 });
 
 type TestCase<I, O> = { name: string; input: I; expected: O };
@@ -49,22 +49,7 @@ type TestCase<I, O> = { name: string; input: I; expected: O };
 describe('exposed floor', () => {
     const cases: Array<TestCase<FloorUValueModelInput, number>> = [
         {
-            name: 'outside air (no insulation)',
-            input: {
-                common: {
-                    area: 100,
-                    exposedPerimeter: 5,
-                },
-                perFloorType: {
-                    floorType: 'exposed',
-                    exposedTo: 'outside air',
-                    insulationLayers: null,
-                },
-            },
-            expected: 4.762,
-        },
-        {
-            name: 'unheated space (no insulation)',
+            name: 'unheated space (single unbridged layer)',
             input: {
                 common: {
                     area: 100,
@@ -73,22 +58,7 @@ describe('exposed floor', () => {
                 perFloorType: {
                     floorType: 'exposed',
                     exposedTo: 'unheated space',
-                    insulationLayers: null,
-                },
-            },
-            expected: 2.941,
-        },
-        {
-            name: 'unheated space (single unbridged layer of insulation)',
-            input: {
-                common: {
-                    area: 100,
-                    exposedPerimeter: 5,
-                },
-                perFloorType: {
-                    floorType: 'exposed',
-                    exposedTo: 'unheated space',
-                    insulationLayers: [
+                    layers: [
                         {
                             thickness: 0.01,
                             mainMaterial: {
@@ -105,7 +75,7 @@ describe('exposed floor', () => {
             expected: 2.8986,
         },
         {
-            name: 'outside air (multiple layers of insulation including bridging)',
+            name: 'outside air (multiple layers including bridging)',
             input: {
                 common: {
                     area: 100,
@@ -114,7 +84,7 @@ describe('exposed floor', () => {
                 perFloorType: {
                     floorType: 'exposed',
                     exposedTo: 'outside air',
-                    insulationLayers: [
+                    layers: [
                         {
                             thickness: 0.01,
                             mainMaterial: {

@@ -41,7 +41,7 @@ export type HeatedBasementFloorInput = {
 export type ExposedFloorInput = {
     floorType: 'exposed';
     exposedTo: 'outside air' | 'unheated space';
-    insulationLayers: null | NonEmptyArray<FloorLayerInput>;
+    layers: NonEmptyArray<FloorLayerInput>;
 };
 
 export type CommonInput = {

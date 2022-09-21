@@ -68,11 +68,9 @@ export const arbPerFloorTypeSpec: fc.Arbitrary<PerFloorTypeSpec> = fc.record({
         insulation: merge(arbInsulationSpec, fc.record({ enabled: fc.boolean() })),
     }),
     exposed: fc.record({
+        version: fc.constant(2),
         exposedTo: fc.option(fc.constantFrom('outside air', 'unheated space')),
-        insulation: fc.record({
-            enabled: fc.boolean(),
-            layers: fcNonEmptyArray(arbFloorLayerSpec),
-        }),
+        layers: fcNonEmptyArray(arbFloorLayerSpec),
     }),
 });
 

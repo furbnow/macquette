@@ -2,7 +2,6 @@ import React, { useId } from 'react';
 
 import { ExposedFloorSpec } from '../../../../../data-schemas/scenario/fabric/floor-u-value';
 import { safeMerge } from '../../../../../helpers/safe-merge';
-import { CheckboxInput } from '../../../../input-components/checkbox';
 import { FormGrid } from '../../../../input-components/forms';
 import { Select } from '../../../../input-components/select';
 import { CombinedMethod } from '../shared-components/combined-method';
@@ -12,9 +11,7 @@ export type State = ExposedFloorSpec;
 
 type MergeState = {
     type: 'exposed floor/merge state';
-    payload: Partial<Omit<State, 'insulation'>> & {
-        insulation?: Partial<State['insulation']>;
-    };
+    payload: Partial<State>;
 };
 export type Action = MergeState;
 
@@ -23,8 +20,8 @@ export function reducer(state: State, action: FloorUValueCalculatorAction): Stat
         case 'exposed floor/merge state': {
             const newState = safeMerge(state, action.payload);
             // Special handling for layers array, since safeMerge will merge arrays
-            if (action.payload.insulation?.layers !== undefined) {
-                newState.insulation.layers = action.payload.insulation.layers;
+            if (action.payload.layers !== undefined) {
+                newState.layers = action.payload.layers;
             }
             return newState;
         }
@@ -40,7 +37,6 @@ export function Component({
     dispatch: React.Dispatch<Action>;
 }) {
     const exposedToId = useId();
-    const insulationId = useId();
 
     return (
         <>
@@ -60,33 +56,17 @@ export function Component({
                         })
                     }
                 />
-
-                <label htmlFor={insulationId}>Insulation?</label>
-                <span>
-                    <CheckboxInput
-                        id={insulationId}
-                        checked={state.insulation.enabled}
-                        callback={(checked) =>
-                            dispatch({
-                                type: 'exposed floor/merge state',
-                                payload: { insulation: { enabled: checked } },
-                            })
-                        }
-                    />
-                </span>
             </FormGrid>
 
-            {state.insulation.enabled && (
-                <CombinedMethod
-                    layers={state.insulation.layers}
-                    onChange={(layers) =>
-                        dispatch({
-                            type: 'exposed floor/merge state',
-                            payload: { insulation: { layers } },
-                        })
-                    }
-                />
-            )}
+            <CombinedMethod
+                layers={state.layers}
+                onChange={(layers) =>
+                    dispatch({
+                        type: 'exposed floor/merge state',
+                        payload: { layers },
+                    })
+                }
+            />
         </>
     );
 }

@@ -384,13 +384,10 @@ export class ExposedFloor extends FloorUValueModel {
     }
 
     get combinedMethodLayerModel(): CombinedMethodModel {
-        const input = transformFloorLayersToCombinedMethodInput(
-            this.floor.insulationLayers ?? [],
-            {
-                internal: this.internalSurfaceResistance,
-                external: this.externalSurfaceResistance,
-            },
-        );
+        const input = transformFloorLayersToCombinedMethodInput(this.floor.layers, {
+            internal: this.internalSurfaceResistance,
+            external: this.externalSurfaceResistance,
+        });
         return new CombinedMethodModel(input);
     }
 
