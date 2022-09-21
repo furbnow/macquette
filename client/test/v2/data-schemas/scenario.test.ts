@@ -11,6 +11,16 @@ import { scenarios, shouldSkipScenario } from '../fixtures';
 import { arbScenarioInputs } from '../model/arbitraries/scenario';
 import { checkInputBugs } from '../model/scenario-predicates';
 
+function runModel(data: unknown): unknown {
+    const oldConsoleWarn = console.warn;
+    console.warn = () => undefined;
+    try {
+        return calcRun(cloneDeep(data));
+    } finally {
+        console.warn = oldConsoleWarn;
+    }
+}
+
 describe('scenario validator', () => {
     describe('scenario inputs', () => {
         function testFn(scenarioData: unknown) {
@@ -29,7 +39,7 @@ describe('scenario validator', () => {
 
     describe('after running calc.run', () => {
         function testFn(scenarioData: unknown) {
-            const modelOutput = calcRun(cloneDeep(scenarioData));
+            const modelOutput = runModel(scenarioData);
             expect(() => scenarioSchema.parse(modelOutput)).not.toThrow();
         }
         test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
@@ -45,7 +55,7 @@ describe('scenario validator', () => {
 
     describe('after running calc.run and then JSON round-trip', () => {
         function testFn(scenarioData: unknown) {
-            const modelOutput = calcRun(cloneDeep(scenarioData));
+            const modelOutput = runModel(scenarioData);
             const jsonRoundTripped = emulateJsonRoundTrip(modelOutput);
             expect(() => scenarioSchema.parse(jsonRoundTripped)).not.toThrow();
         }
@@ -87,7 +97,7 @@ describe('scenario validator', () => {
 
         function testFn(scenarioData: unknown) {
             testIdempotence(validate, scenarioData);
-            const modelOutput = calcRun(cloneDeep(scenarioData));
+            const modelOutput = runModel(scenarioData);
             testIdempotence(validate, modelOutput);
             const jsonRoundTripped = emulateJsonRoundTrip(modelOutput);
             testIdempotence(validate, jsonRoundTripped);
