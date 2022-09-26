@@ -26,6 +26,11 @@ const arbCompleteFloorElement = fc
     .map(({ uvalue, area, perimeter, selectedFloorType, perFloorTypeSpec }): Floor => {
         return {
             type: 'floor',
+            source: '',
+            name: '',
+            description: '',
+            location: '',
+            lib: '',
             id: 1,
             kvalue: 1,
             uvalue,

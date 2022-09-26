@@ -74,11 +74,12 @@ const wall = commonFabricElement
 export type Wall = z.infer<typeof wall>;
 
 const wallMeasure = wall
+    .merge(libraryItemCommonSchema)
+    .merge(measureCommonSchema)
     .extend({
         EWI: legacyBoolean,
-    })
-    .merge(libraryItemCommonSchema)
-    .merge(measureCommonSchema);
+        cost_units: z.literal('sqm' as const),
+    });
 export type WallMeasure = z.infer<typeof wallMeasure>;
 
 const floor = commonFabricElement
@@ -142,7 +143,7 @@ const fabricElement = zodPredicateUnion([
     { predicate: tagsFieldContains(['Roof']), schema: roof.passthrough() },
 ]);
 
-const measure = zodPredicateUnion([
+const fabricMeasure = zodPredicateUnion([
     { predicate: tagsFieldContains(['Wall']), schema: wallMeasure.passthrough() },
     { predicate: tagsFieldContains(['Door']), schema: doorMeasure.passthrough() },
     { predicate: tagsFieldContains(['Floor']), schema: floorMeasure.passthrough() },
@@ -173,7 +174,15 @@ export function isFabricElementsLibrary(
     return library.type === 'elements';
 }
 
-export const fabricElementsMeasures = makeLibrarySchema('elements_measures', measure);
+export type FabricMeasure = z.infer<typeof fabricMeasure>;
+
+export const fabricMeasures = makeLibrarySchema('elements_measures', fabricMeasure);
+export type FabricMeasuresLibrary = z.infer<typeof fabricMeasures>;
+export function isFabricMeasuresLibrary(
+    library: Library,
+): library is FabricMeasuresLibrary {
+    return library.type === 'elements_measures';
+}
 
 export function discriminateTags<
     InputT extends { tags: [string] },

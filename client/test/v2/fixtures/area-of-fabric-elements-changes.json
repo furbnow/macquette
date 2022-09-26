@@ -4,7 +4,10 @@
             "fabric": {
                 "elements": [
                     {
+                        "lib": "FN02",
+                        "name": "Wall",
                         "type": "Wall",
+                        "description": "",
                         "id": 0,
                         "kvalue": 0,
                         "uvalue": 0,

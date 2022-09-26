@@ -8,11 +8,19 @@ import { Overshading } from '../../../../src/v2/model/enums/overshading';
 import { fcOptional, merge } from '../../../helpers/arbitraries';
 import { sensibleFloat, stringySensibleFloat, stringyNumber } from './values';
 
+const uppercaseLetter = fc.constantFrom(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''));
+const digit = fc.constantFrom(...'1234567890'.split(''));
+const elementTag = fc
+    .tuple(uppercaseLetter, uppercaseLetter, digit, digit)
+    .map(([a, b, c, d]) => `${a}${b}${c}${d}`);
 const stringyDimension = stringySensibleFloat().filter((v) => v !== '0');
 
 export function arbCommonElement(id?: number) {
     return fc.record({
+        lib: elementTag,
+        name: fc.string(),
         id: id !== undefined ? fc.constant(id) : sensibleFloat,
+        location: fc.string(),
         uvalue: stringySensibleFloat(),
         kvalue: stringySensibleFloat(),
 

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { appliancesAndCooking } from './appliances-and-cooking';
 import { clothesDryingFacilitiesMeasures } from './clothes-drying-facilities';
 import { draughtProofingMeasures } from './draught-proofing-measures';
-import { fabricElementsMeasures, fabricElements } from './elements';
+import { fabricMeasures, fabricElements } from './elements';
 import { extractVentilationPointsMeasures } from './extract-ventilation-points';
 import { floorInsulation } from './floor-insulation';
 import { generationMeasures } from './generation-measures';
@@ -25,7 +25,7 @@ export const librarySchema = z.discriminatedUnion('type', [
     draughtProofingMeasures,
     extractVentilationPointsMeasures,
     fabricElements,
-    fabricElementsMeasures,
+    fabricMeasures,
     floorInsulation,
     generationMeasures,
     heatingSystems,

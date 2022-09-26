@@ -45,6 +45,7 @@ export type ModelBehaviourVersion = z.infer<typeof modelBehaviourVersionSchema>;
 export const scenarioSchema = z
     .object({
         modelBehaviourVersion: modelBehaviourVersionSchema,
+        created_from: z.string().optional(),
         floors,
         use_custom_occupancy: legacyBoolean,
         custom_occupancy: z.union([z.number(), z.literal('')]),
