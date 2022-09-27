@@ -429,6 +429,15 @@ function normaliseScenario(scenario: any) {
     if (compareFloats(space_heating.annual_cooling_demand, 0)) {
         delete castScenario.energy_requirements?.space_cooling;
     }
+    for (const key of Object.keys(space_heating.heat_demand)) {
+        if (
+            compareFloats(space_heating.heat_demand[key], 0, {
+                absoluteToleranceAroundZero: 0.0002,
+            })
+        ) {
+            space_heating.heat_demand[key] = 0;
+        }
+    }
 
     return castScenario;
 }
