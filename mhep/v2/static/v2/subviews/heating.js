@@ -380,10 +380,6 @@ $('#openbem').on('click', '.add-heating-system', function () {
         heating_controls: 1,
     };
 
-    if (item.category = 'Warm air systems') {
-        item.fans_and_supply_pumps = 0.4 * item.sfp * data.volume;
-    }
-
     data.heating_systems.push(item);
     update();
 });
