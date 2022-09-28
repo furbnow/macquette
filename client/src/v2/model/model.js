@@ -967,11 +967,15 @@ calc.fans_and_pumps_and_combi_keep_hot = function (data) {
     // From heating systems (Central heating pump, fans and supply pumps, keep hot facility
     data.heating_systems.forEach(function (system) {
         annual_energy += 1.0 * system.central_heating_pump;
-        if (system.category != 'Warm air system') {
-            annual_energy += 1.0 * system.fans_and_supply_pumps;
-        } else {
-            annual_energy += 0.4 * system.sfp * data.volume;
-        }
+
+        // There was a broken if-statement here attempting to check for warm
+        // air systems and compute energy from the specific fan power and the
+        // building volume, but we didn't have specific fan power included in
+        // any library data, and the string comparison check had a typo in it
+        // anyway. This probably means we are not totally SAP compliant here
+        // and should be reviewed when this section is refactored.
+        annual_energy += 1.0 * system.fans_and_supply_pumps;
+
         switch (system.combi_loss) {
             case 'Instantaneous, with keep-hot facility controlled by time clock':
                 annual_energy += 600;
