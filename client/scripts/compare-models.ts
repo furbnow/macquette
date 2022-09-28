@@ -31,7 +31,24 @@ function runModel(scenarioData: unknown) {
 }
 
 const basicAssessmentSchema = z.object({
-    data: z.record(z.string(), z.unknown()),
+    data: z.record(
+        z.string(),
+        z
+            .object({
+                scenario_name: z.unknown(),
+            })
+            .partial()
+            .passthrough(),
+    ),
+    name: z.string(),
+    owner: z.object({
+        name: z.string(),
+    }),
+    organisation: z
+        .object({
+            name: z.string(),
+        })
+        .nullable(),
 });
 
 async function main() {
@@ -42,9 +59,15 @@ async function main() {
             try {
                 const data = await readFile(filename, 'utf-8');
                 const parsed: unknown = JSON.parse(data);
-                const { data: scenarios } = basicAssessmentSchema.parse(parsed);
+                const validated = basicAssessmentSchema.parse(parsed);
                 writeFileSync(2, '.');
-                return { filename, scenarios };
+                return {
+                    filename,
+                    scenarios: validated.data,
+                    name: validated.name,
+                    ownerName: validated.owner.name,
+                    organisationName: validated.organisation?.name ?? null,
+                };
             } catch (err) {
                 console.error(filename);
                 throw err;
@@ -53,8 +76,9 @@ async function main() {
     );
     writeFileSync(2, '\n');
     const scenarios = assessments.flatMap(({ scenarios, ...rest }) => {
-        return Object.entries(scenarios).map(([scenarioName, scenarioData]) => ({
-            scenarioName,
+        return Object.entries(scenarios).map(([scenarioId, scenarioData]) => ({
+            scenarioId,
+            scenarioName: scenarioData.scenario_name,
             scenarioData,
             ...rest,
         }));
