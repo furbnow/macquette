@@ -14,8 +14,8 @@ function arbWithWarnings<V, W>(val: fc.Arbitrary<V>, warning: fc.Arbitrary<W>) {
 describe('with warnings type', () => {
     it('survives a JSON and Zod-parse round-trip', () => {
         const arb = arbWithWarnings(
-            fc.jsonValue().filter((v) => !Object.is(v, -0)),
-            fc.jsonValue().filter((v) => !Object.is(v, -0)),
+            fc.jsonValue().map((v) => emulateJsonRoundTrip(v)),
+            fc.jsonValue().map((v) => emulateJsonRoundTrip(v)),
         );
         fc.assert(
             fc.property(arb, (original) => {
