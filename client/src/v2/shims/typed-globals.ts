@@ -17,11 +17,11 @@ export function externals() {
 
         // SAFETY: window.libraries is set in the legacy library helper from
         // this API function.
-        libraries: (window as any).libraries as ReturnType<
-            HTTPClient['listLibraries']
-        > extends Promise<infer T>
-            ? T
-            : unknown,
+        libraries: (window as any).libraries as
+            | (ReturnType<HTTPClient['listLibraries']> extends Promise<infer T>
+                  ? T
+                  : unknown)
+            | undefined,
     };
 }
 

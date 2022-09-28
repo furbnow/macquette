@@ -1,6 +1,8 @@
 :root {
     --app-color: #ff2712;
 
+    --gray: #e1e1e1;
+
     --brown-0: #897a67;
     --brown-1: #ccc7b4;
     --brown-2: rgba(215, 210, 201, 0.9);
@@ -14,6 +16,10 @@
     --beige-700: #d0ccc8;
     --beige-800: #e0ddda;
     --beige-900: #eeece5;
+
+    --blue-5: #c4e3ff;
+
+    --green-5: #92cca6;
 
     --warning-yellow: #fcf8e3;
 
@@ -295,6 +301,9 @@ body .modal {
 .d-flex {
     display: flex;
 }
+.d-iflex {
+    display: inline-flex;
+}
 .d-b {
     display: block;
 }
@@ -368,6 +377,54 @@ body .modal {
     padding: 0px !important;
 }
 
+.mt-3 {
+    margin-top: 3.5px !important;
+}
+.ml-3 {
+    margin-left: 3.5px !important;
+}
+.mb-3 {
+    margin-bottom: 3.5px !important;
+}
+.mr-3 {
+    margin-right: 3.5px !important;
+}
+.mx-3 {
+    margin-left: 3.5px !important;
+    margin-right: 3.5px !important;
+}
+.my-3 {
+    margin-top: 3.5px !important;
+    margin-bottom: 3.5px !important;
+}
+.ma-3 {
+    margin: 3.5px !important;
+}
+
+.pt-3 {
+    padding-top: 3.5px !important;
+}
+.pl-3 {
+    padding-left: 3.5px !important;
+}
+.pb-3 {
+    padding-bottom: 3.5px !important;
+}
+.pr-3 {
+    padding-right: 3.5px !important;
+}
+.px-3 {
+    padding-left: 3.5px !important;
+    padding-right: 3.5px !important;
+}
+.py-3 {
+    padding-top: 3.5px !important;
+    padding-bottom: 3.5px !important;
+}
+.pa-3 {
+    padding: 3.5px !important;
+}
+
 .mt-7 {
     margin-top: 7px !important;
 }
@@ -439,7 +496,6 @@ body .modal {
 .ma-15 {
     margin: 15px !important;
 }
-
 .pt-15 {
     padding-top: 15px !important;
 }
@@ -836,6 +892,17 @@ body .modal {
     width: 560px;
     /* must be half of the width, minus scrollbar on the left (30px) */
     margin-left: -280px;
+}
+
+.card {
+    border: 1px solid #e1e1e1;
+    padding: 15px;
+    margin-bottom: 7px;
+}
+.rounded-cards > .card:first-child {
+}
+.rounded-cards > .card:last-child {
+    margin-bottom: 0;
 }
 
 /**** ARTISANAL DIALOGUE BOXES ****/

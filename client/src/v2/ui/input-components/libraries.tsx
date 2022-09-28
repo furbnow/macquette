@@ -1,15 +1,19 @@
 import { mapValues, pickBy } from 'lodash';
-import React, { ReactNode, useReducer, useState } from 'react';
+import React, { ReactNode, useEffect, useReducer, useState } from 'react';
 import type { ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { Library } from '../../data-schemas/libraries';
 import {
     isFabricElementsLibrary,
+    isFabricMeasuresLibrary,
     FabricElementsLibrary,
+    FabricMeasuresLibrary,
     FabricElement,
+    FabricMeasure,
     discriminateTags,
 } from '../../data-schemas/libraries/elements';
+import type { WallMeasure } from '../../data-schemas/libraries/elements';
 import type { Wall } from '../../data-schemas/libraries/elements';
 import {
     FloorInsulationMaterial,
@@ -21,6 +25,7 @@ import { Shadow } from '../../helpers/shadow-object-type';
 import { externals } from '../../shims/typed-globals';
 import { Select } from '../input-components/select';
 import { ErrorModal, Modal, ModalBody, ModalHeader } from '../output-components/modal';
+import { NumericOutput } from '../output-components/numeric';
 
 function nl2br(input: string): ReactNode {
     const lines = input.split('\n');
@@ -123,7 +128,9 @@ function LibraryItem<T extends MinimalLibraryItem>({
                         </svg>
                     )}
                 </td>
-                {hideTags !== true && <td className="pr-15">{libraryItem.tag}</td>}
+                {hideTags !== true && (
+                    <td className="pr-15 text-nowrap">{libraryItem.tag}</td>
+                )}
                 <td className="pr-15">{libraryItem.name}</td>
 
                 {tableColumns.map(({ title, type, value }) => (
@@ -326,6 +333,7 @@ export type CompleteWall = Shadow<
 type SelectWallParams = {
     onSelect: (item: CompleteWall) => void;
     onClose: () => void;
+    type: 'external wall' | 'party wall' | 'roof' | 'loft';
     currentItemTag?: string | null;
 };
 
@@ -333,19 +341,40 @@ function fail(msg: string): never {
     throw new Error(msg);
 }
 
-export function SelectWall({
+export function SelectWallLike({
     onSelect,
     onClose,
+    type,
     currentItemTag = null,
 }: SelectWallParams) {
-    const libraries: Library[] = externals().libraries;
-    const filtered = libraries
+    const libraries = useLibraries();
+    if (libraries.type === 'waiting') {
+        return libraries.modal(onClose);
+    }
+
+    let tagType: 'Wall' | 'Party_wall' | 'Roof' | 'Loft';
+    switch (type) {
+        case 'external wall':
+            tagType = 'Wall';
+            break;
+        case 'party wall':
+            tagType = 'Party_wall';
+            break;
+        case 'roof':
+            tagType = 'Roof';
+            break;
+        case 'loft':
+            tagType = 'Loft';
+            break;
+    }
+
+    const filtered = libraries.data
         .filter(isFabricElementsLibrary)
         .map((library: FabricElementsLibrary) => ({
             ...library,
             data: pickBy<FabricElement, Wall>(
                 library.data,
-                discriminateTags<FabricElement, Wall, 'Wall'>('Wall'),
+                discriminateTags<FabricElement, Wall, typeof tagType>(tagType),
             ),
         }))
         .map((library) => ({
@@ -371,18 +400,14 @@ export function SelectWall({
         );
     }
 
-    function searchText(wall: CompleteWall) {
-        return wall.name;
-    }
-
     return (
         <SelectLibraryItem
-            title="wall"
+            title={type}
             onSelect={onSelect}
             onClose={onClose}
             currentItemTag={currentItemTag}
             libraries={filtered}
-            searchText={searchText}
+            searchText={(wall) => wall.name}
             tableColumns={[
                 { title: 'U', type: 'number', value: (wall) => wall.uvalue.toString() },
                 { title: 'k', type: 'number', value: (wall) => wall.kvalue.toString() },
@@ -453,6 +478,137 @@ export function SelectFuel({ fuels, onSelect, onClose }: SelectFuelProps) {
     );
 }
 
+export type CompleteWallMeasure = Shadow<
+    WallMeasure,
+    {
+        tag: string;
+        uvalue: number;
+        kvalue: number;
+        min_cost: number;
+        cost: number;
+    }
+>;
+
+type SelectWallMeasureParams = {
+    onSelect: (item: CompleteWallMeasure) => void;
+    onClose: () => void;
+    type: 'external wall' | 'party wall' | 'roof' | 'loft';
+    areaSqm: number | null;
+    currentItemTag: string | null;
+};
+
+export function SelectWallLikeMeasure({
+    onSelect,
+    onClose,
+    type,
+    areaSqm,
+    currentItemTag,
+}: SelectWallMeasureParams) {
+    const libraries = useLibraries();
+    if (libraries.type === 'waiting') {
+        return libraries.modal(onClose);
+    }
+
+    let tagType: 'Wall' | 'Party_wall' | 'Roof' | 'Loft';
+    switch (type) {
+        case 'external wall':
+            tagType = 'Wall';
+            break;
+        case 'party wall':
+            tagType = 'Party_wall';
+            break;
+        case 'roof':
+            tagType = 'Roof';
+            break;
+        case 'loft':
+            tagType = 'Loft';
+            break;
+    }
+
+    const filtered = libraries.data
+        .filter(isFabricMeasuresLibrary)
+        .map((library: FabricMeasuresLibrary) => ({
+            ...library,
+            data: pickBy<FabricMeasure, WallMeasure>(
+                library.data,
+                discriminateTags<FabricMeasure, WallMeasure, typeof tagType>(tagType),
+            ),
+        }))
+        .map((library) => ({
+            ...library,
+            data: mapValues(library.data, (element, tag) => ({
+                ...element,
+                tag,
+                uvalue:
+                    element.uvalue === ''
+                        ? fail(`bad uvalue: ${element.uvalue}`)
+                        : element.uvalue,
+                kvalue:
+                    element.kvalue === ''
+                        ? fail(`bad kvalue: ${element.kvalue}`)
+                        : element.kvalue,
+                min_cost: typeof element.min_cost === 'number' ? element.min_cost : 0,
+                cost: typeof element.cost === 'number' ? element.cost : 0,
+            })),
+        }));
+    if (!isNonEmpty(filtered)) {
+        return (
+            <ErrorModal onClose={onClose} title={'Library missing'}>
+                No wall measure libraries found
+            </ErrorModal>
+        );
+    }
+
+    return (
+        <SelectLibraryItem
+            title={`${type} measure`}
+            onSelect={onSelect}
+            onClose={onClose}
+            currentItemTag={currentItemTag}
+            libraries={filtered}
+            searchText={(row) => row.name}
+            tableColumns={[
+                { title: 'U', type: 'number', value: (row) => row.uvalue.toString() },
+                ...(areaSqm !== null
+                    ? [
+                          {
+                              title: '£',
+                              type: 'number' as const,
+                              value: (row: CompleteWallMeasure) => (
+                                  <NumericOutput
+                                      value={Math.round(
+                                          row.min_cost +
+                                              areaSqm * row.cost * (row.EWI ? 1.15 : 1),
+                                      )}
+                                  />
+                              ),
+                          },
+                      ]
+                    : []),
+            ]}
+            getFullItemData={(row: CompleteWallMeasure) => [
+                ...(row.description !== ''
+                    ? [
+                          {
+                              title: 'Description',
+                              value: nl2br(row.description),
+                          },
+                      ]
+                    : []),
+                {
+                    title: 'Cost',
+                    value: `£${row.min_cost} + £${row.cost} per ${row.cost_units} ${
+                        row.EWI ? '(x1.15 to account for EWI)' : ''
+                    }`,
+                },
+                { title: 'Associated work', value: row.associated_work },
+                { title: 'Key risks', value: row.key_risks },
+                { title: 'Notes', value: nl2br(row.notes) },
+            ]}
+        />
+    );
+}
+
 export function selectWall(
     mountPoint: HTMLDivElement,
     callback: (item: CompleteWall) => void,
@@ -460,7 +616,8 @@ export function selectWall(
 ) {
     const root = createRoot(mountPoint);
     const element = (
-        <SelectWall
+        <SelectWallLike
+            type="external wall"
             onSelect={(item) => {
                 callback(item);
                 root.unmount();
@@ -485,8 +642,12 @@ export function SelectFloorInsulationMaterial({
     onClose,
     currentItemTag = null,
 }: SelectFloorInsulationMaterialParams) {
-    const libraries: Library[] = externals().libraries;
-    const filtered = libraries.filter(isFloorInsulationMaterialLibrary);
+    const libraries = useLibraries();
+    if (libraries.type === 'waiting') {
+        return libraries.modal(onClose);
+    }
+
+    const filtered = libraries.data.filter(isFloorInsulationMaterialLibrary);
     if (!isNonEmpty(filtered)) {
         return (
             <ErrorModal onClose={onClose} title={'Library missing error'}>
@@ -535,4 +696,39 @@ export function SelectFloorInsulationMaterial({
                       },
                   ],
     });
+}
+
+function useLibraries() {
+    const libraries: Library[] | undefined = externals().libraries;
+    const [librariesAvailable, setLibrariesAvailable] = useState(libraries !== undefined);
+    useEffect(() => {
+        if (!librariesAvailable) {
+            const timer = setInterval(() => {
+                if (externals().libraries !== undefined) {
+                    setLibrariesAvailable(true);
+                    clearInterval(timer);
+                }
+            }, 1000);
+            return () => clearInterval(timer);
+        } else {
+            return () => null;
+        }
+    }, [librariesAvailable]);
+    if (librariesAvailable === false) {
+        return {
+            type: 'waiting' as const,
+            modal: (onClose: () => void) => (
+                <Modal onClose={onClose} headerId="modal-header">
+                    <ModalHeader onClose={onClose} title={`Loading...`} />
+                    <ModalBody>
+                        <p>Libraries still loading...</p>
+                    </ModalBody>
+                </Modal>
+            ),
+        };
+    }
+    if (libraries === undefined) {
+        throw new Error('temporally unreachable');
+    }
+    return { type: 'libraries' as const, data: libraries };
 }

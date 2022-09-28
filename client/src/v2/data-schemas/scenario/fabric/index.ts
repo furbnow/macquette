@@ -90,6 +90,28 @@ const commonAppliedMeasure = commonLibraryElement
         quantity: z.number().optional(),
     });
 
+const areaInputsSpecificSchema = z.object({
+    area: z.union([z.number(), z.null()]),
+});
+const areaInputsDimensionsSchema = z.object({
+    length: z.union([z.number(), z.null()]),
+    height: z.union([z.number(), z.null()]),
+    area: z.union([z.number(), z.null()]),
+});
+const areaInputsSchema = z.discriminatedUnion('type', [
+    z.object({
+        type: z.literal('specific'),
+        specific: areaInputsSpecificSchema,
+        dimensions: areaInputsDimensionsSchema.optional(),
+    }),
+    z.object({
+        type: z.literal('dimensions'),
+        specific: areaInputsSpecificSchema.optional(),
+        dimensions: areaInputsDimensionsSchema,
+    }),
+]);
+export type AreaInputs = z.infer<typeof areaInputsSchema>;
+
 const legacyWallTypes = ['Wall', 'Party_wall', 'Loft', 'Roof'] as const;
 const modernWallTypes = ['external wall', 'party wall', 'loft', 'roof'] as const;
 const wallTypes = [...legacyWallTypes, ...modernWallTypes] as const;
@@ -115,6 +137,7 @@ const commonWall = z.object({
     type: z.enum(wallTypes).transform(migrateFromLegacyWallType),
 });
 const appliedWall = z.object({
+    areaInputs: areaInputsSchema.optional(),
     l: stringyFloatSchema.default('' as const),
     h: stringyFloatSchema.default('' as const),
     windowarea: z.number().optional(),

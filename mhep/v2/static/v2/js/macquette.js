@@ -204,11 +204,9 @@ function setupEventHandlers() {
         project[s].creation_hash = generate_hash(JSON.stringify(project[s]));
         project[s].measures = {};
         project[s].fabric.measures = {};
-        project[s].fabric.elements.forEach(function (element) {
-            if (element.cost_total != undefined) {
-                delete element.cost_total;
-            }
-        });
+        for (const element of project[s].fabric.elements) {
+            delete element.cost_total;
+        }
         project[s].created_from = $('#select-scenario').val();
 
         //sort project alphabetically

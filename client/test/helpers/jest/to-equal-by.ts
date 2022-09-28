@@ -1,7 +1,6 @@
 import { inspect } from 'util';
 
 import { flatten } from '../object-flattening';
-import { compareSets } from '../set-operations';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace

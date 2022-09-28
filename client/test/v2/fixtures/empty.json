@@ -1,4 +1,13 @@
 {
+    "id": "2",
+    "name": "donk",
+    "description": "",
+    "status": "In progress",
+    "created_at": "2022-01-24T18:08:00.727951Z",
+    "updated_at": "2022-01-24T18:08:00.727971Z",
+    "owner": { "id": "1", "name": "", "email": "" },
+    "organisation": null,
+    "images": [],
     "data": {
         "master": {}
     }

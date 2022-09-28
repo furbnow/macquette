@@ -2,6 +2,10 @@ import { readdirSync, readFileSync } from 'fs';
 import { join, relative } from 'path';
 import { z } from 'zod';
 
+import type { Project } from '../../../src/v2/data-schemas/project';
+import { projectSchema } from '../../../src/v2/data-schemas/project';
+import { isNotNull } from '../../../src/v2/helpers/null-checking';
+
 const fixturesRoot = join(__filename, '..');
 
 function collectFromDirectory(dir: string) {
@@ -17,6 +21,19 @@ const fixturePaths = [
 
 function safeJsonParse(...args: Parameters<typeof JSON.parse>): unknown {
     return JSON.parse(...args);
+}
+
+export class ProjectFixture {
+    public parsedData: Project;
+
+    constructor(public fixturePath: string, public rawData: unknown) {
+        const parseResult = projectSchema.safeParse(rawData);
+        if (parseResult.success) {
+            this.parsedData = parseResult.data;
+        } else {
+            throw new Error(parseResult.error.toString());
+        }
+    }
 }
 
 export class Scenario {
@@ -39,6 +56,23 @@ export const fixtures: Array<Fixture> = fixturePaths.map((path) => ({
 const fixtureSchema = z.object({
     data: z.record(z.unknown()),
 });
+
+const projectFocus: null | string = null;
+
+export const projects = fixtures
+    .map((fixture) => {
+        if (projectFocus !== null && fixture.path !== projectFocus) {
+            return null;
+        }
+
+        try {
+            return new ProjectFixture(fixture.path, fixture.data);
+        } catch (e) {
+            console.error(`Project parse failure for fixture ${fixture.path}`, e);
+            return null;
+        }
+    })
+    .filter(isNotNull);
 
 export const scenarios = fixtures.flatMap((fixture) => {
     const parseResult = fixtureSchema.safeParse(fixture.data);

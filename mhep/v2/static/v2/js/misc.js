@@ -801,6 +801,7 @@ function _extract_scenario_inputs(data) {
             h: data.fabric.elements[z].h,
             perimeter: data.fabric.elements[z].perimeter,
             area: data.fabric.elements[z].area,
+            areaInputs: data.fabric.elements[z].areaInputs,
             uvalue: 1.0 * data.fabric.elements[z].uvalue,
             id: 1.0 * data.fabric.elements[z].id,
             location: data.fabric.elements[z].location || '',
