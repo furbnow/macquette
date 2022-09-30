@@ -158,7 +158,7 @@ type LayerProps = {
     index: number;
 };
 function Layer({ layer, dispatch, index }: LayerProps) {
-    const { thickness } = layer;
+    const { thickness, mainMaterial, bridging } = layer;
     return (
         <tr className={combinedMethodBem('layer-row', index % 2 === 1 ? 'stripe' : null)}>
             <td className={combinedMethodBem('layer-id-cell')}>
@@ -166,7 +166,7 @@ function Layer({ layer, dispatch, index }: LayerProps) {
             </td>
             <td>
                 <NumericInput
-                    value={thickness === null ? null : thickness * 1000}
+                    value={thickness !== null ? thickness * 1000 : null}
                     unit="mm"
                     callback={(value) =>
                         dispatch({
@@ -179,7 +179,7 @@ function Layer({ layer, dispatch, index }: LayerProps) {
             </td>
             <td>
                 <MaterialSelector
-                    value={layer.mainMaterial}
+                    value={mainMaterial}
                     onChange={(value) =>
                         dispatch({
                             type: 'merge layer state',
@@ -191,7 +191,7 @@ function Layer({ layer, dispatch, index }: LayerProps) {
             </td>
             <td>
                 <MaterialSelector
-                    value={layer.bridging.material}
+                    value={bridging.material}
                     onChange={(value) =>
                         dispatch({
                             type: 'merge layer state',
@@ -204,8 +204,8 @@ function Layer({ layer, dispatch, index }: LayerProps) {
             </td>
             <td>
                 <NumericInput
-                    value={layer.bridging.proportion?.asPercent ?? null}
-                    disabled={layer.bridging.material === null}
+                    value={bridging.proportion?.asPercent ?? null}
+                    disabled={bridging.material === null}
                     unit="%"
                     callback={(value) =>
                         dispatch({

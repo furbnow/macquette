@@ -43,10 +43,9 @@ function arbProportionPartition(options?: {
     return out;
 }
 
-const arbCombinedMethodInput: fc.Arbitrary<CombinedMethodInput> = fcNonEmptyArray(
-    fc.oneof(
+const arbCombinedMethodInput: fc.Arbitrary<CombinedMethodInput> = fc.record({
+    layers: fcNonEmptyArray(
         fc.record({
-            calculationType: fc.constant('resistance' as const),
             elements: arbProportionPartition({ maxLength: 3 }).chain((proportions) =>
                 fc
                     .tuple(
@@ -61,26 +60,9 @@ const arbCombinedMethodInput: fc.Arbitrary<CombinedMethodInput> = fcNonEmptyArra
                     .map(assertNonEmpty),
             ),
         }),
-        fc.record({
-            calculationType: fc.constant('conductivity' as const),
-            thickness: arbFloat(),
-            elements: arbProportionPartition({ maxLength: 3 }).chain((proportions) =>
-                fc
-                    .tuple(
-                        ...proportions.map((proportion) =>
-                            fc.record({
-                                name: fc.constant('some element'),
-                                proportion: fc.constant(proportion),
-                                conductivity: arbFloat(),
-                            }),
-                        ),
-                    )
-                    .map(assertNonEmpty),
-            ),
-        }),
+        { maxLength: 4 },
     ),
-    { maxLength: 4 },
-);
+});
 
 describe('combined method', () => {
     it('always returns a finite number or a zero division error', () => {
@@ -122,69 +104,70 @@ describe('combined method', () => {
      */
 
     const whole = Proportion.fromRatio(1).unwrap();
-    const externalSurfaceResistance: CombinedMethodInput[0] = {
-        calculationType: 'resistance',
+    const externalSurfaceResistance: CombinedMethodInput['layers'][number] = {
         elements: [
             { name: 'external surface resistance', proportion: whole, resistance: 0.04 },
         ],
     };
-    const internalSurfaceResistance: CombinedMethodInput[0] = {
-        calculationType: 'resistance',
+    const internalSurfaceResistance: CombinedMethodInput['layers'][number] = {
         elements: [
             { name: 'internal surface resistance', proportion: whole, resistance: 0.13 },
         ],
     };
 
     test('6.B.2 Timber framed wall example', () => {
-        const input: CombinedMethodInput = [
-            externalSurfaceResistance,
-            {
-                calculationType: 'conductivity',
-                thickness: mm(102),
-                elements: [
-                    { name: 'brick outer leaf', proportion: whole, conductivity: 0.77 },
-                ],
-            },
-            {
-                calculationType: 'resistance',
-                elements: [{ name: 'air cavity', proportion: whole, resistance: 0.18 }],
-            },
-            {
-                calculationType: 'conductivity',
-                thickness: mm(9),
-                elements: [
-                    {
-                        name: 'timber-based sheathing',
-                        proportion: whole,
-                        conductivity: 0.13,
-                    },
-                ],
-            },
-            {
-                calculationType: 'conductivity',
-                thickness: mm(140),
-                elements: [
-                    {
-                        name: 'mineral wool quilt',
-                        proportion: Proportion.fromPercent(85).unwrap(),
-                        conductivity: 0.04,
-                    },
-                    {
-                        name: 'studs',
-                        proportion: Proportion.fromPercent(15).unwrap(),
-                        conductivity: 0.12,
-                    },
-                ],
-            },
-            {
-                calculationType: 'conductivity',
-                thickness: mm(12.5),
-                elements: [
-                    { name: 'plasterboard', proportion: whole, conductivity: 0.21 },
-                ],
-            },
-            internalSurfaceResistance,
-        ];
+        const input: CombinedMethodInput = {
+            layers: [
+                externalSurfaceResistance,
+                {
+                    elements: [
+                        {
+                            name: 'brick outer leaf',
+                            proportion: whole,
+                            resistance: mm(102) / 0.77,
+                        },
+                    ],
+                },
+                {
+                    elements: [
+                        { name: 'air cavity', proportion: whole, resistance: 0.18 },
+                    ],
+                },
+                {
+                    elements: [
+                        {
+                            name: 'timber-based sheathing',
+                            proportion: whole,
+                            resistance: mm(9) / 0.13,
+                        },
+                    ],
+                },
+                {
+                    elements: [
+                        {
+                            name: 'mineral wool quilt',
+                            proportion: Proportion.fromPercent(85).unwrap(),
+                            resistance: mm(140) / 0.04,
+                        },
+                        {
+                            name: 'studs',
+                            proportion: Proportion.fromPercent(15).unwrap(),
+                            resistance: mm(140) / 0.12,
+                        },
+                    ],
+                },
+                {
+                    elements: [
+                        {
+                            name: 'plasterboard',
+                            proportion: whole,
+                            resistance: mm(12.5) / 0.21,
+                        },
+                    ],
+                },
+                internalSurfaceResistance,
+            ],
+        };
         const model = new CombinedMethodModel(input);
         expect(model.upperBoundResistance.unwrap()).toBeCloseTo(3.435, 2);
         expect(model.lowerBoundResistance.unwrap()).toBeCloseTo(3.304, 2);
@@ -192,60 +175,63 @@ describe('combined method', () => {
     });
 
     test('6.B.3 Cavity wall with lightwieght masonry leaf and insulated dry-lining example', () => {
-        const input: CombinedMethodInput = [
-            externalSurfaceResistance,
-            {
-                calculationType: 'conductivity',
-                thickness: mm(102),
-                elements: [
-                    { name: 'brick outer leaf', proportion: whole, conductivity: 0.77 },
-                ],
-            },
-            {
-                calculationType: 'resistance',
-                elements: [{ name: 'air cavity', proportion: whole, resistance: 0.18 }],
-            },
-            {
-                calculationType: 'conductivity',
-                thickness: mm(125),
-                elements: [
-                    {
-                        name: 'AAC blocks',
-                        proportion: Proportion.fromPercent(93.3).unwrap(),
-                        conductivity: 0.11,
-                    },
-                    {
-                        name: 'mortar',
-                        proportion: Proportion.fromPercent(6.7).unwrap(),
-                        conductivity: 0.88,
-                    },
-                ],
-            },
-            {
-                calculationType: 'conductivity',
-                thickness: mm(89),
-                elements: [
-                    {
-                        name: 'mineral wool quilt',
-                        proportion: Proportion.fromPercent(88.2).unwrap(),
-                        conductivity: 0.038,
-                    },
-                    {
-                        name: 'timber studs',
-                        proportion: Proportion.fromPercent(11.8).unwrap(),
-                        conductivity: 0.13,
-                    },
-                ],
-            },
-            {
-                calculationType: 'conductivity',
-                thickness: mm(12.5),
-                elements: [
-                    { name: 'plasterboard', proportion: whole, conductivity: 0.21 },
-                ],
-            },
-            internalSurfaceResistance,
-        ];
+        const input: CombinedMethodInput = {
+            layers: [
+                externalSurfaceResistance,
+                {
+                    elements: [
+                        {
+                            name: 'brick outer leaf',
+                            proportion: whole,
+                            resistance: mm(102) / 0.77,
+                        },
+                    ],
+                },
+                {
+                    elements: [
+                        { name: 'air cavity', proportion: whole, resistance: 0.18 },
+                    ],
+                },
+                {
+                    elements: [
+                        {
+                            name: 'AAC blocks',
+                            proportion: Proportion.fromPercent(93.3).unwrap(),
+                            resistance: mm(125) / 0.11,
+                        },
+                        {
+                            name: 'mortar',
+                            proportion: Proportion.fromPercent(6.7).unwrap(),
+                            resistance: mm(125) / 0.88,
+                        },
+                    ],
+                },
+                {
+                    elements: [
+                        {
+                            name: 'mineral wool quilt',
+                            proportion: Proportion.fromPercent(88.2).unwrap(),
+                            resistance: mm(89) / 0.038,
+                        },
+                        {
+                            name: 'timber studs',
+                            proportion: Proportion.fromPercent(11.8).unwrap(),
+                            resistance: mm(89) / 0.13,
+                        },
+                    ],
+                },
+                {
+                    elements: [
+                        {
+                            name: 'plasterboard',
+                            proportion: whole,
+                            resistance: mm(12.5) / 0.21,
+                        },
+                    ],
+                },
+                internalSurfaceResistance,
+            ],
+        };
         const model = new CombinedMethodModel(input);
         expect(model.upperBoundResistance.unwrap()).toBeCloseTo(3.617, 2);
         expect(model.lowerBoundResistance.unwrap()).toBeCloseTo(3.136, 2);

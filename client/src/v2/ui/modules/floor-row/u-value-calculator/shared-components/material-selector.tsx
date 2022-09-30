@@ -20,7 +20,12 @@ export function MaterialSelector(props: Props) {
             {props.value !== null && (
                 <div className={materialSelectorBem('material-view')}>
                     <div>{props.value.name}</div>
-                    <div>{props.value.conductivity.toFixed(2)} W/m.K</div>
+                    {props.value.mechanism === 'conductivity' && (
+                        <div>{props.value.conductivity.toFixed(2)} W/m·K</div>
+                    )}
+                    {props.value.mechanism === 'resistance' && (
+                        <div>{props.value.resistance.toFixed(2)} m²K/W</div>
+                    )}
                 </div>
             )}
             <div>

@@ -76,8 +76,10 @@ describe('unheated basement', () => {
                     floorType: 'heated basement',
                     basementDepth: 1.5,
                     insulation: {
+                        mechanism: 'conductivity',
                         thickness: 0.01,
                         material: {
+                            mechanism: 'conductivity',
                             name: '',
                             tag: '',
                             description: '',

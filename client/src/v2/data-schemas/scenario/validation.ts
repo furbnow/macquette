@@ -40,3 +40,11 @@ export const miscellaneousNonFiniteNumberWarning = z.object({
 export type MiscellaneousNonFiniteNumberWarning = z.infer<
     typeof miscellaneousNonFiniteNumberWarning
 >;
+
+export const unnecessaryValueWarning = z.object({
+    type: z.literal('unnecessary value'),
+    namespace: modelNamespace,
+    path: valuePath,
+    value: z.number(),
+});
+export type UnnecessaryValueWarning = z.infer<typeof unnecessaryValueWarning>;

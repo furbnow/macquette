@@ -13,13 +13,15 @@ type InsulationInputProps = {
 export function InsulationInput({ currentValue, onChange }: InsulationInputProps) {
     const thicknessId = useId();
     const materialId = useId();
-    const { thickness, material } = currentValue;
+    const { material, thickness } = currentValue;
+    const isResistance = currentValue.material?.mechanism === 'resistance';
     return (
         <>
             <label htmlFor={thicknessId}>Thickness</label>
             <NumericInput
                 id={thicknessId}
-                value={thickness === null ? null : thickness * 1000}
+                disabled={isResistance}
+                value={isResistance || thickness === null ? null : thickness * 1000}
                 callback={(value) =>
                     onChange({
                         thickness: value === null ? null : value / 1000,

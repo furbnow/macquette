@@ -5,6 +5,7 @@ import {
     ValueRangeWarning,
 } from '../../../../data-schemas/scenario/validation';
 import { cache } from '../../../../helpers/cache-decorators';
+import { prependPath } from '../../../../helpers/error-warning-path';
 import { Proportion } from '../../../../helpers/proportion';
 import { WarningCollector, WithWarnings } from '../../../../helpers/with-warnings';
 import {
@@ -15,15 +16,15 @@ import {
     suspendedFloorUninsulatedUValue,
 } from '../../../datasets/building-act-appendix-c';
 import { TabularFunctionRangeWarning } from '../../../datasets/tabular-function';
+import { calculateInsulationResistance } from './calculate-insulation-resistance';
 import { CombinedMethodInput, CombinedMethodModel } from './combined-method';
+import type { FloorLayerInput } from './floor-layer-input';
 import {
     CommonInput,
     CustomFloorInput,
     ExposedFloorInput,
-    FloorLayerInput,
     FloorUValueModelInput,
     HeatedBasementFloorInput,
-    InsulationInput,
     SolidFloorInput,
     SuspendedFloorInput,
 } from './input-types';
@@ -94,37 +95,15 @@ export class CustomFloor extends FloorUValueModel {
     }
 }
 
-function calculateInsulationResistance(
-    insulation: InsulationInput | null,
-    path: (string | number)[],
-): WithWarnings<number, FloorUValueWarning> {
-    if (insulation === null) return WithWarnings.empty(0);
-    if (insulation.material.conductivity === 0) {
-        return new WithWarnings(
-            0,
-            new Set([
-                {
-                    type: 'zero division warning',
-                    namespace: 'floor u-value calculator',
-                    path,
-                    outputReplacedWith: 0,
-                },
-            ]),
-        );
-    }
-    return WithWarnings.empty(insulation.thickness / insulation.material.conductivity);
-}
-
 export class SolidFloor extends FloorUValueModel {
     constructor(common: CommonInput, private floor: SolidFloorInput) {
         super(common);
     }
 
     get allOverInsulationResistance() {
-        return calculateInsulationResistance(this.floor.allOverInsulation, [
-            'solid',
-            'all-over-insulation-resistance',
-        ]);
+        return calculateInsulationResistance(this.floor.allOverInsulation).mapWarnings(
+            prependPath(['solid', 'all-over-insulation']),
+        );
     }
 
     get uValueWithoutEdgeInsulation(): WithWarnings<number, FloorUValueWarning> {
@@ -153,11 +132,9 @@ export class SolidFloor extends FloorUValueModel {
             case 'horizontal':
                 return wc.out(
                     edgeInsulationFactorHorizontal(
-                        calculateInsulationResistance(this.floor.edgeInsulation, [
-                            'solid',
-                            'horizontal-insulation',
-                            'resistance',
-                        ]).unwrap(wc.sink()),
+                        calculateInsulationResistance(this.floor.edgeInsulation)
+                            .mapWarnings(prependPath(['solid', 'horizontal-insulation']))
+                            .unwrap(wc.sink()),
                         this.floor.edgeInsulation.width,
                     )
                         .mapWarnings(
@@ -171,11 +148,9 @@ export class SolidFloor extends FloorUValueModel {
             case 'vertical':
                 return wc.out(
                     edgeInsulationFactorVertical(
-                        calculateInsulationResistance(this.floor.edgeInsulation, [
-                            'solid',
-                            'vertical-insulation',
-                            'resistance',
-                        ]).unwrap(wc.sink()),
+                        calculateInsulationResistance(this.floor.edgeInsulation)
+                            .mapWarnings(prependPath(['solid', 'vertical-insulation']))
+                            .unwrap(wc.sink()),
                         this.floor.edgeInsulation.depth,
                     )
                         .mapWarnings(
@@ -224,8 +199,11 @@ export class SuspendedFloor extends FloorUValueModel {
         );
     }
 
-    get combinedMethodLayerModel(): CombinedMethodModel | null {
-        if (this.floor.insulationLayers === null) return null;
+    get combinedMethodLayerModel(): WithWarnings<
+        CombinedMethodModel | null,
+        FloorUValueWarning
+    > {
+        if (this.floor.insulationLayers === null) return WithWarnings.empty(null);
 
         /* The Building Act 1984 Appendix C specifies that in this case, we are
          * to compute the U-value of the floor using the Combined Method,
@@ -245,17 +223,21 @@ export class SuspendedFloor extends FloorUValueModel {
          *
          * The calculation used here is as specified.
          */
-        const input = transformFloorLayersToCombinedMethodInput(
-            this.floor.insulationLayers,
-            { internal: 0.17, external: 0.17 },
-        );
-        return new CombinedMethodModel(input);
+        return transformFloorLayersToCombinedMethodInput(this.floor.insulationLayers, {
+            internal: 0.17,
+            external: 0.17,
+        })
+            .mapWarnings(prependPath(['suspended']))
+            .map((input) => new CombinedMethodModel(input));
     }
 
     get uValue(): WithWarnings<number, FloorUValueWarning> {
-        if (this.combinedMethodLayerModel === null) return this.uninsulatedUValue;
         const wc = new WarningCollector<FloorUValueWarning>();
-        const combinedMethodResistance = this.combinedMethodLayerModel.resistance
+        const combinedMethodLayerModel = this.combinedMethodLayerModel.unwrap(wc.sink());
+        if (combinedMethodLayerModel === null) {
+            return wc.out(this.uninsulatedUValue.unwrap(wc.sink()));
+        }
+        const combinedMethodResistance = combinedMethodLayerModel.resistance
             .mapErr((e) => {
                 switch (e) {
                     case 'zero division error': {
@@ -290,9 +272,9 @@ function transformFloorLayersToCombinedMethodInput(
         internal: number;
         external: number;
     },
-): CombinedMethodInput {
-    const internalSurface: CombinedMethodInput[0] = {
-        calculationType: 'resistance' as const,
+): WithWarnings<CombinedMethodInput, FloorUValueWarning> {
+    const wc = new WarningCollector<FloorUValueWarning>();
+    const internalSurface: CombinedMethodInput['layers'][number] = {
         elements: [
             {
                 name: 'internal surface',
@@ -301,8 +283,7 @@ function transformFloorLayersToCombinedMethodInput(
             },
         ],
     };
-    const externalSurface: CombinedMethodInput[0] = {
-        calculationType: 'resistance' as const,
+    const externalSurface: CombinedMethodInput['layers'][number] = {
         elements: [
             {
                 name: 'external surface',
@@ -311,33 +292,18 @@ function transformFloorLayersToCombinedMethodInput(
             },
         ],
     };
-    return [
-        internalSurface,
-        ...layers.map(
-            ({ thickness, mainMaterial, bridging }): CombinedMethodInput[0] => ({
-                thickness,
-                calculationType: 'conductivity' as const,
-                elements: [
-                    {
-                        name: mainMaterial.name,
-                        conductivity: mainMaterial.conductivity,
-                        proportion:
-                            bridging === null ? whole : bridging.proportion.complement,
-                    },
-                    ...(bridging === null
-                        ? []
-                        : [
-                              {
-                                  name: bridging.material.name,
-                                  conductivity: bridging.material.conductivity,
-                                  proportion: bridging.proportion,
-                              },
-                          ]),
-                ],
-            }),
-        ),
-        externalSurface,
-    ];
+    return wc.out({
+        layers: [
+            internalSurface,
+            ...layers.map((inputLayer, idx) =>
+                inputLayer
+                    .asCombinedMethodLayer()
+                    .mapWarnings(prependPath(['combined-method-layers', idx]))
+                    .unwrap(wc.sink()),
+            ),
+            externalSurface,
+        ],
+    });
 }
 
 export class HeatedBasementFloor extends FloorUValueModel {
@@ -360,10 +326,9 @@ export class HeatedBasementFloor extends FloorUValueModel {
     }
 
     get insulationResistance() {
-        return calculateInsulationResistance(this.floor.insulation, [
-            'heated-basement',
-            'insulation-resistance',
-        ]);
+        return calculateInsulationResistance(this.floor.insulation).mapWarnings(
+            prependPath(['heated-basement', 'insulation']),
+        );
     }
 
     get uValue(): WithWarnings<number, FloorUValueWarning> {
@@ -383,12 +348,16 @@ export class ExposedFloor extends FloorUValueModel {
         super(common);
     }
 
-    get combinedMethodLayerModel(): CombinedMethodModel {
-        const input = transformFloorLayersToCombinedMethodInput(this.floor.layers, {
+    get combinedMethodLayerModel(): WithWarnings<
+        CombinedMethodModel,
+        FloorUValueWarning
+    > {
+        return transformFloorLayersToCombinedMethodInput(this.floor.layers, {
             internal: this.internalSurfaceResistance,
             external: this.externalSurfaceResistance,
-        });
-        return new CombinedMethodModel(input);
+        })
+            .mapWarnings(prependPath(['exposed']))
+            .map((input) => new CombinedMethodModel(input));
     }
 
     get internalSurfaceResistance() {
@@ -406,8 +375,9 @@ export class ExposedFloor extends FloorUValueModel {
 
     get uValue(): WithWarnings<number, FloorUValueWarning> {
         const wc = new WarningCollector<FloorUValueWarning>();
-        const combinedMethodUValue = this.combinedMethodLayerModel.uValue
-            .mapErr((e) => {
+        const combinedMethodUValue = this.combinedMethodLayerModel
+            .unwrap(wc.sink())
+            .uValue.mapErr((e) => {
                 switch (e) {
                     case 'zero division error': {
                         wc.log({

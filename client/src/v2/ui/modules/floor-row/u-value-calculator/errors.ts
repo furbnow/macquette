@@ -8,7 +8,7 @@ export function errorDisplay(error: FloorUValueError): Result<string, null> {
     if (error.namespace !== 'floor u-value calculator') {
         return Result.err(null);
     }
-    if (error.path[0] === 'combined-method') {
+    if (error.path[1] === 'combined-method-layers') {
         return combinedMethodErrorDisplay(error);
     }
     const stringPath = error.path.join('.');
@@ -76,10 +76,19 @@ function combinedMethodErrorDisplay(error: FloorUValueError): Result<string, nul
         return Result.err(null);
     }
     const path = [...error.path];
-    if (path.shift() !== 'combined-method') {
-        return Result.err(null);
+    const floorType = path.shift();
+    let floorTypeDisplay: string;
+    switch (floorType) {
+        case 'exposed':
+            floorTypeDisplay = 'Exposed floor';
+            break;
+        case 'suspended':
+            floorTypeDisplay = 'Suspended floor';
+            break;
+        default:
+            return Result.err(null);
     }
-    if (path.shift() !== 'layers') {
+    if (path.shift() !== 'combined-method-layers') {
         return Result.err(null);
     }
     const layerIndex0 = path.shift();
@@ -90,14 +99,18 @@ function combinedMethodErrorDisplay(error: FloorUValueError): Result<string, nul
     const stringPath = path.join('.');
     switch (stringPath) {
         case 'thickness': {
-            return Result.ok(`Layer ${layerIndex1}: Must specify thickness`);
+            return Result.ok(
+                `${floorTypeDisplay} layer ${layerIndex1}: Must specify thickness`,
+            );
         }
         case 'main-material': {
-            return Result.ok(`Layer ${layerIndex1}: Must specify main material`);
+            return Result.ok(
+                `${floorTypeDisplay} layer ${layerIndex1}: Must specify main material`,
+            );
         }
         case 'bridging.proportion': {
             return Result.ok(
-                `Layer ${layerIndex1}: Must specify bridging proportion if bridging material is selected`,
+                `${floorTypeDisplay} layer ${layerIndex1}: Must specify bridging proportion if bridging material is selected`,
             );
         }
     }

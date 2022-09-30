@@ -90,13 +90,11 @@ export class Floor {
             };
             const wc = new WarningCollector<FloorUValueWarning>();
             return wc.out(
-                validate(
-                    this.spec.selectedFloorType,
-                    common,
-                    this.spec.perFloorTypeSpec,
-                ).map((input) =>
-                    constructFloorUValueModel(input).uValue.unwrap(wc.sink()),
-                ),
+                validate(this.spec.selectedFloorType, common, this.spec.perFloorTypeSpec)
+                    .unwrap(wc.sink())
+                    .map((input) =>
+                        constructFloorUValueModel(input).uValue.unwrap(wc.sink()),
+                    ),
             );
         } else {
             return WithWarnings.empty(Result.ok(this.spec.uValueLegacyField));

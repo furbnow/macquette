@@ -1,10 +1,10 @@
 import fc from 'fast-check';
 
+import { FloorLayerInput } from '../../../../../src/v2/model/modules/fabric/floor-u-value-calculator/floor-layer-input';
 import {
     CommonInput,
     CustomFloorInput,
     ExposedFloorInput,
-    FloorLayerInput,
     FloorUValueModelInput,
     HeatedBasementFloorInput,
     InsulationInput,
@@ -13,7 +13,11 @@ import {
     SuspendedFloorInput,
 } from '../../../../../src/v2/model/modules/fabric/floor-u-value-calculator/input-types';
 import { fcNonEmptyArray, merge } from '../../../../helpers/arbitraries';
-import { arbFloorInsulationMaterialItem } from '../libraries/floor-insulation-material';
+import {
+    arbFloorInsulationConductivityMaterialItem,
+    arbFloorInsulationMaterialItem,
+    arbFloorInsulationResistanceMaterialItem,
+} from '../libraries/floor-insulation-material';
 import { arbProportion } from '../proportion';
 import { sensibleFloat } from '../values';
 
@@ -25,10 +29,17 @@ export function arbCustomFloorInput(): fc.Arbitrary<CustomFloorInput> {
 }
 
 export function arbInsulationInput(): fc.Arbitrary<InsulationInput> {
-    return fc.record({
-        thickness: sensibleFloat,
-        material: arbFloorInsulationMaterialItem(),
-    });
+    return fc.oneof(
+        fc.record({
+            mechanism: fc.constant('conductivity' as const),
+            thickness: sensibleFloat,
+            material: arbFloorInsulationConductivityMaterialItem(),
+        }),
+        fc.record({
+            mechanism: fc.constant('resistance' as const),
+            material: arbFloorInsulationResistanceMaterialItem(),
+        }),
+    );
 }
 
 export function arbSolidFloorInput(): fc.Arbitrary<SolidFloorInput> {
@@ -55,17 +66,45 @@ export function arbSolidFloorInput(): fc.Arbitrary<SolidFloorInput> {
     });
 }
 
-function arbFloorLayerInput(): fc.Arbitrary<FloorLayerInput> {
-    return fc.record({
-        thickness: sensibleFloat,
-        mainMaterial: arbFloorInsulationMaterialItem(),
-        bridging: fc.option(
-            fc.record({
-                material: arbFloorInsulationMaterialItem(),
-                proportion: arbProportion(),
-            }),
-        ),
-    });
+export function arbFloorLayerInput(): fc.Arbitrary<FloorLayerInput> {
+    return fc
+        .record({
+            mainMaterial: arbFloorInsulationMaterialItem(),
+            bridging: fc.option(
+                fc.record({
+                    material: arbFloorInsulationMaterialItem(),
+                    proportion: arbProportion(),
+                }),
+            ),
+        })
+        .chain(({ mainMaterial, bridging }) => {
+            let thickness: fc.Arbitrary<number | null>;
+            if (
+                mainMaterial.mechanism === 'conductivity' ||
+                bridging?.material.mechanism === 'conductivity'
+            ) {
+                thickness = sensibleFloat;
+            } else {
+                thickness = fc.constant(null);
+            }
+            return fc.record({
+                mainMaterial: fc.constant(mainMaterial),
+                bridging: fc.constant(bridging),
+                thickness,
+            });
+        })
+        .map(({ mainMaterial, bridging, thickness }) => {
+            return FloorLayerInput.validate({
+                mainMaterial,
+                bridging: {
+                    material: bridging?.material ?? null,
+                    proportion: bridging?.proportion ?? null,
+                },
+                thickness,
+            })
+                .unwrap(() => undefined)
+                .unwrap();
+        });
 }
 
 export function arbSuspendedFloorInput(): fc.Arbitrary<SuspendedFloorInput> {

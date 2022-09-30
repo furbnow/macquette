@@ -506,7 +506,18 @@ export function SelectFloorInsulationMaterial({
             {
                 title: 'Conductivity',
                 type: 'text',
-                value: (material) => material.conductivity.toString(),
+                value: (material) =>
+                    material.mechanism === 'conductivity'
+                        ? material.conductivity.toString()
+                        : '',
+            },
+            {
+                title: 'Resistance',
+                type: 'text',
+                value: (material) =>
+                    material.mechanism === 'resistance'
+                        ? material.resistance.toString()
+                        : '',
             },
         ],
         getFullItemData: (item) =>

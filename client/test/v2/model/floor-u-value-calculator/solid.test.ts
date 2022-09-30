@@ -1,4 +1,4 @@
-import { FloorInsulationMaterial } from '../../../../src/v2/data-schemas/libraries/floor-insulation';
+import { FloorInsulationConductivityMaterial } from '../../../../src/v2/data-schemas/libraries/floor-insulation';
 import { constructFloorUValueModel } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator';
 import {
     FloorUValueModelInput,
@@ -34,8 +34,10 @@ describe('solid floor', () => {
                 perFloorType: {
                     floorType: 'solid',
                     allOverInsulation: {
+                        mechanism: 'conductivity',
                         thickness: 2,
                         material: {
+                            mechanism: 'conductivity',
                             name: '',
                             tag: '',
                             description: '',
@@ -57,8 +59,10 @@ describe('solid floor', () => {
                 perFloorType: {
                     floorType: 'solid',
                     allOverInsulation: {
+                        mechanism: 'conductivity',
                         thickness: 2,
                         material: {
+                            mechanism: 'conductivity',
                             name: '',
                             tag: '',
                             description: '',
@@ -96,8 +100,16 @@ describe('solid floor', () => {
         },
     );
 
-    function insulationMaterial(conductivity: number): FloorInsulationMaterial {
-        return { name: '', description: '', tag: '', conductivity };
+    function insulationConductivityMaterial(
+        conductivity: number,
+    ): FloorInsulationConductivityMaterial {
+        return {
+            mechanism: 'conductivity',
+            name: '',
+            description: '',
+            tag: '',
+            conductivity,
+        };
     }
     function basicSolidFloor(
         edgeInsulation: SolidFloorInput['edgeInsulation'],
@@ -110,8 +122,9 @@ describe('solid floor', () => {
             perFloorType: {
                 floorType: 'solid',
                 allOverInsulation: {
+                    mechanism: 'conductivity',
                     thickness: 1,
-                    material: insulationMaterial(1),
+                    material: insulationConductivityMaterial(1),
                 },
                 edgeInsulation,
             },
@@ -122,9 +135,10 @@ describe('solid floor', () => {
             name: 'horizontal top left',
             input: basicSolidFloor({
                 type: 'horizontal',
+                mechanism: 'conductivity',
                 width: 0.5,
                 thickness: 0.5,
-                material: insulationMaterial(1),
+                material: insulationConductivityMaterial(1),
             }),
             expected: 0.335,
         },
@@ -132,9 +146,10 @@ describe('solid floor', () => {
             name: 'horizontal top right',
             input: basicSolidFloor({
                 type: 'horizontal',
+                mechanism: 'conductivity',
                 width: 0.5,
                 thickness: 2,
-                material: insulationMaterial(1),
+                material: insulationConductivityMaterial(1),
             }),
             expected: 0.29,
         },
@@ -142,9 +157,10 @@ describe('solid floor', () => {
             name: 'horizontal bottom right',
             input: basicSolidFloor({
                 type: 'horizontal',
+                mechanism: 'conductivity',
                 width: 1.5,
                 thickness: 2,
-                material: insulationMaterial(1),
+                material: insulationConductivityMaterial(1),
             }),
             expected: 0.19,
         },
@@ -152,9 +168,10 @@ describe('solid floor', () => {
             name: 'horizontal bottom left',
             input: basicSolidFloor({
                 type: 'horizontal',
+                mechanism: 'conductivity',
                 width: 1.5,
                 thickness: 0.5,
-                material: insulationMaterial(1),
+                material: insulationConductivityMaterial(1),
             }),
             expected: 0.285,
         },
@@ -162,9 +179,10 @@ describe('solid floor', () => {
             name: 'vertical top left',
             input: basicSolidFloor({
                 type: 'vertical',
+                mechanism: 'conductivity',
                 depth: 0.25,
                 thickness: 0.5,
-                material: insulationMaterial(1),
+                material: insulationConductivityMaterial(1),
             }),
             expected: 0.335,
         },
@@ -172,9 +190,10 @@ describe('solid floor', () => {
             name: 'vertical top right',
             input: basicSolidFloor({
                 type: 'vertical',
+                mechanism: 'conductivity',
                 depth: 0.25,
                 thickness: 2,
-                material: insulationMaterial(1),
+                material: insulationConductivityMaterial(1),
             }),
             expected: 0.29,
         },
@@ -182,9 +201,10 @@ describe('solid floor', () => {
             name: 'vertical bottom right',
             input: basicSolidFloor({
                 type: 'vertical',
+                mechanism: 'conductivity',
                 depth: 1.0,
                 thickness: 2,
-                material: insulationMaterial(1),
+                material: insulationConductivityMaterial(1),
             }),
             expected: 0.16,
         },
@@ -192,9 +212,10 @@ describe('solid floor', () => {
             name: 'vertical bottom left',
             input: basicSolidFloor({
                 type: 'vertical',
+                mechanism: 'conductivity',
                 depth: 1.0,
                 thickness: 0.5,
-                material: insulationMaterial(1),
+                material: insulationConductivityMaterial(1),
             }),
             expected: 0.27,
         },

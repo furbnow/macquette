@@ -3,45 +3,19 @@ import { isEqual } from 'lodash';
 
 import { Proportion } from '../../../../src/v2/helpers/proportion';
 import { constructFloorUValueModel } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator';
+import { FloorLayerInput } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator/floor-layer-input';
 import {
     ExposedFloorInput,
-    FloorLayerInput,
     FloorUValueModelInput,
 } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator/input-types';
 import { fcNonEmptyArray } from '../../../helpers/arbitraries';
+import { arbFloorLayerInput } from '../../model/arbitraries/floor-u-value-calculator/model-input';
 import { sensibleFloat } from '../arbitraries/values';
-
-const arbFloorInsulationMaterialItem = sensibleFloat.map((conductivity) => ({
-    conductivity,
-    tags: undefined,
-    tag: 'arb tag',
-    name: 'arb name',
-    description: 'arb description',
-}));
-
-const arbFloorLayerInput: fc.Arbitrary<FloorLayerInput> = fc.record({
-    thickness: sensibleFloat,
-    mainMaterial: arbFloorInsulationMaterialItem,
-    bridging: fc.option(
-        fc.record({
-            material: arbFloorInsulationMaterialItem,
-            proportion: fc
-                .float({
-                    min: 0,
-                    max: 1,
-                    noNaN: true,
-                    noDefaultInfinity: true,
-                    next: true,
-                })
-                .map((ratio) => Proportion.fromRatio(ratio).unwrap()),
-        }),
-    ),
-});
 
 const arbInput: fc.Arbitrary<ExposedFloorInput> = fc.record({
     floorType: fc.constant('exposed'),
     exposedTo: fc.constantFrom('outside air', 'unheated space'),
-    layers: fcNonEmptyArray(arbFloorLayerInput),
+    layers: fcNonEmptyArray(arbFloorLayerInput()),
 });
 
 type TestCase<I, O> = { name: string; input: I; expected: O };
@@ -59,16 +33,19 @@ describe('exposed floor', () => {
                     floorType: 'exposed',
                     exposedTo: 'unheated space',
                     layers: [
-                        {
+                        FloorLayerInput.validate({
                             thickness: 0.01,
                             mainMaterial: {
+                                mechanism: 'conductivity',
                                 conductivity: 2,
                                 tag: '',
                                 description: '',
                                 name: '',
                             },
-                            bridging: null,
-                        },
+                            bridging: { material: null, proportion: null },
+                        })
+                            .unwrap(() => undefined)
+                            .unwrap(),
                     ],
                 },
             },
@@ -85,19 +62,23 @@ describe('exposed floor', () => {
                     floorType: 'exposed',
                     exposedTo: 'outside air',
                     layers: [
-                        {
+                        FloorLayerInput.validate({
                             thickness: 0.01,
                             mainMaterial: {
+                                mechanism: 'conductivity',
                                 conductivity: 2,
                                 tag: '',
                                 description: '',
                                 name: '',
                             },
-                            bridging: null,
-                        },
-                        {
+                            bridging: { material: null, proportion: null },
+                        })
+                            .unwrap(() => undefined)
+                            .unwrap(),
+                        FloorLayerInput.validate({
                             thickness: 0.02,
                             mainMaterial: {
+                                mechanism: 'conductivity',
                                 conductivity: 2,
                                 tag: '',
                                 description: '',
@@ -105,6 +86,7 @@ describe('exposed floor', () => {
                             },
                             bridging: {
                                 material: {
+                                    mechanism: 'conductivity',
                                     conductivity: 3,
                                     tag: '',
                                     description: '',
@@ -112,7 +94,9 @@ describe('exposed floor', () => {
                                 },
                                 proportion: Proportion.fromRatio(0.15).unwrap(),
                             },
-                        },
+                        })
+                            .unwrap(() => undefined)
+                            .unwrap(),
                     ],
                 },
             },

@@ -1,4 +1,5 @@
 import { constructFloorUValueModel } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator';
+import { FloorLayerInput } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator/floor-layer-input';
 import { FloorUValueModelInput } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator/input-types';
 
 describe('suspended floor', () => {
@@ -32,17 +33,20 @@ describe('suspended floor', () => {
                 ventilationCombinedArea: 0.04,
                 underFloorSpacePerimeter: 20,
                 insulationLayers: [
-                    {
+                    FloorLayerInput.validate({
                         thickness: 0.1,
                         mainMaterial: {
+                            mechanism: 'conductivity',
                             name: '',
                             tags: [],
                             description: '',
                             tag: '',
                             conductivity: 1,
                         },
-                        bridging: null,
-                    },
+                        bridging: { material: null, proportion: null },
+                    })
+                        .unwrap(() => undefined)
+                        .unwrap(),
                 ],
             },
         };

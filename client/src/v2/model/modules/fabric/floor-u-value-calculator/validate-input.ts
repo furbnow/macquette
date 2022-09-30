@@ -1,4 +1,3 @@
-import { FloorInsulationMaterial } from '../../../../data-schemas/libraries/floor-insulation';
 import {
     CustomFloorSpec,
     ExposedFloorSpec,
@@ -9,47 +8,63 @@ import {
     PerFloorTypeSpec,
     SolidFloorSpec,
     SuspendedFloorSpec,
+    FloorUValueWarning,
 } from '../../../../data-schemas/scenario/fabric/floor-u-value';
 import {
     RequiredValueMissingError,
     ValuePath,
 } from '../../../../data-schemas/scenario/validation';
+import { assertNever } from '../../../../helpers/assert-never';
+import { withPathPrefix } from '../../../../helpers/error-warning-path';
 import { assertNonEmpty, NonEmptyArray } from '../../../../helpers/non-empty-array';
 import { Result } from '../../../../helpers/result';
+import { WarningCollector, WithWarnings } from '../../../../helpers/with-warnings';
+import { FloorLayerInput } from './floor-layer-input';
 import {
     CustomFloorInput,
     ExposedFloorInput,
-    FloorLayerInput,
     FloorUValueModelInput,
     HeatedBasementFloorInput,
+    InsulationInput,
     SolidFloorInput,
     SuspendedFloorInput,
 } from './input-types';
 
-type RVMR<T> = Result<T, RequiredValueMissingError>;
-function error(path: ValuePath): Result<never, RequiredValueMissingError> {
-    return Result.err({
-        type: 'required value missing error' as const,
-        namespace: 'floor u-value calculator',
-        path,
-    });
+type FloorUValueValidationResultWithWarnings<T> = WithWarnings<
+    Result<T, RequiredValueMissingError>,
+    FloorUValueWarning
+>;
+type FUVCResult<T> = FloorUValueValidationResultWithWarnings<T>;
+
+function valueMissingError(
+    path: ValuePath,
+): WithWarnings<Result<never, RequiredValueMissingError>, never> {
+    return WithWarnings.empty(
+        Result.err({
+            type: 'required value missing error' as const,
+            namespace: 'floor u-value calculator',
+            path,
+        }),
+    );
 }
 
 export function validate(
     selectedFloorType: FloorType,
     common: FloorUValueModelInput['common'],
     spec: PerFloorTypeSpec,
-): Result<FloorUValueModelInput, RequiredValueMissingError> {
-    return validatePerFloorType(selectedFloorType, spec).map((perFloorType) => ({
-        common,
-        perFloorType,
-    }));
+): FUVCResult<FloorUValueModelInput> {
+    return validatePerFloorType(selectedFloorType, spec).map((res) =>
+        res.map((perFloorType) => ({
+            common,
+            perFloorType,
+        })),
+    );
 }
 
 function validatePerFloorType(
     selectedFloorType: FloorType,
     spec: PerFloorTypeSpec,
-): RVMR<FloorUValueModelInput['perFloorType']> {
+): FUVCResult<FloorUValueModelInput['perFloorType']> {
     switch (selectedFloorType) {
         case 'custom':
             return validateCustomFloor(spec.custom);
@@ -64,26 +79,27 @@ function validatePerFloorType(
     }
 }
 
-function validateCustomFloor(spec: CustomFloorSpec): RVMR<CustomFloorInput> {
+function validateCustomFloor(spec: CustomFloorSpec): FUVCResult<CustomFloorInput> {
     const { uValue } = spec;
     if (uValue === null) {
-        return error(['custom', 'uValue']);
+        return valueMissingError(['custom', 'uValue']);
     } else {
-        return Result.ok({ floorType: 'custom', uValue });
+        return WithWarnings.empty(Result.ok({ floorType: 'custom', uValue }));
     }
 }
 
-function validateSolidFloor(spec: SolidFloorSpec): RVMR<SolidFloorInput> {
+function validateSolidFloor(spec: SolidFloorSpec): FUVCResult<SolidFloorInput> {
+    const wc = new WarningCollector<FloorUValueWarning>();
     let allOverInsulation: SolidFloorInput['allOverInsulation'];
     if (!spec.allOverInsulation.enabled) {
         allOverInsulation = null;
     } else {
-        const res = validateInsulation(spec.allOverInsulation, [
-            'solid',
-            'all-over-insulation',
-        ]);
+        const res = withPathPrefix(
+            ['solid', 'all-over-insulation'],
+            validateInsulation(spec.allOverInsulation),
+        ).unwrap(wc.sink());
         if (res.isErr()) {
-            return res;
+            return wc.out(res);
         }
         allOverInsulation = res.unwrap();
     }
@@ -93,18 +109,22 @@ function validateSolidFloor(spec: SolidFloorSpec): RVMR<SolidFloorInput> {
             edgeInsulation = { type: 'none' };
             break;
         case 'vertical': {
-            const res = validateInsulation(spec.edgeInsulation.vertical, [
-                'solid',
-                'edge-insulation',
-                'vertical',
-            ]);
+            const res = withPathPrefix(
+                ['solid', 'edge-insulation', 'vertical'],
+                validateInsulation(spec.edgeInsulation.vertical),
+            ).unwrap(wc.sink());
             if (res.isErr()) {
-                return res;
+                return wc.out(res);
             }
             const verticalInsulation = res.unwrap();
             const { depth } = verticalInsulation;
             if (depth === null) {
-                return error(['solid', 'edge-insulation', 'vertical', 'depth']);
+                return valueMissingError([
+                    'solid',
+                    'edge-insulation',
+                    'vertical',
+                    'depth',
+                ]);
             }
             edgeInsulation = {
                 type: 'vertical',
@@ -114,18 +134,22 @@ function validateSolidFloor(spec: SolidFloorSpec): RVMR<SolidFloorInput> {
             break;
         }
         case 'horizontal': {
-            const res = validateInsulation(spec.edgeInsulation.horizontal, [
-                'solid',
-                'edge-insulation',
-                'horizontal',
-            ]);
+            const res = withPathPrefix(
+                ['solid', 'edge-insulation', 'horizontal'],
+                validateInsulation(spec.edgeInsulation.horizontal),
+            ).unwrap(wc.sink());
             if (res.isErr()) {
-                return res;
+                return wc.out(res);
             }
             const horizontalInsulation = res.unwrap();
             const { width } = horizontalInsulation;
             if (width === null) {
-                return error(['solid', 'edge-insulation', 'horizontal', 'width']);
+                return valueMissingError([
+                    'solid',
+                    'edge-insulation',
+                    'horizontal',
+                    'width',
+                ]);
             }
             edgeInsulation = {
                 type: 'horizontal',
@@ -135,124 +159,134 @@ function validateSolidFloor(spec: SolidFloorSpec): RVMR<SolidFloorInput> {
             break;
         }
     }
-    return Result.ok({
-        ...spec,
-        floorType: 'solid',
-        allOverInsulation,
-        edgeInsulation,
-    });
+    return WithWarnings.empty(
+        Result.ok({
+            ...spec,
+            floorType: 'solid',
+            allOverInsulation,
+            edgeInsulation,
+        }),
+    );
 }
 
 function validateCombinedMethodLayers(
     layersSpec: NonEmptyArray<FloorLayerSpec>,
-): RVMR<NonEmptyArray<FloorLayerInput>> {
-    return Result.mapArray(layersSpec, ({ thickness, mainMaterial, bridging }, index) => {
-        function error(pathSuffix: ValuePath) {
-            return Result.err({
-                type: 'required value missing error' as const,
-                namespace: 'floor u-value calculator' as const,
-                path: ['combined-method', 'layers', index, ...pathSuffix],
-            });
-        }
-        if (thickness === null) {
-            return error(['thickness']);
-        }
-        if (mainMaterial === null) {
-            return error(['main-material']);
-        }
-        let bridgingInput: FloorLayerInput['bridging'];
-        if (bridging.material === null) {
-            bridgingInput = null;
-        } else if (bridging.proportion === null) {
-            // Material was non-null but proportion was null
-            return error(['bridging', 'proportion']);
-        } else {
-            bridgingInput = {
-                material: bridging.material,
-                proportion: bridging.proportion,
-            };
-        }
-        return Result.ok({
-            thickness,
-            mainMaterial,
-            bridging: bridgingInput,
-        });
-    }).map(assertNonEmpty);
+): FUVCResult<NonEmptyArray<FloorLayerInput>> {
+    const wc = new WarningCollector<FloorUValueWarning>();
+    return wc.out(
+        Result.mapArray<FloorLayerSpec, FloorLayerInput, RequiredValueMissingError>(
+            layersSpec,
+            (spec, index) =>
+                withPathPrefix(
+                    ['combined-method-layers', index],
+                    FloorLayerInput.validate(spec),
+                ).unwrap(wc.sink()),
+        ).map(assertNonEmpty),
+    );
 }
 
-function validateSuspendedFloor(spec: SuspendedFloorSpec): RVMR<SuspendedFloorInput> {
+function validateSuspendedFloor(
+    spec: SuspendedFloorSpec,
+): FUVCResult<SuspendedFloorInput> {
+    const wc = new WarningCollector<FloorUValueWarning>();
     const { ventilationCombinedArea, underFloorSpacePerimeter } = spec;
     if (ventilationCombinedArea === null) {
-        return error(['suspended', 'ventilation-combined-area']);
+        return valueMissingError(['suspended', 'ventilation-combined-area']);
     }
     if (underFloorSpacePerimeter === null) {
-        return error(['suspended', 'under-floor-space-perimeter']);
+        return valueMissingError(['suspended', 'under-floor-space-perimeter']);
     }
-    let insulationLayersR: RVMR<SuspendedFloorInput['insulationLayers']>;
+    let insulationLayersR: FUVCResult<SuspendedFloorInput['insulationLayers']>;
     if (spec.insulation.enabled) {
-        insulationLayersR = validateCombinedMethodLayers(spec.insulation.layers);
+        insulationLayersR = withPathPrefix(
+            ['suspended'],
+            validateCombinedMethodLayers(spec.insulation.layers),
+        );
     } else {
-        insulationLayersR = Result.ok(null);
+        insulationLayersR = WithWarnings.empty(Result.ok(null));
     }
-    return insulationLayersR.map((insulationLayers) => ({
-        floorType: 'suspended',
-        ventilationCombinedArea,
-        underFloorSpacePerimeter,
-        insulationLayers,
-    }));
+    return wc.out(
+        insulationLayersR.unwrap(wc.sink()).map((insulationLayers) => ({
+            floorType: 'suspended',
+            ventilationCombinedArea,
+            underFloorSpacePerimeter,
+            insulationLayers,
+        })),
+    );
 }
 
 function validateHeatedBasementFloor(
     spec: HeatedBasementFloorSpec,
-): RVMR<HeatedBasementFloorInput> {
+): FUVCResult<HeatedBasementFloorInput> {
+    const wc = new WarningCollector<FloorUValueWarning>();
     const { basementDepth } = spec;
     if (basementDepth === null) {
-        return error(['heated-basement', 'depth']);
+        return valueMissingError(['heated-basement', 'depth']);
     }
     if (!spec.insulation.enabled) {
-        return Result.ok({
-            floorType: 'heated basement',
-            basementDepth,
-            insulation: null,
-        });
+        return WithWarnings.empty(
+            Result.ok({
+                floorType: 'heated basement',
+                basementDepth,
+                insulation: null,
+            }),
+        );
     }
-    const res = validateInsulation(spec.insulation, ['heated-basement']);
+    const res = withPathPrefix(
+        ['heated-basement'],
+        validateInsulation(spec.insulation),
+    ).unwrap(wc.sink());
     if (res.isErr()) {
-        return res;
+        return wc.out(res);
     }
     const insulation = res.unwrap();
-    return Result.ok({
-        floorType: 'heated basement',
-        basementDepth,
-        insulation,
-    });
+    return WithWarnings.empty(
+        Result.ok({
+            floorType: 'heated basement',
+            basementDepth,
+            insulation,
+        }),
+    );
 }
 
-function validateExposedFloor(spec: ExposedFloorSpec): RVMR<ExposedFloorInput> {
+function validateExposedFloor(spec: ExposedFloorSpec): FUVCResult<ExposedFloorInput> {
+    const wc = new WarningCollector<FloorUValueWarning>();
     const { exposedTo } = spec;
     if (exposedTo === null) {
-        return error(['exposed', 'exposed-to']);
+        return valueMissingError(['exposed', 'exposed-to']);
     }
-    const layersR: RVMR<ExposedFloorInput['layers']> = validateCombinedMethodLayers(
-        spec.layers,
+    const layersR: FUVCResult<ExposedFloorInput['layers']> = withPathPrefix(
+        ['exposed'],
+        validateCombinedMethodLayers(spec.layers),
     );
-    return layersR.map((layers) => ({
-        floorType: 'exposed',
-        exposedTo,
-        layers,
-    }));
+    return wc.out(
+        layersR.unwrap(wc.sink()).map((layers) => ({
+            floorType: 'exposed',
+            exposedTo,
+            layers,
+        })),
+    );
 }
 
 function validateInsulation<T extends InsulationSpec>(
     spec: T,
-    pathPrefix: ValuePath,
-): RVMR<T & { thickness: number; material: FloorInsulationMaterial }> {
+): FUVCResult<T & InsulationInput> {
     const { thickness, material } = spec;
-    if (thickness === null) {
-        return error([...pathPrefix, 'insulation', 'thickness']);
-    }
     if (material === null) {
-        return error([...pathPrefix, 'insulation', 'material']);
+        return valueMissingError(['insulation', 'material']);
     }
-    return Result.ok({ ...spec, thickness, material });
+    if (material.mechanism === 'conductivity') {
+        if (thickness === null) {
+            return valueMissingError(['insulation', 'thickness']);
+        }
+        return WithWarnings.empty(
+            Result.ok({ ...spec, mechanism: 'conductivity', thickness, material }),
+        );
+    } else if (material.mechanism === 'resistance') {
+        return WithWarnings.empty(
+            Result.ok({ ...spec, mechanism: 'resistance', material }),
+        );
+    } else {
+        return assertNever(material);
+    }
 }

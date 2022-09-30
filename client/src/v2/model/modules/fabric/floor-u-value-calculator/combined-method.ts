@@ -5,27 +5,17 @@ import { NonEmptyArray } from '../../../../helpers/non-empty-array';
 import { Proportion } from '../../../../helpers/proportion';
 import { Result } from '../../../../helpers/result';
 
-type ConductivityElement = {
-    name: string;
-    conductivity: number;
-    proportion: Proportion;
-};
-type ResistanceElement = {
+export type ResistanceElement = {
     name: string;
     resistance: number;
     proportion: Proportion;
 };
-export type CombinedMethodInput = NonEmptyArray<
-    | {
-          calculationType: 'conductivity';
-          thickness: number;
-          elements: NonEmptyArray<ConductivityElement>;
-      }
-    | {
-          calculationType: 'resistance';
-          elements: NonEmptyArray<ResistanceElement>;
-      }
->;
+export type LayerSpec = {
+    elements: NonEmptyArray<ResistanceElement>;
+};
+export type CombinedMethodInput = {
+    layers: NonEmptyArray<LayerSpec>;
+};
 
 /** Model for the "Combined Method" of calculating U-values, as specified in BS
  *  ISO EN 13370
@@ -37,7 +27,7 @@ export type CombinedMethodInput = NonEmptyArray<
 export class CombinedMethodModel {
     private layers: Array<Layer>;
 
-    constructor(layers: CombinedMethodInput) {
+    constructor({ layers }: CombinedMethodInput) {
         this.layers = layers.map((layerSpec) => new Layer(layerSpec));
     }
 
@@ -52,8 +42,8 @@ export class CombinedMethodModel {
     }
 
     private get resistanceSlices(): Slice[] {
-        const resistances = this.layers.map((layer) => layer.elementResistances);
-        return cartesianProduct(resistances);
+        const resistanceElements = this.layers.map((layer) => layer.spec.elements);
+        return cartesianProduct(resistanceElements);
     }
 
     @cache
@@ -113,7 +103,7 @@ function cartesianProduct<T>(sets: T[][]): T[][] {
 }
 
 class Layer {
-    constructor(public spec: CombinedMethodInput[0]) {
+    constructor(public spec: LayerSpec) {
         const proportions = spec.elements.map((e) => e.proportion.asRatio);
         if (!compareFloats(sum(proportions), 1)) {
             console.error('Proportions do not add up to 1');
@@ -124,31 +114,10 @@ class Layer {
         return (
             1 /
             sum(
-                this.elementResistances.map(
+                this.spec.elements.map(
                     ({ proportion, resistance }) => proportion.asRatio / resistance,
                 ),
             )
         );
-    }
-
-    @cache
-    get elementResistances(): Array<{
-        name: string;
-        proportion: Proportion;
-        resistance: number;
-    }> {
-        const { spec } = this;
-        switch (spec.calculationType) {
-            case 'resistance': {
-                return spec.elements;
-            }
-            case 'conductivity': {
-                return spec.elements.map((element) => ({
-                    name: element.name,
-                    proportion: element.proportion,
-                    resistance: spec.thickness / element.conductivity,
-                }));
-            }
-        }
     }
 }

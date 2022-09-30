@@ -12,7 +12,7 @@ describe('error display', () => {
     it('handles a validation error', () => {
         const arbError = fc
             .tuple(arbFloorType, arbCommon, arbPerFloorTypeSpec)
-            .map((params) => validate(...params))
+            .map((params) => validate(...params).unwrap(() => undefined))
             .filter((validationResult) => validationResult.isErr())
             .map((validationResult) => validationResult.unwrapErr());
         fc.assert(

@@ -9,6 +9,7 @@ import { floorInsulationMaterialItem } from '../../libraries/floor-insulation';
 import {
     miscellaneousNonFiniteNumberWarning,
     requiredValueMissingErrorSchema,
+    unnecessaryValueWarning,
     valueRangeWarning,
     zeroDivisionWarning,
 } from '../validation';
@@ -131,5 +132,6 @@ export const floorUValueWarningSchema = z.discriminatedUnion('type', [
     valueRangeWarning,
     zeroDivisionWarning,
     miscellaneousNonFiniteNumberWarning,
+    unnecessaryValueWarning,
 ]);
 export type FloorUValueWarning = z.infer<typeof floorUValueWarningSchema>;

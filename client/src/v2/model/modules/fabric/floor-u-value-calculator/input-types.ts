@@ -1,19 +1,20 @@
-import { FloorInsulationMaterial } from '../../../../data-schemas/libraries/floor-insulation';
-import { NonEmptyArray } from '../../../../helpers/non-empty-array';
-import { Proportion } from '../../../../helpers/proportion';
+import type {
+    FloorInsulationConductivityMaterial,
+    FloorInsulationResistanceMaterial,
+} from '../../../../data-schemas/libraries/floor-insulation';
+import type { NonEmptyArray } from '../../../../helpers/non-empty-array';
+import type { FloorLayerInput } from './floor-layer-input';
 
-export type InsulationInput = {
+export type InsulationConductivityInput = {
+    mechanism: 'conductivity';
     thickness: number;
-    material: FloorInsulationMaterial;
+    material: FloorInsulationConductivityMaterial;
 };
-export type FloorLayerInput = {
-    thickness: number;
-    mainMaterial: FloorInsulationMaterial;
-    bridging: null | {
-        material: FloorInsulationMaterial;
-        proportion: Proportion;
-    };
+export type InsulationResistanceInput = {
+    mechanism: 'resistance';
+    material: FloorInsulationResistanceMaterial;
 };
+export type InsulationInput = InsulationConductivityInput | InsulationResistanceInput;
 
 export type CustomFloorInput = {
     floorType: 'custom';
