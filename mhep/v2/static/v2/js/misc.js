@@ -240,16 +240,6 @@ function legacy_update_page_from_data() {
     }
 }
 
-function UpdateUI() {
-    // Call page specific updateui function
-    var functionname = page + '_UpdateUI';
-    if (window[functionname] != undefined) {
-        window[functionname]();
-    }
-
-    legacy_update_page_from_data();
-}
-
 function getkeys(key, val) {
     switch (typeof val) {
         case 'object':

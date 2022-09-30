@@ -15,6 +15,8 @@ var projectid;
 var p;
 var project;
 
+var pageManager;
+
 async function initMacquette(api, assessmentId, featureFlags) {
     mhep_helper = api;
     window.features = featureFlags;
@@ -47,7 +49,14 @@ async function initMacquette(api, assessmentId, featureFlags) {
 
     library_helper = new libraryHelper('', $('#openbem'));
 
-    load_page_from_hash();
+    pageManager = new window.Macquette.PageManager(
+        legacySharedInit,
+        legacyModuleInit,
+        legacyModuleInitPostUpdate,
+        legacyModuleUpdate,
+        legacyModuleUnload
+    );
+
     redraw_scenario_menu();
     toggle_scenario_menu(scenario);
     refresh_undo_redo_buttons();
@@ -144,9 +153,6 @@ function setupEventHandlers() {
             }
         }
         update();
-    });
-    $(window).on('hashchange', function () {
-        load_page_from_hash();
     });
     $('.house_graphic').click(function () {
         if ($('.house_graphic').html() == 'Show house graphic') {
@@ -335,7 +341,8 @@ function update(undo_redo = false) {
         refresh_undo_redo_buttons();
     }
 
-    UpdateUI();
+    pageManager.externalDataUpdate();
+
     draw_openbem_graphics('#topgraphic', data);
 
     redraw_emissions();
@@ -483,7 +490,7 @@ function redraw_emissions() {
     }
 }
 
-function init_page_header() {
+function legacySharedInit() {
     if (
         page == 'report' ||
         page == 'householdquestionnaire' ||
@@ -513,7 +520,7 @@ function init_page_header() {
     }
 }
 
-function legacy_page_setup() {
+function legacyModuleInitPostUpdate() {
     // Add lock functionality to buttons and icons
     if (
         page != 'librariesmanager' &&
@@ -549,48 +556,36 @@ function legacy_page_setup() {
     });
 }
 
-async function load_page_from_hash() {
-    let oldPage = page;
-    let oldScenario = scenario;
-
-    var tmp = window.location.hash.substring(1).split('/');
-    page = tmp[1] || 'context';
-    scenario = tmp[0] || 'master';
-
-    if (project[scenario] == undefined) {
-        scenario = 'master';
-    }
-
-    if (oldPage === page && oldScenario === scenario) {
-        return;
-    }
-
-    // Unload previous view
-    if (oldPage && oldScenario) {
-        var functionname = oldPage + '_UnloadUI';
-        if (window[functionname] != undefined) {
-            window[functionname]();
-        }
-    }
-
-    data = project[scenario];
-
+async function legacyModuleInit() {
     try {
         await load_view('#editor__main-content', page);
     } catch (err) {
-        console.error(`Failed to load view ${page}`, err);
+        throw new Error(`Failed to load view ${page}: ${err}`);
     }
 
-    init_page_header();
+    const fnName = `${page}_initUI`;
+    if (window[fnName] !== undefined) {
+        window[fnName]();
+    }
+}
 
-    var initFn = page + '_initUI';
-    if (window[initFn] != undefined) {
-        window[initFn]();
+function legacyModuleUpdate() {
+    // Maintain this invariant, for when p.data changes.
+    window.project = p.data;
+
+    const fnName = `${page}_UpdateUI`;
+    if (window[fnName] !== undefined) {
+        window[fnName]();
     }
 
-    UpdateUI();
+    legacy_update_page_from_data();
+}
 
-    legacy_page_setup();
+function legacyModuleUnload() {
+    const fnName = `${page}_UnloadUI`;
+    if (window[fnName] !== undefined) {
+        window[fnName]();
+    }
 }
 
 function refresh_undo_redo_buttons() {
