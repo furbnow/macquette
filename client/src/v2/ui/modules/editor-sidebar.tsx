@@ -1,4 +1,5 @@
-import React, { useContext, ReactElement } from 'react';
+import React, { useRef, useContext, ReactElement } from 'react';
+import type { RefObject } from 'react';
 
 import { HTTPClient } from '../../api/http';
 import type { Project } from '../../data-schemas/project';
@@ -64,7 +65,10 @@ type DuplicateScenarioAction = {
 };
 type SetLockAction = { type: 'set scenario lock'; scenarioId: string; locked: boolean };
 type DeleteScenarioAction = { type: 'delete scenario'; scenarioId: string };
-type SaveMetadataAction = { type: 'save project metadata' };
+type SaveMetadataAction = {
+    type: 'save project metadata';
+    returnFocusTo: RefObject<HTMLElement>;
+};
 type MetadataSaveStatusAction = {
     type: 'metadata save status';
     status: FetchStatus;
@@ -84,6 +88,7 @@ type Effect = {
     assessmentId: string;
     name: string;
     description: string;
+    returnFocusTo: RefObject<HTMLElement>;
 };
 
 type SidebarLinkProps =
@@ -282,43 +287,60 @@ function ScenarioBlock({
 function MetadataEditorModal({
     state,
     dispatch,
+    returnFocusTo,
 }: {
     state: MetadataEditorModalState;
     dispatch: Dispatcher<Action>;
+    returnFocusTo: RefObject<HTMLElement>;
 }) {
     function close() {
         dispatch({
             type: 'merge data',
             state: { modal: { type: 'none' } },
         });
+        if (returnFocusTo.current !== null) {
+            returnFocusTo.current.focus();
+        }
     }
 
     function save() {
-        dispatch({ type: 'save project metadata' });
+        dispatch({ type: 'save project metadata', returnFocusTo });
     }
 
     return (
         <Modal headerId={'none'} onClose={close}>
             <ModalHeader title="Edit project metadata" onClose={close} />
-            <ModalBody
-                onKeyDown={(evt) => {
-                    if (evt.key === 'Enter') {
-                        save();
-                    }
-                }}
-            >
+            <ModalBody>
                 <FormGrid>
                     <label htmlFor="project-name">Project name:</label>
-                    <TextInput
+                    {/* We use input instead of TextInput because TextInput breaks
+                     * autoFocus due to its inner component shennaningans */}
+                    <input
                         id="project-name"
+                        type="text"
                         value={state.name}
                         style={{ width: '25rem' }}
-                        onChange={(val) =>
+                        onChange={(evt) =>
                             dispatch({
                                 type: 'merge data',
-                                state: { modal: { ...state, name: val } },
+                                state: { modal: { ...state, name: evt.target.value } },
                             })
                         }
+                        onKeyDown={(
+                            evt: React.KeyboardEvent<HTMLInputElement> & {
+                                target: HTMLInputElement;
+                            },
+                        ) => {
+                            if (evt.key === 'Enter') {
+                                dispatch({
+                                    type: 'merge data',
+                                    state: {
+                                        modal: { ...state, name: evt.target.value },
+                                    },
+                                });
+                                save();
+                            }
+                        }}
                         // WAI-ARIA-PRACTICES tells us to use autofocus here because
                         // it's the first field in a modal dialog.
                         // https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html
@@ -337,6 +359,24 @@ function MetadataEditorModal({
                                 state: { modal: { ...state, description: val } },
                             })
                         }
+                        onKeyDown={(
+                            evt: React.KeyboardEvent<HTMLInputElement> & {
+                                target: HTMLInputElement;
+                            },
+                        ) => {
+                            if (evt.key === 'Enter') {
+                                dispatch({
+                                    type: 'merge data',
+                                    state: {
+                                        modal: {
+                                            ...state,
+                                            description: evt.target.value,
+                                        },
+                                    },
+                                });
+                                save();
+                            }
+                        }}
                     />
                 </FormGrid>
             </ModalBody>
@@ -370,6 +410,8 @@ function EditorSidebar({
     state: State;
     dispatch: Dispatcher<Action>;
 }) {
+    const metadataEditorButtonRef = useRef<HTMLButtonElement>(null);
+
     return (
         <SidebarContext.Provider value={{ route: state.route }}>
             <div
@@ -385,6 +427,7 @@ function EditorSidebar({
                 <div>
                     <button
                         className="btn d-flex py-7"
+                        ref={metadataEditorButtonRef}
                         onClick={() =>
                             dispatch({
                                 type: 'merge data',
@@ -405,7 +448,11 @@ function EditorSidebar({
             </div>
 
             {state.modal.type === 'metadata editor' && (
-                <MetadataEditorModal state={state.modal} dispatch={dispatch} />
+                <MetadataEditorModal
+                    state={state.modal}
+                    dispatch={dispatch}
+                    returnFocusTo={metadataEditorButtonRef}
+                />
             )}
 
             <div className="side-section">
@@ -505,6 +552,7 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
                 if (state.modal.type === 'metadata editor') {
                     const { assessmentId } = state;
                     const { name, description } = state.modal;
+                    const { returnFocusTo } = action;
                     return [
                         state,
                         [
@@ -513,6 +561,7 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
                                 assessmentId,
                                 name,
                                 description,
+                                returnFocusTo,
                             },
                         ],
                     ];
@@ -562,6 +611,9 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
                             projectDescription: effect.description,
                         },
                     });
+                    if (effect.returnFocusTo.current !== null) {
+                        effect.returnFocusTo.current.focus();
+                    }
                 } catch (err) {
                     dispatch({ type: 'metadata save status', status: 'failed' });
                 }
