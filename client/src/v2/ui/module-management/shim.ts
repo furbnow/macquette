@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Project, projectSchema } from '../../data-schemas/project';
 import { Scenario } from '../../data-schemas/scenario';
 import { Result } from '../../helpers/result';
+import { CombinedModules } from '../../model/combined-modules';
 import { externals } from '../../shims/typed-globals';
 import type { UiModule } from './module-type';
 
@@ -13,6 +14,7 @@ export type LegacyContext = {
     project: Project;
     scenarioId: string;
     currentScenario: Scenario;
+    currentModel: CombinedModules;
 };
 
 export class UiModuleShim<State, Action, Effect> {
@@ -57,11 +59,18 @@ export class UiModuleShim<State, Action, Effect> {
         if (currentScenario === undefined) {
             throw new Error('Current scenario not found in project');
         }
+        const currentModel = currentScenario.model;
+        if (!(currentModel instanceof CombinedModules)) {
+            throw new Error(
+                'Current scenario model key was not an instance of CombinedModules',
+            );
+        }
         for (const instanceKey of Object.keys(this.keyedInstances)) {
             const legacyContext: LegacyContext = {
                 project,
                 scenarioId,
                 currentScenario,
+                currentModel,
             };
             const actionR = this.module_.shims.extractUpdateAction(
                 legacyContext,

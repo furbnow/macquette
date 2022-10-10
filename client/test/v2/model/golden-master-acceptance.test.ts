@@ -299,7 +299,11 @@ function normaliseScenario(scenario: any) {
                 }>;
             };
         };
+        model?: unknown;
     };
+
+    // Delete pointer to instantiated new model
+    delete castScenario.model;
 
     // Delete new U-value model output
     if (castScenario.fabric !== undefined && castScenario.fabric.elements !== undefined) {

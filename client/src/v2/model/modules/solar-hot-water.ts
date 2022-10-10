@@ -139,6 +139,7 @@ export type SolarHotWaterDependencies = {
 export type SolarHotWater = SolarHotWaterEnabled | SolarHotWaterNoop;
 
 class SolarHotWaterEnabled {
+    type = 'enabled' as const;
     constructor(
         private input: Exclude<
             SolarHotWaterInput,
@@ -365,6 +366,7 @@ class SolarHotWaterEnabled {
 }
 
 class SolarHotWaterNoop {
+    type = 'noop' as const;
     solarInputAnnual = 0;
 
     solarInputMonthly(): number {

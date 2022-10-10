@@ -180,6 +180,7 @@ export const scenarioSchema = z
             .partial(),
         heating_systems: heatingSystems,
         applianceCarbonCoop: applianceCarbonCoop,
+        model: z.unknown(),
     })
     .partial()
     .optional();

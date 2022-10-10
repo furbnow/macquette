@@ -30,6 +30,7 @@ function runReducerActions(
                 project: parseResult.data,
                 currentScenario: parsedCurrentScenario,
                 scenarioId: currentScenarioId,
+                currentModel: null as any,
             },
             '',
         );

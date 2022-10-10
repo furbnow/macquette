@@ -102,22 +102,20 @@ export function extractInputFromLegacy(rawScenario: unknown): Input {
 }
 
 export class CombinedModules {
-    private mutatorModules: {
-        floors: Floors;
-        occupancy: Occupancy;
-        fabric: Fabric;
-        ventilationInfiltrationCommon: VentilationInfiltrationCommon;
-        ventilation: Ventilation;
-        infiltration: Infiltration;
-        airChangeRate: AirChangeRate;
-        heatLoss: HeatLoss;
-        waterCommon: WaterCommon;
-        solarHotWater: SolarHotWater;
-        lighting: LightingSAP;
-        appliances: Appliances;
-        cooking: Cooking;
-        waterHeating: WaterHeating;
-    };
+    floors: Floors;
+    occupancy: Occupancy;
+    fabric: Fabric;
+    ventilationInfiltrationCommon: VentilationInfiltrationCommon;
+    ventilation: Ventilation;
+    infiltration: Infiltration;
+    airChangeRate: AirChangeRate;
+    heatLoss: HeatLoss;
+    waterCommon: WaterCommon;
+    solarHotWater: SolarHotWater;
+    lighting: LightingSAP;
+    appliances: Appliances;
+    cooking: Cooking;
+    waterHeating: WaterHeating;
 
     constructor(input: Input) {
         const { region } = input;
@@ -125,63 +123,59 @@ export class CombinedModules {
             input.modelBehaviourVersion,
         );
         const fuels = new Fuels(input.fuels);
-        const floors = new Floors(input.floors);
-        const occupancy = new Occupancy(input.occupancy, { floors });
-        const fabric = new Fabric(input.fabric, { region, floors });
-        const ventilationInfiltrationCommon = new VentilationInfiltrationCommon(
+        this.floors = new Floors(input.floors);
+        this.occupancy = new Occupancy(input.occupancy, { floors: this.floors });
+        this.fabric = new Fabric(input.fabric, { region, floors: this.floors });
+        this.ventilationInfiltrationCommon = new VentilationInfiltrationCommon(
             input.ventilationInfiltrationCommon,
             { region },
         );
-        const ventilation = new Ventilation(input.ventilation, {
-            floors,
-            ventilationInfiltrationCommon,
+        this.ventilation = new Ventilation(input.ventilation, {
+            floors: this.floors,
+            ventilationInfiltrationCommon: this.ventilationInfiltrationCommon,
         });
-        const infiltration = new Infiltration(input.infiltration, {
-            fabric,
-            floors,
-            ventilationInfiltrationCommon,
+        this.infiltration = new Infiltration(input.infiltration, {
+            fabric: this.fabric,
+            floors: this.floors,
+            ventilationInfiltrationCommon: this.ventilationInfiltrationCommon,
         });
-        const airChangeRate = new AirChangeRate(null, { ventilation, infiltration });
-        const heatLoss = new HeatLoss(null, { fabric, ventilation, infiltration });
-        const waterCommon = new WaterCommon(input.waterCommon, { occupancy });
-        const solarHotWater = constructSolarHotWater(input.solarHotWater, {
+        this.airChangeRate = new AirChangeRate(null, {
+            ventilation: this.ventilation,
+            infiltration: this.infiltration,
+        });
+        this.heatLoss = new HeatLoss(null, {
+            fabric: this.fabric,
+            ventilation: this.ventilation,
+            infiltration: this.infiltration,
+        });
+        this.waterCommon = new WaterCommon(input.waterCommon, {
+            occupancy: this.occupancy,
+        });
+        this.solarHotWater = constructSolarHotWater(input.solarHotWater, {
             region,
-            waterCommon,
+            waterCommon: this.waterCommon,
         });
-        const lighting = new LightingSAP(input.lighting, {
+        this.lighting = new LightingSAP(input.lighting, {
             fuels,
-            floors,
-            fabric,
-            occupancy,
+            floors: this.floors,
+            fabric: this.fabric,
+            occupancy: this.occupancy,
         });
-        const appliances = constructAppliances(input.appliances, {
+        this.appliances = constructAppliances(input.appliances, {
             modelBehaviourFlags,
             fuels,
-            floors,
-            occupancy,
+            floors: this.floors,
+            occupancy: this.occupancy,
         });
-        const cooking = constructCooking(input.cooking, { fuels, floors, occupancy });
-        const waterHeating = new WaterHeating(input.waterHeating, {
-            waterCommon,
-            solarHotWater,
+        this.cooking = constructCooking(input.cooking, {
+            fuels,
+            floors: this.floors,
+            occupancy: this.occupancy,
         });
-
-        this.mutatorModules = {
-            floors,
-            occupancy,
-            fabric,
-            ventilationInfiltrationCommon,
-            ventilation,
-            infiltration,
-            airChangeRate,
-            heatLoss,
-            waterCommon,
-            solarHotWater,
-            lighting,
-            appliances,
-            cooking,
-            waterHeating,
-        };
+        this.waterHeating = new WaterHeating(input.waterHeating, {
+            waterCommon: this.waterCommon,
+            solarHotWater: this.solarHotWater,
+        });
     }
 
     /* eslint-disable
@@ -192,9 +186,30 @@ export class CombinedModules {
        @typescript-eslint/consistent-type-assertions,
     */
     mutateLegacyData(data: any) {
-        for (const mod of Object.values(this.mutatorModules)) {
+        const mutatorModules = [
+            this.floors,
+            this.occupancy,
+            this.fabric,
+            this.ventilationInfiltrationCommon,
+            this.ventilation,
+            this.infiltration,
+            this.airChangeRate,
+            this.heatLoss,
+            this.waterCommon,
+            this.solarHotWater,
+            this.lighting,
+            this.appliances,
+            this.cooking,
+            this.waterHeating,
+        ];
+        for (const mod of Object.values(mutatorModules)) {
             mod.mutateLegacyData(data);
         }
+        data.model = this;
     }
     /* eslint-enable */
+
+    toJSON(): unknown {
+        return null;
+    }
 }

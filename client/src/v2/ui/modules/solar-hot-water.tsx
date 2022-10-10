@@ -1,13 +1,13 @@
+import { pick } from 'lodash';
 import React from 'react';
 
-import { Scenario } from '../../data-schemas/scenario';
 import { SolarHotWaterV1 } from '../../data-schemas/scenario/solar-hot-water';
 import { assertNever } from '../../helpers/assert-never';
-import { nanToNull } from '../../helpers/null-wrapping';
 import { PropsOf } from '../../helpers/props-of';
 import { Result } from '../../helpers/result';
-import { DeepPartial, safeMerge, DeepWith } from '../../helpers/safe-merge';
+import { DeepPartial, safeMerge } from '../../helpers/safe-merge';
 import { Shadow } from '../../helpers/shadow-object-type';
+import { CombinedModules } from '../../model/combined-modules';
 import { Orientation } from '../../model/enums/orientation';
 import { Overshading } from '../../model/enums/overshading';
 import { CheckboxInput } from '../input-components/checkbox';
@@ -16,7 +16,6 @@ import { Select, SelectProps } from '../input-components/select';
 import { UiModule } from '../module-management/module-type';
 import { LockedWarning } from '../output-components/locked-warning';
 import {
-    loading,
     noOutput,
     NumericOutput,
     NumericOutputProps,
@@ -43,33 +42,10 @@ type ModelOutputs = {
 export type LoadedState = {
     scenarioLocked: boolean;
     moduleEnabled: boolean;
-    modelOutput: null | DeepWith<typeof noOutput, ModelOutputs>;
+    modelOutput: null | ModelOutputs;
     modelInput: SolarHotWaterV1['input'];
     pumpType: 'PV' | 'electric' | null;
 };
-
-function extractModelOutputsFromLegacy(scenario: Scenario): LoadedState['modelOutput'] {
-    const { SHW, water_heating } = scenario ?? {};
-    return {
-        aStar: nanToNull(SHW?.a) ?? noOutput,
-        collectorPerformanceRatio:
-            nanToNull(SHW?.collector_performance_ratio) ?? noOutput,
-        annualSolarRadiation: nanToNull(SHW?.annual_solar) ?? noOutput,
-        availableSolarEnergy: nanToNull(SHW?.solar_energy_available) ?? noOutput,
-        utilisation: {
-            load: nanToNull(water_heating?.annual_energy_content) ?? noOutput,
-            solarToLoadRatio: nanToNull(SHW?.solar_load_ratio) ?? noOutput,
-            utilisationFactor: nanToNull(SHW?.utilisation_factor) ?? noOutput,
-            collectorPerformanceFactor:
-                nanToNull(SHW?.collector_performance_factor) ?? noOutput,
-            effectiveSolarVolume: nanToNull(SHW?.Veff) ?? noOutput,
-            dailyHotWaterDemand: nanToNull(water_heating?.Vd_average) ?? noOutput,
-            volumeRatio: nanToNull(SHW?.volume_ratio) ?? noOutput,
-            solarStorageVolumeFactor: nanToNull(SHW?.f2) ?? noOutput,
-            annualSolarInput: nanToNull(SHW?.Qs) ?? noOutput,
-        },
-    };
-}
 
 const emptyModelInput: SolarHotWaterV1['input'] = {
     collector: {
@@ -93,7 +69,10 @@ const emptyModelInput: SolarHotWaterV1['input'] = {
 };
 
 type Action =
-    | { type: 'external data update'; newState: LoadedState }
+    | ({ type: 'external data update'; model: CombinedModules } & Pick<
+          LoadedState,
+          'scenarioLocked' | 'moduleEnabled' | 'modelInput' | 'pumpType'
+      >)
     | {
           type: 'merge state';
           toMerge: DeepPartial<Exclude<LoadedState, 'scenarioLocked'>>;
@@ -106,8 +85,45 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
     },
     reducer: (state, action) => {
         switch (action.type) {
-            case 'external data update':
-                return [action.newState];
+            case 'external data update': {
+                const { solarHotWater, waterCommon } = action.model;
+                let modelOutput: LoadedState['modelOutput'];
+                if (solarHotWater.type === 'noop') {
+                    modelOutput = null;
+                } else {
+                    modelOutput = {
+                        aStar: solarHotWater.aStar,
+                        collectorPerformanceRatio:
+                            solarHotWater.collectorPerformanceRatio,
+                        annualSolarRadiation: solarHotWater.solarRadiationAnnual,
+                        availableSolarEnergy: solarHotWater.solarEnergyAvailable,
+                        utilisation: {
+                            load: waterCommon.hotWaterEnergyContentAnnual,
+                            solarToLoadRatio: solarHotWater.solarToLoadRatio,
+                            utilisationFactor: solarHotWater.utilisationFactor,
+                            collectorPerformanceFactor:
+                                solarHotWater.collectorPerformanceFactor,
+                            effectiveSolarVolume: solarHotWater.effectiveSolarVolume,
+                            dailyHotWaterDemand: waterCommon.dailyHotWaterUsageMeanAnnual,
+                            volumeRatio: solarHotWater.volumeRatio,
+                            solarStorageVolumeFactor:
+                                solarHotWater.solarStorageVolumeFactor,
+                            annualSolarInput: solarHotWater.solarInputAnnual,
+                        },
+                    };
+                }
+                return [
+                    {
+                        ...pick(action, [
+                            'scenarioLocked',
+                            'moduleEnabled',
+                            'modelInput',
+                            'pumpType',
+                        ]),
+                        modelOutput,
+                    },
+                ];
+            }
             case 'merge state': {
                 if (state === 'loading') {
                     return [state];
@@ -118,22 +134,19 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
     },
     effector: assertNever,
     shims: {
-        extractUpdateAction: ({ currentScenario }) => {
+        extractUpdateAction: ({ currentScenario, currentModel }) => {
             const { SHW, use_SHW } = currentScenario ?? {};
             const scenarioLocked = currentScenario?.locked ?? false;
             const moduleEnabled = use_SHW === true;
             const modelInput: SolarHotWaterV1['input'] = SHW?.input ?? emptyModelInput;
             const pumpType = SHW?.pump ?? null;
-            const modelOutput = extractModelOutputsFromLegacy(currentScenario);
             return Result.ok({
                 type: 'external data update',
-                newState: {
-                    scenarioLocked,
-                    moduleEnabled,
-                    modelOutput,
-                    modelInput,
-                    pumpType,
-                },
+                model: currentModel,
+                scenarioLocked,
+                moduleEnabled,
+                modelInput,
+                pumpType,
             });
         },
         mutateLegacyData: ({ project, scenarioId }, state) => {
@@ -145,11 +158,11 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                 pump: pumpType ?? undefined,
             };
             /* eslint-disable
-           @typescript-eslint/consistent-type-assertions,
-           @typescript-eslint/no-explicit-any,
-           @typescript-eslint/no-unsafe-assignment,
-           @typescript-eslint/no-unsafe-member-access,
-        */
+               @typescript-eslint/consistent-type-assertions,
+               @typescript-eslint/no-explicit-any,
+               @typescript-eslint/no-unsafe-assignment,
+               @typescript-eslint/no-unsafe-member-access,
+            */
             const dataAny = (project as any).data[scenarioId as any];
             dataAny.SHW = newSHW;
             dataAny.use_SHW = moduleEnabled;
@@ -190,11 +203,11 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
             props: Shadow<
                 NumericOutputProps,
                 {
-                    value: number | typeof noOutput | undefined;
+                    value: number | undefined;
                 }
             >,
         ) {
-            return <NumericOutput {...props} value={props.value ?? loading} />;
+            return <NumericOutput {...props} value={props.value ?? noOutput} />;
         }
         function MyTd(props: Omit<PropsOf<'td'>, 'style'>) {
             return <td {...props} style={{ verticalAlign: 'middle' }} />;

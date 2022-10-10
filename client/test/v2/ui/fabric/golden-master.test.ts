@@ -263,6 +263,7 @@ describe('fabric page extractor & mutator round trip should roundtrip the data a
                     project: project.parsedData,
                     currentScenario,
                     scenarioId: currentScenarioId,
+                    currentModel: null as any
                 },
                 '',
             );
