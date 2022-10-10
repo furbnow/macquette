@@ -7,8 +7,8 @@ FROM node:lts-alpine as js
 RUN apk add make
 
 WORKDIR /app/client/
-COPY ./client/package.json ./client/yarn.lock /app/client/
-RUN yarn install --production
+COPY ./client/package.json ./client/package-lock.json /app/client/
+RUN npm clean-install --omit dev
 
 COPY ./client/ /app/client/
 COPY ./Makefile /app/

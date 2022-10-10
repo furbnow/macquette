@@ -2,7 +2,7 @@ FROM node:lts-alpine
 
 WORKDIR /app
 COPY ./ /app
-RUN yarn install
+RUN npm clean-install
 
 ENV BASE_URL=
 ENV USERNAME=

@@ -19,7 +19,7 @@ You will need:
 -  Docker and Docker Compose <https://docs.docker.com/compose/install/>
 -  Python 3.9+ and pip <https://pip.pypa.io/en/stable/installing/>
 -  GNU make
--  Node.js (version 16+) with yarn <https://yarnpkg.com/>
+-  Node.js (version 16+) and NPM
 
 The best way of installing these tools will vary depending on your system.
 
@@ -56,7 +56,7 @@ What is happening here?
    remember CLI incantations. It's also a self-documenting Makefile -so
    to see what commands are available, just type ``make`` and you will
    see a list of available tasks.
--  Package freezing is done using ``pip-tools`` and ``yarn`` for Python
+-  Package freezing is done using ``pip-tools`` and ``npm`` for Python
    and NPM packages respectively.
 -  In local development, Macquette looks for settings in a ``.env`` file
    in the project root. Without one of these, it doesn't know where to

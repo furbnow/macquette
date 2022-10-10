@@ -79,7 +79,7 @@ pip-upgrade-all:  ## Compile new requirements files with latest possible version
 .PHONY: sync
 sync:  ## Install dependencies
 	pip-sync requirements/local.txt
-	cd client && yarn install
+	cd client && npm clean-install
 
 .PHONY: docker-local-up
 docker-local-up:  ## Bring up our local docker containers
