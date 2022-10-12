@@ -266,7 +266,9 @@ function normaliseScenario(scenario: any) {
         ventilation?: any;
         space_heating?: any;
         energy_requirements?: {
-            space_heating?: any;
+            space_heating?: {
+                monthly?: number[];
+            };
             space_cooling?: any;
             appliances?: any;
             cooking?: any;
@@ -433,20 +435,39 @@ function normaliseScenario(scenario: any) {
     // Therefore we check the annual space heating and cooling demands here,
     // and if they are *close to* 0, we remove the key so that they cannot be
     // compared.
-    const { space_heating } = castScenario;
+    const { space_heating, energy_requirements } = castScenario;
     if (compareFloats(space_heating.annual_heating_demand, 0)) {
         delete castScenario.energy_requirements?.space_heating;
     }
     if (compareFloats(space_heating.annual_cooling_demand, 0)) {
         delete castScenario.energy_requirements?.space_cooling;
     }
-    for (const key of Object.keys(space_heating.heat_demand)) {
+    /** If the value is close to zero in the scale provided by a reference value, return 0, otherwise return the value */
+    function normaliseZero(value: number, scaleReference: number) {
         if (
-            compareFloats(space_heating.heat_demand[key], 0, {
-                absoluteToleranceAroundZero: 0.0002,
+            compareFloats(value, 0, {
+                absoluteToleranceAroundZero: scaleReference * Math.pow(10, -8),
             })
         ) {
-            space_heating.heat_demand[key] = 0;
+            return 0;
+        } else {
+            return value;
+        }
+    }
+    for (let month = 0; month < 12; month++) {
+        space_heating.heat_demand[month] = normaliseZero(
+            space_heating.heat_demand[month],
+            space_heating.total_losses[month],
+        );
+        space_heating.heat_demand_kwh[month] = normaliseZero(
+            space_heating.heat_demand_kwh[month],
+            space_heating.total_losses[month],
+        );
+        if (energy_requirements?.space_heating?.monthly !== undefined) {
+            energy_requirements.space_heating.monthly[month] = normaliseZero(
+                energy_requirements.space_heating.monthly[month]!,
+                space_heating.total_losses[month],
+            );
         }
     }
 
