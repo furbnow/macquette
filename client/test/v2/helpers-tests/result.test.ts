@@ -18,8 +18,8 @@ function arbResult<V, E>(ok: fc.Arbitrary<V>, err: fc.Arbitrary<E>) {
 describe('result type', () => {
     it('survives a JSON and Zod-parse round-trip', () => {
         const arb = arbResult(
-            fc.jsonValue().filter((v) => !Object.is(v, -0)),
-            fc.jsonValue().filter((v) => !Object.is(v, -0)),
+            fc.jsonValue().map((v) => emulateJsonRoundTrip(v)),
+            fc.jsonValue().map((v) => emulateJsonRoundTrip(v)),
         );
         fc.assert(
             fc.property(arb, (original) => {
