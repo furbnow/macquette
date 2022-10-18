@@ -6,6 +6,8 @@ import { applianceCarbonCoop } from './appliance-carbon-coop';
 import { fabric } from './fabric';
 import { heatingSystems } from './heating-systems';
 import { householdSchema } from './household';
+import { measures } from './measures';
+
 import {
     legacyBoolean,
     legacyString,
@@ -197,6 +199,8 @@ export const scenarioSchema = z
             .partial(),
         heating_systems: heatingSystems,
         applianceCarbonCoop: applianceCarbonCoop,
+        measures: measures,
+        use_generation: legacyBoolean,
         model: z.unknown(),
         generation: z
             .object({

@@ -1,6 +1,6 @@
 import { Scenario } from '../../../data-schemas/scenario';
 import type {
-    AppliedWall as LegacyAppliedWall,
+    WallLikeElement as LegacyAppliedWall,
     AreaInputs as LegacyAreaInputs,
 } from '../../../data-schemas/scenario/fabric';
 import { isWallLike } from '../../../data-schemas/scenario/fabric';

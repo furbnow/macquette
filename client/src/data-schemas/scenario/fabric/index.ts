@@ -14,24 +14,29 @@ const subtractFrom = z.union([
 ]);
 
 /*
- * We use the following names for subsets of fabric data:
- * - 'library' means the data as it is in the library, without representing any
- *   particular application of that data
- * - 'applied' means the library element was copied into the assessment to represent
- *   a particular building element.  It has properties like area, length, etc.
- * - 'element' means that the data is for the baseline condition, i.e. not a measure
- * - 'measure' means that the data is for a measure, i.e. not something that is done
- *   in the baseline condition of the building but that requires works
+ * A note on nomenclature
+ * ----------------------
  *
- * An element that has been inserted into an assessment could be a combination of all
- * of:
- * - commonLibraryElement
- * - commonLibraryMeasure
- * - appliedElementData
- * - appliedMeasureData
- * plus whatever particulars for a given type (e.g. l & h for walls).
+ * Each type of fabric element data has three possible 'shapes' when it is applied to
+ * the project:
+ *
+ * [in fabric.elements]
+ * - an 'element' is when the library data is 'added'; it has some data that is taken
+ *   from the library, but also things like location, size, overshading, etc.
+ * - a 'measure element' is when the element is also a measure. it has everything from
+ *   an 'element' plus fields that are 'measure' fields (associated_work &c.)
+ *
+ * [in fabric.measures]
+ * - a 'measure' contains a slightly different subset of data; it doesn't include e.g.
+ *   overshading or area but does include cost total, quantity, and loction.
+ *
+ * In the code below, 'common' indicates that the data is shared among some subset of
+ * final 'shapes'.
+ *
+ * 'basic' is used to name the non-differentiated element/measure element/measure. The
+ * fabric element type types specialise these 'basic' types.
  */
-const commonLibraryElement = z.object({
+const thing = z.object({
     lib: z.string(),
     name: z.string(),
     source: z
@@ -45,10 +50,17 @@ const commonLibraryElement = z.object({
     uvalue: stringyFloatSchema.transform((val) => (val === '' ? 0 : val)),
     kvalue: stringyFloatSchema.transform((val) => (val === '' ? 0 : val)),
 });
-const commonLibraryMeasure = z.object({
+const location = z
+    .union([z.string(), z.number().transform((n) => n.toString(10))])
+    .optional()
+    .transform((val) => val ?? '');
+
+// This is a more detailed, bespoke version of GenericMeasure
+const commonMeasure = z.object({
     associated_work: z.string(),
     benefits: z.string(),
     cost: stringyIntegerSchema.transform((val) => (val === '' ? 0 : val)),
+    cost_total: z.number().optional(),
     cost_units: z
         .enum(['kWp', 'ln m', 'sqm', 'unit'])
         .optional()
@@ -62,26 +74,21 @@ const commonLibraryMeasure = z.object({
         .string()
         .optional()
         .transform((val) => (val === undefined ? '' : val)),
+    location,
     maintenance: z.string(),
     notes: z.string(),
     performance: z.string(),
+    quantity: z.number().optional(),
     who_by: z.string(),
 });
-const commonAppliedElement = z.object({
+
+const basicElement = thing.extend({
     id: z.number(),
-    location: z
-        .union([z.string(), z.number().transform((n) => n.toString(10))])
-        .optional()
-        .transform((val) => val ?? ''),
+    location,
     area: stringyFloatSchema,
 });
-const commonAppliedMeasure = commonLibraryElement
-    .merge(commonAppliedElement)
-    .merge(commonLibraryMeasure)
-    .extend({
-        cost_total: z.number().optional(),
-        quantity: z.number().optional(),
-    });
+const basicElementMeasure = basicElement.merge(commonMeasure);
+const basicMeasure = thing.merge(commonMeasure);
 
 const areaInputsSpecificSchema = z.object({
     area: z.union([z.number(), z.null()]),
@@ -129,7 +136,7 @@ function migrateFromLegacyWallType(val: LegacyWallType | WallType): WallType {
 const commonWall = z.object({
     type: z.enum(wallTypes).transform(migrateFromLegacyWallType),
 });
-const appliedWall = z.object({
+const commonWallElement = z.object({
     areaInputs: areaInputsSchema.optional(),
     l: stringyFloatSchema.default('' as const),
     h: stringyFloatSchema.default('' as const),
@@ -137,7 +144,7 @@ const appliedWall = z.object({
     netarea: z.number().optional(),
     wk: z.number().optional(),
 });
-const wallMeasure = z.object({
+const commonWallMeasure = z.object({
     cost_units: z
         .union([z.literal('sqm' as const), z.literal('unit' as const)])
         // cost_units are sometimes 'unit' but it's a mistake; should be 'sqm'.
@@ -148,22 +155,16 @@ const wallMeasure = z.object({
     EWI: z.boolean().default(false),
     tags: z.tuple([z.enum(wallTypes).transform(migrateFromLegacyWallType)]).optional(),
 });
-const appliedWallLikeElement = commonLibraryElement
+const wallLikeElement = basicElement.merge(commonWall).merge(commonWallElement);
+const wallLikeMeasureElement = basicElementMeasure
     .merge(commonWall)
-    .merge(appliedWall)
-    .merge(commonAppliedElement);
-const appliedWallLikeMeasure = commonAppliedMeasure
-    .merge(commonWall)
-    .merge(appliedWall)
-    .merge(wallMeasure);
-const libraryWallLikeMeasure = zodPredicateUnion([
+    .merge(commonWallElement)
+    .merge(commonWallMeasure);
+const wallLikeMeasure = zodPredicateUnion([
     {
         name: 'type stored in type',
         predicate: (val) => isIndexable(val) && 'type' in val,
-        schema: commonLibraryElement
-            .merge(commonWall)
-            .merge(commonLibraryMeasure)
-            .merge(wallMeasure),
+        schema: basicMeasure.merge(commonWall).merge(commonWallMeasure),
     },
     // This is not even a 'legacy' format - just for some reason some measures don't
     // have the 'type' field filled in properly, but in every case we can get it from
@@ -171,9 +172,8 @@ const libraryWallLikeMeasure = zodPredicateUnion([
     {
         name: 'type stored in tags',
         predicate: (val) => isIndexable(val) && !('type' in val),
-        schema: commonLibraryElement
-            .merge(commonLibraryMeasure)
-            .merge(wallMeasure)
+        schema: basicMeasure
+            .merge(commonWallMeasure)
             .extend({
                 tags: z.tuple([z.enum(legacyWallTypes)]),
             })
@@ -187,9 +187,9 @@ const libraryWallLikeMeasure = zodPredicateUnion([
             }),
     },
 ]);
-export type AppliedWall =
-    | z.infer<typeof appliedWallLikeElement>
-    | z.infer<typeof appliedWallLikeMeasure>;
+export type WallLikeElement =
+    | z.infer<typeof wallLikeElement>
+    | z.infer<typeof wallLikeMeasureElement>;
 
 const commonOpening = z.object({
     type: z
@@ -210,45 +210,37 @@ const commonOpening = z.object({
     gL: stringyFloatSchema,
     ff: stringyFloatSchema,
 });
-const appliedOpening = z.object({
+const commonOpeningElement = z.object({
     l: stringyFloatSchema,
     h: stringyFloatSchema,
     orientation: stringyIntegerSchema,
     overshading: stringyIntegerSchema,
     subtractfrom: subtractFrom,
 });
-const appliedOpeningElement = commonLibraryElement
-    .merge(commonAppliedElement)
+const openingElement = basicElement.merge(commonOpening).merge(commonOpeningElement);
+const openingMeasureElement = basicElementMeasure
     .merge(commonOpening)
-    .merge(appliedOpening);
-const appliedOpeningMeasure = commonAppliedMeasure
-    .merge(commonOpening)
-    .merge(appliedOpening);
-const libraryOpeningMeasure = commonLibraryElement
-    .merge(commonLibraryMeasure)
-    .merge(commonOpening);
+    .merge(commonOpeningElement);
+const openingMeasure = basicMeasure.merge(commonOpening);
 
 const commonHatch = z.object({
     type: z.enum(['hatch', 'Hatch']).transform(() => 'hatch' as const),
 });
-const appliedHatch = z.object({
+const commonHatchElement = z.object({
     subtractfrom: subtractFrom,
     l: stringyFloatSchema,
     h: stringyFloatSchema,
 });
-const appliedHatchElement = commonLibraryElement
-    .merge(commonAppliedElement)
+const hatchElement = basicElement.merge(commonHatch).merge(commonHatchElement);
+const hatchElementMeasure = basicElementMeasure
     .merge(commonHatch)
-    .merge(appliedHatch);
-const appliedHatchMeasure = commonAppliedMeasure.merge(commonHatch).merge(appliedHatch);
-const libraryHatchMeasure = commonLibraryElement
-    .merge(commonLibraryMeasure)
-    .merge(commonHatch);
+    .merge(commonHatchElement);
+const hatchMeasure = basicMeasure.merge(commonHatch);
 
 const commonFloor = z.object({
     type: z.enum(['floor', 'Floor']).transform(() => 'floor' as const),
 });
-const appliedFloor = z.object({
+const commonFloorElement = z.object({
     // `perimeter` should one day be renamed to `exposedPerimeter` (or
     // something) and go in the per floor type spec, but for now we keep it
     // here because legacy JS references it
@@ -260,15 +252,12 @@ const appliedFloor = z.object({
     wk: stringyFloatSchema.optional(),
 });
 
-const appliedFloorElement = commonLibraryElement
-    .merge(commonAppliedElement)
+const floorElement = basicElement.merge(commonFloor).merge(commonFloorElement);
+const floorMeasureElement = basicElementMeasure
     .merge(commonFloor)
-    .merge(appliedFloor);
-const appliedFloorMeasure = commonAppliedMeasure.merge(commonFloor).merge(appliedFloor);
-const libraryFloorMeasure = commonLibraryElement
-    .merge(commonLibraryMeasure)
-    .merge(commonFloor);
-export const floorSchema = appliedFloorElement;
+    .merge(commonFloorElement);
+const floorMeasure = basicMeasure.merge(commonFloor);
+export const floorSchema = floorElement;
 export type Floor = z.infer<typeof floorSchema>;
 
 function typeFieldMatches(validTypes: string[]) {
@@ -293,7 +282,7 @@ function typeFieldMatches(validTypes: string[]) {
 export const fabricElement = zodPredicateUnion([
     {
         predicate: typeFieldMatches([...legacyWallTypes, ...modernWallTypes]),
-        schema: z.union([appliedWallLikeMeasure, appliedWallLikeElement]),
+        schema: z.union([wallLikeMeasureElement, wallLikeElement]),
     },
     {
         predicate: typeFieldMatches([
@@ -305,20 +294,20 @@ export const fabricElement = zodPredicateUnion([
             'window',
             'Window',
         ]),
-        schema: z.union([appliedOpeningMeasure, appliedOpeningElement]),
+        schema: z.union([openingMeasureElement, openingElement]),
     },
     {
         predicate: typeFieldMatches(['hatch', 'Hatch']),
-        schema: z.union([appliedHatchMeasure, appliedHatchElement]),
+        schema: z.union([hatchElementMeasure, hatchElement]),
     },
     {
         predicate: typeFieldMatches(['floor', 'Floor']),
-        schema: z.union([appliedFloorMeasure, appliedFloorElement]),
+        schema: z.union([floorMeasureElement, floorElement]),
     },
 ]);
 export type FabricElement = z.infer<typeof fabricElement>;
 
-export function isWallLike(element: FabricElement): element is AppliedWall {
+export function isWallLike(element: FabricElement): element is WallLikeElement {
     return (
         element.type === 'external wall' ||
         element.type === 'party wall' ||
@@ -327,10 +316,10 @@ export function isWallLike(element: FabricElement): element is AppliedWall {
     );
 }
 
-export const libraryMeasure = zodPredicateUnion([
+export const fabricMeasure = zodPredicateUnion([
     {
         predicate: typeFieldMatches([...legacyWallTypes, ...modernWallTypes]),
-        schema: libraryWallLikeMeasure,
+        schema: wallLikeMeasure,
     },
     {
         predicate: typeFieldMatches([
@@ -342,15 +331,15 @@ export const libraryMeasure = zodPredicateUnion([
             'window',
             'Window',
         ]),
-        schema: libraryOpeningMeasure,
+        schema: openingMeasure,
     },
     {
         predicate: typeFieldMatches(['hatch', 'Hatch']),
-        schema: libraryHatchMeasure,
+        schema: hatchMeasure,
     },
     {
         predicate: typeFieldMatches(['floor', 'Floor']),
-        schema: libraryFloorMeasure,
+        schema: floorMeasure,
     },
 ]);
 
@@ -359,7 +348,7 @@ export const fabric = z.object({
     measures: z
         .record(
             z.object({
-                measure: libraryMeasure,
+                measure: fabricMeasure,
                 original_elements: z.record(z.object({ id: z.number() })).optional(),
             }),
         )

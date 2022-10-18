@@ -2,11 +2,13 @@ import React from 'react';
 
 import { assertNever } from '../../helpers/assert-never';
 import { Result } from '../../helpers/result';
+import { totalCostOfMeasures } from '../../measures';
 import { CombinedModules } from '../../model/combined-modules';
 import * as targets from '../../model/datasets/targets';
 import type { UiModule } from '../module-management/module-type';
 import { House } from '../output-components/house';
 import { LockedWarning } from '../output-components/locked-warning';
+import { NumberOutput } from '../output-components/numeric';
 import { TargetBar } from '../output-components/target-bar';
 import type { ScenarioPageName, StandalonePageName } from '../pages';
 import { pageTitles } from '../pages';
@@ -17,6 +19,7 @@ export type State = {
     houseGraphicShown: boolean;
     scenarioId: string;
     scenarioLocked: boolean;
+    measuresCost: number | null;
     targetBarData: {
         spaceHeatingDemand: number | null;
         dailyPersonalkWh: number | null;
@@ -98,8 +101,12 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
                     <div className="d-flex align-items-center justify-content-between pb-30">
                         <div style={{ width: '50%' }}>
                             <House {...state.houseData} />
-                            {/* XXX */}
-                            <div>Measures cost: NaN</div>
+                            {state.measuresCost !== null && (
+                                <div>
+                                    Measures cost: £
+                                    <NumberOutput value={state.measuresCost} dp={0} />
+                                </div>
+                            )}
                         </div>
 
                         <div>
@@ -146,6 +153,7 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
             isScenarioPage: false,
             scenarioId: '',
             scenarioLocked: false,
+            measuresCost: null,
             targetBarData: {
                 dailyPersonalkWh: null,
                 co2m2: null,
@@ -195,6 +203,10 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
                         scenarioLocked:
                             route.type === 'with scenario' &&
                             (currentScenario?.locked ?? false),
+                        measuresCost:
+                            scenarioId !== 'master'
+                                ? totalCostOfMeasures(currentScenario)
+                                : null,
                         targetBarData: {
                             spaceHeatingDemand:
                                 currentScenario?.space_heating_demand_m2 ?? null,
