@@ -14,8 +14,8 @@ import { heatingSystems, waterHeating } from './water-heating';
 
 const floors = z.array(
     z.object({
-        area: z.union([z.number(), z.literal('').transform(() => 0)]),
-        height: z.union([z.number(), z.literal('').transform(() => 0)]),
+        area: stringyFloatSchema,
+        height: stringyFloatSchema,
         name: z.string(),
     }),
 );

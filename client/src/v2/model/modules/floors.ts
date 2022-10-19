@@ -1,4 +1,5 @@
 import { Scenario } from '../../data-schemas/scenario';
+import { coalesceEmptyString } from '../../data-schemas/scenario/value-schemas';
 import { sum } from '../../helpers/array-reducers';
 import { cache } from '../../helpers/cache-decorators';
 import { zip } from '../../helpers/zip';
@@ -8,7 +9,14 @@ export type FloorsInput = {
 };
 
 export function extractFloorsInputFromLegacy({ floors }: Scenario): FloorsInput {
-    return { floors: floors ?? [] };
+    return {
+        floors:
+            floors?.map(({ area, height, ...rest }) => ({
+                area: coalesceEmptyString(area, 0),
+                height: coalesceEmptyString(height, 0),
+                ...rest,
+            })) ?? [],
+    };
 }
 
 type FloorSpec = { area: number; height: number; name: string };
