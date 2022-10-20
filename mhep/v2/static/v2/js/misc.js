@@ -949,6 +949,7 @@ function _extract_scenario_inputs(data) {
     inputdata.imagegallery_notes = data.imagegallery_notes;
     inputdata.featuredimage = data.featuredimage;
     inputdata.measures = data.measures;
+    inputdata.modelBehaviourVersion = data.modelBehaviourVersion
 
     return inputdata;
 }
