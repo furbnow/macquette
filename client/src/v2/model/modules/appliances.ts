@@ -23,7 +23,7 @@ export type AppliancesInput =
       };
 
 export function extractAppliancesInputFromLegacy(scenario: Scenario): AppliancesInput {
-    switch (scenario.LAC_calculation_type) {
+    switch (scenario?.LAC_calculation_type) {
         case 'SAP':
         case undefined:
             return {

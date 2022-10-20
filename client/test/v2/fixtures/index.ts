@@ -74,17 +74,20 @@ export const projects = fixtures
     })
     .filter(isNotNull);
 
-export const scenarios = fixtures.flatMap((fixture) => {
-    const parseResult = fixtureSchema.safeParse(fixture.data);
-    if (parseResult.success) {
-        return Object.entries(parseResult.data.data).map(
-            ([name, data]) => new Scenario(fixture.path, name, data),
-        );
-    } else {
-        console.warn(`Scenario parse failure for fixture ${fixture.path}`);
-        return [];
-    }
-});
+export const scenarios = [
+    new Scenario('[no path]', 'undefined scenario', undefined),
+    ...fixtures.flatMap((fixture) => {
+        const parseResult = fixtureSchema.safeParse(fixture.data);
+        if (parseResult.success) {
+            return Object.entries(parseResult.data.data).map(
+                ([name, data]) => new Scenario(fixture.path, name, data),
+            );
+        } else {
+            console.warn(`Scenario parse failure for fixture ${fixture.path}`);
+            return [];
+        }
+    }),
+];
 
 const knownBuggy: Array<{ reason: string; scenarios: Array<[string, string]> }> = [
     {
@@ -166,12 +169,5 @@ export function shouldSkipScenario(scenario: Scenario): boolean {
         }
     }
 
-    // eslint-disable-next-line
-    if ((scenario.data as any).LAC_calculation_type === 'detailedlist') {
-        console.warn(
-            `Skipping fixed data test "${scenario.displayName}" for detailedlist LAC mode`,
-        );
-        return true;
-    }
     return false;
 }

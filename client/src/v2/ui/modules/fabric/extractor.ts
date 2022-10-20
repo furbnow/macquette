@@ -102,7 +102,7 @@ function extractWallElementFromLegacy(legacyWall: LegacyAppliedWall): WallLike {
 
 function extractWallFromLegacy(
     legacyWall: LegacyAppliedWall,
-    fabric: Scenario['fabric'],
+    fabric: Exclude<Scenario, undefined>['fabric'],
     bulkMeasures: State['bulkMeasures'],
 ): WallLike {
     function findMeasureIdx(id: number): number | null {
@@ -243,7 +243,9 @@ function extractWallFromLegacy(
     return extractWallElementFromLegacy(legacyWall);
 }
 
-function extractBulkMeasures(fabric: Scenario['fabric']): State['bulkMeasures'] {
+function extractBulkMeasures(
+    fabric: Exclude<Scenario, undefined>['fabric'],
+): State['bulkMeasures'] {
     return Object.entries(fabric?.measures ?? {})
         .filter(([, v]) => 'original_elements' in v)
         .map(([k, v]) => ({
@@ -255,7 +257,7 @@ function extractBulkMeasures(fabric: Scenario['fabric']): State['bulkMeasures'] 
 }
 
 function thermalMassParameter(scenario: Scenario): State['thermalMassParameter'] {
-    const { fabric } = scenario;
+    const { fabric } = scenario ?? {};
     if (fabric?.global_TMP !== true) {
         return 'no override';
     } else {
@@ -268,7 +270,7 @@ function thermalMassParameter(scenario: Scenario): State['thermalMassParameter']
 }
 
 function maxId(scenario: Scenario) {
-    const { fabric } = scenario;
+    const { fabric } = scenario ?? {};
     const allIds = [
         fabric?.elements?.map((element) => element.id),
         Object.keys(fabric?.measures ?? {}).map((key) => parseInt(key)),
@@ -284,12 +286,12 @@ export function extractUpdateAction({
     currentScenario,
     scenarioId,
 }: LegacyContext): Result<Action, never> {
-    const { fabric } = currentScenario;
+    const { fabric } = currentScenario ?? {};
 
     const bulkMeasuresByScenario = Object.fromEntries(
-        Object.entries(project.data).map(([scenarioId, { fabric }]) => [
+        Object.entries(project.data).map(([scenarioId, scenario]) => [
             scenarioId,
-            extractBulkMeasures(fabric),
+            extractBulkMeasures(scenario?.fabric),
         ]),
     );
     const bulkMeasures = bulkMeasuresByScenario[scenarioId];
@@ -334,7 +336,7 @@ export function extractUpdateAction({
             walls,
             deletedElement: null,
             bulkMeasures,
-            locked: currentScenario.locked ?? false,
+            locked: currentScenario?.locked ?? false,
         },
     });
 }

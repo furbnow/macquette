@@ -82,7 +82,7 @@ export type Input = {
 export function extractInputFromLegacy(rawScenario: unknown): Input {
     const scenario = scenarioSchema.parse(rawScenario);
     return {
-        modelBehaviourVersion: scenario.modelBehaviourVersion ?? 'legacy',
+        modelBehaviourVersion: scenario?.modelBehaviourVersion ?? 'legacy',
         fuels: extractFuelsInputFromLegacy(scenario),
         floors: extractFloorsInputFromLegacy(scenario),
         occupancy: extractOccupancyInputFromLegacy(scenario),

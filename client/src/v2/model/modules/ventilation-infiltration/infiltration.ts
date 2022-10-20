@@ -26,7 +26,7 @@ export type InfiltrationInput = {
 export function extractInfiltrationInputFromLegacy(
     scenario: Scenario,
 ): InfiltrationInput {
-    const { ventilation } = scenario;
+    const { ventilation } = scenario ?? {};
     const intentionalVentsFlues =
         ventilation?.IVF?.map(({ ventilation_rate }) => ({
             ventilationRate: coalesceEmptyString(ventilation_rate, 0),
@@ -62,7 +62,7 @@ export function extractInfiltrationInputFromLegacy(
         }
         estimateFrom = {
             type: 'fabric elements',
-            numberOfFloorsOverride: scenario.num_of_floors_override ?? null,
+            numberOfFloorsOverride: scenario?.num_of_floors_override ?? null,
             walls: interpretWalls(dwelling_construction),
             floor: interpretFloor(suspended_wooden_floor),
             draughtProofedProportion:

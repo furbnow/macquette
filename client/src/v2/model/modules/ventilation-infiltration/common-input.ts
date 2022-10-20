@@ -7,7 +7,7 @@ export function extractVentilationInfiltrationCommonInputFromLegacy(
     scenario: Scenario,
 ): VentilationInfiltrationCommonInput {
     return {
-        numberOfSidesSheltered: scenario.ventilation?.number_of_sides_sheltered ?? 0,
+        numberOfSidesSheltered: scenario?.ventilation?.number_of_sides_sheltered ?? 0,
     };
 }
 

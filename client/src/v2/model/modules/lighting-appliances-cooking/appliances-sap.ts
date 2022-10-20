@@ -14,7 +14,7 @@ export type AppliancesSAPInput = {
 export function extractAppliancesSAPInputFromLegacy(
     scenario: Scenario,
 ): AppliancesSAPInput {
-    const { LAC } = scenario;
+    const { LAC } = scenario ?? {};
     return {
         energyEfficient: LAC?.energy_efficient_appliances ?? false,
         fuels: LAC?.fuels_appliances?.map(({ fuel, fraction }) => ({

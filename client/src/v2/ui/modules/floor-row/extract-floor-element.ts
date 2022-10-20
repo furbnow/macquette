@@ -10,7 +10,7 @@ export function extractFloorElement(
     scenario: Scenario,
     elementId: string,
 ): Result<Floor, Error> {
-    const element = scenario.fabric?.elements?.find(
+    const element = scenario?.fabric?.elements?.find(
         (elem) => elem.id.toString(10) === elementId,
     );
     if (element === undefined) {

@@ -48,10 +48,12 @@ type StorageSpecific =
           temperatureFactor: number;
       };
 
-export function extractWaterHeatingInputFromLegacy(data: Scenario): WaterHeatingInput {
-    const systems = (data.heating_systems ?? []).flatMap(
+export function extractWaterHeatingInputFromLegacy(
+    scenario: Scenario,
+): WaterHeatingInput {
+    const systems = (scenario?.heating_systems ?? []).flatMap(
         (legacySystem): [WaterHeatingSystemInput] | [] => {
-            const out = extractHeatingSystemHelper(legacySystem, data);
+            const out = extractHeatingSystemHelper(legacySystem, scenario);
             if (out === null) {
                 return [];
             } else {
@@ -61,7 +63,7 @@ export function extractWaterHeatingInputFromLegacy(data: Scenario): WaterHeating
     );
     let storage: WaterHeatingInput['storage'];
     const { storage_type, contains_dedicated_solar_storage_or_WWHRS } =
-        data.water_heating ?? {};
+        scenario?.water_heating ?? {};
     if (storage_type === undefined) {
         storage = null;
     } else {
@@ -107,9 +109,9 @@ export function extractWaterHeatingInputFromLegacy(data: Scenario): WaterHeating
             dedicatedSolarOrWWHRSStorage,
         };
     }
-    const communityHeating = data.water_heating?.community_heating ?? false;
+    const communityHeating = scenario?.water_heating?.community_heating ?? false;
     const hotWaterStoreInDwelling =
-        data.water_heating?.hot_water_store_in_dwelling ?? false;
+        scenario?.water_heating?.hot_water_store_in_dwelling ?? false;
     return {
         systems,
         storage,

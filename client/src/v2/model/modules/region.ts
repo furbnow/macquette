@@ -1,7 +1,8 @@
 import { Scenario } from '../../data-schemas/scenario';
 import { Region } from '../enums/region';
 
-export function extractRegionFromLegacy({ region: code }: Scenario) {
+export function extractRegionFromLegacy(scenario: Scenario) {
+    const { region: code } = scenario ?? {};
     if (code === undefined) {
         return new Region('UK average');
     }

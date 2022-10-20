@@ -14,7 +14,7 @@ export type Fuel = {
 export type FuelsDict = Record<string, Fuel>;
 
 export function extractFuelsInputFromLegacy(scenario: Scenario): FuelsDict {
-    const legacyFuels = Object.assign({}, defaultFuels, scenario.fuels);
+    const legacyFuels = Object.assign({}, defaultFuels, scenario?.fuels);
     type LegacyFuelData = typeof legacyFuels[''];
     type FuelData = FuelsDict[''];
     const legacyEntries = Object.entries(legacyFuels);

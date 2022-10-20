@@ -6,10 +6,8 @@ export type OccupancyInput = {
     customOccupancy: number | null;
 };
 
-export function extractOccupancyInputFromLegacy({
-    use_custom_occupancy,
-    custom_occupancy,
-}: Scenario): OccupancyInput {
+export function extractOccupancyInputFromLegacy(scenario: Scenario): OccupancyInput {
+    const { use_custom_occupancy, custom_occupancy } = scenario ?? {};
     if (use_custom_occupancy === true) {
         if (custom_occupancy === undefined || custom_occupancy === '') {
             throw new ModelError(

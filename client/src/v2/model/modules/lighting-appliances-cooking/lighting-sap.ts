@@ -16,7 +16,7 @@ export type LightingSAPInput = {
 };
 
 export function extractLightingSAPInputFromLegacy(scenario: Scenario): LightingSAPInput {
-    const { LAC } = scenario;
+    const { LAC } = scenario ?? {};
     // undefined => 1; empty string => 0... obviously
     function interpretLightOutletLegacyValue(val: number | '' | undefined) {
         return val === '' ? 0 : val === undefined ? 1 : val;

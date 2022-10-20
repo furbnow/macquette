@@ -17,7 +17,7 @@ export function extractWaterCommonInputFromLegacy(scenario: Scenario): WaterComm
         low_water_use_design,
         annual_energy_content,
         override_annual_energy_content,
-    } = scenario.water_heating ?? {};
+    } = scenario?.water_heating ?? {};
     let annualEnergyContentOverride: false | number;
     if (!isTruthy(override_annual_energy_content)) {
         annualEnergyContentOverride = false;
@@ -30,8 +30,8 @@ export function extractWaterCommonInputFromLegacy(scenario: Scenario): WaterComm
         });
     }
     const solarHotWater =
-        isTruthy(scenario.use_SHW) ||
-        isTruthy(scenario.water_heating?.solar_water_heating);
+        isTruthy(scenario?.use_SHW) ||
+        isTruthy(scenario?.water_heating?.solar_water_heating);
     return {
         lowWaterUseDesign: low_water_use_design === true || low_water_use_design === 1,
         annualEnergyContentOverride,

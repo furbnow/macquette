@@ -39,7 +39,7 @@ export type SolarHotWaterInput =
       };
 
 export function extractSolarHotWaterInputFromLegacy(data: Scenario): SolarHotWaterInput {
-    if (data.SHW === undefined) {
+    if (data?.SHW === undefined) {
         return 'incomplete input';
     }
     const { collector, combinedCylinderVolume, dedicatedSolarStorageVolume } =

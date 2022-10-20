@@ -17,9 +17,9 @@ class ProjectData {
         this.data = data;
     }
 
-    scenario(id: string): Scenario {
+    scenario(id: string): Exclude<Scenario, undefined> {
         if (!(id in this.data)) {
-            throw new Error(`No scenario with ID ${id}`);
+            throw new Error(`No scenario with ID ${id} (key missing)`);
         }
         if (id in this.cache) {
             const result = this.cache[id];
@@ -28,6 +28,9 @@ class ProjectData {
             }
         }
         const parsed = scenarioSchema.parse(this.data[id]);
+        if (parsed === undefined) {
+            throw new Error(`No scenario with ID ${id} (undefined)`);
+        }
         this.cache[id] = parsed;
         return parsed;
     }

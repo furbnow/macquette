@@ -54,7 +54,11 @@ let calc = {data: {}};
  ******************************************************************/
 calc.run = function (datain) {
     const combinedModules = new CombinedModules(extractInputFromLegacy(datain))
-    calc.data = datain;
+    if (datain === undefined) {
+        calc.data = {}
+    } else {
+        calc.data = datain;
+    }
     setDefaultLegacyInputs(calc.data)
     setBlankLegacyOutputs(calc.data)
     combinedModules.mutateLegacyData(calc.data)

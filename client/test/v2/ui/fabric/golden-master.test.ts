@@ -1,11 +1,13 @@
 import { cloneDeep } from 'lodash';
+import { z } from 'zod';
 
+import { projectSchema } from '../../../../src/v2/data-schemas/project';
 import { fabricModule } from '../../../../src/v2/ui/modules/fabric';
 import { projects } from '../../fixtures';
 
 function isVariationAcceptable() {
     return function isVariationAcceptableInner(
-        path: string,
+        _path: string,
         modMissing: boolean,
         modValue: unknown,
         origMissing: boolean,
@@ -25,30 +27,33 @@ function isVariationAcceptable() {
     };
 }
 
-function normaliseRawScenario(rawData: unknown, currentScenarioId: string) {
-    const dataAny = (rawData as any).data[currentScenarioId];
+function normaliseRawScenario(
+    rawProject: z.input<typeof projectSchema>,
+    currentScenarioId: string,
+) {
+    const rawScenario = rawProject.data[currentScenarioId] ?? {};
 
-    dataAny.fabric = dataAny.fabric ?? {};
-    dataAny.fabric.elements = dataAny.fabric.elements ?? [];
-    dataAny.fabric.measures = dataAny.fabric.measures ?? {};
+    rawScenario.fabric = rawScenario.fabric ?? {};
+    rawScenario.fabric.elements = rawScenario.fabric.elements ?? [];
+    rawScenario.fabric.measures = rawScenario.fabric.measures ?? {};
 
     // Legacy boolean conversion
-    if (dataAny.fabric.global_TMP === 1) {
-        dataAny.fabric.global_TMP = true;
+    if (rawScenario.fabric.global_TMP === 1) {
+        rawScenario.fabric.global_TMP = true;
     }
-    if (dataAny.fabric.global_TMP === undefined) {
-        dataAny.fabric.global_TMP = false;
+    if (rawScenario.fabric.global_TMP === undefined) {
+        rawScenario.fabric.global_TMP = false;
     }
 
     // New code doesn't keep around old value if not in use
-    if (dataAny.fabric.global_TMP === false) {
-        delete dataAny.fabric.global_TMP_value;
+    if (rawScenario.fabric.global_TMP === false) {
+        delete rawScenario.fabric.global_TMP_value;
     }
 
-    const shouldBeLoft = new Set<string>();
-    const shouldBeRoof = new Set<string>();
+    const shouldBeLoft = new Set<number>();
+    const shouldBeRoof = new Set<number>();
 
-    for (const [id, measure] of Object.entries(dataAny.fabric.measures).filter(
+    for (const [id, measure] of Object.entries(rawScenario.fabric.measures).filter(
         ([, measure]) =>
             (measure as any).measure.type === 'Wall' ||
             (measure as any).measure.type === 'Roof' ||
@@ -61,7 +66,8 @@ function normaliseRawScenario(rawData: unknown, currentScenarioId: string) {
     )) {
         const measureAny = measure as any;
 
-        measureAny.measure.id = parseInt(id, 10);
+        const measureId = parseInt(id, 10);
+        measureAny.measure.id = measureId;
 
         if (
             measureAny.measure.min_cost === '' ||
@@ -95,13 +101,13 @@ function normaliseRawScenario(rawData: unknown, currentScenarioId: string) {
 
         // Lofts are often stored wrongly as roofs
         if (measureAny.measure.type === 'Roof' && measureAny.measure.tags[0] === 'Loft') {
-            shouldBeLoft.add(measureAny.measure.id);
+            shouldBeLoft.add(measureId);
             measureAny.measure.type = 'Loft';
         } else if (
             measureAny.measure.type === 'Loft' &&
             measureAny.measure.tags[0] === 'Roof'
         ) {
-            shouldBeRoof.add(measureAny.measure.id);
+            shouldBeRoof.add(measureId);
             measureAny.measure.type = 'Roof';
         }
 
@@ -136,22 +142,23 @@ function normaliseRawScenario(rawData: unknown, currentScenarioId: string) {
     }
 
     // Prune away all measures with no elements they're applied to
-    for (const key in dataAny.fabric.measures) {
+    for (const key in rawScenario.fabric.measures) {
         if (
-            Object.keys(dataAny.fabric.measures[key].original_elements ?? {}).length === 0
+            Object.keys(rawScenario?.fabric.measures[key]?.original_elements ?? {})
+                .length === 0
         ) {
-            delete dataAny.fabric.measures[key];
+            delete rawScenario.fabric.measures[key];
         }
     }
 
-    for (const element of dataAny.fabric.elements.filter(
+    for (const element of rawScenario.fabric.elements.filter(
         (element: any) =>
             element.type === 'Wall' ||
             element.type === 'Roof' ||
             element.type === 'Loft' ||
             element.type === 'Party_wall',
     )) {
-        const elementAny = element;
+        const elementAny = element as any;
 
         elementAny.kvalue = parseFloat(elementAny.kvalue);
         if (elementAny.cost === '') {
@@ -170,7 +177,7 @@ function normaliseRawScenario(rawData: unknown, currentScenarioId: string) {
         delete elementAny.gL;
 
         // Non-measures shouldn't have these fields
-        if (!(elementAny.id in dataAny.fabric.measures)) {
+        if (!(elementAny.id in rawScenario.fabric.measures)) {
             delete elementAny.associated_work;
             delete elementAny.benefits;
             delete elementAny.cost;
@@ -265,15 +272,15 @@ describe('fabric page extractor & mutator round trip should roundtrip the data a
                 '',
             );
 
-            normaliseRawScenario(project.rawData, currentScenarioId);
+            normaliseRawScenario(project.rawData as any, currentScenarioId);
         }
 
         for (const [currentScenarioId, currentScenario] of Object.entries(
             (modifiedProject as any).data,
         )) {
             normaliseOutputScenario(currentScenario);
-            expect((currentScenario as any).fabric).toEqualBy(
-                (project.rawData as any).data[currentScenarioId].fabric,
+            expect((currentScenario as any)?.fabric).toEqualBy(
+                (project.rawData as any).data[currentScenarioId]?.fabric,
                 isVariationAcceptable(),
             );
         }

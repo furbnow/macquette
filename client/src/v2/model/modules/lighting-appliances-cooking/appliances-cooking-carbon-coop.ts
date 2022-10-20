@@ -29,7 +29,7 @@ export function extractAppliancesCarbonCoopInputFromLegacy(
     scenario: Scenario,
 ): AppliancesCookingCarbonCoopInput {
     return (
-        scenario.applianceCarbonCoop?.list?.map((item, index): LoadInput => {
+        scenario?.applianceCarbonCoop?.list?.map((item, index): LoadInput => {
             const fuelEfficiency = coalesceEmptyString(item.efficiency, 1);
             let fuelType: FuelType;
             switch (item.type_of_fuel) {

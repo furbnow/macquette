@@ -48,10 +48,8 @@ export type LoadedState = {
     pumpType: 'PV' | 'electric' | null;
 };
 
-function extractModelOutputsFromLegacy({
-    SHW,
-    water_heating,
-}: Scenario): LoadedState['modelOutput'] {
+function extractModelOutputsFromLegacy(scenario: Scenario): LoadedState['modelOutput'] {
+    const { SHW, water_heating } = scenario ?? {};
     return {
         aStar: nanToNull(SHW?.a) ?? noOutput,
         collectorPerformanceRatio:
@@ -121,8 +119,8 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
     effector: assertNever,
     shims: {
         extractUpdateAction: ({ currentScenario }) => {
-            const { SHW, use_SHW } = currentScenario;
-            const scenarioLocked = currentScenario.locked ?? false;
+            const { SHW, use_SHW } = currentScenario ?? {};
+            const scenarioLocked = currentScenario?.locked ?? false;
             const moduleEnabled = use_SHW === true;
             const modelInput: SolarHotWaterV1['input'] = SHW?.input ?? emptyModelInput;
             const pumpType = SHW?.pump ?? null;

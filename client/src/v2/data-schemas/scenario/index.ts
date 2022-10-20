@@ -181,6 +181,7 @@ export const scenarioSchema = z
         heating_systems: heatingSystems,
         applianceCarbonCoop: applianceCarbonCoop,
     })
-    .partial();
+    .partial()
+    .optional();
 
 export type Scenario = z.infer<typeof scenarioSchema>;

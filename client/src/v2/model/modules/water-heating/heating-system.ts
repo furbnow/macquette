@@ -45,10 +45,13 @@ type NonCombiNoPrimaryCircuitInput = {
     type: 'non-combi with no primary circuit';
 };
 
-type LegacySystem = Exclude<Scenario['heating_systems'], undefined>[0];
+type LegacySystem = Exclude<
+    Exclude<Scenario, undefined>['heating_systems'],
+    undefined
+>[0];
 export function extractHeatingSystemHelper(
     legacySystem: LegacySystem,
-    legacyScenario: Scenario,
+    scenario: Scenario,
 ): WaterHeatingSystemInput | null {
     if (legacySystem.provides === 'heating') {
         return null;
@@ -70,7 +73,7 @@ export function extractHeatingSystemHelper(
         switch (legacySystem.combi_loss) {
             case '0':
             case 0: {
-                specific = extractNonCombiSystem(legacySystem, legacyScenario);
+                specific = extractNonCombiSystem(legacySystem, scenario);
                 break;
             }
             case 'Instantaneous, without keep hot-facility':
@@ -107,7 +110,7 @@ export function extractHeatingSystemHelper(
                 );
                 specific = {
                     type: 'combi storage',
-                    capacity: legacyScenario.water_heating?.Vc ?? 0,
+                    capacity: scenario?.water_heating?.Vc ?? 0,
                 };
                 break;
             case 'Storage combi boiler >= 55 litres':
@@ -126,7 +129,7 @@ export function extractHeatingSystemHelper(
 
 function extractNonCombiSystem(
     legacySystem: LegacySystem,
-    legacyScenario: Scenario,
+    scenario: Scenario,
 ): NonCombiNoPrimaryCircuitInput | NonCombiWithPrimaryCircuitInput {
     if (legacySystem.combi_loss !== 0 && legacySystem.combi_loss !== '0') {
         throw new ModelError('called extractNonCombiSystem on a combi system');
@@ -136,7 +139,7 @@ function extractNonCombiSystem(
             return { type: 'non-combi with no primary circuit' };
         case 'Yes': {
             let pipeworkInsulation: NonCombiWithPrimaryCircuitInput['primaryCircuitLoss']['pipeworkInsulation'];
-            switch (legacyScenario.water_heating?.pipework_insulation) {
+            switch (scenario?.water_heating?.pipework_insulation) {
                 case 'Uninsulated primary pipework':
                     pipeworkInsulation = 'uninsulated';
                     break;
@@ -155,7 +158,7 @@ function extractNonCombiSystem(
                     );
             }
             let hotWaterControl: NonCombiWithPrimaryCircuitInput['primaryCircuitLoss']['hotWaterControl'];
-            switch (legacyScenario.water_heating?.hot_water_control_type) {
+            switch (scenario.water_heating?.hot_water_control_type) {
                 case 'no_cylinder_thermostat':
                     hotWaterControl = { type: 'no control' };
                     break;

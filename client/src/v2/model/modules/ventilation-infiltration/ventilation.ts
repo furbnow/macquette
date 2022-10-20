@@ -49,7 +49,7 @@ export type VentilationDependencies = {
 };
 
 export function extractVentilationInputFromLegacy(scenario: Scenario): VentilationInput {
-    const { ventilation } = scenario;
+    const { ventilation } = scenario ?? {};
     const extractVentilationPoints =
         ventilation?.EVP?.map(({ ventilation_rate }) => ({
             ventilationRate: coalesceEmptyString(ventilation_rate, 0) ?? 0,

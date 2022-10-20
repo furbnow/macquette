@@ -22,7 +22,8 @@ function isDeductibleSpec(element: FlatElementSpec): element is AnnotatedDeducti
     return ['door', 'hatch', 'roof light', 'window'].includes(element.type);
 }
 
-export function extractFabricInputFromLegacy({ fabric }: Scenario): FabricInput {
+export function extractFabricInputFromLegacy(scenario: Scenario): FabricInput {
+    const { fabric } = scenario ?? {};
     let thermalMassParameterOverride: number | null = null;
     if (fabric?.global_TMP === true) {
         if (typeof fabric.global_TMP_value !== 'number') {

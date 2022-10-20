@@ -136,8 +136,9 @@ export function checkOutputBugs(legacyScenario: any) {
 export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
     function spaceHeatingEnergyRequirementsBugs(): Messages {
         if (
-            typeof (inputs as Record<string, unknown>)['space_heating'] !== 'object' &&
-            (inputs.heating_systems ?? []).length !== 0
+            inputs !== undefined &&
+            typeof inputs['space_heating'] !== 'object' &&
+            (inputs?.heating_systems ?? []).length !== 0
         ) {
             /*
             In the legacy model:
@@ -174,19 +175,19 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
         // truthy and water_heating.solar_water_heating is falsy, then SHW will
         // be calculated but not factored in to the main water heating module.
         const isBug =
-            isTruthy(inputs.use_SHW) !==
-            isTruthy(inputs.water_heating?.solar_water_heating);
+            isTruthy(inputs?.use_SHW) !==
+            isTruthy(inputs?.water_heating?.solar_water_heating);
         return isBug
             ? bug('mismatch between .use_SHW and .water_heating.solar_water_heating', {
-                  use_SHW: inputs.use_SHW,
-                  solar_water_heating: inputs.water_heating?.solar_water_heating,
+                  use_SHW: inputs?.use_SHW,
+                  solar_water_heating: inputs?.water_heating?.solar_water_heating,
               })
             : noBug;
     }
 
     function heatingSystemCombiTypeBug(): Messages {
         return (
-            inputs.heating_systems?.flatMap((system) => {
+            inputs?.heating_systems?.flatMap((system) => {
                 if (system.combi_loss === 'Storage combi boiler  55 litres') {
                     return bug('some heating system had a buggy value for .combi_loss', {
                         id: (system as any).id,
@@ -203,7 +204,7 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
         // Primary circuit losses are fixed as 0 when a combi boiler is
         // configured, so primary_circuit_loss should not be 'Yes'
         return (
-            inputs.heating_systems?.flatMap((system) => {
+            inputs?.heating_systems?.flatMap((system) => {
                 if (system.combi_loss === 0 || system.combi_loss === '0') {
                     return noBug;
                 }
@@ -224,7 +225,7 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
 
     function heatingSystemPrimaryCircuitInvariants(): Messages {
         return (
-            inputs.heating_systems?.flatMap((system) => {
+            inputs?.heating_systems?.flatMap((system) => {
                 if (system.primary_circuit_loss === 'No') {
                     return noBug;
                 }
@@ -232,7 +233,7 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
                     id: (system as any).id,
                     combi_loss: system.combi_loss,
                 };
-                if (inputs.water_heating?.pipework_insulation === undefined) {
+                if (inputs?.water_heating?.pipework_insulation === undefined) {
                     return bug(
                         'some heating system was specified as having primary circuit loss, but no value was provided for pipework insulation',
                         context,
@@ -250,10 +251,10 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
     }
 
     function fuelBugs(): Messages {
-        if (inputs.fuels === undefined) {
+        if (inputs?.fuels === undefined) {
             return noBug;
         }
-        return Object.entries(inputs.fuels).flatMap(([fuelName, fuelData]) => {
+        return Object.entries(inputs?.fuels).flatMap(([fuelName, fuelData]) => {
             if (typeof fuelData.standingcharge === 'string') {
                 return bug(
                     'some fuel had a stringy number for its standing charge, which causes string concatenation errors if this fuel is used for anything',
@@ -277,8 +278,8 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
 export function hasNewBehaviour(inputs: FcInfer<typeof arbScenarioInputs>): boolean {
     // SHW from estimate
     const shwIsFromEstimate =
-        inputs.SHW !== undefined &&
-        isTruthy(inputs.use_SHW || inputs.water_heating?.solar_water_heating) &&
+        inputs?.SHW !== undefined &&
+        isTruthy(inputs?.use_SHW || inputs?.water_heating?.solar_water_heating) &&
         'version' in inputs.SHW &&
         inputs.SHW.version >= 1 &&
         inputs.SHW.input.collector.parameterSource === 'estimate';
@@ -287,6 +288,6 @@ export function hasNewBehaviour(inputs: FcInfer<typeof arbScenarioInputs>): bool
 }
 
 export function hasNewInputs(inputs: FcInfer<typeof arbScenarioInputs>): boolean {
-    const shwIsNew = 'version' in (inputs.SHW ?? {});
+    const shwIsNew = 'version' in (inputs?.SHW ?? {});
     return shwIsNew;
 }

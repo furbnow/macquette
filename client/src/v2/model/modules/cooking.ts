@@ -11,7 +11,7 @@ export type CookingInput =
     | { type: 'carbon coop' };
 
 export function extractCookingInputFromLegacy(scenario: Scenario): CookingInput {
-    switch (scenario.LAC_calculation_type) {
+    switch (scenario?.LAC_calculation_type) {
         case 'SAP':
         case undefined:
             return {

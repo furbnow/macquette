@@ -8,7 +8,8 @@ export type FloorsInput = {
     floors: Array<FloorSpec>;
 };
 
-export function extractFloorsInputFromLegacy({ floors }: Scenario): FloorsInput {
+export function extractFloorsInputFromLegacy(scenario: Scenario): FloorsInput {
+    const { floors } = scenario ?? {};
     return {
         floors:
             floors?.map(({ area, height, ...rest }) => ({

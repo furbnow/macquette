@@ -599,14 +599,14 @@ function Generation({
 }
 
 function extractGeneration(scenario: Scenario): State['generation'] {
+    const { currentenergy, fuels } = scenario ?? {};
     const onsite = {
-        annualkWh: scenario.currentenergy?.generation?.annual_generation ?? null,
-        fractionUsedOnsite:
-            scenario.currentenergy?.generation?.fraction_used_onsite ?? null,
-        fitAnnualIncome: scenario.currentenergy?.generation?.annual_FIT_income ?? null,
+        annualkWh: currentenergy?.generation?.annual_generation ?? null,
+        fractionUsedOnsite: currentenergy?.generation?.fraction_used_onsite ?? null,
+        fitAnnualIncome: currentenergy?.generation?.annual_FIT_income ?? null,
     };
 
-    if (scenario.currentenergy?.onsite_generation !== true) {
+    if (currentenergy?.onsite_generation !== true) {
         return {
             type: 'none',
             onsite,
@@ -617,83 +617,72 @@ function extractGeneration(scenario: Scenario): State['generation'] {
             onsite,
             outputs: {
                 co2factor:
-                    coalesceEmptyString(
-                        scenario.fuels?.['generation']?.co2factor,
-                        null,
-                    ) ?? noOutput,
-                kgCo2: scenario.currentenergy?.generation?.annual_CO2 ?? noOutput,
+                    coalesceEmptyString(fuels?.['generation']?.co2factor, null) ??
+                    noOutput,
+                kgCo2: currentenergy?.generation?.annual_CO2 ?? noOutput,
                 primaryEnergyFactor:
                     coalesceEmptyString(
-                        scenario.fuels?.['generation']?.primaryenergyfactor,
+                        fuels?.['generation']?.primaryenergyfactor,
                         null,
                     ) ?? noOutput,
-                primaryEnergykWh:
-                    scenario.currentenergy?.generation?.primaryenergy ?? noOutput,
+                primaryEnergykWh: currentenergy?.generation?.primaryenergy ?? noOutput,
                 unitCost:
-                    coalesceEmptyString(scenario.fuels?.['generation']?.fuelcost, null) ??
+                    coalesceEmptyString(fuels?.['generation']?.fuelcost, null) ??
                     noOutput,
                 standingCharge:
-                    coalesceEmptyString(
-                        scenario.fuels?.['generation']?.standingcharge,
-                        null,
-                    ) ?? noOutput,
-                totalCost: scenario.currentenergy?.generation?.annual_savings ?? noOutput,
+                    coalesceEmptyString(fuels?.['generation']?.standingcharge, null) ??
+                    noOutput,
+                totalCost: currentenergy?.generation?.annual_savings ?? noOutput,
             },
         };
     }
 }
 
 function extractOutputsFromLegacy(scenario: Scenario): Partial<State> {
+    const { kwhdpp, kgco2perm2, primary_energy_use_m2, currentenergy, fuels } =
+        scenario ?? {};
     return {
         totals: {
             baseline: {
-                dailyPersonalkWh: scenario.kwhdpp ?? noOutput,
-                co2m2: scenario.kgco2perm2 ?? noOutput,
-                primaryEnergykWhm2: scenario.primary_energy_use_m2 ?? noOutput,
+                dailyPersonalkWh: kwhdpp ?? noOutput,
+                co2m2: kgco2perm2 ?? noOutput,
+                primaryEnergykWhm2: primary_energy_use_m2 ?? noOutput,
             },
             currentEnergy: {
-                dailyPersonalkWh: scenario.currentenergy?.energyuseperperson ?? noOutput,
-                primaryEnergykWh:
-                    scenario.currentenergy?.primaryenergy_annual_kwh ?? noOutput,
-                primaryEnergykWhm2:
-                    scenario.currentenergy?.primaryenergy_annual_kwhm2 ?? noOutput,
-                co2: scenario.currentenergy?.total_co2m2 ?? noOutput,
-                co2m2: scenario.currentenergy?.total_co2m2 ?? noOutput,
-                grossCost: scenario.currentenergy?.total_cost ?? noOutput,
-                netCost: scenario.currentenergy?.annual_net_cost ?? noOutput,
+                dailyPersonalkWh: currentenergy?.energyuseperperson ?? noOutput,
+                primaryEnergykWh: currentenergy?.primaryenergy_annual_kwh ?? noOutput,
+                primaryEnergykWhm2: currentenergy?.primaryenergy_annual_kwhm2 ?? noOutput,
+                co2: currentenergy?.total_co2m2 ?? noOutput,
+                co2m2: currentenergy?.total_co2m2 ?? noOutput,
+                grossCost: currentenergy?.total_cost ?? noOutput,
+                netCost: currentenergy?.annual_net_cost ?? noOutput,
             },
         },
         consumption: mapValues(
-            scenario.currentenergy?.use_by_fuel ?? {},
+            currentenergy?.use_by_fuel ?? {},
             (fuel, name): ConsumptionData => ({
                 inputs: {
                     kWh: coalesceEmptyString(fuel.annual_use, null),
                 },
                 outputs: {
                     co2factor:
-                        coalesceEmptyString(scenario.fuels?.[name]?.co2factor, null) ??
-                        noOutput,
+                        coalesceEmptyString(fuels?.[name]?.co2factor, null) ?? noOutput,
                     kgCo2: fuel.annual_co2,
                     primaryEnergyFactor:
-                        coalesceEmptyString(
-                            scenario.fuels?.[name]?.primaryenergyfactor,
-                            null,
-                        ) ?? noOutput,
+                        coalesceEmptyString(fuels?.[name]?.primaryenergyfactor, null) ??
+                        noOutput,
                     primaryEnergykWh: fuel.primaryenergy,
                     unitCost:
-                        coalesceEmptyString(scenario.fuels?.[name]?.fuelcost, null) ??
-                        noOutput,
+                        coalesceEmptyString(fuels?.[name]?.fuelcost, null) ?? noOutput,
                     standingCharge:
-                        coalesceEmptyString(
-                            scenario.fuels?.[name]?.standingcharge,
-                            null,
-                        ) ?? noOutput,
+                        coalesceEmptyString(fuels?.[name]?.standingcharge, null) ??
+                        noOutput,
                     totalCost: fuel.annualcost,
                 },
             }),
         ),
         generation: extractGeneration(scenario),
-        fuels: mapValues(scenario.fuels, ({ category }, name) => ({
+        fuels: mapValues(fuels, ({ category }, name) => ({
             tag: name,
             name,
             category,
