@@ -1,10 +1,15 @@
 import fc from 'fast-check';
 
+import { Fuels } from '../../../../src/v2/model/modules/fuels';
 import { sensibleFloat, stringySensibleFloat } from './values';
 
 export function arbFuels() {
     return fc.dictionary(
-        fc.string(),
+        fc.oneof(
+            fc.constant(Fuels.STANDARD_TARIFF),
+            fc.constant(Fuels.GENERATION),
+            fc.string(),
+        ),
         fc.record({
             category: fc.constantFrom(
                 ...([

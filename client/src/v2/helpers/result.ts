@@ -207,4 +207,9 @@ export class Result<T, E> {
             return Result.ok(val);
         }
     }
+
+    static fromNullable<V>(val: V | null): Result<V, null> {
+        if (val === null) return Result.err(null);
+        else return Result.ok(val);
+    }
 }

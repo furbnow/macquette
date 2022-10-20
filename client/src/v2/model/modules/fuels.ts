@@ -7,7 +7,7 @@ export type Fuel = {
     category: 'gas' | 'solid fuel' | 'generation' | 'oil' | 'electricity';
     standingCharge: number; // £ per year
     unitPrice: number; // p per kWh
-    emissions: number; // kg CO_2 per kWh
+    carbonEmissionsFactor: number; // kg CO_2 per kWh
     primaryEnergyFactor: number;
 };
 
@@ -45,7 +45,7 @@ export function extractFuelsInputFromLegacy(scenario: Scenario): FuelsDict {
                 category: sanitiseCategory(category),
                 standingCharge: coalesceEmptyString(standingcharge, 0),
                 unitPrice: coalesceEmptyString(fuelcost, 0),
-                emissions: coalesceEmptyString(co2factor, 0),
+                carbonEmissionsFactor: coalesceEmptyString(co2factor, 0),
                 primaryEnergyFactor: coalesceEmptyString(primaryenergyfactor, 0),
             },
         ],
@@ -55,10 +55,14 @@ export function extractFuelsInputFromLegacy(scenario: Scenario): FuelsDict {
 
 export class Fuels {
     public static STANDARD_TARIFF = 'Standard Tariff';
+    public static GENERATION = 'generation';
 
     constructor(private input: FuelsDict) {
         if (!(Fuels.STANDARD_TARIFF in input)) {
             throw new ModelError('fuels must contain standard tariff');
+        }
+        if (!(Fuels.GENERATION in input)) {
+            throw new ModelError('fuels must contain generation');
         }
     }
 
@@ -70,5 +74,11 @@ export class Fuels {
         // SAFETY: Presence of this key is checked by constructor
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.input[Fuels.STANDARD_TARIFF]!;
+    }
+
+    get generation(): Fuel {
+        // SAFETY: Presence of this key is checked by constructor
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.input[Fuels.GENERATION]!;
     }
 }

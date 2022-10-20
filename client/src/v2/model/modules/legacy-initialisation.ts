@@ -38,6 +38,26 @@ export function setDefaultLegacyInputs(data: unknown) {
         applianceCarbonCoop: {
             list: [],
         },
+        generation: {
+            solar_annual_kwh: 0,
+            // SAP defaults to 0.5, but this is unrealistic
+            solar_fraction_used_onsite: 0.25,
+            solar_FIT: 0,
+            solar_export_FIT: 0,
+            wind_annual_kwh: 0,
+            wind_fraction_used_onsite: 0.5,
+            wind_FIT: 0,
+            wind_export_FIT: 0,
+            hydro_annual_kwh: 0,
+            hydro_fraction_used_onsite: 0.5,
+            hydro_FIT: 0,
+            hydro_export_FIT: 0,
+            use_PV_calculator: false,
+            solarpv_orientation: 4,
+            solarpv_kwp_installed: 0,
+            solarpv_inclination: 35,
+            solarpv_overshading: 1,
+        },
     };
     defaultsDeep(data, modelDefaults);
 }
@@ -97,5 +117,12 @@ export function setBlankLegacyOutputs(data: any) {
     };
     data.applianceCarbonCoop.gains_W = {};
     data.applianceCarbonCoop.gains_W_monthly = {};
+    data.generation.systems = {};
+    data.generation.total_energy_income = 0;
+    data.generation.total_primaryenergy = 0;
+    data.generation.total_generation = 0;
+    data.generation.total_used_onsite = 0;
+    data.generation.total_exported = 0;
+    data.generation.total_CO2 = 0;
     /* eslint-enable */
 }

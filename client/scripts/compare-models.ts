@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { calcRun } from '../src/v2/model/model';
 
 const MODEL_VERSION_LEGACY = 'legacy';
-const MODEL_VERSION_LATEST = 1;
+const MODEL_VERSION_LATEST = 2;
 
 const HEADLINE_FIGURE_KEY = 'space_heating_demand_m2';
 

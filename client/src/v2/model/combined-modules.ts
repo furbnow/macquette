@@ -17,6 +17,11 @@ import {
 import { extractFabricInputFromLegacy, Fabric, FabricInput } from './modules/fabric';
 import { extractFloorsInputFromLegacy, Floors, FloorsInput } from './modules/floors';
 import { extractFuelsInputFromLegacy, Fuels, FuelsDict } from './modules/fuels';
+import {
+    extractGenerationInputFromLegacy,
+    Generation,
+    GenerationInput,
+} from './modules/generation';
 import { HeatLoss } from './modules/heat-loss';
 import {
     extractLightingSAPInputFromLegacy,
@@ -77,6 +82,7 @@ export type Input = {
     appliances: AppliancesInput;
     cooking: CookingInput;
     waterHeating: WaterHeatingInput;
+    generation: GenerationInput;
 };
 
 export function extractInputFromLegacy(rawScenario: unknown): Input {
@@ -98,6 +104,7 @@ export function extractInputFromLegacy(rawScenario: unknown): Input {
         appliances: extractAppliancesInputFromLegacy(scenario),
         cooking: extractCookingInputFromLegacy(scenario),
         waterHeating: extractWaterHeatingInputFromLegacy(scenario),
+        generation: extractGenerationInputFromLegacy(scenario),
     };
 }
 
@@ -116,6 +123,7 @@ export class CombinedModules {
     appliances: Appliances;
     cooking: Cooking;
     waterHeating: WaterHeating;
+    generation: Generation;
 
     constructor(input: Input) {
         const { region } = input;
@@ -176,6 +184,11 @@ export class CombinedModules {
             waterCommon: this.waterCommon,
             solarHotWater: this.solarHotWater,
         });
+        this.generation = new Generation(input.generation, {
+            modelBehaviourFlags,
+            region,
+            fuels,
+        });
     }
 
     /* eslint-disable
@@ -201,6 +214,7 @@ export class CombinedModules {
             this.appliances,
             this.cooking,
             this.waterHeating,
+            this.generation,
         ];
         for (const mod of Object.values(mutatorModules)) {
             mod.mutateLegacyData(data);

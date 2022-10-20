@@ -39,7 +39,11 @@ const LAC = z
     })
     .partial();
 
-export const modelBehaviourVersionSchema = z.union([z.literal('legacy'), z.literal(1)]);
+export const modelBehaviourVersionSchema = z.union([
+    z.literal('legacy'),
+    z.literal(1),
+    z.literal(2),
+]);
 export type ModelBehaviourVersion = z.infer<typeof modelBehaviourVersionSchema>;
 
 export const scenarioSchema = z
@@ -105,8 +109,8 @@ export const scenarioSchema = z
             .partial(),
         num_of_floors_override: z.number(), // Used only in ventilation
         FEE: numberWithNaN.nullable(),
-        total_cost: stringyFloatSchema.nullable(),
-        annualco2: z.number().nullable(),
+        total_cost: numberWithNaN.nullable(),
+        annualco2: numberWithNaN.nullable(),
         totalWK: numberWithNaN.nullable(),
         kwhdpp: numberWithNaN.nullable(),
         kgco2perm2: numberWithNaN.nullable(),
@@ -126,7 +130,7 @@ export const scenarioSchema = z
             z.object({
                 name: z.string(),
                 quantity: z.number().nullable(),
-                annualcost: stringyFloatSchema.nullable(),
+                annualcost: numberWithNaN.nullable(),
             }),
         ),
         currentenergy: z
@@ -181,6 +185,29 @@ export const scenarioSchema = z
         heating_systems: heatingSystems,
         applianceCarbonCoop: applianceCarbonCoop,
         model: z.unknown(),
+        generation: z
+            .object({
+                solar_annual_kwh: stringyFloatSchema,
+                solar_fraction_used_onsite: stringyFloatSchema,
+                solar_FIT: stringyFloatSchema,
+                solar_export_FIT: stringyFloatSchema,
+                wind_annual_kwh: stringyFloatSchema,
+                wind_fraction_used_onsite: stringyFloatSchema,
+                wind_FIT: stringyFloatSchema,
+                wind_export_FIT: stringyFloatSchema,
+                hydro_annual_kwh: stringyFloatSchema,
+                hydro_fraction_used_onsite: stringyFloatSchema,
+                hydro_FIT: stringyFloatSchema,
+                hydro_export_FIT: stringyFloatSchema,
+            })
+            .partial()
+            .extend({
+                use_PV_calculator: legacyBoolean,
+                solarpv_kwp_installed: stringyFloatSchema,
+                solarpv_orientation: stringyIntegerSchema,
+                solarpv_inclination: stringyFloatSchema,
+                solarpv_overshading: stringyFloatSchema,
+            }),
     })
     .partial()
     .optional();

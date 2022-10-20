@@ -3,13 +3,19 @@ import { z } from 'zod';
 
 import { scenarioSchema } from '../../../../src/v2/data-schemas/scenario';
 import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
+import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import { Region } from '../../../../src/v2/model/enums/region';
 import { fcPartialRecord, merge } from '../../../helpers/arbitraries';
 import { arbLAC, arbLAC_calculation_type } from './LAC';
 import { arbFabric } from './fabric';
 import { arbFuels } from './fuels';
 import { shwInputIsComplete, shwInputs } from './solar-hot-water';
-import { legacyBoolean, sensibleFloat } from './values';
+import {
+    legacyBoolean,
+    sensibleFloat,
+    stringyNumber,
+    stringySensibleFloat,
+} from './values';
 import { arbVentilation } from './ventilation';
 import { heatingSystemInputs, waterHeatingInputs } from './water-heating';
 
@@ -45,6 +51,35 @@ export function arbScenarioInputs(): fc.Arbitrary<z.input<typeof scenarioSchema>
                     num_of_floors_override: fc.nat(),
                     heating_systems: heatingSystemInputs(Object.keys(fuels)),
                     space_heating: fc.constant({}),
+                    generation: merge(
+                        fc.record({
+                            use_PV_calculator: legacyBoolean(),
+                            solarpv_kwp_installed: stringySensibleFloat(),
+                            solarpv_overshading: fc
+                                .tuple(fc.boolean(), fc.constantFrom(0.5, 0.65, 0.8, 1))
+                                .map(([stringy, number]) =>
+                                    stringy ? number.toString(10) : number,
+                                ),
+                            solarpv_inclination: stringySensibleFloat(),
+                            solarpv_orientation: stringyNumber(
+                                fc.integer({ min: 0, max: Orientation.names.length - 1 }),
+                            ),
+                        }),
+                        fcPartialRecord({
+                            solar_annual_kwh: stringySensibleFloat(),
+                            solar_fraction_used_onsite: stringySensibleFloat(),
+                            solar_FIT: stringySensibleFloat(),
+                            solar_export_FIT: stringySensibleFloat(),
+                            wind_annual_kwh: stringySensibleFloat(),
+                            wind_fraction_used_onsite: stringySensibleFloat(),
+                            wind_FIT: stringySensibleFloat(),
+                            wind_export_FIT: stringySensibleFloat(),
+                            hydro_annual_kwh: stringySensibleFloat(),
+                            hydro_fraction_used_onsite: stringySensibleFloat(),
+                            hydro_FIT: stringySensibleFloat(),
+                            hydro_export_FIT: stringySensibleFloat(),
+                        }),
+                    ),
                 }),
             ),
         )

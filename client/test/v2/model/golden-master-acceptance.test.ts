@@ -10,6 +10,7 @@ import {
 } from '../../../src/v2/helpers/fuzzy-float-equality';
 import { isTruthy } from '../../../src/v2/helpers/is-truthy';
 import { calcRun } from '../../../src/v2/model/model';
+import { setDefaultLegacyInputs } from '../../../src/v2/model/modules/legacy-initialisation';
 import { FcInfer } from '../../helpers/arbitraries';
 import { stricterParseFloat } from '../../helpers/stricter-parse-float';
 import { scenarios, shouldSkipScenario } from '../fixtures';
@@ -153,7 +154,7 @@ function heuristicTypeOf(value: unknown) {
 
 function modelValueComparer(compareFloatParams?: CompareFloatParams) {
     return (
-        path: string,
+        _path: string,
         receivedMissing: boolean,
         receivedLive: unknown,
         expectedMissing: boolean,
@@ -300,10 +301,22 @@ function normaliseScenario(scenario: any) {
             };
         };
         model?: unknown;
+        generation?: {
+            total_income?: unknown;
+            systems?: Record<
+                'solarpv' | 'wind' | 'hydro',
+                {
+                    fraction_used_onsite?: unknown;
+                }
+            >;
+        };
     };
 
     // Delete pointer to instantiated new model
     delete castScenario.model;
+
+    // Set default inputs if none are set
+    setDefaultLegacyInputs(castScenario);
 
     // Delete new U-value model output
     if (castScenario.fabric !== undefined && castScenario.fabric.elements !== undefined) {
@@ -473,6 +486,29 @@ function normaliseScenario(scenario: any) {
                 space_heating.total_losses[month],
             );
         }
+    }
+
+    // Generation
+
+    // If generation.systems.*.fraction_used_onsite is present and set to
+    // undefined, set it to the relevant default - it's copied in from the
+    // input, which is defaulted in the new model but not in the old
+    for (const systemName of ['solarpv', 'wind', 'hydro'] as const) {
+        const systemObject = (castScenario?.generation?.systems ?? {})[systemName];
+        if (
+            systemObject !== undefined &&
+            'fraction_used_onsite' in systemObject &&
+            systemObject.fraction_used_onsite === undefined
+        ) {
+            systemObject.fraction_used_onsite = systemName === 'solarpv' ? 0.25 : 0.5;
+        }
+    }
+
+    if (
+        castScenario?.generation !== undefined &&
+        castScenario.generation.total_income === undefined
+    ) {
+        castScenario.generation.total_income = 0;
     }
 
     return castScenario;

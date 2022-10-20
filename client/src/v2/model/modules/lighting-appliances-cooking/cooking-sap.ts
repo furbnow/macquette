@@ -66,7 +66,7 @@ export class CookingSAP {
         // Estimated from emissions
         return (
             (this.emissionsAnnual * this.dependencies.floors.totalFloorArea) /
-            this.dependencies.fuels.standardTariff.emissions
+            this.dependencies.fuels.standardTariff.carbonEmissionsFactor
         );
     }
 
