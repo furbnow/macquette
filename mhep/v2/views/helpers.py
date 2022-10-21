@@ -101,17 +101,21 @@ def check_library_write_permissions(library, original_request):
 
 def check_library_share_permissions(library, original_request):
     """
-    manually check the permissions for the ShareUnshareOrganisationLibraries view to work out
-    if the current user (based on original_request) is allowed to share / unshare this library.
+    manually check the permissions for the ShareUnshareOrganisationLibraries view to
+    work out if the current user (based on original_request) is allowed to share /
+    unshare this library.
     """
-
-    from ..views.organisations import (
-        ShareUnshareOrganisationLibraries,
-    )  # avoid circular import
 
     owner_organisation = library.owner_organisation
     if owner_organisation is None:
         return False
+
+    if original_request.user not in owner_organisation.admins.all():
+        return False
+
+    from ..views.organisations import (
+        ShareUnshareOrganisationLibraries,
+    )  # avoid circular import
 
     view = ShareUnshareOrganisationLibraries(
         kwargs={
@@ -120,11 +124,6 @@ def check_library_share_permissions(library, original_request):
             # "otherorgid" not set as it's shouldn't be relevant: we're only checking permission
         }
     )
-
-    # check view-level permissions
-    for permission in view.get_permissions():
-        if not permission.has_permission(original_request, view):
-            return False
 
     # check object-level permissions
     for permission in view.get_permissions():

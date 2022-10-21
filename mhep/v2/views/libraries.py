@@ -1,6 +1,7 @@
 import json
 import logging
 
+from django.db.models import Q
 from rest_framework import exceptions
 from rest_framework import generics
 from rest_framework import status
@@ -23,24 +24,18 @@ STATIC_URLS = build_static_dictionary()
 
 class MyLibrariesMixin:
     def my_libraries(self):
-        user_libraries = getattr(self.request.user, f"{VERSION}_libraries").all()
-        user_orgs = getattr(self.request.user, f"{VERSION}_organisations").all()
+        user = self.request.user
+        user_v_libraries = getattr(user, f"{VERSION}_libraries")
+        user_v_organisations = getattr(user, f"{VERSION}_organisations")
 
-        all_libraries = user_libraries
+        user_libraries = Q(id__in=user_v_libraries.values("id"))
+        org_libraries = Q(owner_organisation__in=user_v_organisations.values("id"))
+        shared_libraries = Q(shared_with__in=user_v_organisations.values("id"))
+        global_libraries = Q(owner_user=None, owner_organisation=None)
 
-        for org in user_orgs:
-            org_libraries = org.libraries.all()
-            all_libraries |= org_libraries
-
-            shared_libraries = org.libraries_shared_with.all()
-            all_libraries |= shared_libraries
-
-        global_libraries = Library.objects.filter(
-            owner_user=None, owner_organisation=None
+        return Library.objects.filter(
+            user_libraries | global_libraries | shared_libraries | org_libraries
         )
-        all_libraries |= global_libraries
-
-        return all_libraries.distinct()
 
 
 class ListCreateLibraries(MyLibrariesMixin, generics.ListCreateAPIView):
@@ -49,7 +44,12 @@ class ListCreateLibraries(MyLibrariesMixin, generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self, *args, **kwargs):
-        return self.my_libraries()
+        return self.my_libraries().prefetch_related(
+            "owner_user",
+            "owner_organisation",
+            "owner_organisation__librarians",
+            "owner_organisation__admins",
+        )
 
 
 class UpdateDestroyLibrary(
