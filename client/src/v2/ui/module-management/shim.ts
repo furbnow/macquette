@@ -10,7 +10,7 @@ import { CombinedModules } from '../../model/combined-modules';
 import { externals } from '../../shims/typed-globals';
 import type { UiModule } from './module-type';
 
-export type LegacyContext = {
+export type ShimContext = {
     project: Project;
     scenarioId: string;
     currentScenario: Scenario;
@@ -66,7 +66,7 @@ export class UiModuleShim<State, Action, Effect> {
             );
         }
         for (const instanceKey of Object.keys(this.keyedInstances)) {
-            const legacyContext: LegacyContext = {
+            const legacyContext: ShimContext = {
                 project,
                 scenarioId,
                 currentScenario,

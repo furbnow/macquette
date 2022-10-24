@@ -3,7 +3,7 @@ import {
     CombinedModules,
     extractInputFromLegacy,
 } from '../../../../src/v2/model/combined-modules';
-import { LegacyContext } from '../../../../src/v2/ui/module-management/shim';
+import { ShimContext } from '../../../../src/v2/ui/module-management/shim';
 import { solarHotWaterModule } from '../../../../src/v2/ui/modules/solar-hot-water';
 import { scenarios } from '../../fixtures';
 
@@ -26,7 +26,7 @@ describe('solar hot water update action extractor', () => {
             const input = extractInputFromLegacy(scenario.data);
             const model = new CombinedModules(input);
             const { extractUpdateAction } = solarHotWaterModule.shims;
-            const legacyContext: LegacyContext = {
+            const shimContext: ShimContext = {
                 project: {
                     ...FAKE_PROJECT_DATA,
                     data: { ['some scenario name']: scenarioSchema.parse(scenario.data) },
@@ -35,7 +35,7 @@ describe('solar hot water update action extractor', () => {
                 scenarioId: 'some scenario name',
                 currentModel: model,
             };
-            const result = extractUpdateAction(legacyContext, '');
+            const result = extractUpdateAction(shimContext, '');
             expect(() => result.unwrap()).not.toThrow();
         },
     );

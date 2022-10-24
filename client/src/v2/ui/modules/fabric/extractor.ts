@@ -8,7 +8,7 @@ import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schema
 import { Result } from '../../../helpers/result';
 import { calcMeasureQtyAndCost } from '../../../measures';
 import { reverseCalcQuantity } from '../../../measures';
-import type { LegacyContext } from '../../module-management/shim';
+import type { ShimContext } from '../../module-management/shim';
 import { noOutput } from '../../output-components/numeric';
 import type { Action } from './reducer';
 import type { State, WallLike, AreaSpec } from './state';
@@ -285,7 +285,7 @@ export function extractUpdateAction({
     project,
     currentScenario,
     scenarioId,
-}: LegacyContext): Result<Action, never> {
+}: ShimContext): Result<Action, never> {
     const { fabric } = currentScenario ?? {};
 
     const bulkMeasuresByScenario = Object.fromEntries(

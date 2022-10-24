@@ -1,6 +1,6 @@
 import type { Result } from '../../helpers/result';
 import type { Externals } from '../../shims/typed-globals';
-import type { LegacyContext } from './shim';
+import type { ShimContext } from './shim';
 
 export type Dispatcher<Action> = (action: Action) => void;
 
@@ -25,7 +25,7 @@ export type ReducerComponent<
 export type UiModule<State, Action, Effect> = ReducerComponent<State, Action, Effect> & {
     shims: {
         extractUpdateAction: (
-            legacyContext: LegacyContext,
+            legacyContext: ShimContext,
             instanceKey: string,
         ) => Result<Action, Error>;
         mutateLegacyData: (
