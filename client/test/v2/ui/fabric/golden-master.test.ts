@@ -167,6 +167,8 @@ function normaliseRawScenario(
             elementAny.cost = parseFloat(elementAny.cost);
         }
 
+        elementAny.location = elementAny.location.toString();
+
         // 'l' and 'h' are legacy and we use areaInputs now
         delete elementAny.l;
         delete elementAny.h;
