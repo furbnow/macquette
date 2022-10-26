@@ -136,7 +136,7 @@ export class PageManager {
         if (pageData.style === 'legacy') {
             this.legacyModuleUpdate();
         } else {
-            pageData.module.update();
+            pageData.module.update(this.currentRoute);
         }
     }
 

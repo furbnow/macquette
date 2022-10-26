@@ -31,6 +31,11 @@ function runReducerActions(
                 currentScenario: parsedCurrentScenario,
                 scenarioId: currentScenarioId,
                 currentModel: null as any,
+                route: {
+                    type: 'with scenario',
+                    scenarioId: currentScenarioId,
+                    page: 'elements',
+                },
             },
             '',
         );

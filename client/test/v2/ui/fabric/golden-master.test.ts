@@ -264,6 +264,11 @@ describe('fabric page extractor & mutator round trip should roundtrip the data a
                     currentScenario,
                     scenarioId: currentScenarioId,
                     currentModel: null as any,
+                    route: {
+                        type: 'with scenario',
+                        scenarioId: currentScenarioId,
+                        page: 'elements',
+                    },
                 },
                 '',
             );

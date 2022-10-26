@@ -26,14 +26,20 @@ describe('solar hot water update action extractor', () => {
             const input = extractInputFromLegacy(scenario.data);
             const model = new CombinedModules(input);
             const { extractUpdateAction } = solarHotWaterModule.shims;
+            const scenarioId = 'some scenario name';
             const shimContext: ShimContext = {
+                route: {
+                    type: 'with scenario',
+                    page: 'solarhotwater',
+                    scenarioId,
+                },
                 project: {
                     ...FAKE_PROJECT_DATA,
-                    data: { ['some scenario name']: scenarioSchema.parse(scenario.data) },
+                    data: { [scenarioId]: scenarioSchema.parse(scenario.data) },
                 },
                 currentScenario: scenario.data as any,
-                scenarioId: 'some scenario name',
                 currentModel: model,
+                scenarioId,
             };
             const result = extractUpdateAction(shimContext, '');
             expect(() => result.unwrap()).not.toThrow();

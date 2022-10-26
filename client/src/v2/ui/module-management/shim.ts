@@ -8,9 +8,11 @@ import { Scenario } from '../../data-schemas/scenario';
 import { Result } from '../../helpers/result';
 import { CombinedModules } from '../../model/combined-modules';
 import { externals } from '../../shims/typed-globals';
+import type { ResolvedRoute } from '../routes';
 import type { UiModule } from './module-type';
 
 export type ShimContext = {
+    route: ResolvedRoute;
     project: Project;
     scenarioId: string;
     currentScenario: Scenario;
@@ -52,7 +54,7 @@ export class UiModuleShim<State, Action, Effect> {
         }
     }
 
-    update() {
+    update(route: ResolvedRoute) {
         const project = projectSchema.parse(externals().project);
         const scenarioId = z.string().parse(externals().scenarioId);
         const currentScenario = project.data[scenarioId];
@@ -67,6 +69,7 @@ export class UiModuleShim<State, Action, Effect> {
         }
         for (const instanceKey of Object.keys(this.keyedInstances)) {
             const legacyContext: ShimContext = {
+                route,
                 project,
                 scenarioId,
                 currentScenario,
