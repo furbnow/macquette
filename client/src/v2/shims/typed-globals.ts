@@ -1,4 +1,5 @@
 import { HTTPClient } from '../api/http';
+import { isIndexable } from '../helpers/is-indexable';
 
 /* eslint-disable
     @typescript-eslint/consistent-type-assertions,
@@ -10,8 +11,12 @@ export function externals() {
     if (typeof update !== 'function') {
         throw new Error('window.update was not a function');
     }
+    const project: unknown = (window as any).p;
+    if (!isIndexable(project)) {
+        throw new Error('window.p is not a Record');
+    }
     return {
-        project: (window as any).p as unknown,
+        project,
         scenarioId: (window as any).scenario as unknown,
         update,
 

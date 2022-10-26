@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import type { Project } from '../../../src/v2/data-schemas/project';
 import { projectSchema } from '../../../src/v2/data-schemas/project';
+import { isIndexable } from '../../../src/v2/helpers/is-indexable';
 import { isNotNull } from '../../../src/v2/helpers/null-checking';
 
 const fixturesRoot = join(__filename, '..');
@@ -26,7 +27,7 @@ function safeJsonParse(...args: Parameters<typeof JSON.parse>): unknown {
 export class ProjectFixture {
     public parsedData: Project;
 
-    constructor(public fixturePath: string, public rawData: unknown) {
+    constructor(public fixturePath: string, public rawData: Record<string, unknown>) {
         const parseResult = projectSchema.safeParse(rawData);
         if (parseResult.success) {
             this.parsedData = parseResult.data;
@@ -62,6 +63,11 @@ const projectFocus: null | string = null;
 export const projects = fixtures
     .map((fixture) => {
         if (projectFocus !== null && fixture.path !== projectFocus) {
+            return null;
+        }
+
+        if (!isIndexable(fixture.data)) {
+            console.error(`Project is not a Record for fixture ${fixture.path}`);
             return null;
         }
 

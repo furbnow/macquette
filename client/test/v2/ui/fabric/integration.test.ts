@@ -15,7 +15,7 @@ import { State } from '../../../../src/v2/ui/modules/fabric/state';
 function runReducerActions(
     state: State,
     actions: Action[],
-    project: unknown,
+    project: Record<string, unknown>,
     currentScenarioId: string,
 ): State {
     for (const action of actions) {
