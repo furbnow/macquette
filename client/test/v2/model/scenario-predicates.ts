@@ -276,15 +276,15 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
 }
 
 export function hasNewBehaviour(inputs: FcInfer<typeof arbScenarioInputs>): boolean {
-    // SHW from estimate
-    const shwIsFromEstimate =
-        inputs?.SHW !== undefined &&
-        isTruthy(inputs?.use_SHW || inputs?.water_heating?.solar_water_heating) &&
-        'version' in inputs.SHW &&
-        inputs.SHW.version >= 1 &&
-        inputs.SHW.input.collector.parameterSource === 'estimate';
+    // SHW
+    const shwIsEnabled = isTruthy(
+        inputs?.use_SHW || inputs?.water_heating?.solar_water_heating,
+    );
+    const shwHasNewDataStructure =
+        inputs?.SHW !== undefined && 'version' in inputs.SHW && inputs.SHW.version >= 1;
+    const shwHasNewBehaviour = shwIsEnabled && shwHasNewDataStructure;
 
-    return shwIsFromEstimate;
+    return shwHasNewBehaviour;
 }
 
 export function hasNewInputs(inputs: FcInfer<typeof arbScenarioInputs>): boolean {
