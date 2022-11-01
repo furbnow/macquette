@@ -2,8 +2,50 @@ import { isEqual } from 'lodash';
 
 import { isIndexable } from '../helpers/is-indexable';
 import { externals } from '../shims/typed-globals';
+import { modules } from './modules';
+import type { Module } from './modules';
+import type { StandalonePageName, ScenarioPageName } from './pages';
 import { resolveRoute, parseRoute } from './routes';
 import type { ResolvedRoute } from './routes';
+
+type PageData = { style: 'legacy' } | { style: 'modern'; module: Module };
+
+export const standalonePages: Record<StandalonePageName, PageData> = {
+    householdquestionnaire: { style: 'legacy' },
+    commentary: { style: 'legacy' },
+    currentenergy: { style: 'legacy' },
+    imagegallery: { style: 'legacy' },
+    compare: { style: 'legacy' },
+    report: { style: 'legacy' },
+    scopeofworks: { style: 'legacy' },
+    export: { style: 'legacy' },
+    librariesmanager: { style: 'legacy' },
+    fuelsmanager: { style: 'legacy' },
+    sandbox: { style: 'modern', module: modules.sandbox },
+};
+
+export const scenarioPages: Record<ScenarioPageName, PageData> = {
+    context: { style: 'legacy' },
+    ventilation: { style: 'legacy' },
+    elements: { style: 'legacy' },
+    LAC: { style: 'legacy' },
+    heating: { style: 'legacy' },
+    fuel_requirements: { style: 'legacy' },
+    generation: { style: 'legacy' },
+    solarhotwater: { style: 'modern', module: modules.solarHotWater },
+    worksheets: { style: 'legacy' },
+};
+
+function pageDataForRoute(route: ResolvedRoute): PageData {
+    switch (route.type) {
+        case 'standalone': {
+            return standalonePages[route.page];
+        }
+        case 'with scenario': {
+            return scenarioPages[route.page];
+        }
+    }
+}
 
 export class PageManager {
     private currentRoute: ResolvedRoute | null = null;
@@ -42,13 +84,30 @@ export class PageManager {
             return;
         }
 
-        this.legacyModuleUnload();
+        const pageData = pageDataForRoute(this.currentRoute);
+        if (pageData.style === 'legacy') {
+            this.legacyModuleUnload();
+        } else {
+            pageData.module.unmountAll();
+        }
 
         this.currentRoute = null;
     }
 
     private async init(route: ResolvedRoute) {
-        await this.legacyModuleInit();
+        const pageData = pageDataForRoute(route);
+        if (pageData.style === 'legacy') {
+            await this.legacyModuleInit();
+        } else {
+            const element = document.querySelector('#editor__main-content');
+            if (element === null) {
+                throw new Error(
+                    'main content area not available for view initialisation',
+                );
+            }
+            pageData.module.init(element, '');
+        }
+
         this.legacySharedInit();
         this.currentRoute = route;
     }
@@ -58,7 +117,12 @@ export class PageManager {
             return;
         }
 
-        this.legacyModuleUpdate();
+        const pageData = pageDataForRoute(this.currentRoute);
+        if (pageData.style === 'legacy') {
+            this.legacyModuleUpdate();
+        } else {
+            pageData.module.update();
+        }
     }
 
     async takeRoute(newRoute: ResolvedRoute) {
@@ -87,6 +151,10 @@ export class PageManager {
 
         await this.init(newRoute);
         this.externalDataUpdate();
-        this.legacyModuleInitPostUpdate();
+
+        const pageData = pageDataForRoute(newRoute);
+        if (pageData.style === 'legacy') {
+            this.legacyModuleInitPostUpdate();
+        }
     }
 }

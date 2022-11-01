@@ -14,3 +14,5 @@ export const modules = {
     imageGallery: new UiModuleShim(imageGalleryModule),
     fabric: new UiModuleShim(fabricModule),
 };
+
+export type Module = typeof modules[keyof typeof modules];
