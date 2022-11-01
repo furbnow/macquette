@@ -5,7 +5,7 @@ import { externals } from '../shims/typed-globals';
 import { modules } from './modules';
 import type { Module } from './modules';
 import type { StandalonePageName, ScenarioPageName } from './pages';
-import { resolveRoute, parseRoute } from './routes';
+import { resolveRoute, parseRoute, DEFAULT_ROUTE } from './routes';
 import type { ResolvedRoute } from './routes';
 
 type PageData = { style: 'legacy' } | { style: 'modern'; module: Module };
@@ -63,7 +63,10 @@ export class PageManager {
                 console.error(err),
             );
         } else {
-            throw new Error(currentPage.unwrapErr());
+            alert('Could not navigate to page, going to default page');
+            this.takeRoute(resolveRoute(DEFAULT_ROUTE)).catch((err) =>
+                console.error(err),
+            );
         }
 
         window.addEventListener('hashchange', () => {
@@ -114,9 +117,19 @@ export class PageManager {
         this.currentRoute = route;
     }
 
-    externalDataUpdate() {
+    async externalDataUpdate() {
         if (this.currentRoute === null) {
             return;
+        }
+
+        // Check if the scenario we're on still exists
+        if (this.currentRoute.type === 'with scenario') {
+            const { project } = externals();
+            const { scenarioId } = this.currentRoute;
+
+            if (isIndexable(project['data']) && !(scenarioId in project['data'])) {
+                return await this.takeRoute(resolveRoute(DEFAULT_ROUTE));
+            }
         }
 
         const pageData = pageDataForRoute(this.currentRoute);
@@ -152,7 +165,7 @@ export class PageManager {
         }
 
         await this.init(newRoute);
-        this.externalDataUpdate();
+        await this.externalDataUpdate();
 
         const pageData = pageDataForRoute(newRoute);
         if (pageData.style === 'legacy') {
