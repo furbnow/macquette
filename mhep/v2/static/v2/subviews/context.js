@@ -1,4 +1,4 @@
-$('#add-floor').click(function(){
+$('#openbem').on('click','#add-floor', function(){
     var size = Object.size(data.floors);
     if (size==0) {
         name = 'Ground Floor';
