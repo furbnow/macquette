@@ -95,6 +95,8 @@ export class PageManager {
     }
 
     private async init(route: ResolvedRoute) {
+        window.scrollTo({ top: 0 });
+
         const pageData = pageDataForRoute(route);
         if (pageData.style === 'legacy') {
             await this.legacyModuleInit();
