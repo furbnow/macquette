@@ -529,7 +529,8 @@ function legacyModuleInitPostUpdate() {
         page != 'householdquestionnaire' &&
         page != 'currentenergy' &&
         page != 'commentary' &&
-        page != 'report'
+        page != 'report' &&
+        page != 'scopeofworks'
     ) {
         $('#editor__main-content button').addClass('if-not-locked');
         $('#editor__main-content i').addClass('if-not-locked');
