@@ -132,6 +132,27 @@ class TestListLibraries(APITestCase):
 
         assert shared_lib.id in retrieved_ids
 
+    def test_library_shared_through_multiple_shared_organisations(self):
+        sharing_org = OrganisationFactory.create()
+
+        my_org1 = OrganisationFactory.create()
+        my_org1.members.add(self.me)
+
+        my_org2 = OrganisationFactory.create()
+        my_org2.members.add(self.me)
+
+        shared_lib = LibraryFactory.create(
+            owner_organisation=sharing_org, owner_user=None
+        )
+        shared_lib.shared_with.add(my_org1)
+        shared_lib.shared_with.add(my_org2)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/libraries/")
+        assert response.status_code == status.HTTP_200_OK
+
+        assert 1 == len(response.data)
+
     def test_can_write_is_false_for_org_librarian(self):
         my_org = OrganisationFactory.create()
         my_org.members.add(self.me)

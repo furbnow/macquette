@@ -33,8 +33,12 @@ class MyLibrariesMixin:
         shared_libraries = Q(shared_with__in=user_v_organisations.values("id"))
         global_libraries = Q(owner_user=None, owner_organisation=None)
 
-        return Library.objects.filter(
-            user_libraries | global_libraries | shared_libraries | org_libraries
+        return (
+            Library.objects.filter(
+                user_libraries | global_libraries | shared_libraries | org_libraries
+            )
+            .distinct()
+            .order_by("id")
         )
 
 
