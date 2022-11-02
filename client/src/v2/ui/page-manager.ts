@@ -13,8 +13,8 @@ type PageData = { style: 'legacy' } | { style: 'modern'; module: Module };
 export const standalonePages: Record<StandalonePageName, PageData> = {
     householdquestionnaire: { style: 'legacy' },
     commentary: { style: 'legacy' },
-    currentenergy: { style: 'legacy' },
-    imagegallery: { style: 'legacy' },
+    currentenergy: { style: 'modern', module: modules.currentEnergy },
+    imagegallery: { style: 'modern', module: modules.imageGallery },
     compare: { style: 'legacy' },
     report: { style: 'legacy' },
     scopeofworks: { style: 'legacy' },
