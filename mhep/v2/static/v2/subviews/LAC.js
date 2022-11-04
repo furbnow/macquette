@@ -95,7 +95,7 @@ $('#openbem').on('click', '.add-item-CarbonCoop', function () {
     LAC_initUI();
     update();
 });
-$('#applianceCarbonCoop').on('click', '.delete-appliance', function () {
+$('#openbem').on('click', '.delete-appliance', function () {
     index = $(this).attr('index');
     data.applianceCarbonCoop.list.splice(index, 1);
     //appliannceCarbonCoop_initUI();
