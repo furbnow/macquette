@@ -29,7 +29,7 @@ function generateSummary() {
         ['Cooking', 'energy_requirements', 'cooking', 'quantity'],
         ['Fans and pumps', 'energy_requirements', 'fans_and_pumps', 'quantity'],
         ['Lighting', 'energy_requirements', 'lighting', 'quantity'],
-        ['Space heting', 'energy_requirements', 'space_heating', 'quantity'],
+        ['Space heating', 'energy_requirements', 'space_heating', 'quantity'],
         ['Water heating ', 'energy_requirements', 'waterheating', 'quantity'],
         ['', ''],
         ['<b>Fuel input (kWh.a)</b>', ''],
@@ -37,7 +37,7 @@ function generateSummary() {
         ['Cooking', 'fuel_requirements', 'cooking', 'quantity'],
         ['Fans and pumps', 'fuel_requirements', 'fans_and_pumps', 'quantity'],
         ['Lighting', 'fuel_requirements', 'lighting', 'quantity'],
-        ['Space heting', 'fuel_requirements', 'space_heating', 'quantity'],
+        ['Space heating', 'fuel_requirements', 'space_heating', 'quantity'],
         ['Water heating', 'fuel_requirements', 'waterheating', 'quantity'],
         ['', '']
     ];
