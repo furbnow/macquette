@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
 
 from . import VERSION
+from .views import dashboards
 from .views.assessments import DuplicateAssessment
 from .views.assessments import ListCreateAssessments
 from .views.assessments import RetrieveUpdateDestroyAssessment
@@ -33,6 +34,7 @@ urlpatterns = [
         RedirectView.as_view(url=reverse_lazy(f"{VERSION}:list-assessments")),
         name="index",
     ),
+    path("dashboard/", dashboards.Dashboard.as_view(), name="dashboard"),
     path("assessments/", ListAssessmentsHTMLView.as_view(), name="list-assessments"),
     path("assessments/<int:pk>/", AssessmentHTMLView.as_view(), name="view-assessment"),
     path(

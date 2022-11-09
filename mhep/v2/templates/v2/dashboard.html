@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<title>Dashboard</title>
+
+<p>Total assessments on system</p>
+
+{{ total_assessments }}
+
+
+<div id="annual-chart"></div>
+<div id="assessments-chart"></div>
+<div id="duration-chart"></div>
+
+<script src='https://cdn.plot.ly/plotly-2.16.1.min.js'></script>
+
+<script>
+function range0(to) {
+    return Array.from({ length: to }).map((_, key) => key)
+}
+
+function getXYForDurations(durations) {
+    const longestDuration = durations.at(-1).duration;
+
+    function sumUpToDuration(upToDuration) {
+        return durations.filter(
+            ({duration}) => duration <= upToDuration
+        ).reduce(
+            (prev, curr) => prev + curr.count,
+            0
+        );
+    }
+
+    function nForDuration(filterDuration) {
+        return durations.filter(
+            ({duration}) => duration === filterDuration
+        ).reduce(
+            (prev, curr) => prev + curr.count,
+            0
+        );
+    }
+
+    const x = range0(longestDuration + 1);
+    const countY = x.map(x => sumUpToDuration(x))
+    const maxCountY = countY.at(-1)
+    const percentY = countY.map(y => y / maxCountY)
+
+    return { x, y: percentY }
+}
+
+const durations_last60days = [
+    {% for row in duration_last60 %}
+        { duration: {{row.duration}}, count: {{row.count}} },
+    {% endfor %}
+];
+
+const durations_prev60days = [
+    {% for row in duration_prev60 %}
+        { duration: {{row.duration}}, count: {{row.count}} },
+    {% endfor %}
+];
+
+Plotly.newPlot(
+    'duration-chart',
+    [
+        { name: 'last 60 days', type: 'scatter', ...getXYForDurations(durations_last60days) },
+        { name: 'prev 60 days', type: 'scatter', ...getXYForDurations(durations_prev60days) },
+    ],
+    {
+        title: 'Assessments completed in given period by days taken to complete',
+        xaxis: {
+            title: 'Days between created and finished',
+        },
+        yaxis: {
+            title: 'Percentage of assessments completed',
+        }
+    }
+);
+
+
+const completedMonths = [
+    {% for row in completed_assessments_by_updated_month %}
+        '{{ row.month|date:"M Y" }}',
+    {% endfor %}
+];
+const completedCount = [
+    {% for row in completed_assessments_by_updated_month %}
+        {{ row.count }},
+    {% endfor %}
+];
+
+const startedMonths = [
+    {% for row in assessments_by_month %}
+        '{{ row.month|date:"M Y" }}',
+    {% endfor %}
+];
+const startedCount = [
+    {% for row in assessments_by_month %}
+        {{ row.count }},
+    {% endfor %}
+];
+
+Plotly.newPlot(
+    'assessments-chart',
+    [
+        { name: 'completed assessments by updated month', type: 'bar',
+          x: completedMonths.slice(-12), y: completedCount.slice(-12) },
+        { name: 'started assessments', type: 'bar',
+          x: startedMonths.slice(-12), y: startedCount.slice(-12) },
+
+    ],
+    {
+        title: 'Started and completed assessments by month',
+        barmode: 'group',
+        xaxis: {
+            title: 'Month',
+        },
+        yaxis: {
+            title: 'Count',
+        }
+    }
+);
+
+
+const completedYear = [
+    {% for row in assessments_by_year %}
+        'Year {{ row.year|date:"Y" }}',
+    {% endfor %}
+];
+const completedYearCount = [
+    {% for row in assessments_by_year %}
+        {{ row.count }},
+    {% endfor %}
+];
+
+Plotly.newPlot(
+    'annual-chart',
+    [
+        { type: 'bar', x: completedYearCount, y: completedYear, orientation: 'h' },
+    ],
+    {
+        title: 'Completed assessments by last updated year',
+        barmode: 'group',
+    }
+);
+
+</script>
