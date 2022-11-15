@@ -87,3 +87,14 @@ Resetting the database
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Run ``make docker-local-clean``.
+
+Issuing reports
+~~~~~~~~~~~~~~~
+
+In order to enable report issuing, you must create an organisation with an
+associated report template through the Django admin interface. At present there
+is no generic IP-unencumbered report template, so you must copy one from the
+production instance.
+
+Once an organisation with an associated report template is created, assessments
+made under that organisation will have the "Reports" page enabled.
