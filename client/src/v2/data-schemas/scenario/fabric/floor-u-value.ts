@@ -46,7 +46,7 @@ const floorLayerSpecSchema = z.object({
 });
 export type FloorLayerSpec = z.infer<typeof floorLayerSpecSchema>;
 
-const suspendedFloorSpecSchema = z.object({
+const suspendedFloorV1SpecSchema = z.object({
     ventilationCombinedArea: z.number().nullable(),
     underFloorSpacePerimeter: z.number().nullable(),
     insulation: z.object({
@@ -54,6 +54,35 @@ const suspendedFloorSpecSchema = z.object({
         layers: zodNonEmptyArray(floorLayerSpecSchema),
     }),
 });
+const suspendedFloorV2SpecSchema = z.object({
+    version: z.literal(2),
+    ventilationCombinedArea: z.number().nullable(),
+    underFloorSpacePerimeter: z.number().nullable(),
+    layers: zodNonEmptyArray(floorLayerSpecSchema),
+});
+const suspendedFloorSpecSchema = zodPredicateUnion([
+    {
+        name: 'v1',
+        predicate: (spec) => isIndexable(spec) && !('version' in spec),
+        schema: suspendedFloorV1SpecSchema.transform(
+            ({
+                ventilationCombinedArea,
+                underFloorSpacePerimeter,
+                insulation,
+            }): z.infer<typeof suspendedFloorV2SpecSchema> => ({
+                version: 2,
+                ventilationCombinedArea,
+                underFloorSpacePerimeter,
+                layers: insulation.layers,
+            }),
+        ),
+    },
+    {
+        name: 'v2',
+        predicate: (spec) => isIndexable(spec) && spec['version'] === 2,
+        schema: suspendedFloorV2SpecSchema,
+    },
+]);
 export type SuspendedFloorSpec = z.infer<typeof suspendedFloorSpecSchema>;
 
 const heatedBasementFloorSpecSchema = z.object({

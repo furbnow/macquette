@@ -2,7 +2,6 @@ import React, { useId } from 'react';
 
 import { SuspendedFloorSpec } from '../../../../../data-schemas/scenario/fabric/floor-u-value';
 import { safeMerge } from '../../../../../helpers/safe-merge';
-import { CheckboxInput } from '../../../../input-components/checkbox';
 import { FormGrid, LabelWithInfo } from '../../../../input-components/forms';
 import { NumericInput } from '../../../../input-components/numeric';
 import { CombinedMethod } from '../shared-components/combined-method';
@@ -12,9 +11,7 @@ export type State = SuspendedFloorSpec;
 
 type MergeState = {
     type: 'suspended floor/merge state';
-    payload: Partial<Omit<State, 'insulation'>> & {
-        insulation?: Partial<State['insulation']>;
-    };
+    payload: Partial<State>;
 };
 export type Action = MergeState;
 
@@ -23,8 +20,8 @@ export function reducer(state: State, action: FloorUValueCalculatorAction): Stat
         case 'suspended floor/merge state': {
             const newState = safeMerge(state, action.payload);
             // Special handling for layers array, since safeMerge will merge arrays
-            if (action.payload.insulation?.layers !== undefined) {
-                newState.insulation.layers = action.payload.insulation.layers;
+            if (action.payload.layers !== undefined) {
+                newState.layers = action.payload.layers;
             }
             return newState;
         }
@@ -36,7 +33,6 @@ type Props = { state: State; dispatch: React.Dispatch<FloorUValueCalculatorActio
 export function Component({ state, dispatch }: Props) {
     const ventilationId = useId();
     const underFloorId = useId();
-    const insulationId = useId();
 
     return (
         <>
@@ -107,33 +103,19 @@ export function Component({ state, dispatch }: Props) {
                     }
                     unit="m"
                 />
-
-                <label htmlFor={insulationId}>Insulated floor?</label>
-                <span>
-                    <CheckboxInput
-                        id={insulationId}
-                        checked={state.insulation.enabled}
-                        callback={(checked) =>
-                            dispatch({
-                                type: 'suspended floor/merge state',
-                                payload: { insulation: { enabled: checked } },
-                            })
-                        }
-                    />
-                </span>
             </FormGrid>
 
-            {state.insulation.enabled && (
+            {
                 <CombinedMethod
-                    layers={state.insulation.layers}
+                    layers={state.layers}
                     onChange={(layers) =>
                         dispatch({
                             type: 'suspended floor/merge state',
-                            payload: { insulation: { layers } },
+                            payload: { layers },
                         })
                     }
                 />
-            )}
+            }
         </>
     );
 }

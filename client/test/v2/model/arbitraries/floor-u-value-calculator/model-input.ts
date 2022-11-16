@@ -112,7 +112,7 @@ export function arbSuspendedFloorInput(): fc.Arbitrary<SuspendedFloorInput> {
         floorType: fc.constant('suspended' as const),
         ventilationCombinedArea: sensibleFloat,
         underFloorSpacePerimeter: sensibleFloat,
-        insulationLayers: fc.option(fcNonEmptyArray(arbFloorLayerInput())),
+        layers: fcNonEmptyArray(arbFloorLayerInput()),
     });
 }
 

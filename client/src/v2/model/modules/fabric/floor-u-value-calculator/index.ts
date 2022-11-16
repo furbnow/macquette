@@ -203,7 +203,7 @@ export class SuspendedFloor extends FloorUValueModel {
         CombinedMethodModel | null,
         FloorUValueWarning
     > {
-        if (this.floor.insulationLayers === null) return WithWarnings.empty(null);
+        if (this.floor.layers === null) return WithWarnings.empty(null);
 
         /* The Building Act 1984 Appendix C specifies that in this case, we are
          * to compute the U-value of the floor using the Combined Method,
@@ -223,7 +223,7 @@ export class SuspendedFloor extends FloorUValueModel {
          *
          * The calculation used here is as specified.
          */
-        return transformFloorLayersToCombinedMethodInput(this.floor.insulationLayers, {
+        return transformFloorLayersToCombinedMethodInput(this.floor.layers, {
             internal: 0.17,
             external: 0.17,
         })

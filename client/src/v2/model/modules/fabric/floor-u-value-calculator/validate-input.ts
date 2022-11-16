@@ -196,21 +196,16 @@ function validateSuspendedFloor(
     if (underFloorSpacePerimeter === null) {
         return valueMissingError(['suspended', 'under-floor-space-perimeter']);
     }
-    let insulationLayersR: FUVCResult<SuspendedFloorInput['insulationLayers']>;
-    if (spec.insulation.enabled) {
-        insulationLayersR = withPathPrefix(
-            ['suspended'],
-            validateCombinedMethodLayers(spec.insulation.layers),
-        );
-    } else {
-        insulationLayersR = WithWarnings.empty(Result.ok(null));
-    }
+    const layersR = withPathPrefix(
+        ['suspended'],
+        validateCombinedMethodLayers(spec.layers),
+    );
     return wc.out(
-        insulationLayersR.unwrap(wc.sink()).map((insulationLayers) => ({
+        layersR.unwrap(wc.sink()).map((layers) => ({
             floorType: 'suspended',
             ventilationCombinedArea,
             underFloorSpacePerimeter,
-            insulationLayers,
+            layers,
         })),
     );
 }

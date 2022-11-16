@@ -36,12 +36,10 @@ const arbInsulationSpec: fc.Arbitrary<InsulationSpec> = fc.record({
 });
 
 export const arbSuspendedFloorSpec: fc.Arbitrary<SuspendedFloorSpec> = fc.record({
+    version: fc.constant(2),
     ventilationCombinedArea: fc.option(sensibleFloat),
     underFloorSpacePerimeter: fc.option(sensibleFloat),
-    insulation: fc.record({
-        enabled: fc.boolean(),
-        layers: fcNonEmptyArray(arbFloorLayerSpec),
-    }),
+    layers: fcNonEmptyArray(arbFloorLayerSpec),
 });
 
 export const arbPerFloorTypeSpec: fc.Arbitrary<PerFloorTypeSpec> = fc.record({

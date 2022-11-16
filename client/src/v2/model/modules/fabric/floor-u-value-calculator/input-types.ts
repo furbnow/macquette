@@ -32,7 +32,7 @@ export type SuspendedFloorInput = {
     floorType: 'suspended';
     ventilationCombinedArea: number;
     underFloorSpacePerimeter: number;
-    insulationLayers: null | NonEmptyArray<FloorLayerInput>;
+    layers: NonEmptyArray<FloorLayerInput>;
 };
 export type HeatedBasementFloorInput = {
     floorType: 'heated basement';

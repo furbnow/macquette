@@ -27,12 +27,10 @@ export function initialPerFloorTypeSpec(): PerFloorTypeSpec {
             },
         },
         suspended: {
+            version: 2,
             ventilationCombinedArea: null,
             underFloorSpacePerimeter: null,
-            insulation: {
-                enabled: false,
-                layers: initialCombinedMethodLayers,
-            },
+            layers: initialCombinedMethodLayers,
         },
         'heated basement': {
             basementDepth: null,

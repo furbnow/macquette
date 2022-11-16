@@ -24,13 +24,11 @@ describe('suspended floor reducer', () => {
                 const action: Action = {
                     type: 'suspended floor/merge state',
                     payload: {
-                        insulation: {
-                            layers: newLayers,
-                        },
+                        layers: newLayers,
                     },
                 };
                 const newState = reducer(state, action);
-                expect(newState.insulation.layers).toEqual(newLayers);
+                expect(newState.layers).toEqual(newLayers);
             }),
         );
     });
