@@ -14,10 +14,10 @@ describe('solid floor', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 5,
                 },
                 perFloorType: {
                     floorType: 'solid',
+                    exposedPerimeter: 5,
                     allOverInsulation: null,
                     edgeInsulation: { type: 'none' },
                 },
@@ -29,10 +29,10 @@ describe('solid floor', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 5,
                 },
                 perFloorType: {
                     floorType: 'solid',
+                    exposedPerimeter: 5,
                     allOverInsulation: {
                         mechanism: 'conductivity',
                         thickness: 2,
@@ -54,10 +54,10 @@ describe('solid floor', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 100,
                 },
                 perFloorType: {
                     floorType: 'solid',
+                    exposedPerimeter: 100,
                     allOverInsulation: {
                         mechanism: 'conductivity',
                         thickness: 2,
@@ -79,10 +79,10 @@ describe('solid floor', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 100,
                 },
                 perFloorType: {
                     floorType: 'solid',
+                    exposedPerimeter: 100,
                     allOverInsulation: null,
                     edgeInsulation: { type: 'none' },
                 },
@@ -117,10 +117,10 @@ describe('solid floor', () => {
         return {
             common: {
                 area: 200,
-                exposedPerimeter: 100,
             },
             perFloorType: {
                 floorType: 'solid',
+                exposedPerimeter: 100,
                 allOverInsulation: {
                     mechanism: 'conductivity',
                     thickness: 1,

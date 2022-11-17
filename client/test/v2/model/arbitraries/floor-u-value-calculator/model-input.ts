@@ -45,6 +45,7 @@ export function arbInsulationInput(): fc.Arbitrary<InsulationInput> {
 export function arbSolidFloorInput(): fc.Arbitrary<SolidFloorInput> {
     return fc.record({
         floorType: fc.constant('solid' as const),
+        exposedPerimeter: sensibleFloat,
         allOverInsulation: fc.option(arbInsulationInput()),
         edgeInsulation: fc.oneof(
             fc.record({ type: fc.constant('none' as const) }),
@@ -119,6 +120,7 @@ export function arbSuspendedFloorInput(): fc.Arbitrary<SuspendedFloorInput> {
 export function arbHeatedBasementFloorInput(): fc.Arbitrary<HeatedBasementFloorInput> {
     return fc.record({
         floorType: fc.constant('heated basement' as const),
+        exposedPerimeter: sensibleFloat,
         basementDepth: sensibleFloat,
         insulation: fc.option(arbInsulationInput()),
     });
@@ -135,7 +137,6 @@ export function arbExposedFloorInput(): fc.Arbitrary<ExposedFloorInput> {
 export function arbCommonInput(): fc.Arbitrary<CommonInput> {
     return fc.record({
         area: sensibleFloat,
-        exposedPerimeter: sensibleFloat,
     });
 }
 

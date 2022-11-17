@@ -22,6 +22,7 @@ export type CustomFloorInput = {
 };
 export type SolidFloorInput = {
     floorType: 'solid';
+    exposedPerimeter: number;
     allOverInsulation: null | InsulationInput;
     edgeInsulation:
         | { type: 'none' }
@@ -36,6 +37,7 @@ export type SuspendedFloorInput = {
 };
 export type HeatedBasementFloorInput = {
     floorType: 'heated basement';
+    exposedPerimeter: number;
     basementDepth: number;
     insulation: null | InsulationInput;
 };
@@ -47,7 +49,6 @@ export type ExposedFloorInput = {
 
 export type CommonInput = {
     area: number;
-    exposedPerimeter: number;
 };
 
 export type PerFloorTypeInput =

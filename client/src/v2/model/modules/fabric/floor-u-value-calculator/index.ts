@@ -64,7 +64,7 @@ abstract class FloorUValueModel {
     constructor(private common: CommonInput) {}
 
     @cache
-    get perimeterAreaRatio(): WithWarnings<number, FloorUValueWarning> {
+    protected get areaForDivision(): WithWarnings<number, FloorUValueWarning> {
         const wc = new WarningCollector<FloorUValueWarning>();
         let area: number;
         if (this.common.area === 0) {
@@ -78,9 +78,7 @@ abstract class FloorUValueModel {
         } else {
             area = this.common.area;
         }
-        return wc
-            .out(this.common.exposedPerimeter / area)
-            .chain(warnForNonFinite(1, ['perimeter-area ratio']));
+        return wc.out(area).chain(warnForNonFinite(1, ['perimeter-area ratio']));
     }
 
     abstract get uValue(): WithWarnings<number, FloorUValueWarning>;
@@ -104,6 +102,10 @@ export class SolidFloor extends FloorUValueModel {
         return calculateInsulationResistance(this.floor.allOverInsulation).mapWarnings(
             prependPath(['solid', 'all-over-insulation']),
         );
+    }
+
+    get perimeterAreaRatio() {
+        return this.areaForDivision.map((area) => this.floor.exposedPerimeter / area);
     }
 
     get uValueWithoutEdgeInsulation(): WithWarnings<number, FloorUValueWarning> {
@@ -179,6 +181,12 @@ export class SolidFloor extends FloorUValueModel {
 export class SuspendedFloor extends FloorUValueModel {
     constructor(common: CommonInput, private floor: SuspendedFloorInput) {
         super(common);
+    }
+
+    get perimeterAreaRatio() {
+        return this.areaForDivision.map(
+            (area) => this.floor.underFloorSpacePerimeter / area,
+        );
     }
 
     get ventilationRatio() {
@@ -309,6 +317,10 @@ function transformFloorLayersToCombinedMethodInput(
 export class HeatedBasementFloor extends FloorUValueModel {
     constructor(common: CommonInput, private floor: HeatedBasementFloorInput) {
         super(common);
+    }
+
+    get perimeterAreaRatio() {
+        return this.areaForDivision.map((area) => this.floor.exposedPerimeter / area);
     }
 
     get uninsulatedUValue(): WithWarnings<number, FloorUValueWarning> {

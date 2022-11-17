@@ -7,7 +7,6 @@ describe('suspended floor', () => {
         const input: FloorUValueModelInput = {
             common: {
                 area: 40,
-                exposedPerimeter: 25.5,
             },
             perFloorType: {
                 floorType: 'suspended',
@@ -33,7 +32,7 @@ describe('suspended floor', () => {
         };
         const { uValue } = constructFloorUValueModel(input);
         const [value, warnings] = uValue.inner();
-        expect(value).toBeApproximately(0.8176);
+        expect(value).toBeApproximately(0.7219);
         expect(warnings.size).toBe(0);
     });
 });

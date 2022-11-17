@@ -27,7 +27,6 @@ describe('exposed floor', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 5,
                 },
                 perFloorType: {
                     floorType: 'exposed',
@@ -56,7 +55,6 @@ describe('exposed floor', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 5,
                 },
                 perFloorType: {
                     floorType: 'exposed',
@@ -110,10 +108,9 @@ describe('exposed floor', () => {
         expect(warnings.size).toBe(0);
     });
 
-    test('area and exposed perimeter does not affect u-value', () => {
+    test('area does not affect u-value', () => {
         const common = fc.record({
             area: sensibleFloat,
-            exposedPerimeter: sensibleFloat,
         });
         const commonInputs = fc
             .tuple(common, common)
@@ -131,26 +128,6 @@ describe('exposed floor', () => {
                 };
                 const modelDifferingArea = constructFloorUValueModel(differingArea);
                 expect(modelDifferingArea.uValue.inner()[0]).toBe(
-                    modelBaseline.uValue.inner()[0],
-                );
-                const differingPerimeter: FloorUValueModelInput = {
-                    common: {
-                        ...common1,
-                        exposedPerimeter: common2.exposedPerimeter,
-                    },
-                    perFloorType,
-                };
-                const modelDifferingPerimeter =
-                    constructFloorUValueModel(differingPerimeter);
-                expect(modelDifferingPerimeter.uValue.inner()[0]).toBe(
-                    modelBaseline.uValue.inner()[0],
-                );
-                const differingBoth: FloorUValueModelInput = {
-                    common: common2,
-                    perFloorType,
-                };
-                const modelDifferingBoth = constructFloorUValueModel(differingBoth);
-                expect(modelDifferingBoth.uValue.inner()[0]).toBe(
                     modelBaseline.uValue.inner()[0],
                 );
             }),

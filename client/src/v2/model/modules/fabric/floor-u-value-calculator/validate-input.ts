@@ -48,20 +48,25 @@ function valueMissingError(
     );
 }
 
+type CommonSpec = {
+    area: number;
+    exposedPerimeter: number;
+};
 export function validate(
     selectedFloorType: FloorType,
-    common: FloorUValueModelInput['common'],
+    common: CommonSpec,
     spec: PerFloorTypeSpec,
 ): FUVCResult<FloorUValueModelInput> {
-    return validatePerFloorType(selectedFloorType, spec).map((res) =>
+    return validatePerFloorType(common, selectedFloorType, spec).map((res) =>
         res.map((perFloorType) => ({
-            common,
+            common: { area: common.area },
             perFloorType,
         })),
     );
 }
 
 function validatePerFloorType(
+    common: CommonSpec,
     selectedFloorType: FloorType,
     spec: PerFloorTypeSpec,
 ): FUVCResult<FloorUValueModelInput['perFloorType']> {
@@ -69,11 +74,11 @@ function validatePerFloorType(
         case 'custom':
             return validateCustomFloor(spec.custom);
         case 'solid':
-            return validateSolidFloor(spec.solid);
+            return validateSolidFloor(common, spec.solid);
         case 'suspended':
             return validateSuspendedFloor(spec.suspended);
         case 'heated basement':
-            return validateHeatedBasementFloor(spec['heated basement']);
+            return validateHeatedBasementFloor(common, spec['heated basement']);
         case 'exposed':
             return validateExposedFloor(spec.exposed);
     }
@@ -88,7 +93,10 @@ function validateCustomFloor(spec: CustomFloorSpec): FUVCResult<CustomFloorInput
     }
 }
 
-function validateSolidFloor(spec: SolidFloorSpec): FUVCResult<SolidFloorInput> {
+function validateSolidFloor(
+    { exposedPerimeter }: CommonSpec,
+    spec: SolidFloorSpec,
+): FUVCResult<SolidFloorInput> {
     const wc = new WarningCollector<FloorUValueWarning>();
     let allOverInsulation: SolidFloorInput['allOverInsulation'];
     if (!spec.allOverInsulation.enabled) {
@@ -162,6 +170,7 @@ function validateSolidFloor(spec: SolidFloorSpec): FUVCResult<SolidFloorInput> {
     return WithWarnings.empty(
         Result.ok({
             ...spec,
+            exposedPerimeter,
             floorType: 'solid',
             allOverInsulation,
             edgeInsulation,
@@ -211,6 +220,7 @@ function validateSuspendedFloor(
 }
 
 function validateHeatedBasementFloor(
+    { exposedPerimeter }: CommonSpec,
     spec: HeatedBasementFloorSpec,
 ): FUVCResult<HeatedBasementFloorInput> {
     const wc = new WarningCollector<FloorUValueWarning>();
@@ -222,6 +232,7 @@ function validateHeatedBasementFloor(
         return WithWarnings.empty(
             Result.ok({
                 floorType: 'heated basement',
+                exposedPerimeter,
                 basementDepth,
                 insulation: null,
             }),
@@ -238,6 +249,7 @@ function validateHeatedBasementFloor(
     return WithWarnings.empty(
         Result.ok({
             floorType: 'heated basement',
+            exposedPerimeter,
             basementDepth,
             insulation,
         }),

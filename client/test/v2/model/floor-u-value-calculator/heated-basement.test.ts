@@ -10,10 +10,10 @@ describe('unheated basement', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 10,
                 },
                 perFloorType: {
                     floorType: 'heated basement',
+                    exposedPerimeter: 10,
                     basementDepth: 0.5,
                     insulation: null,
                 },
@@ -25,10 +25,10 @@ describe('unheated basement', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 10,
                 },
                 perFloorType: {
                     floorType: 'heated basement',
+                    exposedPerimeter: 10,
                     basementDepth: 2.5,
                     insulation: null,
                 },
@@ -40,10 +40,10 @@ describe('unheated basement', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 100,
                 },
                 perFloorType: {
                     floorType: 'heated basement',
+                    exposedPerimeter: 100,
                     basementDepth: 2.5,
                     insulation: null,
                 },
@@ -55,10 +55,10 @@ describe('unheated basement', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 100,
                 },
                 perFloorType: {
                     floorType: 'heated basement',
+                    exposedPerimeter: 100,
                     basementDepth: 0.5,
                     insulation: null,
                 },
@@ -70,10 +70,10 @@ describe('unheated basement', () => {
             input: {
                 common: {
                     area: 100,
-                    exposedPerimeter: 50,
                 },
                 perFloorType: {
                     floorType: 'heated basement',
+                    exposedPerimeter: 50,
                     basementDepth: 1.5,
                     insulation: {
                         mechanism: 'conductivity',

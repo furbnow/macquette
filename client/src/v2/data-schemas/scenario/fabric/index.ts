@@ -256,6 +256,9 @@ const commonFloor = z.object({
     type: z.enum(['floor', 'Floor']).transform(() => 'floor' as const),
 });
 const appliedFloor = z.object({
+    // `perimeter` should one day be renamed to `exposedPerimeter` (or
+    // something) and go in the per floor type spec, but for now we keep it
+    // here because legacy JS references it
     perimeter: stringyFloatSchema.optional(),
     selectedFloorType: floorType.optional(),
     perFloorTypeSpec: perFloorTypeSpecSchema.optional(),
@@ -267,6 +270,7 @@ const appliedFloor = z.object({
         floorUValueWarningSchema,
     ).optional(),
 });
+
 const appliedFloorElement = commonLibraryElement
     .merge(commonAppliedElement)
     .merge(commonFloor)
