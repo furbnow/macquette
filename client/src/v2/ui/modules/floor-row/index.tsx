@@ -13,6 +13,7 @@ import { assertNever } from '../../../helpers/assert-never';
 import { Result } from '../../../helpers/result';
 import { safeMerge } from '../../../helpers/safe-merge';
 import { WithWarnings } from '../../../helpers/with-warnings';
+import { InfoTooltip } from '../../input-components/forms';
 import { NumericInput } from '../../input-components/numeric';
 import { Select } from '../../input-components/select';
 import { TextInput } from '../../input-components/text';
@@ -215,6 +216,9 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
         if (!state.loaded) {
             return <>Loading...</>;
         }
+        const exposedPerimeterEnabled = ['solid', 'heated basement'].includes(
+            state.selectedFloorType,
+        );
         return (
             <>
                 {portal}
@@ -279,7 +283,8 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                 </td>
                 <td>
                     <NumericInput
-                        value={state.exposedPerimeter}
+                        disabled={!exposedPerimeterEnabled}
+                        value={exposedPerimeterEnabled ? state.exposedPerimeter : null}
                         callback={(exposedPerimeter) =>
                             dispatch({
                                 type: 'merge state',
@@ -288,6 +293,11 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                         }
                         unit="m"
                     />
+                    <InfoTooltip>
+                        This field is only enabled when the exposed perimeter value is
+                        necessary for calculating the floor U-value; if it is disabled
+                        then the exposed perimeter is not required.
+                    </InfoTooltip>
                 </td>
                 <td>
                     <NumericInput
