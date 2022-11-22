@@ -554,20 +554,24 @@ function elements_initUI() {
     $('#floors').html('');
     $('#windows').html('');
     $('#party_walls').html('');
-    // Initial addition of floors
+
     for (z in data.fabric.elements) {
         var type = data.fabric.elements[z].type;
 
-        if (type == 'Wall' || type == 'wall') {
-            add_element('#walls', z);
-        } else if (type == 'Floor' || type == 'floor') {
+        if (!window.features.includes('new-fabric-page')) {
+            if (type == 'Wall' || type == 'wall') {
+                add_element('#walls', z);
+            } else if (isRoofOrLoft(type)) {
+                add_element('#roofs', z);
+            } else if (isPartyWall(type)) {
+                add_element('#party_walls', z);
+            }
+        }
+
+        if (type == 'Floor' || type == 'floor') {
             add_floor(z);
-        } else if (isRoofOrLoft(type)) {
-            add_element('#roofs', z);
         } else if (isOpening(type)) {
             add_window(z);
-        } else if (isPartyWall(type)) {
-            add_element('#party_walls', z);
         }
     }
 
