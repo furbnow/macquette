@@ -131,7 +131,7 @@ $('#openbem').on('click', '.delete-element', function () {
     var row = $(this).attr('row');
     var item_id = 1.0 * $(this).attr('item_id');
     $(this).closest('tr').remove();
-    if (window.features.includes('new-fuvc')) {
+    if (window.features.includes('new-fuvc') && this.dataset.type === "floor") {
         window.Macquette.uiModules.floorRow.unmount(item_id);
     }
     data.fabric.elements.splice(row, 1);
