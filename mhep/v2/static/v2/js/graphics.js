@@ -16,7 +16,7 @@ function draw_openbem_graphics(parent, scenarioData) {
 }
 
 function houseSVG(data) {
-    const SCALE = 30;
+    const SCALE = 50;
 
     const floorwk = data.fabric.total_floor_WK;
     const ventilationwk = data.ventilation.average_ventilation_WK;
