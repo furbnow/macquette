@@ -183,7 +183,7 @@ $('#openbem').on('click', '.apply-bulk-measure', function () {
 });
 $('#openbem').on('click', '#bulk-measure-next', function () {
 // Prepare conten for modal
-    var out = '<div id="modal-bulk-measure-body" style="padding: 15px" >';
+    var out = '<div class="modal-body" id="modal-bulk-measure-body" style="padding: 15px" >';
     out += '<p>Choose elements to appply measures to.</p>';
     out += '<table class="table" style="margin-left:15px">';
     var label = $(this).attr('tags') == 'Window' ? 'Subtract from' : '';
@@ -228,8 +228,8 @@ $('#openbem').on('click', '#bulk-measure-next', function () {
     out += '</table>';
     out += '</div>';
     // Add content and buttons, hide what we don't need from the original modal
-    $('#apply-measure-modal .modal-body').after($(out));
-    $('#apply-measure-modal .modal-body').hide();
+    $('#apply-measure-modal-choose-measure').after($(out));
+    $('#apply-measure-modal-choose-measure').hide();
     $('#bulk-measure-next').remove();
     $('#apply-measure-modal .modal-footer').append('<button id="bulk-measure-finish" class="btn btn-primary">Finish</button>');
 });
