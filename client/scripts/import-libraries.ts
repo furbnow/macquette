@@ -65,17 +65,27 @@ async function confirmProceed(
 ) {
     const allLibraries = await client.listLibraries();
     return async (library: LibraryWithOptionalId): Promise<ConfirmResult> => {
+        let action: ConfirmResult;
+
         if (library.id !== undefined) {
             const existingLibrary = allLibraries.find(
                 (existingLibrary) => existingLibrary.id === library.id,
             );
             if (existingLibrary === undefined) {
                 console.error(
-                    chalk.red('[ERROR]') +
+                    chalk.red('[WARN]') +
                         ' ' +
                         'Library to upload specified an ID, but there was no library with that ID server-side',
                 );
-                return { type: 'skip' };
+
+                console.log(
+                    'This will instead create a ' + chalk.green('new') + ' library.',
+                );
+                console.log('Name: ' + chalk.green(library.name));
+                console.log(
+                    'Number of items: ' + chalk.green(Object.keys(library.data).length),
+                );
+                action = { type: 'create' };
             } else {
                 console.log(
                     chalk.yellow('[WARN]') +
@@ -94,6 +104,7 @@ async function confirmProceed(
                         ' (new) ' +
                         chalk.green(Object.keys(library.data).length),
                 );
+                action = { type: 'update', id: library.id };
             }
         } else {
             console.log('You are about to upload a ' + chalk.green('new') + ' library.');
@@ -101,7 +112,9 @@ async function confirmProceed(
             console.log(
                 'Number of items: ' + chalk.green(Object.keys(library.data).length),
             );
+            action = { type: 'create' };
         }
+
         if (params.dryRun) {
             console.log('(No action - dry run)');
             return { type: 'skip' };
@@ -111,10 +124,8 @@ async function confirmProceed(
             ]);
             if (!confirm) {
                 return { type: 'skip' };
-            } else if (library.id === undefined) {
-                return { type: 'create' };
             } else {
-                return { type: 'update', id: library.id };
+                return action;
             }
         }
     };
