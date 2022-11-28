@@ -119,26 +119,45 @@ Plotly.newPlot(
     }
 );
 
+function uniq(arr) {
+    return [...new Set(arr)];
+}
 
-const completedYear = [
+const yearData = [
     {% for row in assessments_by_year %}
-        'Year {{ row.year|date:"Y" }}',
+        { year: {{ row.year | date:"Y" }},
+          organisationId: {{ row.organisation_id|default:"null" }},
+          organisationName: '{{ row.organisation__name|default:"(individual)" }}',
+          count: {{ row.count }} },
     {% endfor %}
 ];
-const completedYearCount = [
-    {% for row in assessments_by_year %}
-        {{ row.count }},
-    {% endfor %}
-];
+
+const allYears = uniq(yearData.map(row => row.year))
+const allYearsFormatted = allYears.map(year => `Y${year}`)
+const allOrganisations = uniq(yearData.map(row => row.organisationId))
+    .map(organisationId => [
+        organisationId,
+        yearData.find(row => row.organisationId === organisationId).organisationName
+    ])
+
+const data = allOrganisations.map(([organisationId, organisationName]) => {
+    return {
+        type: 'bar',
+        name: organisationName,
+        x: allYears.map(year =>
+            yearData.find(row => row.organisationId === organisationId && row.year === year)?.count ?? 0
+        ),
+        y: allYearsFormatted,
+        orientation: 'h',
+    };
+})
 
 Plotly.newPlot(
     'annual-chart',
-    [
-        { type: 'bar', x: completedYearCount, y: completedYear, orientation: 'h' },
-    ],
+    data,
     {
         title: 'Completed assessments by last updated year',
-        barmode: 'group',
+        barmode: 'stack',
     }
 );
 

@@ -45,9 +45,9 @@ class Dashboard(UserPassesTestMixin, TemplateView):
         context["assessments_by_year"] = (
             Assessment.objects.filter(status="Complete")
             .annotate(year=TruncYear("updated_at"))
-            .values("year")
+            .values("year", "organisation_id", "organisation__name")
             .annotate(count=Count("id"))
-            .values("year", "count")
+            .values("year", "count", "organisation_id", "organisation__name")
             .order_by("year")
         )
 
