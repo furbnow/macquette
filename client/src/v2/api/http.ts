@@ -9,6 +9,13 @@ import axios from 'axios';
 import { z } from 'zod';
 
 import {
+    addressSuggestionResponse,
+    AddressSuggestionResponse,
+    resolvedAddressResponse,
+    ResolvedAddressResponse,
+    ResolvedAddress,
+} from '../data-schemas/address';
+import {
     AssessmentMetadata,
     LibraryMetadata,
     libraryMetadataSchema,
@@ -22,6 +29,7 @@ import { Library, librarySchema } from '../data-schemas/libraries';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
 import { isIndexable } from '../helpers/is-indexable';
 import { jsEnvironment } from '../helpers/js-environment';
+import { Result } from '../helpers/result';
 import { urls } from './urls';
 
 export function cameliseStr(str: string): string {
@@ -530,5 +538,43 @@ export class HTTPClient {
             responseType: 'blob',
         });
         return response.data;
+    }
+
+    async suggestAddresses(
+        query: string,
+    ): Promise<
+        Result<AddressSuggestionResponse['results'], AddressSuggestionResponse['error']>
+    > {
+        const response = await this.wrappedFetch({
+            intent: 'getting address suggestions',
+            url: urls.addressSuggestions(),
+            method: 'GET',
+            params: { q: query },
+            responseType: 'json',
+        });
+        const parsed = addressSuggestionResponse.parse(camelise(response.data));
+        if (typeof parsed.error === 'string') {
+            return Result.err(parsed.error);
+        } else {
+            return Result.ok(parsed.results);
+        }
+    }
+
+    async resolveAddress(
+        id: string,
+    ): Promise<Result<ResolvedAddress, ResolvedAddressResponse['error']>> {
+        const response = await this.wrappedFetch({
+            intent: 'resolving address id',
+            url: urls.resolveAddress(),
+            method: 'POST',
+            responseType: 'json',
+            data: { id },
+        });
+        const parsed = resolvedAddressResponse.parse(camelise(response.data));
+        if (parsed.error !== null) {
+            return Result.err(parsed.error);
+        } else {
+            return Result.ok(parsed.result);
+        }
     }
 }

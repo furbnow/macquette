@@ -1,4 +1,12 @@
 export const urls = {
+    addressSuggestions(): string {
+        return `/address-search/v1/suggestions/`;
+    },
+
+    resolveAddress(): string {
+        return '/address-search/v1/lookup/';
+    },
+
     assessments(): string {
         return `/v2/api/assessments/`;
     },
