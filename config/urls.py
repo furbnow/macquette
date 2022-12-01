@@ -23,6 +23,7 @@ urlpatterns = [
         "", RedirectView.as_view(url=reverse_lazy("v2:list-assessments")), name="index"
     ),
     # Add app versions after this line
+    path("address-search/", include("mhep.address_search.urls")),
     path("v2/", include("mhep.v2.urls", namespace="v2")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

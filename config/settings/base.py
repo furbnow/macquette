@@ -350,3 +350,12 @@ REST_FRAMEWORK = {
         ["rest_framework.authentication.SessionAuthentication"]
     )
 }
+
+API_KEY = {
+    "IDEAL_POSTCODES": env.str("IDEAL_POSTCODES_API_KEY", None),
+}
+
+if ENV == "production":
+    FAKE_EXPENSIVE_DATA = False
+else:
+    FAKE_EXPENSIVE_DATA = env.bool("FAKE_EXPENSIVE_DATA", default=False)
