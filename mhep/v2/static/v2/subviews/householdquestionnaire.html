@@ -66,24 +66,26 @@
                 </div>
             </div>
 
-            <div class="form-row mb-7">
-                <label class='form-row-label' for="address_1">Address:</label>
-                <div class="form-row-control">
-                    <input type="text" key="data.household.address_1" class="mb-7" style="width:250px" id="address_1"><br>
-                    <input type="text" key="data.household.address_2" class="mb-7" style="width:250px"><br>
-                    <input type="text" key="data.household.address_3" class="mb-0" style="width:250px">
+            <div data-hide-if-flag="address-search-page">
+                <div class="form-row mb-7">
+                    <label class='form-row-label' for="address_1">Address:</label>
+                    <div class="form-row-control">
+                        <input type="text" key="data.household.address_1" class="mb-7" style="width:250px" id="address_1"><br>
+                        <input type="text" key="data.household.address_2" class="mb-7" style="width:250px"><br>
+                        <input type="text" key="data.household.address_3" class="mb-0" style="width:250px">
+                    </div>
                 </div>
-            </div>
-            <div class="form-row mb-7">
-                <label class='form-row-label' for="address_town">Town/city:</label>
-                <div class="form-row-control">
-                    <input type="text" key="data.household.address_town" id="address_town" style="width:130px">
+                <div class="form-row mb-7">
+                    <label class='form-row-label' for="address_town">Town/city:</label>
+                    <div class="form-row-control">
+                        <input type="text" key="data.household.address_town" id="address_town" style="width:130px">
+                    </div>
                 </div>
-            </div>
-            <div class="form-row">
-                <label class='form-row-label' for="address_postcode">Postcode:</label>
-                <div class="form-row-control">
-                    <input type="text" key="data.household.address_postcode" id="address_postcode" style="width:130px">
+                <div class="form-row">
+                    <label class='form-row-label' for="address_postcode">Postcode:</label>
+                    <div class="form-row-control">
+                        <input type="text" key="data.household.address_postcode" id="address_postcode" style="width:130px">
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,7 +102,7 @@
                 <p class="mb-0" id="csv-result"></p>
             </div>
 
-            <div class="bg-assessor pa-15">
+            <div class="bg-assessor pa-15" data-hide-if-flag="address-search-page">
                 <p class="text-italic mb-15">Assessor: check and fill these if required.</p>
 
                 <div class="form-row">
@@ -1122,20 +1124,24 @@
     <textarea class="ma-0 textarea" key="data.household.laundry"></textarea>
 
 
-    <h4>2.2.4 Radon</h4>
-    <div class="pa-15 bg-assessor">
-    <label for="radon_risk">The chance of a high level of radon is:</label>
-    <select key="data.household.radon_risk" id="radon_risk" style="width:180px">
-            <option value="">Select...</option>
-            <option value="LOW">less than 1%</option>
-            <option value="1-3">1-3%</option>
-            <option value="3-5">3-5%</option>
-            <option value="5-10">5-10%</option>
-            <option value="10-30">10-30%</option>
-            <option value="30">greater than 30%</option>
-        </select><br>
-    <i>Please look this up using the <a href="https://www.ukradon.org/information/ukmaps" rel="noreferrer"target="_blank" style="text-decoration: underline;">UK Radon map</a>.</i>
+    <div data-hide-if-flag="address-search-page">
+        <h4>2.2.4 Radon</h4>
+        <div class="pa-15 bg-assessor">
+            <label for="radon_risk">The chance of a high level of radon is:</label>
+            <select key="data.household.radon_risk" id="radon_risk" style="width:180px">
+                    <option value="">Select...</option>
+                    <option value="LOW">less than 1%</option>
+                    <option value="1-3">1-3%</option>
+                    <option value="3-5">3-5%</option>
+                    <option value="5-10">5-10%</option>
+                    <option value="10-30">10-30%</option>
+                    <option value="30">greater than 30%</option>
+                </select><br>
+            <i>Please look this up using the <a href="https://www.ukradon.org/information/ukmaps" rel="noreferrer"target="_blank" style="text-decoration: underline;">UK Radon map</a>.</i>
+        </div>
     </div>
+
+
     <h4>2.3 Your experience</h4>
 
     <h4>2.3.1 Thermal comfort</h4>
@@ -1446,7 +1452,7 @@
         </div>
     </div>
 
-    <div class="bg-assessor pa-15 mb-15 w-50">
+    <div class="bg-assessor pa-15 mb-15 w-50" data-hide-if-flag="address-search-page">
         <p>
             <b>Risk of flooding from...</b><br>
             Please look this up using the <a href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/map" rel="noreferrer"target="_blank" style="text-decoration: underline;">uk.gov flood risk map</a>.

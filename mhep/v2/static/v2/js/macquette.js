@@ -83,6 +83,10 @@ async function initMacquette(api, assessmentId, featureFlags) {
         projectid,
     );
 
+    for (const feature of window.features) {
+        $(`[data-hide-if-flag=${feature}]`).hide();
+        $(`[data-show-if-flag=${feature}]`).show();
+    }
     refresh_undo_redo_buttons();
 
     if (!window.features.includes('new-sidebar')) {
@@ -600,6 +604,11 @@ async function legacyModuleInit() {
     const fnName = `${page}_initUI`;
     if (window[fnName] !== undefined) {
         window[fnName]();
+    }
+
+    for (const feature of window.features) {
+        $(`[data-hide-if-flag=${feature}]`).hide();
+        $(`[data-show-if-flag=${feature}]`).show();
     }
 }
 
