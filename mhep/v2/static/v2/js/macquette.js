@@ -537,7 +537,8 @@ function legacySharedInit() {
         page == 'commentary' ||
         page == 'scopeofworks' ||
         page == 'currentenergy' ||
-        page == 'imagegallery'
+        page == 'imagegallery' ||
+        page == 'address-search'
     ) {
         hide_house_graphic();
     } else {
@@ -547,6 +548,8 @@ function legacySharedInit() {
 
     if (page == 'householdquestionnaire') {
         $('.scenario-name').html('Household Questionnaire');
+    } else if (page == 'address-search') {
+        $('.scenario-name').html('Address Search');
     } else if (page == 'commentary') {
         $('.scenario-name').html('Commentary');
     } else if (page == 'report') {
