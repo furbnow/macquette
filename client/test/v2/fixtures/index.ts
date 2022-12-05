@@ -2,10 +2,8 @@ import { readdirSync, readFileSync } from 'fs';
 import { join, relative } from 'path';
 import { z } from 'zod';
 
-import type { Project } from '../../../src/v2/data-schemas/project';
-import { projectSchema } from '../../../src/v2/data-schemas/project';
-import { isIndexable } from '../../../src/v2/helpers/is-indexable';
-import { isNotNull } from '../../../src/v2/helpers/null-checking';
+import { Project, projectSchema } from '../../../src/v2/data-schemas/project';
+import { Scenario, scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 
 const fixturesRoot = join(__filename, '..');
 
@@ -26,23 +24,28 @@ function safeJsonParse(...args: Parameters<typeof JSON.parse>): unknown {
 
 export class ProjectFixture {
     public parsedData: Project;
+    public rawData: z.input<typeof projectSchema>;
 
-    constructor(public fixturePath: string, public rawData: Record<string, unknown>) {
+    constructor(public fixturePath: string, rawData: unknown) {
         const parseResult = projectSchema.safeParse(rawData);
         if (parseResult.success) {
             this.parsedData = parseResult.data;
+            // SAFETY: the data passed the schema, so is assignable to the input type
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            this.rawData = rawData as z.input<typeof projectSchema>;
         } else {
             throw new Error(parseResult.error.toString());
         }
     }
 }
 
-export class Scenario {
+export class ScenarioFixture {
     public displayName: string;
     constructor(
         public fixturePath: string,
         public scenarioName: string,
-        public data: unknown,
+        public rawData: z.input<typeof scenarioSchema>,
+        public data: Scenario,
     ) {
         this.displayName = `${this.fixturePath} - ${this.scenarioName}`;
     }
@@ -54,44 +57,32 @@ export const fixtures: Array<Fixture> = fixturePaths.map((path) => ({
     data: safeJsonParse(readFileSync(path, 'utf-8')),
 }));
 
-const fixtureSchema = z.object({
-    data: z.record(z.unknown()),
-});
-
 const projectFocus: null | string = null;
 
-export const projects = fixtures
-    .map((fixture) => {
-        if (projectFocus !== null && fixture.path !== projectFocus) {
-            return null;
-        }
-
-        if (!isIndexable(fixture.data)) {
-            console.error(`Project is not a Record for fixture ${fixture.path}`);
-            return null;
-        }
-
-        try {
-            return new ProjectFixture(fixture.path, fixture.data);
-        } catch (e) {
-            console.error(`Project parse failure for fixture ${fixture.path}`, e);
-            return null;
-        }
-    })
-    .filter(isNotNull);
+export const projects = fixtures.flatMap((fixture) => {
+    if (projectFocus !== null && fixture.path !== projectFocus) {
+        return [];
+    }
+    try {
+        return [new ProjectFixture(fixture.path, fixture.data)];
+    } catch (e) {
+        console.error(`Project parse failure for fixture ${fixture.path}`, e);
+        return [];
+    }
+});
 
 export const scenarios = [
-    new Scenario('[no path]', 'undefined scenario', undefined),
-    ...fixtures.flatMap((fixture) => {
-        const parseResult = fixtureSchema.safeParse(fixture.data);
-        if (parseResult.success) {
-            return Object.entries(parseResult.data.data).map(
-                ([name, data]) => new Scenario(fixture.path, name, data),
-            );
-        } else {
-            console.warn(`Scenario parse failure for fixture ${fixture.path}`);
-            return [];
-        }
+    new ScenarioFixture('[no path]', 'undefined scenario', undefined, undefined),
+    ...projects.flatMap((project) => {
+        return Object.entries(project.parsedData.data).map(
+            ([name, scenarioData]) =>
+                new ScenarioFixture(
+                    project.fixturePath,
+                    name,
+                    project.rawData.data[name],
+                    scenarioData,
+                ),
+        );
     }),
 ];
 
@@ -165,7 +156,7 @@ const knownBuggyFlat: Array<[string, string, string]> = knownBuggy.flatMap(
     ({ reason, scenarios }) =>
         scenarios.map(([p, n]): [string, string, string] => [p, n, reason]),
 );
-export function shouldSkipScenario(scenario: Scenario): boolean {
+export function shouldSkipScenario(scenario: ScenarioFixture): boolean {
     for (const [path, name, reason] of knownBuggyFlat) {
         if (scenario.fixturePath === path && scenario.scenarioName === name) {
             console.warn(

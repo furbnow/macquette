@@ -30,7 +30,7 @@ describe('scenario validator', () => {
             if (shouldSkipScenario(scenario)) {
                 return;
             }
-            testFn(scenario.data);
+            testFn(scenario.rawData);
         });
         test('arbitrary', () => {
             fc.assert(fc.property(arbScenarioInputs(), testFn));
@@ -42,7 +42,7 @@ describe('scenario validator', () => {
             const modelOutput = runModel(scenarioData);
             expect(() => scenarioSchema.parse(modelOutput)).not.toThrow();
         }
-        test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
+        test.each(scenarios)('$displayName', (scenario) => testFn(scenario.rawData));
         test('arbitrary', () => {
             fc.assert(
                 fc.property(
@@ -59,7 +59,7 @@ describe('scenario validator', () => {
             const jsonRoundTripped = emulateJsonRoundTrip(modelOutput);
             expect(() => scenarioSchema.parse(jsonRoundTripped)).not.toThrow();
         }
-        test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
+        test.each(scenarios)('$displayName', (scenario) => testFn(scenario.rawData));
         test('arbitrary', () => {
             fc.assert(
                 fc.property(
@@ -103,7 +103,7 @@ describe('scenario validator', () => {
             testIdempotence(validate, jsonRoundTripped);
         }
 
-        test.each(scenarios)('$displayName', (scenario) => testFn(scenario.data));
+        test.each(scenarios)('$displayName', (scenario) => testFn(scenario.rawData));
         test('arbitrary', () => {
             fc.assert(
                 fc.property(

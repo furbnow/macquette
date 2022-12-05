@@ -519,13 +519,13 @@ export class HTTPClient {
         });
     }
 
-    async generateReport(organisationId: string, context: unknown): Promise<Blob> {
+    async generateReport(organisationId: string, reportData: unknown): Promise<Blob> {
         const response = await this.wrappedFetch({
             intent: 'generating report',
             url: urls.report(organisationId),
             method: 'POST',
             headers: jsonContentTypeHeader,
-            data: context,
+            data: reportData,
             responseType: 'blob',
         });
         return response.data;

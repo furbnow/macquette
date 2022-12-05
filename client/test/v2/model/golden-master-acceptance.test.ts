@@ -70,22 +70,22 @@ describe('golden master acceptance tests', () => {
         if (shouldSkipScenario(scenario)) {
             return;
         }
-        if (hasNewBehaviour(scenario.data as any)) {
+        if (hasNewBehaviour(scenario.rawData as any)) {
             console.warn(`Skipping scenario for new behaviour: ${scenario.displayName}`);
             return;
         }
-        expect(checkInputBugs(scenario.data as any)).toEqual(
+        expect(checkInputBugs(scenario.rawData as any)).toEqual(
             expect.objectContaining({
                 bugs: false,
             }),
         );
-        const legacyReference = runLegacyModel(cloneDeep(scenario.data));
+        const legacyReference = runLegacyModel(cloneDeep(scenario.rawData));
         expect(checkOutputBugs(legacyReference)).toEqual(
             expect.objectContaining({
                 bugs: false,
             }),
         );
-        const actual = runLiveModel(cloneDeep(scenario.data));
+        const actual = runLiveModel(cloneDeep(scenario.rawData));
         expect(normaliseScenario(actual)).toEqualBy(
             normaliseScenario(legacyReference),
             modelValueComparer(),
