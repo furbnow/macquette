@@ -9,7 +9,6 @@ function scopeofworks_initUI() {
                 'Code',
                 'Measure',
                 'Label/location',
-                'Description',
                 'Performance target',
                 'Key risks',
                 'Associated work',
@@ -20,7 +19,6 @@ function scopeofworks_initUI() {
                 row.tag,
                 row.name,
                 row.location,
-                row.description,
                 row.performance,
                 row.key_risks,
                 row.associated_work,
@@ -36,14 +34,12 @@ function scopeofworks_initUI() {
     }
 
     $('#export_csv_2').click(function () {
-        const assessment = p.data;
         const outputFields = {
             house_type: questionnaire.HOUSE_TYPE[project.master.household.house_type],
             house_nr_bedrooms: project.master.household.house_nr_bedrooms,
             previous_works: project.master.household.previous_works,
             expected_other_works_note: project.master.household.expected_other_works_note,
             expected_start_note: project.master.household.expected_start_note,
-            construct_note_floors: project.master.household.construct_note_floors,
             construct_note_floors: project.master.household.construct_note_floors,
             construct_note_roof: project.master.household.construct_note_roof,
             construct_note_openings: project.master.household.construct_note_openings,
