@@ -131,18 +131,20 @@ function HorizontalEdgeInsulation({
                 Width
             </LabelWithInfo>
             <NumericInput
-                value={state.width}
+                value={state.width === null ? null : state.width * 1000}
                 callback={(value) =>
                     dispatch({
                         type: 'solid floor/merge input',
                         payload: {
                             edgeInsulation: {
-                                horizontal: { width: value },
+                                horizontal: {
+                                    width: value === null ? null : value / 1000,
+                                },
                             },
                         },
                     })
                 }
-                unit="m"
+                unit="mm"
             />
         </>
     );
@@ -182,18 +184,18 @@ function VerticalEdgeInsulation({
             </LabelWithInfo>
             <NumericInput
                 id={depthId}
-                value={state.depth}
+                value={state.depth === null ? null : state.depth * 1000}
                 callback={(value) =>
                     dispatch({
                         type: 'solid floor/merge input',
                         payload: {
                             edgeInsulation: {
-                                vertical: { depth: value },
+                                vertical: { depth: value === null ? null : value / 1000 },
                             },
                         },
                     })
                 }
-                unit="m"
+                unit="mm"
             />
         </>
     );
