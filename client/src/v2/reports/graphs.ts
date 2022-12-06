@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import { cloneDeep, mapValues } from 'lodash';
 
 import { Scenario, scenarioSchema } from '../data-schemas/scenario';
 import { coalesceEmptyString } from '../data-schemas/scenario/value-schemas';
@@ -43,6 +43,9 @@ class ProjectData {
     }
 }
 
+// @note These types are coupled to server-side types in Python, and no static
+// analysis or automated tests check that they line up. If you change them you
+// must manually test that graph generation still works.
 type Line = {
     value: number;
     label: string;
@@ -53,10 +56,11 @@ type ShadedArea = {
     label?: string;
 };
 
-type BarChart = {
+export type BarChart = {
     type: 'bar';
     stacked?: boolean;
     units: string;
+    numCategories: number;
     bins: { label: string; data: number[] }[];
     categoryLabels?: string[];
     categoryColours?: string[];
@@ -64,7 +68,7 @@ type BarChart = {
     areas?: ShadedArea[];
 };
 
-type LineGraph = {
+export type LineGraph = {
     type: 'line';
     xAxis: { units: string };
     yAxis: { units: string };
@@ -83,6 +87,7 @@ function heatBalance(project: ProjectData, scenarioIds: string[]): BarChart {
         type: 'bar',
         stacked: true,
         units: 'kWh per m² per year',
+        numCategories: 5,
         bins: scenarioIds.map((id, idx) => ({
             label: scenarioName(id, idx),
             data: [
@@ -111,6 +116,7 @@ function spaceHeatingDemand(project: ProjectData, scenarioIds: string[]): BarCha
     return {
         type: 'bar',
         units: 'kWh per m² per year',
+        numCategories: 2,
         bins: scenarioIds.map((id, idx) => ({
             label: scenarioName(id, idx),
             data: [
@@ -187,6 +193,7 @@ function peakHeatingLoad(project: ProjectData, scenarioIds: string[]): BarChart 
     return {
         type: 'bar',
         units: 'kW',
+        numCategories: 1,
         bins: scenarioIds.map((id, idx) => ({
             label: scenarioName(id, idx),
             data: [getHeatingLoad(project.scenarioRaw(id)).peak_heat],
@@ -205,8 +212,8 @@ function fuelUse(project: ProjectData, scenarioIds: string[]): BarChart {
 
     function getScenarioData(
         fuelTotals: Record<string, { name: string; quantity: number | null }>,
-    ): number[] {
-        const result = [0, 0, 0, 0];
+    ): [number, number, number, number] {
+        const result: [number, number, number, number] = [0, 0, 0, 0];
 
         for (const { name, quantity } of Object.values(fuelTotals)) {
             const fuelType = fuelList?.[name];
@@ -248,46 +255,36 @@ function fuelUse(project: ProjectData, scenarioIds: string[]): BarChart {
             0) *
         (project.scenario('master').currentenergy?.generation?.annual_generation ?? 0);
 
-    const hasBillsData =
-        billsData[0] !== 0 ||
-        billsData[1] !== 0 ||
-        billsData[2] !== 0 ||
-        billsData[3] !== 0;
-
     return {
         type: 'bar',
         stacked: true,
         units: 'kWh per year',
+        numCategories: 4,
         bins: [
-            hasBillsData
-                ? {
-                      label: 'Bills data',
-                      data: billsData,
-                  }
-                : null,
+            {
+                label: 'Bills data',
+                data: billsData,
+            },
             ...scenarioIds.map((scenarioId, idx) => ({
                 label: scenarioName(scenarioId, idx),
                 data: getScenarioData(project.scenario(scenarioId).fuel_totals ?? {}),
             })),
-        ].filter((row): row is BarChart['bins'][0] => row !== null),
+        ],
         categoryLabels: ['Electricity', 'Gas', 'Oil', 'Solid fuels'],
     };
 }
 
 function energyUseIntensity(project: ProjectData, scenarioIds: string[]): BarChart {
     const baseline = project.scenario('master');
-    if (baseline.currentenergy === undefined) {
-        throw new Error('No current energy data');
-    }
 
     // We have to undo the generation amount here so we can show it separately.
     const billsAssumedConsumedGeneration =
-        ((baseline.currentenergy.generation?.annual_generation ?? 0) *
-            (baseline.currentenergy.generation?.fraction_used_onsite ?? 0)) /
+        ((baseline.currentenergy?.generation?.annual_generation ?? 0) *
+            (baseline.currentenergy?.generation?.fraction_used_onsite ?? 0)) /
         (coalesceEmptyString(baseline.TFA, 1) ?? 1);
 
     const billsData =
-        (coalesceEmptyString(baseline.currentenergy.enduse_annual_kwh, 0) ?? 0) /
+        (coalesceEmptyString(baseline.currentenergy?.enduse_annual_kwh, 0) ?? 0) /
             (coalesceEmptyString(baseline.TFA, 1) ?? 1) -
         billsAssumedConsumedGeneration;
 
@@ -295,13 +292,13 @@ function energyUseIntensity(project: ProjectData, scenarioIds: string[]): BarCha
         type: 'bar',
         stacked: true,
         units: 'kWh per m² per year',
+        numCategories: 8,
         bins: [
-            billsData !== 0
-                ? {
-                      label: 'Bills data',
-                      data: [0, 0, 0, 0, 0, 0, billsData, billsAssumedConsumedGeneration],
-                  }
-                : null,
+            {
+                label: 'Bills data',
+                data: [0, 0, 0, 0, 0, 0, billsData, billsAssumedConsumedGeneration],
+            },
+
             ...scenarioIds.map((id, idx) => {
                 const requirements = project.scenario(id).fuel_requirements;
                 const floorArea = coalesceEmptyString(project.scenario(id).TFA, 1) ?? 1;
@@ -413,7 +410,6 @@ function selectColourPair(idx: number): [string, string] {
 
 function energyCosts(project: ProjectData, scenarioIds: string[]): BarChart {
     const baselineScenario = project.scenario('master');
-    const billsData = baselineScenario.currentenergy?.total_cost ?? 0;
 
     type FuelCostEntry = { name: string; colour: string } & (
         | {
@@ -447,40 +443,39 @@ function energyCosts(project: ProjectData, scenarioIds: string[]): BarChart {
         }
     });
 
-    const billsGenerationCostReduction =
+    const actualGenerationSavings =
         baselineScenario.currentenergy?.generation?.annual_savings ?? 0;
 
     return {
         type: 'bar',
         stacked: true,
         units: '£ per year',
+        numCategories: costEntries.length + 1,
         bins: [
-            billsData !== 0
-                ? {
-                      label: 'Bills data',
-                      data: [
-                          ...costEntries.map((costEntry) => {
-                              const amountUsed =
-                                  coalesceEmptyString(
-                                      baselineScenario.currentenergy?.use_by_fuel?.[
-                                          costEntry.name
-                                      ]?.annual_use,
-                                      0,
-                                  ) ?? 0;
-                              if (amountUsed === 0) {
-                                  return 0;
-                              }
+            {
+                label: 'Bills data',
+                data: [
+                    ...costEntries.map((costEntry) => {
+                        const amountUsed =
+                            coalesceEmptyString(
+                                baselineScenario.currentenergy?.use_by_fuel?.[
+                                    costEntry.name
+                                ]?.annual_use,
+                                0,
+                            ) ?? 0;
+                        if (amountUsed === 0) {
+                            return 0;
+                        }
 
-                              if (costEntry.source === 'UNIT_COST') {
-                                  return (amountUsed * costEntry.unitCost) / 100;
-                              } else {
-                                  return costEntry.standingCharge;
-                              }
-                          }),
-                          billsGenerationCostReduction,
-                      ],
-                  }
-                : null,
+                        if (costEntry.source === 'UNIT_COST') {
+                            return (amountUsed * costEntry.unitCost) / 100;
+                        } else {
+                            return costEntry.standingCharge;
+                        }
+                    }),
+                    actualGenerationSavings,
+                ],
+            },
             ...scenarioIds.map((scenarioId, idx) => {
                 const scenario = project.scenario(scenarioId);
                 const generationCostReduction = Math.abs(
@@ -517,7 +512,7 @@ function energyCosts(project: ProjectData, scenarioIds: string[]): BarChart {
                     ],
                 };
             }),
-        ].filter((row): row is BarChart['bins'][0] => row !== null),
+        ],
         categoryLabels: [
             ...costEntries.map(({ name, source }) => {
                 if (name === 'Standard Tariff') {
@@ -536,17 +531,74 @@ function energyCosts(project: ProjectData, scenarioIds: string[]): BarChart {
 // expecting only numbers.
 // Instead of wrapping every call in the above with NaN checks, just do it in one go,
 // it results in cleaner code.
-function removeNaNs(name: string, chart: BarChart) {
-    for (const bin of chart.bins) {
-        for (const [idx, datapoint] of bin.data.entries()) {
-            if (!Number.isNaN(datapoint)) {
-                continue;
+function removeNaNs(name: string, chart: BarChart): BarChart {
+    const outBins = chart.bins.map((bin) => ({
+        ...bin,
+        data: bin.data.map((val, idx) => {
+            if (Number.isNaN(val)) {
+                console.warn(
+                    `Graph ${name}, bin ${bin.label}, datapoint idx ${idx} was NaN`,
+                );
+                return 0;
+            } else {
+                return val;
             }
+        }),
+    }));
+    return {
+        ...chart,
+        bins: outBins,
+    };
+}
 
-            bin.data[idx] = 0;
-            console.warn(`Graph ${name}, bin ${bin.label}, datapoint idx ${idx} was NaN`);
+function removeEmptyCategories(chart: BarChart): BarChart {
+    const emptyCategoryIndexes = new Set<number>();
+    for (let categoryIdx = 0; categoryIdx < chart.numCategories; categoryIdx++) {
+        const categoryValues = chart.bins.map((bin) => bin.data[categoryIdx]);
+        if (categoryValues.every((value) => value === 0)) {
+            emptyCategoryIndexes.add(categoryIdx);
         }
     }
+    function removeArrayIndices<T>(array: T[], indicesToRemove: Set<number>): T[] {
+        return array.flatMap((val, index) => (indicesToRemove.has(index) ? [] : [val]));
+    }
+    return {
+        ...chart,
+        numCategories: chart.numCategories - emptyCategoryIndexes.size,
+        bins: chart.bins.map((bin) => ({
+            ...bin,
+            data: removeArrayIndices(bin.data, emptyCategoryIndexes),
+        })),
+        ...(chart.categoryColours === undefined
+            ? {}
+            : {
+                  categoryColours: removeArrayIndices(
+                      chart.categoryColours,
+                      emptyCategoryIndexes,
+                  ),
+              }),
+        ...(chart.categoryLabels === undefined
+            ? {}
+            : {
+                  categoryLabels: removeArrayIndices(
+                      chart.categoryLabels,
+                      emptyCategoryIndexes,
+                  ),
+              }),
+    };
+}
+
+function removeEmptyBins(chart: BarChart): BarChart {
+    return {
+        ...chart,
+        bins: chart.bins.flatMap((bin) => {
+            if (bin.data.every((value) => value === 0)) {
+                return [];
+            } else {
+                return [bin];
+            }
+        }),
+    };
 }
 
 export function generateReportGraphs(
@@ -554,17 +606,17 @@ export function generateReportGraphs(
     scenarioIds: string[],
 ): Record<string, BarChart | LineGraph> {
     const parsed = new ProjectData(project);
-    const bars = {
-        heatBalance: heatBalance(parsed, scenarioIds),
-        spaceHeatingDemand: spaceHeatingDemand(parsed, scenarioIds),
-        peakHeatingLoad: peakHeatingLoad(parsed, scenarioIds),
-        fuelUse: fuelUse(parsed, scenarioIds),
-        energyUseIntensity: energyUseIntensity(parsed, scenarioIds),
-        energyCosts: energyCosts(parsed, scenarioIds),
-    };
-    for (const [name, graph] of Object.entries(bars)) {
-        removeNaNs(name, graph);
-    }
+    const bars = mapValues(
+        {
+            heatBalance: heatBalance(parsed, scenarioIds),
+            spaceHeatingDemand: spaceHeatingDemand(parsed, scenarioIds),
+            peakHeatingLoad: peakHeatingLoad(parsed, scenarioIds),
+            fuelUse: fuelUse(parsed, scenarioIds),
+            energyUseIntensity: energyUseIntensity(parsed, scenarioIds),
+            energyCosts: energyCosts(parsed, scenarioIds),
+        },
+        (graph, name) => removeEmptyCategories(removeEmptyBins(removeNaNs(name, graph))),
+    );
     return {
         ...bars,
         cumulativeCo2: cumulativeCo2(parsed, scenarioIds),

@@ -37,6 +37,7 @@ def test_graph_rendering_gives_a_data_url():
         context={},
         graph_data={
             "tester": {
+                "numCategories": 1,
                 "bins": [
                     {"data": [0], "label": "Nowt"},
                 ],

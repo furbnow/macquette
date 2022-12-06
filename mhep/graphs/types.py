@@ -44,18 +44,11 @@ class BarChart(BaseModel):
     stacked: Optional[bool] = False
     units: str
     bins: List[Bin]
+    num_categories: int
     category_labels: Optional[List[str]]
     category_colours: Optional[List[constr(regex=r"^#[a-f0-9]{6}$")]]  # noqa:F722
     lines: Optional[List[Line]]
     areas: Optional[List[ShadedArea]]
-
-    @property
-    def num_categories(self) -> int:
-        """The number of different data points we're trying to plot in each bin."""
-        if self.category_labels:
-            return len(self.category_labels)
-        else:
-            return len(self.bins[0].data)
 
     def reversed_data_by_category(self) -> List[List[float]]:
         """Convert data from being per-bin into being per-category (backwards)."""
@@ -87,23 +80,14 @@ class BarChart(BaseModel):
     @staticmethod
     def _consistent_number_of_categories(cls, values):
         bins = values.get("bins")
-        category_labels = values.get("category_labels")
-
-        # Duplicated logic from num_categories because this is a static method, not
-        # an instance method
-        if category_labels:
-            num_categories = len(category_labels)
-            reason = " as there are that many category labels"
-        else:
-            num_categories = len(bins[0].data)
-            reason = " as there are that many data points in the first bin"
+        num_categories = values.get("num_categories")
 
         # Ensure our bins all contain the same number of data points
         for bin in bins:
             if len(bin.data) != num_categories:
                 raise ValueError(
                     f"Bin '{bin.label}' should have {num_categories} item(s) of data"
-                    f"{reason}, but instead it has {len(bin.data)}"
+                    f", but instead it has {len(bin.data)}"
                 )
 
         category_colours = values.get("category_colours")
@@ -113,19 +97,20 @@ class BarChart(BaseModel):
                 f" {len(category_colours)} provided"
             )
 
+        category_labels = values.get("category_labels")
+        if category_labels and len(category_labels) != num_categories:
+            raise ValueError(
+                f"Should have {num_categories} category labels but"
+                f" {len(category_labels)} provided"
+            )
+
     @staticmethod
     def _no_mixed_negative_and_positive_within_category(cls, values):
         """Ensure that all data points in a category are either positive or negative."""
         stacked = values.get("stacked")
         bins = values.get("bins")
         category_labels = values.get("category_labels")
-
-        # Duplicated logic from num_categories because this is a static method, not
-        # an instance method
-        if category_labels:
-            num_categories = len(category_labels)
-        else:
-            num_categories = len(bins[0].data)
+        num_categories = values.get("num_categories")
 
         if not stacked:
             return values

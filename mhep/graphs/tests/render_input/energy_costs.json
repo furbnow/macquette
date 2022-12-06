@@ -1,4 +1,5 @@
 {
+    "numCategories": 1,
     "bins": [
         { "data": [0], "label": "Bills data" },
         { "data": [1902], "label": "Baseline" },

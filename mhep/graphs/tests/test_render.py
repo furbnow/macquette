@@ -38,6 +38,7 @@ def test_report_key_omits_unused_labels():
     chart = types.BarChart(
         type="bar",
         units="none",
+        numCategories=3,
         categoryLabels=["French", "German", "Mauritian"],
         bins=[
             {"label": "Fnargle", "data": [0, 0, 100]},

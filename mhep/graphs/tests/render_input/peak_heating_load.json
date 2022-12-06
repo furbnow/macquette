@@ -1,4 +1,5 @@
 {
+    "numCategories": 1,
     "areas": [
         { "interval": [3, 6], "label": "Small" },
         { "interval": [6, 10], "label": "Medium" },

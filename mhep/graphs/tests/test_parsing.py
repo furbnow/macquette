@@ -7,6 +7,7 @@ def test_empty_bar_chart_is_disallowed():
     input = {
         "type": "bar",
         "units": "none",
+        "numCategories": 0,
         "bins": [],
     }
 
@@ -16,10 +17,11 @@ def test_empty_bar_chart_is_disallowed():
     assert "must have some data" in str(excinfo.value)
 
 
-def test_mismatching_number_of_categories():
+def test_mismatching_number_of_categories_in_a_bin():
     input = {
         "type": "bar",
         "units": "none",
+        "numCategories": 2,
         "bins": [
             {
                 "label": "1",
@@ -32,16 +34,16 @@ def test_mismatching_number_of_categories():
     with pytest.raises(ValueError) as excinfo:
         parse(input)
 
-    assert (
-        "Bin '1' should have 2 item(s) of data as there are"
-        " that many category labels, but instead it has 1" in str(excinfo.value)
+    assert "Bin '1' should have 2 item(s) of data" ", but instead it has 1" in str(
+        excinfo.value
     )
 
 
-def test_mismatching_number_of_colours():
+def test_mismatching_number_of_category_colours():
     input = {
         "type": "bar",
         "units": "none",
+        "numCategories": 2,
         "bins": [
             {
                 "label": "1",
@@ -58,11 +60,32 @@ def test_mismatching_number_of_colours():
     assert "Should have 2 category colours but 1 provided" in str(excinfo.value)
 
 
+def test_mismatching_number_of_category_labels():
+    input = {
+        "type": "bar",
+        "units": "none",
+        "numCategories": 1,
+        "bins": [
+            {
+                "label": "1",
+                "data": [0],
+            }
+        ],
+        "categoryLabels": ["Cat 1", "Cat 2"],
+    }
+
+    with pytest.raises(ValueError) as excinfo:
+        parse(input)
+
+    assert "Should have 1 category labels but 2 provided" in str(excinfo.value)
+
+
 def test_mixed_positive_and_negative_within_same_category():
     input = {
         "type": "bar",
         "stacked": True,
         "units": "none",
+        "numCategories": 2,
         "bins": [
             {
                 "label": "One",
@@ -88,6 +111,7 @@ def test_mixed_positive_and_negative_within_same_category_with_mismatching_numbe
         "type": "bar",
         "stacked": True,
         "units": "none",
+        "numCategories": 3,
         "bins": [
             {
                 "label": "One",
@@ -110,6 +134,7 @@ def test_bad_colours():
     input = {
         "type": "bar",
         "units": "none",
+        "numCategories": 2,
         "bins": [
             {
                 "label": "1",

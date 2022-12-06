@@ -1,4 +1,5 @@
 {
+    "numCategories": 2,
     "areas": [{ "interval": [12, 75], "label": "Target" }],
     "bins": [
         { "data": [194, 160], "label": "Baseline" },
