@@ -472,14 +472,7 @@ function energyCosts(project: ProjectData, scenarioIds: string[]): BarChart {
                               }
 
                               if (costEntry.source === 'UNIT_COST') {
-                                  let totalCost = (amountUsed * costEntry.unitCost) / 100;
-                                  if (costEntry.name === 'Standard Tariff') {
-                                      totalCost -= billsGenerationCostReduction;
-                                      if (totalCost < 0) {
-                                          totalCost = 0;
-                                      }
-                                  }
-                                  return totalCost;
+                                  return (amountUsed * costEntry.unitCost) / 100;
                               } else {
                                   return costEntry.standingCharge;
                               }
