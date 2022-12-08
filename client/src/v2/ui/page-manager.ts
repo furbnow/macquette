@@ -23,6 +23,7 @@ export const standalonePages: Record<StandalonePageName, PageData> = {
     librariesmanager: { style: 'legacy' },
     fuelsmanager: { style: 'legacy' },
     sandbox: { style: 'modern', module: modules.sandbox },
+    'address-search': { style: 'modern', module: modules.addressSearch },
 };
 
 export const scenarioPages: Record<ScenarioPageName, PageData> = {

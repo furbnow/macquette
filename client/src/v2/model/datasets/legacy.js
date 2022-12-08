@@ -442,6 +442,7 @@ export const datasets = {
          *  - Second dimension: region index, see datasets.regions
          *  -Source: SAP2012 table U4 p.177
          */
+    // TO DELETE: Can be deleted when the new address search page is live for everyone
     table_U6_region_from_postcode:[
         ['AB',16],['AL',1],['B',6],['BA',5],['BB',7],['BD',11],['BD23-24',10],['BH',3],['BL',7],['BN',2],['BR',2],['BS',5],['BT',21],['CA',8],['CB',12],['CF',5],['CH',7],['CH5-8',7],['CM',12],['CM21-23',1],['CO',12],['CR',1],['CT',2],['CV',6],['CW',7],['DA',2],['DD',15],['DE',6],['DG',8],['DH',10],['DH4-5',9],['DL',10],['DN',11],['DT',3],['DY',6],['E',1],['EC',1],['EH',15],['EH43-46',9],['EN',1],['EN9',12],['EX',4],['FK',14],['FY',7],
         ['G',14],['GL',5],['GU',1],['GU11-12',3],['GU14',3],['GU28-29',2],['GU30-35',3],['GU46',3],['GU51-52',3],['HA',1],['HD',11],['HG',10],['HP',1],['HR',6],['HS',18],['HU',11],['HX',11],['IG',12],['IP',12],['IV',17],['IV30-32',16],['IV36',16],['KA',14],['KT',1],['KW',17],['KW15-17',19],['KY',15],['L',7],['LA',7],['LA7-23',8],['LD',13],['LE',6],['LL',7],['LL23-27',13],['LL30-78',13],['LN',11],['LS',11],['LS24',10],['LU',1],['M',7],['ME',2],['MK',1],['ML',14],

@@ -720,7 +720,9 @@ function _extract_scenario_inputs(data) {
     inputdata.sidebarExpanded = data.sidebarExpanded;
     inputdata.household = data.household;
     inputdata.region = data.region;
+    inputdata.region_full = data.region_full;
     inputdata.altitude = data.altitude;
+    inputdata.altitude_full = data.altitude_full;
     inputdata.use_custom_occupancy = data.use_custom_occupancy;
     inputdata.custom_occupancy = data.custom_occupancy;
     inputdata.floors = [];

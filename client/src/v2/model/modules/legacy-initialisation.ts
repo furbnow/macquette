@@ -5,7 +5,9 @@ import { defaultFuels } from '../datasets';
 export function setDefaultLegacyInputs(data: unknown) {
     const modelDefaults = {
         region: 0,
+        region_db: { type: 'no data' },
         altitude: 0,
+        altitude_db: { type: 'no data' },
         LAC_calculation_type: 'SAP',
         fuels: defaultFuels,
         ventilation: {

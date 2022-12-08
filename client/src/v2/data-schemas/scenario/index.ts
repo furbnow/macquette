@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
+import { withOriginSchema } from '../helpers/with-origin';
 import { applianceCarbonCoop } from './appliance-carbon-coop';
 import { fabric } from './fabric';
+import { householdSchema } from './household';
 import { solarHotWaterSchema } from './solar-hot-water';
 import {
     legacyBoolean,
@@ -60,6 +62,7 @@ export const scenarioSchema = z
         use_custom_occupancy: legacyBoolean,
         custom_occupancy: z.union([z.number(), z.literal('')]),
         region: z.number(),
+        region_full: withOriginSchema(z.number(), z.null()),
         fabric,
         water_heating: waterHeating,
         SHW: solarHotWaterSchema,
@@ -214,6 +217,9 @@ export const scenarioSchema = z
                 solarpv_inclination: stringyFloatSchema,
                 solarpv_overshading: stringyFloatSchema,
             }),
+        altitude: stringyFloatSchema,
+        altitude_full: withOriginSchema(z.number(), z.null()),
+        household: householdSchema.partial(),
     })
     .partial()
     .optional();

@@ -10,6 +10,7 @@ const standalonePageNames = [
     'librariesmanager',
     'fuelsmanager',
     'sandbox',
+    'address-search',
 ] as const;
 
 const scenarioPageNames = [

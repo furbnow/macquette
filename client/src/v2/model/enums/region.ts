@@ -1,4 +1,6 @@
 import { cache } from '../../helpers/cache-decorators';
+import { Result } from '../../helpers/result';
+import { regionFromPostcode } from '../datasets/region-lookups';
 import { ModelError } from '../error';
 
 export type RegionName = typeof Region.names extends Array<infer N> ? N : never;
@@ -48,5 +50,23 @@ export class Region {
     @cache
     get index0(): number {
         return Region.names.indexOf(this.name);
+    }
+
+    public static fromPostcode(postcode: string): Result<Region, Error> {
+        postcode = postcode.toUpperCase();
+        for (const [pattern, region] of regionFromPostcode) {
+            if (typeof pattern === 'string') {
+                if (postcode.startsWith(pattern)) {
+                    return Result.ok(Region.fromIndex0(region));
+                }
+            } else {
+                if (pattern.exec(postcode) !== null) {
+                    return Result.ok(Region.fromIndex0(region));
+                }
+            }
+        }
+        return Result.err(
+            new Error('Failed to find postcode in SAP postcode to region table'),
+        );
     }
 }

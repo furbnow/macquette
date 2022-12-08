@@ -1,4 +1,5 @@
 import { UiModuleShim } from './module-management/shim';
+import { addressSearchModule } from './modules/address-search';
 import { currentEnergyModule } from './modules/current-energy';
 import { editorSidebarModule } from './modules/editor-sidebar';
 import { fabricModule } from './modules/fabric';
@@ -15,6 +16,7 @@ export const modules = {
     currentEnergy: new UiModuleShim(currentEnergyModule),
     imageGallery: new UiModuleShim(imageGalleryModule),
     fabric: new UiModuleShim(fabricModule),
+    addressSearch: new UiModuleShim(addressSearchModule),
 };
 
 export type Module = typeof modules[keyof typeof modules];
