@@ -562,38 +562,76 @@ export class HTTPClient {
     async suggestAddresses(
         query: string,
     ): Promise<
-        Result<AddressSuggestionResponse['results'], AddressSuggestionResponse['error']>
+        Result<
+            AddressSuggestionResponse['results'],
+            AddressSuggestionResponse['error'] | HttpClientError
+        >
     > {
-        const response = await this.throwingRequest({
-            intent: 'getting address suggestions',
-            url: urls.addressSuggestions(),
-            method: 'GET',
-            params: { q: query },
-            responseType: 'json',
-        });
-        const parsed = addressSuggestionResponse.parse(camelise(response.data));
-        if (typeof parsed.error === 'string') {
-            return Result.err(parsed.error);
-        } else {
-            return Result.ok(parsed.results);
-        }
+        const intent = 'getting address suggestions';
+        return (
+            await this.request({
+                intent,
+                url: urls.addressSuggestions(),
+                method: 'GET',
+                params: { q: query },
+                responseType: 'json',
+            })
+        ).chain(
+            (
+                response,
+            ): Result<
+                AddressSuggestionResponse['results'],
+                AddressSuggestionResponse['error'] | HttpClientError
+            > => {
+                const parsed = addressSuggestionResponse.safeParse(
+                    camelise(response.data),
+                );
+                if (parsed.success === false) {
+                    return Result.err(new HttpClientError(intent, parsed.error));
+                }
+
+                if (typeof parsed.data.error === 'string') {
+                    return Result.err(parsed.data.error);
+                } else {
+                    return Result.ok(parsed.data.results);
+                }
+            },
+        );
     }
 
     async resolveAddress(
         id: string,
-    ): Promise<Result<ResolvedAddress, ResolvedAddressResponse['error']>> {
-        const response = await this.throwingRequest({
-            intent: 'resolving address id',
-            url: urls.resolveAddress(),
-            method: 'POST',
-            responseType: 'json',
-            data: { id },
-        });
-        const parsed = resolvedAddressResponse.parse(camelise(response.data));
-        if (parsed.error !== null) {
-            return Result.err(parsed.error);
-        } else {
-            return Result.ok(parsed.result);
-        }
+    ): Promise<
+        Result<ResolvedAddress, ResolvedAddressResponse['error'] | HttpClientError>
+    > {
+        return (
+            await this.request({
+                intent: 'resolving address',
+                url: urls.resolveAddress(),
+                method: 'POST',
+                responseType: 'json',
+                data: { id },
+            })
+        ).chain(
+            (
+                response,
+            ): Result<
+                ResolvedAddress,
+                ResolvedAddressResponse['error'] | HttpClientError
+            > => {
+                const parsed = resolvedAddressResponse.safeParse(camelise(response.data));
+                if (parsed.success === false) {
+                    return Result.err(
+                        new HttpClientError('resolving address', parsed.error),
+                    );
+                }
+
+                if (parsed.data.error !== null) {
+                    return Result.err(parsed.data.error);
+                } else {
+                    return Result.ok(parsed.data.result);
+                }
+            },
+        );
     }
 }
