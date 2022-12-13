@@ -168,38 +168,57 @@ export class HTTPClient {
         });
     }
 
-    private async wrappedFetch(
+    private async throwingRequest(
         params: AxiosRequestConfig & { intent: string; responseType: 'blob' },
     ): Promise<AxiosResponse<Blob>>;
 
-    private async wrappedFetch(
+    private async throwingRequest(
         params: AxiosRequestConfig & { intent: string; responseType: 'json' },
     ): Promise<AxiosResponse<unknown>>;
 
-    private async wrappedFetch(
+    private async throwingRequest(
         params: AxiosRequestConfig & { intent: string },
     ): Promise<AxiosResponse<string>>;
 
-    private async wrappedFetch(
+    private async throwingRequest(
         params: AxiosRequestConfig & { intent: string },
     ): Promise<AxiosResponse> {
+        const responseR = await this.request(params);
+        if (responseR.isOk()) {
+            return responseR.unwrap();
+        } else {
+            const httpClientError = responseR.unwrapErr();
+            if (jsEnvironment() === 'browser') {
+                alert(httpClientError.message);
+            }
+            throw httpClientError;
+        }
+    }
+
+    private async request(
+        params: AxiosRequestConfig & { intent: string; responseType: 'blob' },
+    ): Promise<Result<AxiosResponse<Blob>, HttpClientError>>;
+
+    private async request(
+        params: AxiosRequestConfig & { intent: string; responseType: 'json' },
+    ): Promise<Result<AxiosResponse<unknown>, HttpClientError>>;
+
+    private async request(
+        params: AxiosRequestConfig & { intent: string },
+    ): Promise<Result<AxiosResponse<string>, HttpClientError>>;
+
+    private async request(
+        params: AxiosRequestConfig & { intent: string },
+    ): Promise<Result<AxiosResponse, HttpClientError>> {
         try {
-            return await this.axios.request(params);
+            return Result.ok(await this.axios.request(params));
         } catch (error) {
             const httpClientError = new HttpClientError(
                 params.intent,
                 handleNonErrorError(error),
             );
-
-            switch (jsEnvironment()) {
-                case 'node':
-                    console.error(httpClientError.message);
-                    break;
-                case 'browser':
-                    alert(httpClientError.message);
-                    break;
-            }
-            throw httpClientError;
+            console.error(httpClientError.message);
+            return Result.err(httpClientError);
         }
     }
 
@@ -207,7 +226,7 @@ export class HTTPClient {
         if (process.env['NODE_ENV'] === 'production') {
             throw new Error('This method is for debugging purposes only.');
         }
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'performing raw API call',
             url,
             method,
@@ -218,7 +237,7 @@ export class HTTPClient {
     }
 
     async listLibraries(): Promise<(Library & LibraryMetadata)[]> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'listing libraries',
             url: urls.libraries(),
             method: 'GET',
@@ -261,7 +280,7 @@ export class HTTPClient {
     }
 
     async updateLibrary(libraryId: string, updates: unknown): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'updating library',
             url: urls.library(libraryId),
             method: 'PATCH',
@@ -271,7 +290,7 @@ export class HTTPClient {
     }
 
     async addItemToLibrary(libraryId: string, data: unknown): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'adding item to library',
             url: urls.libraryItems(libraryId),
             method: 'POST',
@@ -285,7 +304,7 @@ export class HTTPClient {
         tag: string,
         updates: unknown,
     ): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'updating item in library',
             url: urls.libraryItem(libraryId, tag),
             method: 'PUT',
@@ -295,7 +314,7 @@ export class HTTPClient {
     }
 
     async deleteLibrary(libraryId: string): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'deleting library',
             url: urls.library(libraryId),
             method: 'DELETE',
@@ -303,7 +322,7 @@ export class HTTPClient {
     }
 
     async deleteLibraryItem(libraryId: string, tag: string): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'deleting item from library',
             url: urls.libraryItem(libraryId, tag),
             method: 'DELETE',
@@ -311,7 +330,7 @@ export class HTTPClient {
     }
 
     async listAssessments(organisationId?: string): Promise<AssessmentMetadata[]> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'listing assessments',
             url:
                 organisationId !== undefined
@@ -324,7 +343,7 @@ export class HTTPClient {
     }
 
     async getAssessment(id: string): Promise<unknown> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'getting assessment',
             url: urls.assessment(id),
             method: 'GET',
@@ -334,7 +353,7 @@ export class HTTPClient {
     }
 
     async updateAssessment(id: string, updates: unknown): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'updating assessment',
             url: urls.assessment(id),
             method: 'PATCH',
@@ -348,7 +367,7 @@ export class HTTPClient {
         description: string,
         organisationId?: string,
     ): Promise<AssessmentMetadata> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'duplicating assessment',
             url:
                 organisationId !== undefined
@@ -363,7 +382,7 @@ export class HTTPClient {
     }
 
     async duplicateAssessment(id: string): Promise<AssessmentMetadata> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'duplicating assessment',
             url: urls.duplicateAssessment(id),
             method: 'POST',
@@ -373,7 +392,7 @@ export class HTTPClient {
     }
 
     async deleteAssessment(id: string): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'deleting assessment',
             url: urls.assessment(id),
             method: 'DELETE',
@@ -381,7 +400,7 @@ export class HTTPClient {
     }
 
     async listOrganisations(): Promise<unknown> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'listing organisations',
             url: urls.organisations(),
             method: 'GET',
@@ -391,7 +410,7 @@ export class HTTPClient {
     }
 
     async listUsers(): Promise<unknown> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'listing users',
             url: urls.users(),
             method: 'GET',
@@ -401,7 +420,7 @@ export class HTTPClient {
     }
 
     async addMember(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'adding member',
             url: urls.members(organisationId, userId),
             method: 'POST',
@@ -409,7 +428,7 @@ export class HTTPClient {
     }
 
     async removeMember(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'removing member',
             url: urls.members(organisationId, userId),
             method: 'DELETE',
@@ -417,7 +436,7 @@ export class HTTPClient {
     }
 
     async createLibrary(libraryData: unknown, organisationId?: string): Promise<unknown> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'creating library',
             url:
                 organisationId !== undefined
@@ -437,7 +456,7 @@ export class HTTPClient {
         libraryId: string,
         toOrgId: string,
     ): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'sharing library with organisation',
             url: urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
             method: 'POST',
@@ -449,7 +468,7 @@ export class HTTPClient {
         libraryId: string,
         toOrgId: string,
     ): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'stopping sharing library with organisation',
             url: urls.shareUnshareOrganisationLibraries(fromOrgId, libraryId, toOrgId),
             method: 'DELETE',
@@ -460,7 +479,7 @@ export class HTTPClient {
         organisationId: string,
         libraryId: string,
     ): Promise<unknown> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'listing organisations library is shared with',
             url: urls.libraryOrganisationLibraryShares(organisationId, libraryId),
             method: 'GET',
@@ -470,7 +489,7 @@ export class HTTPClient {
     }
 
     async promoteUserAsLibrarian(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'promoting user as librarian',
             url: urls.librarians(organisationId, userId),
             method: 'POST',
@@ -478,7 +497,7 @@ export class HTTPClient {
     }
 
     async demoteUserAsLibrarian(organisationId: string, userId: string): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'demoting user as librarian',
             url: urls.librarians(organisationId, userId),
             method: 'DELETE',
@@ -488,7 +507,7 @@ export class HTTPClient {
     async uploadImage(assessmentId: string, image: File): Promise<Image> {
         const formData = new FormData();
         formData.append('file', image);
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'uploading image',
             url: urls.uploadImage(assessmentId),
             method: 'POST',
@@ -499,7 +518,7 @@ export class HTTPClient {
     }
 
     async setFeaturedImage(assessmentId: string, imageId: number): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'setting featured image',
             url: urls.setFeaturedImage(assessmentId),
             method: 'POST',
@@ -509,7 +528,7 @@ export class HTTPClient {
     }
 
     async setImageNote(id: number, note: string): Promise<Image> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'setting image note',
             url: urls.image(id),
             method: 'PATCH',
@@ -521,7 +540,7 @@ export class HTTPClient {
     }
 
     async deleteImage(id: number): Promise<void> {
-        await this.wrappedFetch({
+        await this.throwingRequest({
             intent: 'deleting image',
             url: urls.image(id),
             method: 'DELETE',
@@ -529,7 +548,7 @@ export class HTTPClient {
     }
 
     async generateReport(organisationId: string, reportData: unknown): Promise<Blob> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'generating report',
             url: urls.report(organisationId),
             method: 'POST',
@@ -545,7 +564,7 @@ export class HTTPClient {
     ): Promise<
         Result<AddressSuggestionResponse['results'], AddressSuggestionResponse['error']>
     > {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'getting address suggestions',
             url: urls.addressSuggestions(),
             method: 'GET',
@@ -563,7 +582,7 @@ export class HTTPClient {
     async resolveAddress(
         id: string,
     ): Promise<Result<ResolvedAddress, ResolvedAddressResponse['error']>> {
-        const response = await this.wrappedFetch({
+        const response = await this.throwingRequest({
             intent: 'resolving address id',
             url: urls.resolveAddress(),
             method: 'POST',
