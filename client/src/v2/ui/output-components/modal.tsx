@@ -1,5 +1,8 @@
 import React, { useEffect, useCallback, ReactElement, ReactNode, useId } from 'react';
 
+import { PropsOf } from '../../helpers/props-of';
+import { Shadow } from '../../helpers/shadow-object-type';
+
 interface ModalProps {
     /** HTML id for the header that labels this dialog */
     headerId: string;
@@ -96,12 +99,17 @@ export function ModalHeader({ title, children, onClose }: ModalHeaderProps) {
     );
 }
 
-type ModalBodyProps = {
+type BasicModalBodyProps = {
     children: ReactNode;
 };
+type ModalBodyProps = Shadow<PropsOf<'div'>, BasicModalBodyProps>;
 
-export function ModalBody({ children }: ModalBodyProps) {
-    return <div className="dialog-body">{children}</div>;
+export function ModalBody({ children, ...passthrough }: ModalBodyProps) {
+    return (
+        <div className="dialog-body" {...passthrough}>
+            {children}
+        </div>
+    );
 }
 
 type ModalFooterProps = {

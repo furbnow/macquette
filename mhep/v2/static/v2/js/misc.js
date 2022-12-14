@@ -717,6 +717,7 @@ function _extract_scenario_inputs(data) {
     var inputdata = {};
     inputdata.scenario_name = data.scenario_name;
     inputdata.scenario_description = data.scenario_description;
+    inputdata.sidebarExpanded = data.sidebarExpanded;
     inputdata.household = data.household;
     inputdata.region = data.region;
     inputdata.altitude = data.altitude;

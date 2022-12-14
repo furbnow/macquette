@@ -36,3 +36,26 @@ export function isScenarioPage(x: string): x is ScenarioPageName {
     const names: readonly string[] = scenarioPageNames;
     return names.includes(x);
 }
+
+export const pageTitles: Record<StandalonePageName | ScenarioPageName, string> = {
+    householdquestionnaire: 'Household Questionnaire',
+    commentary: 'Commentary',
+    currentenergy: 'Current Energy',
+    imagegallery: 'Image Gallery',
+    compare: 'Compare Scenarios',
+    report: 'Generate Report',
+    scopeofworks: 'Scope of Works',
+    export: 'Import/Export',
+    librariesmanager: 'Libraries Manager',
+    fuelsmanager: 'Fuels Manager',
+    sandbox: 'Sandbox',
+    context: 'Basic Dwelling Data',
+    ventilation: 'Ventilation & Infiltration',
+    elements: 'Fabric',
+    LAC: 'Lighting, Appliances & Cooking',
+    heating: 'Heating',
+    fuel_requirements: 'Fuel Requirements',
+    generation: 'Generation',
+    solarhotwater: 'Solar Hot Water Heating',
+    worksheets: 'SAP worksheets',
+};

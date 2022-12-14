@@ -57,21 +57,24 @@ async function initMacquette(api, assessmentId, featureFlags) {
         legacyModuleUnload
     );
 
-    redraw_scenario_menu();
-    toggle_scenario_menu(scenario);
     refresh_undo_redo_buttons();
 
-    // Don't show reports to people who can't issue reports to avoid confusion
-    if (!p.organisation) {
-        $('[href="#master/report"]').hide();
-    }
+    if (!window.features.includes('new-sidebar')) {
+        redraw_scenario_menu();
+        toggle_scenario_menu(scenario);
 
-    $('#project-title').html(p.name);
-    $('#project-description').html(p.description);
-    if (p.organisation) {
-        $('#project-author').html(`${p.owner.name}, ${p.organisation.name}`);
-    } else {
-        $('#project-author').html(`by ${p.owner.name}`);
+        // Don't show reports to people who can't issue reports to avoid confusion
+        if (!p.organisation) {
+            $('[href="#master/report"]').hide();
+        }
+
+        $('#project-title').html(p.name);
+        $('#project-description').html(p.description);
+        if (p.organisation) {
+            $('#project-author').html(`${p.owner.name}, ${p.organisation.name}`);
+        } else {
+            $('#project-author').html(`by ${p.owner.name}`);
+        }
     }
 
     // Initialize undo functionality
@@ -90,6 +93,7 @@ async function initMacquette(api, assessmentId, featureFlags) {
 }
 
 function setupEventHandlers() {
+    if (!window.features.includes('new-sidebar')) {
     $('#openbem').on('click', '.lock', function () {
         const id = this.dataset.scenario;
         project[id].locked = !project[id].locked;
@@ -107,6 +111,8 @@ function setupEventHandlers() {
 
         update();
     });
+    }
+
     $('#openbem').on('change', '[key]', function () {
         if (
             data.locked == true &&
@@ -148,7 +154,7 @@ function setupEventHandlers() {
 
             console.log(key + ' changed from ' + lastval + ' to ' + val);
 
-            if (key.endsWith('.scenario_name')) {
+            if (!window.features.includes('new-sidebar') && key.endsWith('.scenario_name')) {
                 redraw_scenario_menu();
             }
         }
@@ -161,6 +167,8 @@ function setupEventHandlers() {
             hide_house_graphic();
         }
     });
+
+    if (!window.features.includes('new-sidebar')) {
     // Scenarios interactions
     $('#openbem').on('click', '.scenario-nav', function () {
         $(window).scrollTop(650);
@@ -275,6 +283,8 @@ function setupEventHandlers() {
             description: p.description,
         });
     });
+    }
+
     $('#modal-error-submitting-data-done').on('click', function () {
         location.reload();
     });
@@ -332,20 +342,25 @@ function update(undo_redo = false) {
         }
     }
 
-    project[scenario] = calc.run(project[scenario]);
-    data = project[scenario];
-    if (undo_redo === false) {
-        historical.splice(0, historical_index); // reset the historical removing all the elements that were still there because of undoing
-        historical.unshift(JSON.stringify(project));
-        historical_index = 0;
-        refresh_undo_redo_buttons();
+    if (project[scenario] !== undefined) {
+        project[scenario] = calc.run(project[scenario]);
+        data = project[scenario];
+        if (undo_redo === false) {
+            historical.splice(0, historical_index); // reset the historical removing all the elements that were still there because of undoing
+            historical.unshift(JSON.stringify(project));
+            historical_index = 0;
+            refresh_undo_redo_buttons();
+        }
     }
 
     pageManager.externalDataUpdate();
 
     draw_openbem_graphics('#topgraphic', data);
 
-    redraw_emissions();
+    if (!window.features.includes('new-sidebar')) {
+        redraw_emissions();
+    }
+
     save_project();
 }
 
@@ -368,6 +383,7 @@ function show_hide_if_master() {
     }
 }
 
+// DELETE: after feature flag new-sidebar is fully enabled
 function has_changed_base_scenario(scenario_id) {
     const creation_hash = project[scenario_id].creation_hash;
     if (!creation_hash) {
@@ -383,6 +399,7 @@ function has_changed_base_scenario(scenario_id) {
     return creation_hash != current_hash;
 }
 
+// DELETE: after feature flag new-sidebar is fully enabled
 function scenario_block(id, currently_open) {
     const title = project[id].scenario_name || id.charAt(0).toUpperCase() + id.slice(1);
     const locked = project[id].locked;
@@ -458,6 +475,7 @@ function scenario_block(id, currently_open) {
     `;
 }
 
+// DELETE: after feature flag new-sidebar is fully enabled
 function redraw_scenario_menu() {
     const currently_open = $('[scenario] .menu-content')
         .filter('.active')
@@ -475,6 +493,7 @@ function redraw_scenario_menu() {
     redraw_emissions();
 }
 
+// DELETE: after feature flag new-sidebar is fully enabled
 function redraw_emissions() {
     for (let s in project) {
         const $emissions = $(`[scenario="${s}"] .shd`);
@@ -547,9 +566,6 @@ function legacyModuleInitPostUpdate() {
         $('.if-not-locked').show();
     }
 
-    // Disable measures if master
-    show_hide_if_master();
-
     // Make modals draggable
     $('#openbem .modal-header').css('cursor', 'move');
     $('#openbem .modal').draggable({
@@ -580,6 +596,13 @@ function legacyModuleUpdate() {
     }
 
     legacy_update_page_from_data();
+    show_hide_if_master();
+
+    if (data.locked) {
+        $('.if-not-locked').hide();
+    } else {
+        $('.if-not-locked').show();
+    }
 }
 
 function legacyModuleUnload() {
@@ -587,6 +610,8 @@ function legacyModuleUnload() {
     if (window[fnName] !== undefined) {
         window[fnName]();
     }
+
+    $('#editor__main-content').html('');
 }
 
 function refresh_undo_redo_buttons() {
@@ -607,6 +632,7 @@ function refresh_undo_redo_buttons() {
     }
 }
 
+// DELETE: after feature flag new-sidebar is fully enabled
 function generate_hash(string) {
     var hash = 0,
         i,
@@ -622,6 +648,7 @@ function generate_hash(string) {
     return hash;
 }
 
+// DELETE: after feature flag new-sidebar is fully enabled
 function toggle_scenario_menu(project_id) {
     const $menu_content = $(`div[scenario="${project_id}"] .menu-content`);
     const visible = $menu_content.hasClass('active');

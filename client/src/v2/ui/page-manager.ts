@@ -1,5 +1,6 @@
 import { isEqual } from 'lodash';
 
+import { featureFlags } from '../helpers/feature-flags';
 import { isIndexable } from '../helpers/is-indexable';
 import { externals } from '../shims/typed-globals';
 import { modules } from './modules';
@@ -57,6 +58,8 @@ export class PageManager {
         private legacyModuleUpdate: () => void,
         private legacyModuleUnload: () => void,
     ) {
+        PageManager.initEnvirons();
+
         const currentPage = parseRoute(window.location.hash);
         if (currentPage.isOk()) {
             this.takeRoute(resolveRoute(currentPage.unwrap())).catch((err) =>
@@ -98,6 +101,7 @@ export class PageManager {
     }
 
     private async init(route: ResolvedRoute) {
+        this.updateEnvirons(route);
         window.scrollTo({ top: 0 });
 
         const pageData = pageDataForRoute(route);
@@ -131,6 +135,8 @@ export class PageManager {
                 return await this.takeRoute(resolveRoute(DEFAULT_ROUTE));
             }
         }
+
+        this.updateEnvirons(this.currentRoute);
 
         const pageData = pageDataForRoute(this.currentRoute);
         if (pageData.style === 'legacy') {
@@ -170,6 +176,23 @@ export class PageManager {
         const pageData = pageDataForRoute(newRoute);
         if (pageData.style === 'legacy') {
             this.legacyModuleInitPostUpdate();
+        }
+    }
+
+    private static initEnvirons() {
+        if (featureFlags.has('new-sidebar')) {
+            const sidebarElement = document.querySelector('#editor__sidebar');
+            if (sidebarElement === null) {
+                throw new Error('sidebar area not available for view initialisation');
+            }
+
+            modules.editorSidebar.init(sidebarElement, '');
+        }
+    }
+
+    private updateEnvirons(route: ResolvedRoute) {
+        if (featureFlags.has('new-sidebar')) {
+            modules.editorSidebar.update(route);
         }
     }
 }
