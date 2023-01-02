@@ -39,6 +39,7 @@ export function isScenarioPage(x: string): x is ScenarioPageName {
 }
 
 export const pageTitles: Record<StandalonePageName | ScenarioPageName, string> = {
+    'address-search': 'Address Search',
     householdquestionnaire: 'Household Questionnaire',
     commentary: 'Commentary',
     currentenergy: 'Current Energy',
