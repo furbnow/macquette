@@ -16,6 +16,7 @@ var p;
 var project;
 
 var pageManager;
+var saveManager;
 
 async function initMacquette(api, assessmentId, featureFlags) {
     mhep_helper = api;
@@ -55,6 +56,31 @@ async function initMacquette(api, assessmentId, featureFlags) {
         legacyModuleInitPostUpdate,
         legacyModuleUpdate,
         legacyModuleUnload
+    );
+
+    saveManager = new window.Macquette.SaveManager(
+        (data) => mhep_helper.updateAssessment(projectid, data),
+        (status) => {
+            let text = "";
+            switch (status) {
+                case "failed":
+                    text = "Failed to save";
+                    break;
+                case "saving":
+                    text = "Saving...";
+                    break;
+                case "saved":
+                    text = "Saved";
+                    break;
+                case "unsaved":
+                    text = "Unsaved";
+                    break;
+
+            }
+            $('#saving_status').text(text)
+        },
+        (error) => Sentry.captureException(error),
+        projectid,
     );
 
     refresh_undo_redo_buttons();
@@ -320,17 +346,6 @@ function setupEventHandlers() {
     );
 }
 
-function save_project() {
-    $('#saving_status').text('Saving...');
-
-    const inputs = extract_assessment_inputs(project);
-    mhep_helper.updateAssessment(projectid, { data: inputs }).then(() => {
-        $('#saving_status').text('Saved');
-    }).catch(err => {
-        $('#saving_status').text('Failed to save');
-    });
-}
-
 function update(undo_redo = false) {
     // We need to calculate the periods of heating off here because if we try to do it in household.js it happens after the update
     if (project.master.household != undefined) {
@@ -361,7 +376,7 @@ function update(undo_redo = false) {
         redraw_emissions();
     }
 
-    save_project();
+    saveManager.save({ data: extract_assessment_inputs(project) });
 }
 
 function hide_house_graphic() {

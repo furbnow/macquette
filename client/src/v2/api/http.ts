@@ -21,6 +21,7 @@ import { Image, imageSchema } from '../data-schemas/image';
 import { Library, librarySchema } from '../data-schemas/libraries';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
 import { isIndexable } from '../helpers/is-indexable';
+import { jsEnvironment } from '../helpers/js-environment';
 import { urls } from './urls';
 
 export function cameliseStr(str: string): string {
@@ -530,8 +531,4 @@ export class HTTPClient {
         });
         return response.data;
     }
-}
-
-function jsEnvironment(): 'node' | 'browser' {
-    return typeof window === 'undefined' ? 'node' : 'browser';
 }

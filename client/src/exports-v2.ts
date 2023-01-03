@@ -1,4 +1,5 @@
 import { HTTPClient } from './v2/api/http';
+import { SaveManager } from './v2/api/save-manager';
 import { StaticFileResolver } from './v2/api/static-file-resolver';
 import { emulateJsonRoundTrip } from './v2/helpers/emulate-json-round-trip';
 import { datasets } from './v2/model/datasets/legacy';
@@ -27,4 +28,5 @@ window.Macquette = {
     selectWall,
     emulateJsonRoundTrip,
     PageManager,
+    SaveManager,
 };
