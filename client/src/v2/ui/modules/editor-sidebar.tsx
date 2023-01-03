@@ -628,7 +628,7 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
                     assessmentId: project.id,
                     projectName: project.name,
                     projectDescription: project.description,
-                    hasReports: false, // figure this one out
+                    hasReports: project.organisation !== null,
                     route,
                     scenarios: Object.entries(project.data).map(
                         ([scenarioId, scenarioData]) => ({
