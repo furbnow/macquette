@@ -29,11 +29,22 @@ def _sqrt(value):
     return math.sqrt(value)
 
 
+def _to_hours_and_minutes(value):
+    (minutes, hours) = math.modf(float(value))
+    hours = int(hours)
+    minutes = int(minutes * 60)
+    if minutes == 0:
+        return f"{hours} hours"
+    else:
+        return f"{hours} hours {minutes} minutes"
+
+
 def parse_template(template):
     """Parse and compile the provided template."""
     env = Environment(loader=DictLoader({}), autoescape=select_autoescape())
     env.filters["nl2br"] = _nl2br
     env.filters["sqrt"] = _sqrt
+    env.filters["to_hours_and_minutes"] = _to_hours_and_minutes
     return env.from_string(template)
 
 
