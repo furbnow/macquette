@@ -1314,7 +1314,7 @@ function initialiseMeasuresTable(tableSelector) {
      <th class="tg-yw4l" rowspan="2">Key risks</th>\
      <th class="tg-yw4l" rowspan="2">Dirt and disruption?</th>\
      <th class="tg-yw4l" rowspan="2">Associated work?</th>\
-     <th class="tg-yw4l" rowspan="2">Maintenace</th>\
+     <th class="tg-yw4l" rowspan="2">Maintenance</th>\
      <th class="tg-yw4l" rowspan="2">Special and other considerations</th>\
      </tr>\
      <tr>\

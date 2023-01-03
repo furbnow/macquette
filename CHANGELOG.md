@@ -18,7 +18,7 @@ v2.5 (November 2020)
 - Fix commentary text 'stickiness' (closes #618)
 - Make it clearer how to select the cover image (closes #636)
 - Make it clearer whether an assessment belongs to an individual or to
-  an organsiation (closes #489)
+  an organisation (closes #489)
 - Allow specifying org when creating assessment (#489)
 - Default to making it an organisation's assessment when you are only in
   one organisation.  (#489)

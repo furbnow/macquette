@@ -103,7 +103,7 @@ export function checkOutputBugs(legacyScenario: any) {
 
     function wideSpectrumNaNBug(): Messages {
         if (Number.isNaN(stricterParseFloat(legacyScenario.total_cost))) {
-            return bug('.total_cost was NaN or an unparseable string', {
+            return bug('.total_cost was NaN or an unparsable string', {
                 total_cost: legacyScenario.total_cost,
             });
         } else {

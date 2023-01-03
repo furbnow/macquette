@@ -169,7 +169,7 @@ $('#openbem').on('change', '.floor-uvalue', function () {
 });
 $('#openbem').on('click', '.apply-bulk-measure', function () {
 // We use the modal from the library_helper but we modify it (remove/add buttons) to chang its behaviour
-// When we finsih with it -on("click", '#bulk-measure-next'- we leave it as it was originally
+// When we finish with it -on("click", '#bulk-measure-next'- we leave it as it was originally
     $('#apply-measure-ok').hide();
     $('#apply-measure-modal .modal-footer').append('<button id="bulk-measure-next" tags="' + $(this).attr('tags') + '" class="btn btn-primary">Next</button>');
     library_helper.onApplyMeasure($(this));
@@ -672,7 +672,7 @@ function apply_measure(measure) {
         case 'replace':
         case 'edit':
             measure.item[lib].lib = lib;
-            for (z in data.fabric.elements[measure.row]) { // We copy over all the properties that are not asked when applying measures, this are the ones that the user inputed like "length" and "height"
+            for (z in data.fabric.elements[measure.row]) { // We copy over all the properties that are not asked when applying measures, this are the ones that the user inputted like "length" and "height"
                 if (measure.item[lib][z] == undefined) {
                     measure.item[lib][z] = data.fabric.elements[measure.row][z];
                 }
@@ -698,7 +698,7 @@ function edit_item(element, row) {
     if (element[lib].type == undefined) {
         element[lib].type = element[lib].tags[0];
     }
-    for (z in data.fabric.elements[row]) { // We copy over all the properties that are not asked when editting an element, this are the ones that the user inputed like "length" and "height"
+    for (z in data.fabric.elements[row]) { // We copy over all the properties that are not asked when editing an element, this are the ones that the user inputted like "length" and "height"
         if (element[lib][z] == undefined) {
             element[lib][z] = data.fabric.elements[row][z];
         }

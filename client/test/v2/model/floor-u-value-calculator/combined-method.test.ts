@@ -174,7 +174,7 @@ describe('combined method', () => {
         expect(model.uValue.unwrap()).toBeCloseTo(0.297, 2);
     });
 
-    test('6.B.3 Cavity wall with lightwieght masonry leaf and insulated dry-lining example', () => {
+    test('6.B.3 Cavity wall with lightweight masonry leaf and insulated dry-lining example', () => {
         const input: CombinedMethodInput = {
             layers: [
                 externalSurfaceResistance,

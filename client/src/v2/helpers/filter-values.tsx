@@ -1,7 +1,7 @@
 /**
  * Return a new object that is the subset of an existing object that matches `predicate`.
  *
- * Analagous to lodash's mapValues except for filtering.
+ * Analogous to lodash's mapValues except for filtering.
  */
 export function filterValues<Value>(
     obj: Record<string, Value>,

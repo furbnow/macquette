@@ -14,7 +14,7 @@ let g, m, x, z, fuel; // Variables used in for-loops
 
  Studying the SAP model we see that the calculations can be broken down into sub
  calculation modules and that it could be possible to create a flexible model where
- you can include or exclude certain parts depending on the granularity or adherance
+ you can include or exclude certain parts depending on the granularity or adherence
  to SAP that you would like.
 
  Principles
@@ -30,7 +30,7 @@ let g, m, x, z, fuel; // Variables used in for-loops
  - Variables used internally by a module that are not accessed by the ui should be
  defined as local variables within the module's calc function.
 
- - variable naming: this_is_a_variable. _ between words. Abreviations can be in capitals
+ - variable naming: this_is_a_variable. _ between words. Abbreviations can be in capitals
  otherwise lower case.
 
  - if the module has a primary data object i.e floors call the module by the data object
@@ -178,7 +178,7 @@ calc.temperature = function (data) {
         data.temperature.responsiveness = fraction_MHS1 * mainHSs.mainHS1.responsiveness + fraction_MHS2 * mainHSs.mainHS2.responsiveness;
     }
 
-    // Ohter preprationn for the formula
+    // Other prepration for the formula
     let R = data.temperature.responsiveness;
     let Th = data.temperature.target;
     let Th_monthly = [Th, Th, Th, Th, Th, Th, Th, Th, Th, Th, Th, Th];
@@ -791,7 +791,7 @@ calc.currentenergy = function (data) {
         // Calculate totals taking into account generation
         total_co2 -= data.currentenergy.generation.annual_CO2;
         primaryenergy_annual_kwh -= data.currentenergy.generation.primaryenergy;
-        // total_cost -= data.currentenergy.generation.annual_savings; -- Annual savings are not added: this is moeny that the user would pay on top of what they already pay if they didn't have generation
+        // total_cost -= data.currentenergy.generation.annual_savings; -- Annual savings are not added: this is money that the user would pay on top of what they already pay if they didn't have generation
     }
 
 
@@ -976,7 +976,7 @@ calc.metabolic_losses_fans_and_pumps_gains = function (data) {
             monthly_heat_gains += power;
         }
     });
-    // Note: From if there was an oil boiler with pump inside dweling we should add 10W of gains, the problem is that i don't know where in MHEP we can as this. Therefor we assume taht in the case of havin an oil boiler the pump is outside :(
+    // Note: From if there was an oil boiler with pump inside dwelling we should add 10W of gains, the problem is that i don't know where in MHEP we can as this. Therefor we assume that in the case of havin an oil boiler the pump is outside :(
 
     // From ventilation
     let ventilation_type = '';
@@ -1159,7 +1159,7 @@ calc.fabric_energy_efficiency = function (data) {
 };
 
 //---------------------------------------------------------------------------------------------
-// SEPERATED MODEL FUNCTIONS
+// SEPARATED MODEL FUNCTIONS
 //---------------------------------------------------------------------------------------------
 // U3.2 Solar radiation on vertical and inclined surfaces
 function solar_rad(region, orient, p, m) {

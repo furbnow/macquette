@@ -6,7 +6,7 @@ export const datasets = {
     /*********************************************
          * regions
          *
-         * Lits of regions, this dataset is important as its index corresponds with many other datasets that have regions as a first dimension
+         * List of regions, this dataset is important as its index corresponds with many other datasets that have regions as a first dimension
          */
     regions: [
         // UK regions

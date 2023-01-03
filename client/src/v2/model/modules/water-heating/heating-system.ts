@@ -1,5 +1,5 @@
 import { Scenario } from '../../../data-schemas/scenario';
-import { solarHotWaterPrimaryCircutLossFactor } from '../../datasets';
+import { solarHotWaterPrimaryCircuitLossFactor } from '../../datasets';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
 
@@ -379,7 +379,7 @@ class NonCombiWithPrimaryCircuit implements IWaterHeatingSystem {
                 0.0263);
         let solarHotWaterFactor: number;
         if (this.dependencies.waterCommon.solarHotWater) {
-            solarHotWaterFactor = solarHotWaterPrimaryCircutLossFactor(month);
+            solarHotWaterFactor = solarHotWaterPrimaryCircuitLossFactor(month);
         } else {
             solarHotWaterFactor = 1;
         }

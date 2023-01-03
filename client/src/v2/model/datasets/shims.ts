@@ -100,6 +100,6 @@ export function windSpeed(region: Region, month: Month): number {
 }
 
 /** datasets.table_h4 */
-export function solarHotWaterPrimaryCircutLossFactor(month: Month): number {
+export function solarHotWaterPrimaryCircuitLossFactor(month: Month): number {
     return wrapDataset('table_h4', [month.index0], { month });
 }

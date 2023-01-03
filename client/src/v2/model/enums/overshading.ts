@@ -9,7 +9,7 @@ export class Overshading {
 
     constructor(public name: OvershadingName) {}
 
-    /** @deprected Prefer optionalFromIndex0 */
+    /** @deprecated Prefer optionalFromIndex0 */
     public static fromIndex0(index0: number) {
         const toReturn = Overshading.optionalFromIndex0(index0);
         if (toReturn === null) {

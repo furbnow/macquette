@@ -190,7 +190,7 @@ Returns:
 
    {
        "id": 6,
-       "name": "Example assesment",
+       "name": "Example assessment",
        "description": "Example description",
        "status": "In progress",
        "created_at": "2019-06-01T16:35:34Z",
@@ -238,7 +238,7 @@ Returns:
 
    {
        "id": 6,
-       "name": "Example assesment",
+       "name": "Example assessment",
        "description": "Example description",
        "status": "In progress",
        "created_at": "2019-06-01T16:35:34Z",

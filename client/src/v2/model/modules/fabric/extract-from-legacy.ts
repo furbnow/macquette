@@ -127,7 +127,7 @@ export function extractFabricInputFromLegacy(scenario: Scenario): FabricInput {
             }
         }
     });
-    const [deductibeElements, parentElements] = partition<
+    const [deductibleElements, parentElements] = partition<
         FlatElementSpec,
         AnnotatedDeductibleSpec
     >(elementSpecs, isDeductibleSpec);
@@ -135,7 +135,7 @@ export function extractFabricInputFromLegacy(scenario: Scenario): FabricInput {
         main: parentElements,
         floatingDeductibles: [],
     };
-    const stitchedUpElements = deductibeElements.reduce((elements, deductible) => {
+    const stitchedUpElements = deductibleElements.reduce((elements, deductible) => {
         const [parent, otherMainElements] = findWithRest(
             elements.main,
             (e) => e.id === deductible.subtractFrom,

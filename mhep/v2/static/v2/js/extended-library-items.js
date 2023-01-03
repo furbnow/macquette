@@ -11,7 +11,7 @@ var extended_library = {
             who_by: 'DIY',
             disruption: 'LOW',
             associated_work: 'Electricals and wiring. ',
-            key_risks: 'Changes to wiring etc should be undertaken by a qualified electrican. ',
+            key_risks: 'Changes to wiring etc should be undertaken by a qualified electrician. ',
             notes: 'Where spotlights or downlighters are being replaced care should be taken in ensuring transformers on existing circuits are suitable for LEDs - if unsure take advice from a qualified electrician. Where compact fluorecents are reaching the end of their life, it is also worth replacing them with LEDs - and this may in many cases result in better quality lighting. ',
             maintenance: 'Occasional Cleaning, eventual replacement'
         }

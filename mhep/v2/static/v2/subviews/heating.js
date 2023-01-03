@@ -669,14 +669,14 @@ function edit_item(item, index, item_subsystem) {
     } // item comes in the format: system = {electric:{bla bla bla}} and we transform it to: system = {bla bla bla}
     if (library_helper.type === 'water_usage') {
         var object = 'water_usage';
-        for (z in data.water_heating[object][index]) { // We copy over all the properties that are not asked when editting an system, like id or tag
+        for (z in data.water_heating[object][index]) { // We copy over all the properties that are not asked when editing an system, like id or tag
             if (item[z] == undefined) {
                 item[z] = data.water_heating[object][index][z];
             }
         }
         data.water_heating[object][index] = item;
     } else if (library_helper.type === 'heating_systems') {
-        for (z in data.heating_systems[index]) { // We copy over all the properties that are not asked when editting an system, like id or tag
+        for (z in data.heating_systems[index]) { // We copy over all the properties that are not asked when editing an system, like id or tag
             if (item[z] == undefined) {
                 item[z] = data.heating_systems[index][z];
             }

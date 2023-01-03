@@ -17,7 +17,7 @@ How to deploy to the production site: you need to do this manually from
 AWS Elastic Beanstalk. Wait until the staging deploy has finished, then
 go to the mhep-production environment and it's 'change version' or
 'choose version', something like that. Then just deploy the same thing
-that's deployed on staging.  This is a fairly rarely rare occurance so
+that's deployed on staging.  This is a fairly rarely rare occurrence so
 not worth automating.
 
 Reports

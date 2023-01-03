@@ -158,7 +158,7 @@ export const datasets = {
         co2factor: 0.136,
         primaryenergyfactor: 1.501,
         SAP_code: 34,
-        notes: 'This is a tariff designed for rare and obselete systems - not possible to obtain anymore except in special circumstances',
+        notes: 'This is a tariff designed for rare and obsolete systems - not possible to obtain anymore except in special circumstances',
         updatedAt: '2022-11-29',
     },
     '10-hour tariff - Low Rate': {
@@ -168,7 +168,7 @@ export const datasets = {
         co2factor: 0.136,
         primaryenergyfactor: 1.501,
         SAP_code: 33,
-        notes: 'This is a tariff designed for rare and obselete systems - not possible to obtain anymore except in special circumstances',
+        notes: 'This is a tariff designed for rare and obsolete systems - not possible to obtain anymore except in special circumstances',
         updatedAt: '2022-11-29',
     },
     '24-hour heating tariff': {
@@ -178,7 +178,7 @@ export const datasets = {
         co2factor: 0.136,
         primaryenergyfactor: 1.501,
         SAP_code: 35,
-        notes: 'This is a tariff designed for rare and obselete systems - not possible to obtain anymore except in special circumstances',
+        notes: 'This is a tariff designed for rare and obsolete systems - not possible to obtain anymore except in special circumstances',
         updatedAt: '2022-11-29',
     },
     'Standard Tariff': {
@@ -208,7 +208,7 @@ export const datasets = {
     /*********************************************
          * regions
          *
-         * Lits of regions, this dataset is important as its index corresponds with many other datasets that have regions as a first dimension
+         * List of regions, this dataset is important as its index corresponds with many other datasets that have regions as a first dimension
          */
     regions: [
         // UK regions

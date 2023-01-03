@@ -16,7 +16,7 @@ A report in Macquette is an output PDF given to a householder at the end of the 
 
 The process looks like so:
 
-* Each organsiation has its own report template, which is on the relevant versioned app's Organisation model.
+* Each organisation has its own report template, which is on the relevant versioned app's Organisation model.
 
   - It's an HTML template
   - Each organisation's report template is itself generated from a template that customises the report template template per organisation
@@ -37,7 +37,7 @@ The process looks like so:
     |            |    asks for template   |            |
     |            |                        |            |
     |            |  --------------------> |            |
-    |            |    sends HTML tempate  |            |
+    |            |   sends HTML template  |            |
     +------------+                        +------------+
                                                 \/
                                           creates context

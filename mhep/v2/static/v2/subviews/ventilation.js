@@ -396,7 +396,7 @@ function ventilation_initUI() {
         case 'MVHR':
             ventilation_type = 'a'; //Balanced mechanical ventilation with heat recovery (MVHR)
             break;
-        default: // this one will be the case the firs time an assesment is run after changing the types 21-03-16
+        default: // this one will be the case the first time an assessment is run after changing the types 21-03-16
             data.ventilation.ventilation_type = 'NV';
             ventilation_type = 'd';
             break;
@@ -577,7 +577,7 @@ function edit_item(item, index, item_subsystem) {
         object = 'EVP';
     }
 
-    for (z in data.ventilation[object][index]) { // We copy over all the properties that are not asked when editting an system, like id or tag
+    for (z in data.ventilation[object][index]) { // We copy over all the properties that are not asked when editing an system, like id or tag
         if (item[z] == undefined) {
             item[z] = data.ventilation[object][index][z];
         }

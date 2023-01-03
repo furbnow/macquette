@@ -216,7 +216,7 @@ export class SuspendedFloor extends FloorUValueModel {
         /* The Building Act 1984 Appendix C specifies that in this case, we are
          * to compute the U-value of the floor using the Combined Method,
          * taking both the internal and external surface resistances to be
-         * 0.17, and then use the following forumula to convert it into the
+         * 0.17, and then use the following formula to convert it into the
          * basic floor resistance (aka R_f):
          *
          * R_f = (1 / U_f) - 0.17 - 0.17

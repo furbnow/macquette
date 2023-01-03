@@ -433,7 +433,7 @@ function normaliseScenario(scenario: any) {
     }
 
     // Space heating
-    // Becaues the space heating module involves subtracting floating point
+    // Because the space heating module involves subtracting floating point
     // numbers of arbitrary magnitude, it is easy for FP precision errors to
     // become significant.
     //
