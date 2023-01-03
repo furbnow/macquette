@@ -14,7 +14,6 @@ import type { UiModule, Dispatcher } from '../module-management/module-type';
 import { Modal, ModalBody, ModalHeader, ModalFooter } from '../output-components/modal';
 import { NumericOutput, noOutput } from '../output-components/numeric';
 import { Spinner } from '../output-components/spinner';
-import { isScenarioPage } from '../pages';
 import type { StandalonePageName, ScenarioPageName } from '../pages';
 import { pageTitles } from '../pages';
 import type { ResolvedRoute } from '../routes';
@@ -92,58 +91,41 @@ type Effect = {
     returnFocusTo: RefObject<HTMLElement>;
 };
 
-type SidebarLinkProps =
-    | {
-          pageName: StandalonePageName;
-      }
-    | {
-          pageName: ScenarioPageName;
-          scenarioId: string;
-      };
-
-function linkIsToScenarioPage(
-    link: SidebarLinkProps,
-): link is SidebarLinkProps & { pageName: ScenarioPageName } {
-    if (isScenarioPage(link.pageName)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function SidebarLink(props: SidebarLinkProps): ReactElement {
+function StandalonePageLink(props: { pageName: StandalonePageName }): ReactElement {
     const { route } = useContext(SidebarContext);
-
-    const { pageName } = props;
-    let url: string;
-
-    if (linkIsToScenarioPage(props)) {
-        url = `#${props.scenarioId}/${props.pageName}`;
-    } else {
-        url = `#${pageName}`;
-    }
-
-    let isCurrentPage = false;
-    if (route !== null) {
-        if (route.type === 'standalone') {
-            isCurrentPage = route.page === pageName;
-        } else if (
-            route.type === 'with scenario' &&
-            isScenarioPage(props.pageName) &&
-            // @ts-expect-error because the above check guarantees scenarioId being there
-            route.scenarioId === props.scenarioId
-        ) {
-            isCurrentPage = route.page === pageName;
-        }
-    }
+    const isCurrentPage =
+        route !== null && route.type === 'standalone' && route.page === props.pageName;
 
     return (
         <li>
             <a
                 className={`sidebar-link ${isCurrentPage ? 'sidebar-link--current' : ''}`}
-                href={url}
+                href={`#${props.pageName}`}
             >
-                {pageTitles[pageName]}
+                {pageTitles[props.pageName]}
+            </a>
+        </li>
+    );
+}
+
+function ScenarioPageLink(props: {
+    pageName: ScenarioPageName;
+    scenarioId: string;
+}): ReactElement {
+    const { route } = useContext(SidebarContext);
+    const isCurrentPage =
+        route !== null &&
+        route.type === 'with scenario' &&
+        route.page === props.pageName &&
+        route.scenarioId === props.scenarioId;
+
+    return (
+        <li>
+            <a
+                className={`sidebar-link ${isCurrentPage ? 'sidebar-link--current' : ''}`}
+                href={`#${props.scenarioId}/${props.pageName}`}
+            >
+                {pageTitles[props.pageName]}
             </a>
         </li>
     );
@@ -270,15 +252,15 @@ function ScenarioBlock({
                             </button>
                         )}
                     </li>
-                    <SidebarLink scenarioId={id} pageName="context" />
-                    <SidebarLink scenarioId={id} pageName="ventilation" />
-                    <SidebarLink scenarioId={id} pageName="elements" />
-                    <SidebarLink scenarioId={id} pageName="LAC" />
-                    <SidebarLink scenarioId={id} pageName="heating" />
-                    <SidebarLink scenarioId={id} pageName="fuel_requirements" />
-                    <SidebarLink scenarioId={id} pageName="generation" />
-                    <SidebarLink scenarioId={id} pageName="solarhotwater" />
-                    <SidebarLink scenarioId={id} pageName="worksheets" />
+                    <ScenarioPageLink scenarioId={id} pageName="context" />
+                    <ScenarioPageLink scenarioId={id} pageName="ventilation" />
+                    <ScenarioPageLink scenarioId={id} pageName="elements" />
+                    <ScenarioPageLink scenarioId={id} pageName="LAC" />
+                    <ScenarioPageLink scenarioId={id} pageName="heating" />
+                    <ScenarioPageLink scenarioId={id} pageName="fuel_requirements" />
+                    <ScenarioPageLink scenarioId={id} pageName="generation" />
+                    <ScenarioPageLink scenarioId={id} pageName="solarhotwater" />
+                    <ScenarioPageLink scenarioId={id} pageName="worksheets" />
                 </ul>
             )}
         </div>
@@ -461,12 +443,12 @@ function EditorSidebar({
 
                 <ul className="list-unstyled">
                     {featureFlags.has('address-search-page') && (
-                        <SidebarLink pageName="address-search" />
+                        <StandalonePageLink pageName="address-search" />
                     )}
-                    <SidebarLink pageName="householdquestionnaire" />
-                    <SidebarLink pageName="commentary" />
-                    <SidebarLink pageName="currentenergy" />
-                    <SidebarLink pageName="imagegallery" />
+                    <StandalonePageLink pageName="householdquestionnaire" />
+                    <StandalonePageLink pageName="commentary" />
+                    <StandalonePageLink pageName="currentenergy" />
+                    <StandalonePageLink pageName="imagegallery" />
                 </ul>
             </div>
 
@@ -474,9 +456,9 @@ function EditorSidebar({
                 <div className="side-section--header">Output</div>
 
                 <ul className="list-unstyled">
-                    <SidebarLink pageName="compare" />
-                    {state.hasReports ? <SidebarLink pageName="report" /> : null}
-                    <SidebarLink pageName="scopeofworks" />
+                    <StandalonePageLink pageName="compare" />
+                    {state.hasReports ? <StandalonePageLink pageName="report" /> : null}
+                    <StandalonePageLink pageName="scopeofworks" />
                 </ul>
             </div>
 
@@ -501,9 +483,9 @@ function EditorSidebar({
                 <div className="side-section--header">Tools &amp; Settings</div>
 
                 <ul className="list-unstyled">
-                    <SidebarLink pageName="export" />
-                    <SidebarLink pageName="librariesmanager" />
-                    <SidebarLink pageName="fuelsmanager" />
+                    <StandalonePageLink pageName="export" />
+                    <StandalonePageLink pageName="librariesmanager" />
+                    <StandalonePageLink pageName="fuelsmanager" />
                 </ul>
             </div>
         </SidebarContext.Provider>
