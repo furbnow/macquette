@@ -37,6 +37,10 @@ $('#upload_project').submit(function (e) {
     e.preventDefault();
 
     var file = $('#file_to_upload')[0].files[0];
+    if (file === undefined) {
+        alert("Please select a file to upload.");
+        return;
+    }
     var fr = new FileReader();
     var file_text = '';
 
