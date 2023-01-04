@@ -4,10 +4,10 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 
-from ... import VERSION
-from ..factories import AssessmentFactory
-from ..factories import OrganisationFactory
 from mhep.users.tests.factories import UserFactory
+
+from ... import VERSION
+from ..factories import AssessmentFactory, OrganisationFactory
 
 
 class TestListAssessmentsHTMLView(TestCase):

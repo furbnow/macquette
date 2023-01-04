@@ -1,8 +1,7 @@
 import requests
 
+from .base import ENV, env
 from .base import *  # noqa
-from .base import ENV
-from .base import env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -138,7 +137,7 @@ ADMIN_URL = env("DJANGO_ADMIN_URL")
 # Anymail (Mailgun)
 # ------------------------------------------------------------------------------
 # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+INSTALLED_APPS += ["anymail"]
 EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
 # https://anymail.readthedocs.io/en/stable/installation/#anymail-settings-reference
 ANYMAIL = {
@@ -150,7 +149,7 @@ ANYMAIL = {
 # Collectfast
 # ------------------------------------------------------------------------------
 # https://github.com/antonagestam/collectfast#installation
-INSTALLED_APPS = ["collectfast"] + INSTALLED_APPS  # noqa F405
+INSTALLED_APPS = ["collectfast"] + INSTALLED_APPS
 AWS_PRELOAD_METADATA = True
 
 # LOGGING

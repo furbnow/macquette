@@ -5,8 +5,7 @@ import logging
 
 import environ
 import sentry_sdk
-from corsheaders.defaults import default_headers
-from corsheaders.defaults import default_methods
+from corsheaders.defaults import default_headers, default_methods
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 from ssm_parameter_store import EC2ParameterStore

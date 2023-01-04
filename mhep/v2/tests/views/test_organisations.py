@@ -6,11 +6,11 @@ from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ... import VERSION
-from ..factories import AssessmentFactory
-from ..factories import OrganisationFactory
 from mhep.users.models import User
 from mhep.users.tests.factories import UserFactory
+
+from ... import VERSION
+from ..factories import AssessmentFactory, OrganisationFactory
 
 pytestmark = pytest.mark.django_db  # enable DB and run each test in transaction
 
@@ -84,7 +84,7 @@ class TestListOrganisations(APITestCase):
         response = self.client.get(f"/{VERSION}/api/organisations/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert "never" == response.data[0]["members"][0]["last_login"]
+        assert response.data[0]["members"][0]["last_login"] == "never"
 
     def test_number_of_assessments_only_includes_own_assessments_if_not_admin(self):
         me = UserFactory.create(last_login=None)

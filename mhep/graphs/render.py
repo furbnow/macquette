@@ -1,7 +1,5 @@
 from base64 import b64encode
 from io import BytesIO
-from typing import List
-from typing import Tuple
 from typing import Union
 
 import matplotlib as mpl
@@ -26,7 +24,7 @@ DEFAULT_COLOURS = [
 bg_colours = ["#444", "#aaa"]
 
 
-def _make_key(figure: types.BarChart, colours: List[str]) -> Tuple[str, str]:
+def _make_key(figure: types.BarChart, colours: list[str]) -> tuple[str, str]:
     data = figure.data_by_category()
     data_sums = [sum(category) for category in data]
 

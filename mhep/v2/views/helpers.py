@@ -1,17 +1,13 @@
 import logging
 import os
-from os.path import abspath
-from os.path import dirname
-from os.path import join
+from os.path import abspath, dirname, join
 
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.templatetags.static import static
-from rest_framework.exceptions import NotAuthenticated
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 
-from .. import models
-from .. import VERSION
+from .. import VERSION, models
 
 User = get_user_model()
 
@@ -45,7 +41,7 @@ def find_app_static_files():
 
     static_dir = join(abspath(dirname(__file__)), "..", "static", VERSION)
 
-    for root, dirs, files in os.walk(static_dir):
+    for root, _dirs, files in os.walk(static_dir):
         for fn in files:
             # We think collectstatic doesn't collect dotfiles, so this prevents an error
             # in production when Django loads up where there is a dotfile in the static
@@ -115,7 +111,7 @@ def check_library_share_permissions(library, original_request):
 
     from ..views.organisations import (
         ShareUnshareOrganisationLibraries,
-    )  # avoid circular import
+    )
 
     view = ShareUnshareOrganisationLibraries(
         kwargs={

@@ -1,12 +1,12 @@
 from freezegun import freeze_time
-from rest_framework import exceptions
-from rest_framework import status
+from rest_framework import exceptions, status
 from rest_framework.test import APITestCase
+
+from mhep.users.tests.factories import UserFactory
 
 from ... import VERSION
 from ...models import Library
 from ..factories import OrganisationFactory
-from mhep.users.tests.factories import UserFactory
 
 
 class TestCreateOrganisationLibraries(APITestCase):

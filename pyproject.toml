@@ -1,0 +1,38 @@
+[tool.ruff]
+select = ["E", "W", "F", "C90", "I", "UP", "N", "YTT", "S", "BLE", "FBT", "B", "A", "C4", "T10", "EM", "ISC", "ICN", "T20", "PT", "Q", "RET", "SIM", "TID", "ARG", "DTZ", "PD", "PGH", "PLC", "PLE", "PLR", "PLW", "PIE", "RUF"]
+
+unfixable = [
+    # don't autofix print statements
+    "T20",
+    # has some problems
+    "RET503",
+]
+
+ignore = [
+    # Never enforce `E501` (line length violations).
+    "E501",
+    # ENABLE LATER FOR NON-TESTS: allow assert (we use it in test code)
+    "S101", "S106", "S104", "S105",
+    # ENABLE LATER
+    "T201",
+    "PGH004",
+    "TID252",
+    "N805", "N806",
+    "RUF004",
+    "A001", "A003", "A002",
+    "PLW0120",
+    "ARG001", "ARG002", "ARG004", "ARG005",
+    "EM102", "EM101",
+    "FBT001", "FBT003",
+    "PT011",
+    "B904", "B026",
+    "RET505", "RET506", "RET504",
+    "PT004",
+    "C901",
+    "ISC001",
+    "BLE001",
+    "Q002",
+    "DTZ005",
+]
+line-length = 120
+target-version = "py39"

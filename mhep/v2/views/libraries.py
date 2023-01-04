@@ -2,20 +2,14 @@ import json
 import logging
 
 from django.db.models import Q
-from rest_framework import exceptions
-from rest_framework import generics
-from rest_framework import status
+from rest_framework import exceptions, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .. import VERSION
 from ..models import Library
-from ..permissions import CanReadLibrary
-from ..permissions import CanWriteLibrary
-from ..permissions import IsReadRequest
-from ..permissions import IsWriteRequest
-from ..serializers import LibraryItemSerializer
-from ..serializers import LibrarySerializer
+from ..permissions import CanReadLibrary, CanWriteLibrary, IsReadRequest, IsWriteRequest
+from ..serializers import LibraryItemSerializer, LibrarySerializer
 from .exceptions import BadRequest
 from .helpers import build_static_dictionary
 

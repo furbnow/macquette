@@ -9,8 +9,7 @@ from rest_framework.views import APIView
 
 from ..models import Organisation
 from ..permissions import IsMemberOfOrganisation
-from ..reports import render_template
-from ..reports import render_to_pdf
+from ..reports import render_template, render_to_pdf
 
 
 class GenerateReport(APIView):

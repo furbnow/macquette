@@ -3,17 +3,17 @@ import os
 
 import PIL
 from django.core.files.base import ContentFile
-from rest_framework import generics
-from rest_framework import parsers
-from rest_framework import status
+from rest_framework import generics, parsers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Image
-from ..serializers import AssessmentFullSerializer
-from ..serializers import AssessmentMetadataSerializer
-from ..serializers import FeaturedImageSerializer
-from ..serializers import ImageSerializer
+from ..serializers import (
+    AssessmentFullSerializer,
+    AssessmentMetadataSerializer,
+    FeaturedImageSerializer,
+    ImageSerializer,
+)
 from .mixins import AssessmentQuerySetMixin
 
 

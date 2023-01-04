@@ -1,10 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Assessment
-from .models import Image
-from .models import Library
-from .models import Organisation
+from .models import Assessment, Image, Library, Organisation
 from .models.assessment import STATUS_CHOICES
 
 User = get_user_model()
@@ -172,8 +169,8 @@ class LibrarySerializer(serializers.ModelSerializer):
 
     def get_permissions(self, library):
         from .views.helpers import (
-            check_library_write_permissions,
             check_library_share_permissions,
+            check_library_write_permissions,
         )
 
         return {

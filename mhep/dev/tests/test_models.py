@@ -2,11 +2,8 @@ import pytest
 from django.db.utils import IntegrityError
 
 from .. import VERSION
-from ..models import Library
-from ..models import Organisation
-from ..tests.factories import LibraryFactory
-from ..tests.factories import OrganisationFactory
-from ..tests.factories import UserFactory
+from ..models import Library, Organisation
+from ..tests.factories import LibraryFactory, OrganisationFactory, UserFactory
 
 pytestmark = pytest.mark.django_db
 

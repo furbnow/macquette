@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 import mhep.organisations.models as org_models
+
 from ..validators import validate_dict
 
 User = get_user_model()

@@ -2,10 +2,11 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from mhep.users.tests.factories import UserFactory
+
 from ... import VERSION
 from ..factories import OrganisationFactory
 from .mixins import AssertErrorMixin
-from mhep.users.tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db  # enable DB and run each test in transaction
 

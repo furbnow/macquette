@@ -18,8 +18,6 @@ coverage                # https://github.com/nedbat/coveragepy
 
 # Code quality
 # ------------------------------------------------------------------------------
-flake8                  # https://github.com/PyCQA/flake8
-pylint-django           # https://github.com/PyCQA/pylint-django
 pre-commit              # https://github.com/pre-commit/pre-commit
 mypy
 django-stubs

@@ -1,27 +1,28 @@
-from django.urls import path
-from django.urls import reverse_lazy
+from django.urls import path, reverse_lazy
 from django.views.generic.base import RedirectView
 
 from . import VERSION
-from .views import AssessmentHTMLView
-from .views import CreateDeleteOrganisationLibrarians
-from .views import CreateDeleteOrganisationMembers
-from .views import CreateOrganisationLibraries
-from .views import CreateUpdateDeleteLibraryItem
-from .views import DuplicateAssessment
-from .views import ListAssessmentsHTMLView
-from .views import ListCreateAssessments
-from .views import ListCreateLibraries
-from .views import ListCreateOrganisationAssessments
-from .views import ListOrganisationLibraryShares
-from .views import ListOrganisations
-from .views import ListUsers
-from .views import RetrieveUpdateDestroyAssessment
-from .views import SetFeaturedImage
-from .views import ShareUnshareOrganisationLibraries
-from .views import UpdateDestroyImage
-from .views import UpdateDestroyLibrary
-from .views import UploadAssessmentImage
+from .views import (
+    AssessmentHTMLView,
+    CreateDeleteOrganisationLibrarians,
+    CreateDeleteOrganisationMembers,
+    CreateOrganisationLibraries,
+    CreateUpdateDeleteLibraryItem,
+    DuplicateAssessment,
+    ListAssessmentsHTMLView,
+    ListCreateAssessments,
+    ListCreateLibraries,
+    ListCreateOrganisationAssessments,
+    ListOrganisationLibraryShares,
+    ListOrganisations,
+    ListUsers,
+    RetrieveUpdateDestroyAssessment,
+    SetFeaturedImage,
+    ShareUnshareOrganisationLibraries,
+    UpdateDestroyImage,
+    UpdateDestroyLibrary,
+    UploadAssessmentImage,
+)
 
 app_name = "assessments"
 urlpatterns = [

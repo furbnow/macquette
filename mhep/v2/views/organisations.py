@@ -1,28 +1,28 @@
 from django.contrib.auth import get_user_model
-from rest_framework import exceptions
-from rest_framework import generics
-from rest_framework import serializers
-from rest_framework import status
+from rest_framework import exceptions, generics, serializers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .. import VERSION
-from ..models import Assessment
-from ..models import Library
-from ..models import Organisation
-from ..permissions import IsAdminOfOrganisation
-from ..permissions import IsLibrarianOfOrganisation
-from ..permissions import IsMemberOfOrganisation
-from ..serializers import AssessmentMetadataSerializer
-from ..serializers import LibrarySerializer
-from ..serializers import OrganisationInviteSerializer
-from ..serializers import OrganisationLibrarianSerializer
-from ..serializers import OrganisationMemberSerializer
-from ..serializers import OrganisationMetadataSerializer
-from ..serializers import OrganisationSerializer
-from .exceptions import BadRequest
 from mhep.users import services as user_services
+
+from .. import VERSION
+from ..models import Assessment, Library, Organisation
+from ..permissions import (
+    IsAdminOfOrganisation,
+    IsLibrarianOfOrganisation,
+    IsMemberOfOrganisation,
+)
+from ..serializers import (
+    AssessmentMetadataSerializer,
+    LibrarySerializer,
+    OrganisationInviteSerializer,
+    OrganisationLibrarianSerializer,
+    OrganisationMemberSerializer,
+    OrganisationMetadataSerializer,
+    OrganisationSerializer,
+)
+from .exceptions import BadRequest
 
 User = get_user_model()
 

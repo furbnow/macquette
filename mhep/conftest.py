@@ -10,11 +10,11 @@ def media_storage(settings, tmpdir):
     settings.MEDIA_ROOT = tmpdir.strpath
 
 
-@pytest.fixture
+@pytest.fixture()
 def user() -> settings.AUTH_USER_MODEL:
     return UserFactory()
 
 
-@pytest.fixture
+@pytest.fixture()
 def request_factory() -> RequestFactory:
     return RequestFactory()

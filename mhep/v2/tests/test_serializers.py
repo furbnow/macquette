@@ -1,9 +1,9 @@
 import pytest
 
-from ..serializers import LibrarySerializer
-from ..tests.factories import LibraryFactory
-from ..tests.factories import OrganisationFactory
 from mhep.users.tests.factories import UserFactory
+
+from ..serializers import LibrarySerializer
+from ..tests.factories import LibraryFactory, OrganisationFactory
 
 pytestmark = pytest.mark.django_db
 

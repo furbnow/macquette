@@ -4,8 +4,7 @@ import uuid
 import django.contrib.postgres.fields.jsonb
 import django.db.models.deletion
 from django.conf import settings
-from django.db import migrations
-from django.db import models
+from django.db import migrations, models
 
 import mhep.v2.models.image
 import mhep.v2.validators

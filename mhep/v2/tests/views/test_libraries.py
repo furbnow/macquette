@@ -1,13 +1,12 @@
 from freezegun import freeze_time
-from rest_framework import exceptions
-from rest_framework import status
+from rest_framework import exceptions, status
 from rest_framework.test import APITestCase
+
+from mhep.users.tests.factories import UserFactory
 
 from ... import VERSION
 from ...models import Library
-from ..factories import LibraryFactory
-from ..factories import OrganisationFactory
-from mhep.users.tests.factories import UserFactory
+from ..factories import LibraryFactory, OrganisationFactory
 
 
 class TestListLibraries(APITestCase):
@@ -28,7 +27,7 @@ class TestListLibraries(APITestCase):
         response = self.client.get(f"/{VERSION}/api/libraries/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 3 == len(response.data)
+        assert len(response.data) == 3
 
         assert {
             "id": "{}".format(l1.pk),
@@ -89,7 +88,7 @@ class TestListLibraries(APITestCase):
         response = self.client.get(f"/{VERSION}/api/libraries/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 3 == len(response.data)
+        assert len(response.data) == 3
 
         retrieved_ids = [int(row["id"]) for row in response.data]
 
@@ -105,7 +104,7 @@ class TestListLibraries(APITestCase):
         response = self.client.get(f"/{VERSION}/api/libraries/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 1 == len(response.data)
+        assert len(response.data) == 1
 
         retrieved_ids = [int(row["id"]) for row in response.data]
 
@@ -126,7 +125,7 @@ class TestListLibraries(APITestCase):
         response = self.client.get(f"/{VERSION}/api/libraries/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 1 == len(response.data)
+        assert len(response.data) == 1
 
         retrieved_ids = [int(row["id"]) for row in response.data]
 
@@ -151,7 +150,7 @@ class TestListLibraries(APITestCase):
         response = self.client.get(f"/{VERSION}/api/libraries/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 1 == len(response.data)
+        assert len(response.data) == 1
 
     def test_can_write_is_false_for_org_librarian(self):
         my_org = OrganisationFactory.create()
@@ -336,13 +335,13 @@ class TestUpdateLibrary(APITestCase):
             )
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
-        assert b"" == response.content
+        assert response.content == b""
 
         updated_library = Library.objects.get(pk=lib.pk)
 
         assert {"new": "data"} == updated_library.data
 
-        assert "2019-07-13T12:10:12+00:00" == updated_library.updated_at.isoformat()
+        assert updated_library.updated_at.isoformat() == "2019-07-13T12:10:12+00:00"
 
     def test_update_library_name(self):
         with freeze_time("2019-06-01T16:35:34Z"):
@@ -357,11 +356,11 @@ class TestUpdateLibrary(APITestCase):
             )
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
-        assert b"" == response.content
+        assert response.content == b""
 
         updated_library = Library.objects.get(pk=lib.pk)
 
-        assert "updated name" == updated_library.name
+        assert updated_library.name == "updated name"
 
     def test_destroy_library(self):
         lib = LibraryFactory.create(owner_user=self.me)
@@ -372,7 +371,7 @@ class TestUpdateLibrary(APITestCase):
         response = self.client.delete(f"/{VERSION}/api/libraries/{lib.pk}/")
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
-        assert b"" == response.content
+        assert response.content == b""
 
         assert (assessment_count - 1) == Library.objects.count()
 

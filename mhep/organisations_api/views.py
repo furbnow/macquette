@@ -1,17 +1,16 @@
 from django.contrib.auth import get_user_model
-from rest_framework import exceptions
-from rest_framework import generics
-from rest_framework import status
+from rest_framework import exceptions, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from . import serializers
 from .exceptions import BadRequest
-from .permissions import CanAddRemoveMembers
-from .permissions import CanListOrganisations
-from .permissions import CanListUsers
-from .permissions import CanPromoteDemoteLibrarians
-
+from .permissions import (
+    CanAddRemoveMembers,
+    CanListOrganisations,
+    CanListUsers,
+    CanPromoteDemoteLibrarians,
+)
 
 User = get_user_model()
 

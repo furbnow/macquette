@@ -2,8 +2,7 @@
 import uuid
 
 import django.db.models.deletion
-from django.db import migrations
-from django.db import models
+from django.db import migrations, models
 
 import mhep.dev.models.image
 

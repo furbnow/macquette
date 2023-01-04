@@ -1,10 +1,8 @@
 import pytest
-from django.urls import resolve
-from django.urls import reverse
+from django.urls import resolve, reverse
 
 from .. import VERSION
-from ..models import Assessment
-from ..models import Library
+from ..models import Assessment, Library
 
 # from django.conf import settings
 

@@ -86,7 +86,7 @@ class TestListOrganisations(APITestCase):
         response = self.client.get("/api/organisations/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert "never" == response.data[0]["members"][0]["last_login"]
+        assert response.data[0]["members"][0]["last_login"] == "never"
 
 
 class TestListOrganisationsPermissions(APITestCase):

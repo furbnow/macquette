@@ -5,8 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
 from waffle import get_waffle_flag_model
-from waffle.models import Sample
-from waffle.models import Switch
+from waffle.models import Sample, Switch
 
 from .. import VERSION
 from ..models import Assessment

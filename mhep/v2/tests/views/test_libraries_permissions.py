@@ -1,11 +1,11 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ... import VERSION
-from ..factories import LibraryFactory
-from ..factories import OrganisationFactory
-from .mixins import AssertErrorMixin
 from mhep.users.tests.factories import UserFactory
+
+from ... import VERSION
+from ..factories import LibraryFactory, OrganisationFactory
+from .mixins import AssertErrorMixin
 
 
 class CreateLibraryMixin:

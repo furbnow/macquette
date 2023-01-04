@@ -1,31 +1,34 @@
-from django.urls import path
-from django.urls import reverse_lazy
+from django.urls import path, reverse_lazy
 from django.views.generic.base import RedirectView
 
 from . import VERSION
 from .views import dashboards
-from .views.assessments import DuplicateAssessment
-from .views.assessments import ListCreateAssessments
-from .views.assessments import RetrieveUpdateDestroyAssessment
-from .views.assessments import SetFeaturedImage
-from .views.assessments import UploadAssessmentImage
-from .views.html import AssessmentHTMLView
-from .views.html import ListAssessmentsHTMLView
+from .views.assessments import (
+    DuplicateAssessment,
+    ListCreateAssessments,
+    RetrieveUpdateDestroyAssessment,
+    SetFeaturedImage,
+    UploadAssessmentImage,
+)
+from .views.html import AssessmentHTMLView, ListAssessmentsHTMLView
 from .views.images import UpdateDestroyImage
-from .views.libraries import CreateUpdateDeleteLibraryItem
-from .views.libraries import ListCreateLibraries
-from .views.libraries import UpdateDestroyLibrary
-from .views.organisations import CreateDeleteOrganisationLibrarians
-from .views.organisations import CreateDeleteOrganisationMembers
-from .views.organisations import CreateOrganisationLibraries
-from .views.organisations import InviteOrganisationMembers
-from .views.organisations import ListCreateOrganisationAssessments
-from .views.organisations import ListOrganisationLibraryShares
-from .views.organisations import ListOrganisations
-from .views.organisations import ShareUnshareOrganisationLibraries
+from .views.libraries import (
+    CreateUpdateDeleteLibraryItem,
+    ListCreateLibraries,
+    UpdateDestroyLibrary,
+)
+from .views.organisations import (
+    CreateDeleteOrganisationLibrarians,
+    CreateDeleteOrganisationMembers,
+    CreateOrganisationLibraries,
+    InviteOrganisationMembers,
+    ListCreateOrganisationAssessments,
+    ListOrganisationLibraryShares,
+    ListOrganisations,
+    ShareUnshareOrganisationLibraries,
+)
 from .views.reports import GenerateReport
 from .views.users import ListUsers
-
 
 app_name = "assessments"
 urlpatterns = [

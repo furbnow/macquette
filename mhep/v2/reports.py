@@ -2,12 +2,8 @@ import math
 import re
 
 import pydantic
-from jinja2 import DictLoader
-from jinja2 import Environment
-from jinja2 import pass_eval_context
-from jinja2 import select_autoescape
-from markupsafe import escape
-from markupsafe import Markup
+from jinja2 import DictLoader, Environment, pass_eval_context, select_autoescape
+from markupsafe import Markup, escape
 from rest_framework.exceptions import APIException
 from weasyprint import HTML
 

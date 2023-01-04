@@ -108,7 +108,6 @@ test: test-python test-js  ## Run all tests
 .PHONY: test-python
 test-python:  ## Run Python tests
 	pytest --cov=mhep --mpl --mpl-generate-summary=html --mpl-results-path=graph_results
-	flake8 mhep
 
 .PHONY: test-js
 test-js:  ## Run non-browser JS tests

@@ -3,7 +3,6 @@ from django.db import models
 
 import mhep.organisations.models as org_models
 
-
 User = get_user_model()
 
 

@@ -1,9 +1,10 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .. import factories
-from ... import VERSION
 from mhep.users.tests.factories import UserFactory
+
+from ... import VERSION
+from .. import factories
 
 
 class TestSetFeaturedImage(APITestCase):

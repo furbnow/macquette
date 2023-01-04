@@ -4,11 +4,7 @@ from django.forms import CheckboxSelectMultiple
 from import_export import resources
 from import_export.admin import ImportExportMixin
 
-from .models import Assessment
-from .models import Image
-from .models import Library
-from .models import Organisation
-from .models import ReportTemplate
+from .models import Assessment, Image, Library, Organisation, ReportTemplate
 
 
 @admin.register(Image)

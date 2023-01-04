@@ -4,10 +4,7 @@ import pathlib
 
 import pytest
 
-from mhep.graphs import parse
-from mhep.graphs import render
-from mhep.graphs import types
-
+from mhep.graphs import parse, render, types
 
 INPUT_DIR = pathlib.Path(__file__).parent.resolve() / "render_input"
 INPUT_FILES = os.listdir(INPUT_DIR)

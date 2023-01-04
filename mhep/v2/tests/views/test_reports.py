@@ -1,12 +1,12 @@
 import pytest
 
-from ... import VERSION
-from ...tests.factories import OrganisationFactory
-from ...tests.factories import ReportTemplateFactory
 from mhep.users.tests.factories import UserFactory
 
+from ... import VERSION
+from ...tests.factories import OrganisationFactory, ReportTemplateFactory
 
-@pytest.mark.django_db
+
+@pytest.mark.django_db()
 def test_api_endpoint_generates_a_pdf(client):
     user = UserFactory.create()
     rt = ReportTemplateFactory(template="Some text")
@@ -27,7 +27,7 @@ def test_api_endpoint_generates_a_pdf(client):
     assert response.content[:8] == b"%PDF-1.7"
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_api_endpoint_has_preview_function(client):
     user = UserFactory.create()
     rt = ReportTemplateFactory(template="Some text")
@@ -49,7 +49,7 @@ def test_api_endpoint_has_preview_function(client):
     assert "Some text" in response.content.decode("utf-8")
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_api_endpoint_includes_org_data_in_context(client):
     user = UserFactory.create()
     rt = ReportTemplateFactory(template="{{ org.name }}: {{ org.bg_colour }}")
@@ -75,7 +75,7 @@ def test_api_endpoint_includes_org_data_in_context(client):
     assert f"{org.name}: #000" in response.content.decode("utf-8")
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_api_endpoint_only_works_for_org_members(client):
     user = UserFactory.create()
     rt = ReportTemplateFactory(template="Some text")

@@ -1,16 +1,13 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.db.models import Count
-from django.db.models import F
-from django.db.models.functions import ExtractDay
-from django.db.models.functions import TruncMonth
-from django.db.models.functions import TruncYear
+from django.db.models import Count, F
+from django.db.models.functions import ExtractDay, TruncMonth, TruncYear
 from django.views.generic.base import TemplateView
 
-from .. import VERSION
 from mhep.v2.models.assessment import Assessment
+
+from .. import VERSION
 
 
 class Dashboard(UserPassesTestMixin, TemplateView):

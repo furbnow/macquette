@@ -1,13 +1,6 @@
-from typing import List
-from typing import Literal
-from typing import Optional
-from typing import Tuple
-from typing import Union
+from typing import Literal, Optional, Union
 
-from pydantic import BaseModel
-from pydantic import constr
-from pydantic import root_validator
-from pydantic import validator
+from pydantic import BaseModel, constr, root_validator, validator
 
 
 def to_camel(underscored: str) -> str:
@@ -17,7 +10,7 @@ def to_camel(underscored: str) -> str:
 
 class Bin(BaseModel):
     label: str
-    data: List[float]
+    data: list[float]
 
     class Config:
         extra = "forbid"
@@ -32,7 +25,7 @@ class Line(BaseModel):
 
 
 class ShadedArea(BaseModel):
-    interval: Tuple[float, float]
+    interval: tuple[float, float]
     label: Union[str, None] = None
 
     class Config:
@@ -43,21 +36,21 @@ class BarChart(BaseModel):
     type: Literal["bar"]
     stacked: Optional[bool] = False
     units: str
-    bins: List[Bin]
+    bins: list[Bin]
     num_categories: int
-    category_labels: Optional[List[str]]
-    category_colours: Optional[List[constr(regex=r"^#[a-f0-9]{6}$")]]  # noqa:F722
-    lines: Optional[List[Line]]
-    areas: Optional[List[ShadedArea]]
+    category_labels: Optional[list[str]]
+    category_colours: Optional[list[constr(regex=r"^#[a-f0-9]{6}$")]]  # noqa:F722
+    lines: Optional[list[Line]]
+    areas: Optional[list[ShadedArea]]
 
-    def reversed_data_by_category(self) -> List[List[float]]:
+    def reversed_data_by_category(self) -> list[list[float]]:
         """Convert data from being per-bin into being per-category (backwards)."""
         return [
             list(reversed([bin.data[idx] for bin in self.bins]))
             for idx in range(self.num_categories)
         ]
 
-    def data_by_category(self) -> List[List[float]]:
+    def data_by_category(self) -> list[list[float]]:
         """Convert data from being per-bin into being per-category."""
         return [
             [bin.data[idx] for bin in self.bins] for idx in range(self.num_categories)
@@ -145,7 +138,7 @@ class Axis(BaseModel):
 
 class LineRow(BaseModel):
     label: str
-    data: List[List[float]]
+    data: list[list[float]]
 
     class Config:
         extra = "forbid"
@@ -155,7 +148,7 @@ class LineGraph(BaseModel):
     type: Literal["line"]
     x_axis: Axis
     y_axis: Axis
-    rows: List[LineRow]
+    rows: list[LineRow]
 
     class Config:
         alias_generator = to_camel

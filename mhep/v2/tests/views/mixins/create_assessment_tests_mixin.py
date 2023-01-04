@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
 from freezegun import freeze_time
-from rest_framework import exceptions
-from rest_framework import status
+from rest_framework import exceptions, status
+
+from mhep.users.tests.factories import UserFactory
 
 from ....models import Assessment
-from mhep.users.tests.factories import UserFactory
 
 User = get_user_model()
 
@@ -90,7 +90,7 @@ class CreateAssessmentTestsMixin:
         response = self.post_to_create_endpoint(new_assessment)
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert "" == response.data["description"]
+        assert response.data["description"] == ""
 
     def test_returns_forbidden_if_not_logged_in(self):
         new_assessment = {"name": "test assessment 1"}

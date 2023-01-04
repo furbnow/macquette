@@ -1,10 +1,10 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ... import VERSION
-from ..factories import AssessmentFactory
-from ..factories import OrganisationFactory
 from mhep.users.tests.factories import UserFactory
+
+from ... import VERSION
+from ..factories import AssessmentFactory, OrganisationFactory
 
 
 class AssessmentPermissionTestsMixin:

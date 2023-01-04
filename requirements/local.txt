@@ -22,8 +22,6 @@ asgiref==3.5.2
     # via
     #   -r requirements/./production.txt
     #   django
-astroid==2.11.6
-    # via pylint
 asttokens==2.0.5
     # via stack-data
 attrs==21.4.0
@@ -115,8 +113,6 @@ diff-match-patch==20200713
     # via
     #   -r requirements/./production.txt
     #   django-import-export
-dill==0.3.5.1
-    # via pylint
 distlib==0.3.4
     # via virtualenv
 django==4.0.5
@@ -188,8 +184,6 @@ faker==13.14.0
     # via factory-boy
 filelock==3.7.1
     # via virtualenv
-flake8==4.0.1
-    # via -r requirements/local.in
 fonttools[woff]==4.33.3
     # via
     #   -r requirements/./production.txt
@@ -220,8 +214,6 @@ ipdb==0.13.9
     # via -r requirements/local.in
 ipython==8.4.0
     # via ipdb
-isort==5.10.1
-    # via pylint
 itypes==1.2.0
     # via
     #   -r requirements/./production.txt
@@ -243,8 +235,6 @@ kiwisolver==1.4.3
     # via
     #   -r requirements/./production.txt
     #   matplotlib
-lazy-object-proxy==1.7.1
-    # via astroid
 markuppy==1.14
     # via
     #   -r requirements/./production.txt
@@ -260,10 +250,6 @@ matplotlib==3.5.2
     #   pytest-mpl
 matplotlib-inline==0.1.3
     # via ipython
-mccabe==0.6.1
-    # via
-    #   flake8
-    #   pylint
 mypy==0.961
     # via
     #   -r requirements/local.in
@@ -318,9 +304,7 @@ pillow==9.1.1
 pip-tools==6.7.0
     # via -r requirements/local.in
 platformdirs==2.5.2
-    # via
-    #   pylint
-    #   virtualenv
+    # via virtualenv
 pluggy==1.0.0
     # via pytest
 pre-commit==2.19.0
@@ -340,8 +324,6 @@ pyasn1==0.4.8
     #   -r requirements/./production.txt
     #   python-jose
     #   rsa
-pycodestyle==2.8.0
-    # via flake8
 pycparser==2.21
     # via
     #   -r requirements/./production.txt
@@ -352,8 +334,6 @@ pydyf==0.5.0
     # via
     #   -r requirements/./production.txt
     #   weasyprint
-pyflakes==2.4.0
-    # via flake8
 pygments==2.12.0
     # via
     #   ipython
@@ -363,14 +343,6 @@ pyjwt[crypto]==2.4.0
     #   -r requirements/./production.txt
     #   auth0-python
     #   social-auth-core
-pylint==2.14.4
-    # via
-    #   pylint-django
-    #   pylint-plugin-utils
-pylint-django==2.5.3
-    # via -r requirements/local.in
-pylint-plugin-utils==0.7
-    # via pylint-django
 pyparsing==3.0.9
     # via
     #   -r requirements/./production.txt
@@ -504,10 +476,7 @@ tomli==2.0.1
     #   django-stubs
     #   mypy
     #   pep517
-    #   pylint
     #   pytest
-tomlkit==0.11.0
-    # via pylint
 traitlets==5.3.0
     # via
     #   ipython
@@ -527,14 +496,12 @@ types-urllib3==1.26.15
 typing-extensions==4.2.0
     # via
     #   -r requirements/./production.txt
-    #   astroid
     #   collectfast
     #   django-stubs
     #   django-stubs-ext
     #   djangorestframework-stubs
     #   mypy
     #   pydantic
-    #   pylint
 uritemplate==4.1.1
     # via
     #   -r requirements/./production.txt
@@ -563,8 +530,6 @@ wheel==0.37.1
     # via pip-tools
 whitenoise[brotli]==6.2.0
     # via -r requirements/./production.txt
-wrapt==1.14.1
-    # via astroid
 xlrd==2.0.1
     # via
     #   -r requirements/./production.txt

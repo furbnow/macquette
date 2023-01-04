@@ -1,15 +1,12 @@
-from typing import Any
-from typing import Sequence
+from typing import Any, Sequence
 
 import factory
 from factory.django import DjangoModelFactory
 from faker.providers import BaseProvider
 
-from ..models import Assessment
-from ..models import Image
-from ..models import Library
-from ..models import Organisation
 from mhep.users.tests.factories import UserFactory
+
+from ..models import Assessment, Image, Library, Organisation
 
 
 # create new provider class. Note that the class name _must_ be ``Provider``.

@@ -1,18 +1,14 @@
 repos:
+    - repo: https://github.com/charliermarsh/ruff-pre-commit
+      rev: v0.0.208
+      hooks:
+          - id: ruff
+            args: ['--force-exclude', '--fix']
+
     - repo: https://github.com/psf/black
       rev: 22.10.0
       hooks:
           - id: black
-
-    - repo: https://github.com/pycqa/flake8
-      rev: 5.0.4
-      hooks:
-          - id: flake8
-
-    - repo: https://github.com/asottile/reorder_python_imports
-      rev: v3.9.0
-      hooks:
-          - id: reorder-python-imports
 
     - repo: https://github.com/pre-commit/mirrors-prettier
       rev: v2.7.1

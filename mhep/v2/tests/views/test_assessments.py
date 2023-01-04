@@ -2,17 +2,15 @@ from django.contrib.auth import get_user_model
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from freezegun import freeze_time
-from rest_framework import exceptions
-from rest_framework import status
+from rest_framework import exceptions, status
 from rest_framework.test import APITestCase
+
+from mhep.users.tests.factories import UserFactory
 
 from ... import VERSION
 from ...models import Assessment
-from ..factories import AssessmentFactory
-from ..factories import ImageFactory
-from ..factories import OrganisationFactory
+from ..factories import AssessmentFactory, ImageFactory, OrganisationFactory
 from .mixins import CreateAssessmentTestsMixin
-from mhep.users.tests.factories import UserFactory
 
 User = get_user_model()
 
@@ -114,7 +112,7 @@ class TestListAssessments(APITestCase):
         response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 3 == len(response.data)
+        assert len(response.data) == 3
 
     def test_returns_own_assessments_in_connected_organisation_if_not_admin(self):
         user = UserFactory.create()
@@ -131,7 +129,7 @@ class TestListAssessments(APITestCase):
         response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 2 == len(response.data)
+        assert len(response.data) == 2
 
     def test_only_returns_non_organisation_assessments_for_logged_in_user(self):
         me = UserFactory.create()
@@ -145,7 +143,7 @@ class TestListAssessments(APITestCase):
         response = self.client.get(f"/{VERSION}/api/assessments/")
         assert response.status_code == status.HTTP_200_OK
 
-        assert 2 == len(response.data)
+        assert len(response.data) == 2
 
     def test_returns_assessments_shared_with(self):
         user = UserFactory.create()
@@ -171,7 +169,7 @@ class TestListAssessments(APITestCase):
 
         self.client.force_authenticate(user)
 
-        for n in range(30):
+        for _n in range(30):
             AssessmentFactory.create(organisation=organisation)
 
         with CaptureQueriesContext(connection) as captured_queries:
@@ -337,14 +335,14 @@ class TestUpdateAssessment(APITestCase):
             )
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
-        assert b"" == response.content
+        assert response.content == b""
 
         updated_assessment = Assessment.objects.get(pk=self.assessment.pk)
 
         assert {"new": "data"} == updated_assessment.data
-        assert "Complete" == updated_assessment.status
+        assert updated_assessment.status == "Complete"
 
-        assert "2019-07-13T12:10:12+00:00" == updated_assessment.updated_at.isoformat()
+        assert updated_assessment.updated_at.isoformat() == "2019-07-13T12:10:12+00:00"
 
     def test_fails_if_data_field_is_a_string(self):
         with freeze_time("2019-07-13T12:10:12Z"):
@@ -431,7 +429,7 @@ class TestDestroyAssessment(APITestCase):
         response = self.client.delete(f"/{VERSION}/api/assessments/{a.pk}/")
 
         assert status.HTTP_204_NO_CONTENT == response.status_code
-        assert b"" == response.content
+        assert response.content == b""
 
         assert (assessment_count - 1) == Assessment.objects.count()
 

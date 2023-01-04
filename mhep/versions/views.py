@@ -1,4 +1,3 @@
-from typing import List
 from typing import NamedTuple
 
 from django.apps import apps
@@ -44,7 +43,7 @@ def _version_data(app_config) -> Version:
     )
 
 
-def _displayable_versions() -> List[Version]:
+def _displayable_versions() -> list[Version]:
     return [_version_data(version) for version in _all_versions()]
 
 

@@ -4,8 +4,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.html import format_html
 
-from mhep.users.forms import UserChangeForm
-from mhep.users.forms import UserCreationForm
+from mhep.users.forms import UserChangeForm, UserCreationForm
 
 User = get_user_model()
 

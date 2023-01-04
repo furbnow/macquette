@@ -1,15 +1,13 @@
-from typing import Set
-
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from mhep.users.tests.factories import UserFactory
+
 from ... import VERSION
 from ...models import Assessment
-from ..factories import AssessmentFactory
-from ..factories import OrganisationFactory
+from ..factories import AssessmentFactory, OrganisationFactory
 from .mixins import CreateAssessmentTestsMixin
-from mhep.users.tests.factories import UserFactory
 
 
 class TestListAssessmentsForOrganisation(APITestCase):
@@ -130,7 +128,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
             "detail": "You are not a member of the Organisation."
         } == response.json()
 
-    def fetch_organisation_assessment_ids(self) -> Set[str]:
+    def fetch_organisation_assessment_ids(self) -> set[str]:
         self.client.force_authenticate(self.org_member)
         response = self.client.get(
             f"/{VERSION}/api/organisations/{self.organisation.pk}/assessments/"
