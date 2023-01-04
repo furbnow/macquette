@@ -12,17 +12,14 @@ from mhep import graphs
 
 @pass_eval_context
 def _nl2br(eval_ctx, value):
-    br = "<br>\n"
-
-    if eval_ctx.autoescape:
-        value = escape(value)
-        br = Markup(br)
-
-    result = "\n\n".join(
-        f"<p>{br.join(p.splitlines())}</p>"
-        for p in re.split(r"(?:\r\n|\r(?!\n)|\n){2,}", value)
-    )
-    return Markup(result) if eval_ctx.autoescape else result
+    split_paragraphs = re.split(r"(?:\r\n|\r(?!\n)|\n){2,}", value)
+    processed_paragraphs = [
+        Markup("<p>")
+        + Markup("<br>\n").join([escape(line) for line in paragraph.splitlines()])
+        + Markup("</p>")
+        for paragraph in split_paragraphs
+    ]
+    return escape("\n\n").join(processed_paragraphs)
 
 
 def _sqrt(value):

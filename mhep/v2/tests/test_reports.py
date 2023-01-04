@@ -11,7 +11,7 @@ def test_basic_html_generation():
     assert result == "Friendless raccoons"
 
 
-def test_nl2br_filter():
+def test_nl2br_filter_produces_brs():
     result = reports.render_template(
         template="{{ text | nl2br }}",
         context={"text": "Friendless\nraccoons\n\nAre not your friends"},
@@ -19,6 +19,26 @@ def test_nl2br_filter():
     )
 
     assert result == "<p>Friendless<br>\nraccoons</p>\n\n<p>Are not your friends</p>"
+
+
+def test_nl2br_filter_handles_apostrophes():
+    result = reports.render_template(
+        template="{{ text | nl2br }}",
+        context={"text": "that's too bad"},
+        graph_data={},
+    )
+
+    assert result == "<p>that&#39;s too bad</p>"
+
+
+def test_nl2br_filter_handles_xss():
+    result = reports.render_template(
+        template="{{ text | nl2br }}",
+        context={"text": "<script>alert('hacked');</script>"},
+        graph_data={},
+    )
+
+    assert result == "<p>&lt;script&gt;alert(&#39;hacked&#39;);&lt;/script&gt;</p>"
 
 
 def test_sqrt_filter():
