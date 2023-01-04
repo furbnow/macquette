@@ -113,7 +113,7 @@ class BarChart(BaseModel):
         num_categories = values.get("num_categories")
 
         if not stacked:
-            return values
+            return
 
         for idx in range(num_categories):
             negative = False
