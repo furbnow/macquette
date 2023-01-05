@@ -33,7 +33,6 @@ urlpatterns = [
         "api/organisations/",
         include("mhep.organisations_api.urls", namespace="organisations-api"),
     ),
-    path("versions/", include("mhep.versions.urls", namespace="versions")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
