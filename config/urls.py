@@ -24,14 +24,6 @@ urlpatterns = [
     ),
     # Add app versions after this line
     path("v2/", include("mhep.v2.urls", namespace="v2")),
-    path(
-        "organisations/",
-        include("mhep.organisations_ui.urls", namespace="organisations-ui"),
-    ),
-    path(
-        "api/organisations/",
-        include("mhep.organisations_api.urls", namespace="organisations-api"),
-    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
