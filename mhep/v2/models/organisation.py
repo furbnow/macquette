@@ -1,21 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-import mhep.organisations.models as org_models
-
 from ..validators import validate_dict
 
 User = get_user_model()
 
 
 class Organisation(models.Model):
-    organisation = models.ForeignKey(
-        to=org_models.Organisation,
-        related_name="%(app_label)s_data",
-        on_delete=models.deletion.PROTECT,
-        null=True,
-    )
-
     name = models.TextField()
 
     members = models.ManyToManyField(
