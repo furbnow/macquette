@@ -1,5 +1,3 @@
-from typing import Optional
-
 from auth0.v3.authentication import GetToken
 from auth0.v3.management import Auth0
 from django.conf import settings
@@ -48,7 +46,7 @@ def create_user(
         return response["user_id"]
 
 
-def find_user_by_email(email: str) -> Optional[dict]:
+def find_user_by_email(email: str) -> dict | None:
     auth0 = get_client()
     response = auth0.users_by_email.search_users_by_email(email=email)
 

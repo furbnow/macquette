@@ -1,6 +1,5 @@
 from base64 import b64encode
 from io import BytesIO
-from typing import Union
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -201,7 +200,7 @@ def _render_line_graph(figure: types.LineGraph):
     return fig, None
 
 
-def render(data: Union[types.BarChart, types.LineGraph]):
+def render(data: types.BarChart | types.LineGraph):
     # Make it squat
     plt.rc("figure", figsize=(6, 3.5))
 

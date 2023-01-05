@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Union
+from typing import Literal
 
 from pydantic import BaseModel, constr, root_validator, validator
 
@@ -26,7 +26,7 @@ class Line(BaseModel):
 
 class ShadedArea(BaseModel):
     interval: tuple[float, float]
-    label: Union[str, None] = None
+    label: str | None = None
 
     class Config:
         extra = "forbid"
@@ -34,14 +34,14 @@ class ShadedArea(BaseModel):
 
 class BarChart(BaseModel):
     type: Literal["bar"]
-    stacked: Optional[bool] = False
+    stacked: bool | None = False
     units: str
     bins: list[Bin]
     num_categories: int
-    category_labels: Optional[list[str]]
-    category_colours: Optional[list[constr(regex=r"^#[a-f0-9]{6}$")]]  # noqa:F722
-    lines: Optional[list[Line]]
-    areas: Optional[list[ShadedArea]]
+    category_labels: list[str] | None
+    category_colours: list[constr(regex="^#[a-f0-9]{6}$")] | None  # noqa:F722
+    lines: list[Line] | None
+    areas: list[ShadedArea] | None
 
     def reversed_data_by_category(self) -> list[list[float]]:
         """Convert data from being per-bin into being per-category (backwards)."""
@@ -155,7 +155,7 @@ class LineGraph(BaseModel):
         extra = "forbid"
 
 
-def parse_figure(figure: dict) -> Union[BarChart, LineGraph]:
+def parse_figure(figure: dict) -> BarChart | LineGraph:
     if figure["type"] == "bar":
         return BarChart(**figure)
     elif figure["type"] == "line":
