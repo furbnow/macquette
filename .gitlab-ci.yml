@@ -35,7 +35,7 @@ python-test:
         - virtualenv venv
         - source venv/bin/activate
         - pip -V
-        - pip install pip-tools==6.7.0
+        - pip install pip-tools==6.12.1
         - pip-sync requirements/local.txt
     script:
         # Silence warnings
