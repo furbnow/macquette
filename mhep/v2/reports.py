@@ -26,11 +26,17 @@ def _sqrt(value):
     return math.sqrt(value)
 
 
+def _round_half_up(num):
+    return math.floor(num * 10 + 0.5) / 10
+
+
 def _to_hours_and_minutes(value):
     (minutes, hours) = math.modf(float(value))
     hours = int(hours)
-    minutes = int(minutes * 60)
-    if minutes == 0:
+    minutes = int(_round_half_up(minutes * 60))
+    if hours == 0:
+        return f"{minutes} minutes"
+    elif minutes == 0:
         return f"{hours} hours"
     else:
         return f"{hours} hours {minutes} minutes"

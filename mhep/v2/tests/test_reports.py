@@ -1,3 +1,5 @@
+import pytest
+
 from .. import reports
 
 
@@ -71,14 +73,33 @@ def test_to_hours_and_minutes_filter_with_minutes():
     assert result == "4 hours 30 minutes"
 
 
-def test_to_hours_and_minutes_filter_with_few_minutes():
+@pytest.mark.parametrize(
+    "data",
+    [
+        (1, 0.0166666),
+        (5, 0.0833333),
+        (10, 0.1666666),
+        (15, 0.25),
+        (20, 0.3333333),
+        (25, 0.4166666),
+        (30, 0.5),
+        (35, 0.5833333),
+        (40, 0.6666666),
+        (45, 0.75),
+        (50, 0.8333333),
+        (55, 0.9166666),
+        (59, 0.9833333),
+    ],
+)
+def test_to_hours_and_minutes_filter_with_accurate_minutes(data):
+    (output, input) = data
     result = reports.render_template(
-        template="{{ 4.1 | to_hours_and_minutes }}",
-        context={},
+        template="{{ num | to_hours_and_minutes }}",
+        context={"num": input},
         graph_data={},
     )
 
-    assert result == "4 hours 5 minutes"
+    assert result == f"{output} minutes"
 
 
 def test_graph_rendering_gives_a_data_url():
