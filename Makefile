@@ -9,50 +9,25 @@ help:
 
 .PHONY: dev
 dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for changes)
-	./client/node_modules/.bin/concurrently -n "server,js-dev,js-v2 " -c green "make server" "make js-dev-watch" "make js-v2-watch"
+	./client/node_modules/.bin/concurrently -n "server,js-v2 " -c green "make server" "make js-watch"
 
-.PHONY: js-dev-watch
-js-dev-watch:  ## Compile dev JS (one off, for development)
-	./client/node_modules/.bin/esbuild \
-		client/src/exports-dev.tsx \
-		--outdir=mhep/dev/static/dev/js_generated/ \
-		--loader:.js=jsx \
-		--target=es2019 \
-		--sourcemap --bundle --watch
-
-.PHONY: js-dev-prod
-js-dev-prod:  ## Compile dev JS (one off, for production)
-	./client/node_modules/.bin/esbuild \
-		client/src/exports-dev.tsx \
-		--outdir=mhep/dev/static/dev/js_generated/ \
-		--loader:.js=jsx \
-		--target=es2019 \
-		--sourcemap --bundle --minify
-
-.PHONY: js-v2-watch
-js-v2-watch:  ## Compile v2 JS (one off, for development)
+.PHONY: js-watch
+js-watch:  ## Compile JS (watching, for development)
 	./client/node_modules/.bin/esbuild \
 		client/src/exports-v2.ts \
 		--outdir=mhep/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--target=es2019 \
 		--sourcemap --bundle --watch
-
-.PHONY: js-v2-prod
-js-v2-prod:  ## Compile v2 JS (one off, for production)
-	./client/node_modules/.bin/esbuild \
-		client/src/exports-v2.ts \
-		--outdir=mhep/v2/static/v2/js_generated/ \
-		--loader:.js=jsx \
-		--target=es2019 \
-		--sourcemap --bundle --minify
 
 .PHONY: js-prod
-js-prod: js-dev-prod js-v2-prod  ## Compile all JS (one off, for production)
-
-.PHONY: load-placeholder-library
-load-placeholder-library:
-	python manage.py loaddata mhep/dev/fixtures/standard_library.json
+js-prod:  ## Compile JS (one off, for production)
+	./client/node_modules/.bin/esbuild \
+		client/src/exports-v2.ts \
+		--outdir=mhep/v2/static/v2/js_generated/ \
+		--loader:.js=jsx \
+		--target=es2019 \
+		--sourcemap --bundle --minify
 
 .PHONY: server
 server: docker-local-up ## Bring docker up and run the local server

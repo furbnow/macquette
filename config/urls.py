@@ -24,7 +24,6 @@ urlpatterns = [
     ),
     # Add app versions after this line
     path("v2/", include("mhep.v2.urls", namespace="v2")),
-    path("dev/", include("mhep.dev.urls", namespace="dev")),
     path(
         "organisations/",
         include("mhep.organisations_ui.urls", namespace="organisations-ui"),
