@@ -284,7 +284,16 @@ export function hasNewBehaviour(inputs: FcInfer<typeof arbScenarioInputs>): bool
         inputs?.SHW !== undefined && 'version' in inputs.SHW && inputs.SHW.version >= 1;
     const shwHasNewBehaviour = shwIsEnabled && shwHasNewDataStructure;
 
-    return shwHasNewBehaviour;
+    // FUVC
+    const hasNewFuvcFloor =
+        inputs?.fabric?.elements?.some(
+            (element) =>
+                (element.type === 'floor' || element.type === 'Floor') &&
+                element.perFloorTypeSpec !== null &&
+                element.selectedFloorType !== null,
+        ) ?? false;
+
+    return shwHasNewBehaviour || hasNewFuvcFloor;
 }
 
 export function hasNewInputs(inputs: FcInfer<typeof arbScenarioInputs>): boolean {

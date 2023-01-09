@@ -44,7 +44,7 @@ function runLiveModel(data: any) {
     return runModel(data, calcRun);
 }
 
-// const focussedScenariosSpec: [string, string][] = [['private/170.json', 'scenario3']];
+// const focussedScenariosSpec: [string, string][] = [['private/950.json', 'master']];
 const focussedScenariosSpec: [string, string][] = [];
 const focussedScenarios = scenarios.filter(
     (s) =>
