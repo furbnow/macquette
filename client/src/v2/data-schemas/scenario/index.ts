@@ -50,7 +50,10 @@ export const scenarioSchema = z
     .object({
         modelBehaviourVersion: modelBehaviourVersionSchema,
         created_from: z.string().optional(),
-        scenario_name: z.string(),
+        scenario_name: z.union([
+            z.string(),
+            z.number().transform((val) => val.toString()),
+        ]),
         creation_hash: z.number().optional(),
         sidebarExpanded: z.boolean().optional(),
         floors,
