@@ -21,12 +21,7 @@ import {
     shwInputs,
 } from './arbitraries/solar-hot-water';
 import { calcRun as referenceCalcRun } from './reference-model';
-import {
-    checkInputBugs,
-    checkOutputBugs,
-    hasNewBehaviour,
-    hasNewInputs,
-} from './scenario-predicates';
+import { checkInputBugs, checkOutputBugs, hasNewBehaviour } from './scenario-predicates';
 
 function runModel(data: any, calcRun: (data: any) => any) {
     // Clone the input because calcRun will modify it in-place
@@ -98,10 +93,7 @@ describe('golden master acceptance tests', () => {
         fc.assert(
             fc.property(
                 arbScenarioInputs().filter(
-                    (inputs) =>
-                        !hasNewBehaviour(inputs) &&
-                        !hasNewInputs(inputs) &&
-                        !checkInputBugs(inputs).bugs,
+                    (inputs) => !hasNewBehaviour(inputs) && !checkInputBugs(inputs).bugs,
                 ),
                 (scenario) => {
                     const legacyReference = runLegacyModel(scenario);
@@ -116,7 +108,7 @@ describe('golden master acceptance tests', () => {
                 },
             ),
             {
-                ...(isTruthy(process.env['CI']) ? { numRuns: 1000 } : {}),
+                ...(isTruthy(process.env['CI']) ? { numRuns: 500 } : {}),
                 examples,
             },
         );

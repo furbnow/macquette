@@ -54,7 +54,7 @@ export function arbScenarioInputs(): fc.Arbitrary<z.input<typeof scenarioSchema>
                     generation: merge(
                         fc.record({
                             use_PV_calculator: legacyBoolean(),
-                            solarpv_kwp_installed: stringySensibleFloat(),
+                            solarpv_kwp_installed: sensibleFloat,
                             solarpv_overshading: fc
                                 .tuple(fc.boolean(), fc.constantFrom(0.5, 0.65, 0.8, 1))
                                 .map(([stringy, number]) =>
@@ -66,15 +66,15 @@ export function arbScenarioInputs(): fc.Arbitrary<z.input<typeof scenarioSchema>
                             ),
                         }),
                         fcPartialRecord({
-                            solar_annual_kwh: stringySensibleFloat(),
+                            solar_annual_kwh: sensibleFloat,
                             solar_fraction_used_onsite: stringySensibleFloat(),
                             solar_FIT: stringySensibleFloat(),
                             solar_export_FIT: stringySensibleFloat(),
-                            wind_annual_kwh: stringySensibleFloat(),
+                            wind_annual_kwh: sensibleFloat,
                             wind_fraction_used_onsite: stringySensibleFloat(),
                             wind_FIT: stringySensibleFloat(),
                             wind_export_FIT: stringySensibleFloat(),
-                            hydro_annual_kwh: stringySensibleFloat(),
+                            hydro_annual_kwh: sensibleFloat,
                             hydro_fraction_used_onsite: stringySensibleFloat(),
                             hydro_FIT: stringySensibleFloat(),
                             hydro_export_FIT: stringySensibleFloat(),

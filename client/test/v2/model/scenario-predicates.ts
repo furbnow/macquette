@@ -123,6 +123,7 @@ export function checkOutputBugs(legacyScenario: any) {
             return noBug;
         }
     }
+
     return combineBugCheckers([
         fabricBugs,
         wideSpectrumNaNBug,
@@ -265,6 +266,28 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
         });
     }
 
+    function generationStringConcatenationBug(): Messages {
+        if (inputs?.generation === undefined) {
+            return noBug;
+        }
+        const { solar_annual_kwh, wind_annual_kwh, hydro_annual_kwh } =
+            inputs.generation as any;
+        const castThenSummed =
+            1.0 * solar_annual_kwh + 1.0 * wind_annual_kwh + 1.0 * hydro_annual_kwh;
+        const summedThenCast =
+            // SAFETY: We are deliberately invoking weird JS behaviour with the + operator
+            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+            1.0 * (solar_annual_kwh + wind_annual_kwh + hydro_annual_kwh);
+        if (castThenSummed !== summedThenCast) {
+            return bug('generation inputs will cause string concat bug', {
+                solar_annual_kwh,
+                wind_annual_kwh,
+                hydro_annual_kwh,
+            });
+        }
+        return noBug;
+    }
+
     return combineBugCheckers([
         spaceHeatingEnergyRequirementsBugs,
         solarHotWaterFlagBug,
@@ -272,6 +295,7 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
         heatingSystemCombiWithPrimaryCircuitBug,
         heatingSystemPrimaryCircuitInvariants,
         fuelBugs,
+        generationStringConcatenationBug,
     ]);
 }
 
@@ -294,9 +318,4 @@ export function hasNewBehaviour(inputs: FcInfer<typeof arbScenarioInputs>): bool
         ) ?? false;
 
     return shwHasNewBehaviour || hasNewFuvcFloor;
-}
-
-export function hasNewInputs(inputs: FcInfer<typeof arbScenarioInputs>): boolean {
-    const shwIsNew = 'version' in (inputs?.SHW ?? {});
-    return shwIsNew;
 }
