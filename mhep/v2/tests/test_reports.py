@@ -43,6 +43,16 @@ def test_nl2br_filter_handles_xss():
     assert result == "<p>&lt;script&gt;alert(&#39;hacked&#39;);&lt;/script&gt;</p>"
 
 
+def test_nl2br_missing_value():
+    result = reports.render_template(
+        template="{{ text | nl2br }}",
+        context={},
+        graph_data={},
+    )
+
+    assert result == "<p></p>"
+
+
 def test_sqrt_filter():
     result = reports.render_template(
         template="{{ 4 | sqrt }}",

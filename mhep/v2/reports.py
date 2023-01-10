@@ -12,7 +12,7 @@ from mhep import graphs
 
 @pass_eval_context
 def _nl2br(eval_ctx, value):
-    split_paragraphs = re.split(r"(?:\r\n|\r(?!\n)|\n){2,}", value)
+    split_paragraphs = re.split(r"(?:\r\n|\r(?!\n)|\n){2,}", str(value))
     processed_paragraphs = [
         Markup("<p>")
         + Markup("<br>\n").join([escape(line) for line in paragraph.splitlines()])
