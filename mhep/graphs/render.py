@@ -23,20 +23,20 @@ DEFAULT_COLOURS = [
 bg_colours = ["#444", "#aaa"]
 
 
-def _make_key(figure: types.BarChart, colours: list[str]) -> tuple[str, str]:
+def _make_key(
+    figure: types.BarChart, colours: list[str]
+) -> list[tuple[str, str]] | None:
+    if not figure.category_labels:
+        return None
+
     data = figure.data_by_category()
     data_sums = [sum(category) for category in data]
 
-    if figure.num_categories > 1 and figure.category_labels:
-        key = [
-            (name, colours[idx % len(colours)])
-            for idx, name in enumerate(figure.category_labels)
-            if data_sums[idx] != 0
-        ]
-    else:
-        key = None
-
-    return key
+    return [
+        (name, colours[idx % len(colours)])
+        for idx, name in enumerate(figure.category_labels)
+        if data_sums[idx] != 0
+    ]
 
 
 def _render_bar_chart(figure: types.BarChart):

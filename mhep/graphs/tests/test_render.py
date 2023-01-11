@@ -48,3 +48,39 @@ def test_report_key_omits_unused_labels():
         ("French", DEFAULT_COLOURS[0]),
         ("Mauritian", DEFAULT_COLOURS[2]),
     ]
+
+
+def test_report_key_always_exists_for_bar_chart_if_category_labels_do():
+    from mhep.graphs.render import DEFAULT_COLOURS
+
+    chart = types.BarChart(
+        type="bar",
+        units="none",
+        numCategories=1,
+        categoryLabels=["French"],
+        bins=[
+            {"label": "Fnargle", "data": [0]},
+            {"label": "Fnord", "data": [100]},
+        ],
+    )
+    _, key = render(chart)
+
+    assert key == [
+        ("French", DEFAULT_COLOURS[0]),
+    ]
+
+
+def test_report_key_never_exists_for_bar_chart_if_category_labels_dont():
+    chart = types.BarChart(
+        type="bar",
+        units="none",
+        numCategories=1,
+        categoryLabels=None,
+        bins=[
+            {"label": "Fnargle", "data": [0]},
+            {"label": "Fnord", "data": [100]},
+        ],
+    )
+    _, key = render(chart)
+
+    assert key is None
