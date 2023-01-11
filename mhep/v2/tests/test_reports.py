@@ -129,3 +129,22 @@ def test_graph_rendering_gives_a_data_url():
     )
 
     assert result.startswith("data:")
+
+
+def test_graph_key():
+    # Tests that graphs' .key property quacks like a list[tuple[string, string]]
+    reports.render_template(
+        template="""{% for label, colour in graphs.tester.key %} {{label}}, {{colour}}; {% endfor %}""",
+        context={},
+        graph_data={
+            "tester": {
+                "numCategories": 1,
+                "bins": [
+                    {"data": [0], "label": "Nowt"},
+                ],
+                "categoryLabels": ["Electricity"],
+                "type": "bar",
+                "units": "n/a",
+            },
+        },
+    )

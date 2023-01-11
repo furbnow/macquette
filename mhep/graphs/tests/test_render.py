@@ -50,7 +50,7 @@ def test_report_key_omits_unused_labels():
     ]
 
 
-def test_report_key_always_exists_for_bar_chart_if_category_labels_do():
+def test_report_key_is_populated_from_category_labels():
     from mhep.graphs.render import DEFAULT_COLOURS
 
     chart = types.BarChart(
@@ -70,7 +70,7 @@ def test_report_key_always_exists_for_bar_chart_if_category_labels_do():
     ]
 
 
-def test_report_key_never_exists_for_bar_chart_if_category_labels_dont():
+def test_report_key_is_populated_from_category_labels_when_empty():
     chart = types.BarChart(
         type="bar",
         units="none",
@@ -83,4 +83,4 @@ def test_report_key_never_exists_for_bar_chart_if_category_labels_dont():
     )
     _, key = render(chart)
 
-    assert key is None
+    assert key == []
