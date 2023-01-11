@@ -243,10 +243,6 @@ function normaliseOutputScenario(currentScenario: unknown) {
         if (newSource !== undefined) {
             element.source = newSource;
         }
-
-        // areaInputs is not in the input data.  If 'area' is the same then the two
-        // records are equivalent.
-        delete element.areaInputs;
     }
 }
 
