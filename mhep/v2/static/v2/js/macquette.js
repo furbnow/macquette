@@ -352,8 +352,10 @@ function update(undo_redo = false) {
         for (var s in project) {
             // we ensure all the scenarios have the same household data and heating off periods
             project[s].household = project.master.household;
-            project[s].temperature.hours_off.weekday = get_hours_off_weekday(project[s]);
-            project[s].temperature.hours_off.weekend = get_hours_off_weekend(project[s]);
+            project[s].temperature.hours_off = {
+                weekday: get_hours_off_weekday(project[s]),
+                weekend: get_hours_off_weekend(project[s]),
+            };
         }
     }
 
