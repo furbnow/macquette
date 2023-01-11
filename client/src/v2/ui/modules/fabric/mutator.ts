@@ -129,7 +129,7 @@ export function mutateLegacyData(
                         id: wall.id,
                         location: wall.inputs.location,
                         ...wallLikeToLegacy(wall, {
-                            includeSpecifics: false,
+                            includeSpecifics: true,
                         }),
                     },
                 };

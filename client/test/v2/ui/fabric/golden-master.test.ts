@@ -2,6 +2,7 @@ import { cloneDeep } from 'lodash';
 import { z } from 'zod';
 
 import { projectSchema } from '../../../../src/v2/data-schemas/project';
+import { compareFloats } from '../../../../src/v2/helpers/fuzzy-float-equality';
 import { fabricModule } from '../../../../src/v2/ui/modules/fabric';
 import { projects } from '../../fixtures';
 
@@ -21,6 +22,10 @@ function isVariationAcceptable() {
         // New values in the modification are OK
         if (origMissing === true) {
             return true;
+        }
+
+        if (typeof modValue === 'number' && typeof origValue === 'number') {
+            return compareFloats(origValue, modValue);
         }
 
         return false;
@@ -91,11 +96,9 @@ function normaliseRawScenario(
         // Measures don't contain the results of calculations or anything that the user
         // enters directly
         delete measureAny.measure.area;
-        delete measureAny.measure.cost_total;
         delete measureAny.measure.h;
         delete measureAny.measure.l;
         delete measureAny.measure.netarea;
-        delete measureAny.measure.quantity;
         delete measureAny.measure.windowarea;
         delete measureAny.measure.wk;
 
