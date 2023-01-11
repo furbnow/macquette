@@ -20,7 +20,7 @@ function wallLikeTypeToLegacy(type: 'external wall' | 'party wall' | 'loft' | 'r
     }
 }
 
-function wallToLikeLegacy(
+function wallLikeToLegacy(
     wall: WallLike,
     { includeSpecifics = false }: { includeSpecifics: boolean },
 ) {
@@ -112,10 +112,10 @@ export function mutateLegacyData(
 
         if (legacyWallIdx === -1) {
             dataAny.fabric.elements.push(
-                wallToLikeLegacy(wall, { includeSpecifics: true }),
+                wallLikeToLegacy(wall, { includeSpecifics: true }),
             );
         } else {
-            dataAny.fabric.elements[legacyWallIdx] = wallToLikeLegacy(wall, {
+            dataAny.fabric.elements[legacyWallIdx] = wallLikeToLegacy(wall, {
                 includeSpecifics: true,
             });
 
@@ -128,7 +128,7 @@ export function mutateLegacyData(
                     measure: {
                         id: wall.id,
                         location: wall.inputs.location,
-                        ...wallToLikeLegacy(wall, {
+                        ...wallLikeToLegacy(wall, {
                             includeSpecifics: false,
                         }),
                     },
@@ -160,7 +160,7 @@ export function mutateLegacyData(
             dataAny.fabric.measures[measure.id] = {
                 measure: {
                     id: measure.id,
-                    ...wallToLikeLegacy(firstElement, { includeSpecifics: false }),
+                    ...wallLikeToLegacy(firstElement, { includeSpecifics: false }),
                     location: measureElements
                         .map((elem) => elem.inputs.location)
                         .join(', '),
