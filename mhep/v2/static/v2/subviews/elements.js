@@ -682,6 +682,14 @@ function apply_measure(measure) {
             // Update element and add measure
             data.fabric.elements[measure.row] = measure.item[lib];
             data.fabric.measures[measure.item_id].measure = measure.item[lib];
+
+            const element = data.fabric.elements[measure.row]
+            if (element.type === 'floor' || element.type === 'Floor') {
+                element.selectedFloorType = 'custom'
+                element.perFloorTypeSpec.custom = {
+                    uValue: element.uvalue
+                }
+            }
             break;
     }
 
