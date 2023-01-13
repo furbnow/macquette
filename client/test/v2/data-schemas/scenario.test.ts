@@ -21,8 +21,8 @@ function runModel(data: unknown): unknown {
     }
 }
 
-describe('scenario validator', () => {
-    describe('scenario inputs', () => {
+describe('scenario schema', () => {
+    describe('should be able to parse fixed & arbitrary data', () => {
         function testFn(scenarioData: unknown) {
             expect(() => scenarioSchema.parse(scenarioData)).not.toThrow();
         }
@@ -32,7 +32,7 @@ describe('scenario validator', () => {
         });
     });
 
-    describe('after running calc.run', () => {
+    describe('should be able to parse the output of running the model', () => {
         function testFn(scenarioData: unknown) {
             const modelOutput = runModel(scenarioData);
             expect(() => scenarioSchema.parse(modelOutput)).not.toThrow();
@@ -48,7 +48,7 @@ describe('scenario validator', () => {
         });
     });
 
-    describe('after running calc.run and then JSON round-trip', () => {
+    describe('should be able to parse the JSON round-tripped output of running the model', () => {
         function testFn(scenarioData: unknown) {
             const modelOutput = runModel(scenarioData);
             const jsonRoundTripped = emulateJsonRoundTrip(modelOutput);
