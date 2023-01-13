@@ -8,7 +8,7 @@ import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { emulateJsonRoundTrip } from '../../../src/v2/helpers/emulate-json-round-trip';
 import { calcRun } from '../../../src/v2/model/model';
 import { arbScenarioInputs } from '../arbitraries/scenario-inputs';
-import { scenarios, shouldSkipScenario } from '../fixtures';
+import { scenarios } from '../fixtures';
 import { checkInputBugs } from '../model/scenario-predicates';
 
 function runModel(data: unknown): unknown {
@@ -26,12 +26,7 @@ describe('scenario validator', () => {
         function testFn(scenarioData: unknown) {
             expect(() => scenarioSchema.parse(scenarioData)).not.toThrow();
         }
-        test.each(scenarios)('$displayName', (scenario) => {
-            if (shouldSkipScenario(scenario)) {
-                return;
-            }
-            testFn(scenario.rawData);
-        });
+        test.each(scenarios)('$displayName', (scenario) => testFn(scenario.rawData));
         test('arbitrary', () => {
             fc.assert(fc.property(arbScenarioInputs(), testFn));
         });

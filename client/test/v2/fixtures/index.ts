@@ -183,7 +183,9 @@ const knownBuggyFlat: Array<[string, string, string]> = knownBuggy.flatMap(
     ({ reason, scenarios }) =>
         scenarios.map(([p, n]): [string, string, string] => [p, n, reason]),
 );
-export function shouldSkipScenario(scenario: ScenarioFixture): boolean {
+export function shouldSkipScenarioForGoldenMasterTest(
+    scenario: ScenarioFixture,
+): boolean {
     for (const [path, name, reason] of knownBuggyFlat) {
         if (scenario.fixturePath === path && scenario.scenarioName === name) {
             console.warn(

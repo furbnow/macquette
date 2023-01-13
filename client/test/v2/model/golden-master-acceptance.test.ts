@@ -1,7 +1,6 @@
 import fc from 'fast-check';
 import { cloneDeep, defaults, pick } from 'lodash';
 
-import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { SolarHotWaterV1 } from '../../../src/v2/data-schemas/scenario/solar-hot-water';
 import { assertNever } from '../../../src/v2/helpers/assert-never';
 import {
@@ -19,7 +18,7 @@ import {
     shwInputs,
     shwLegacyInputKeys,
 } from '../arbitraries/scenario/solar-hot-water';
-import { scenarios, shouldSkipScenario } from '../fixtures';
+import { scenarios, shouldSkipScenarioForGoldenMasterTest } from '../fixtures';
 import { calcRun as referenceCalcRun } from './reference-model';
 import { checkInputBugs, checkOutputBugs, hasNewBehaviour } from './scenario-predicates';
 
@@ -62,7 +61,7 @@ describe('golden master acceptance tests', () => {
     });
 
     test.each(focussedScenarios)('fixed data: $displayName', (scenario) => {
-        if (shouldSkipScenario(scenario)) {
+        if (shouldSkipScenarioForGoldenMasterTest(scenario)) {
             return;
         }
         if (hasNewBehaviour(scenario.rawData as any)) {
