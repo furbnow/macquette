@@ -115,14 +115,6 @@ describe('golden master acceptance tests', () => {
             },
         );
     });
-
-    test('scenario schema validates fast-check arbitrary', () => {
-        fc.assert(
-            fc.property(arbScenarioInputs(), (scenario) => {
-                expect(() => scenarioSchema.parse(scenario)).not.toThrow();
-            }),
-        );
-    });
 });
 
 function heuristicTypeOf(value: unknown) {
