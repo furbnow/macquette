@@ -1,13 +1,8 @@
 import type { Fabric } from '.';
 import { sum } from '../../../helpers/array-reducers';
-import { WithWarnings } from '../../../helpers/with-warnings';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
 import { Floor, grossArea, Hatch, netArea, WallLike, WindowLike } from './element-types';
-
-function discard(): void {
-    // Pass
-}
 
 /* eslint-disable
    @typescript-eslint/no-explicit-any,
@@ -35,12 +30,8 @@ export function mutateLegacyData(fabric: Fabric, data: any) {
     ) {
         data.fabric.global_TMP_value = fabric.input.overrides.thermalMassParameter ?? 250;
     }
-    const fabricHeatLossAsNumber = fabric.heatLoss
-        .unwrap(discard)
-        .mapErr(() => 0)
-        .coalesce();
-    data.fabric_total_heat_loss_WK = fabricHeatLossAsNumber;
-    data.fabric.total_heat_loss_WK = fabricHeatLossAsNumber;
+    data.fabric_total_heat_loss_WK = fabric.heatLoss;
+    data.fabric.total_heat_loss_WK = fabric.heatLoss;
     data.fabric.total_thermal_capacity = sum(
         fabric.flatElements.map((e) => e.thermalCapacity),
     );
@@ -82,30 +73,16 @@ export function mutateLegacyData(fabric: Fabric, data: any) {
         }
         if (newStyleElement instanceof Floor) {
             if (newStyleElement.spec.perFloorTypeSpec !== null) {
-                legacyElement.uvalue = newStyleElement.uValue
-                    .unwrap(discard)
-                    .mapErr(() => 0)
-                    .coalesce();
+                legacyElement.uvalue = newStyleElement.uValue;
             }
-            legacyElement.uValueModelOutput = newStyleElement.uValue;
         }
-        if (newStyleElement.heatLoss instanceof WithWarnings) {
-            legacyElement.wk = newStyleElement.heatLoss
-                .unwrap(discard)
-                .mapErr(() => 0)
-                .coalesce();
-        } else {
-            legacyElement.wk = newStyleElement.heatLoss;
-        }
+        legacyElement.wk = newStyleElement.heatLoss;
     }
-    const heatLossTotalsR = fabric.heatLossTotals.unwrap(discard);
-    data.fabric.total_floor_WK = heatLossTotalsR.floor.mapErr(() => 0).coalesce();
-    data.fabric.total_wall_WK = heatLossTotalsR.externalWall.mapErr(() => 0).coalesce();
-    data.fabric.total_roof_WK = heatLossTotalsR.roof.mapErr(() => 0).coalesce();
-    data.fabric.total_window_WK = heatLossTotalsR.windowLike.mapErr(() => 0).coalesce();
-    data.fabric.total_party_wall_WK = heatLossTotalsR.partyWall
-        .mapErr(() => 0)
-        .coalesce();
+    data.fabric.total_floor_WK = fabric.heatLossTotals.floor;
+    data.fabric.total_wall_WK = fabric.heatLossTotals.externalWall;
+    data.fabric.total_roof_WK = fabric.heatLossTotals.roof;
+    data.fabric.total_window_WK = fabric.heatLossTotals.windowLike;
+    data.fabric.total_party_wall_WK = fabric.heatLossTotals.partyWall;
     data.fabric.total_external_area = fabric.externalArea;
     data.fabric.total_wall_area = fabric.areaTotals.externalWall;
     data.fabric.total_floor_area = fabric.areaTotals.floor;
@@ -117,13 +94,10 @@ export function mutateLegacyData(fabric: Fabric, data: any) {
     data.fabric.total_thermal_capacity = fabric.fabricElementsThermalCapacity;
     data.fabric.annual_solar_gain = fabric.solarGainMeanAnnual;
     data.fabric.thermal_bridging_heat_loss = fabric.thermalBridgingHeatLoss;
-    data.fabric.fabric_heat_loss_WK = fabric.fabricElementsHeatLoss
-        .unwrap(discard)
-        .mapErr(() => 0)
-        .coalesce();
+    data.fabric.fabric_heat_loss_WK = fabric.fabricElementsHeatLoss;
     data.fabric.annual_solar_gain_kwh = (fabric.solarGainMeanAnnual * 365 * 24) / 1000;
     data.TMP = fabric.thermalMassParameter;
-    data.losses_WK.fabric = new Array(12).fill(fabricHeatLossAsNumber);
+    data.losses_WK.fabric = new Array(12).fill(fabric.heatLoss);
     data.gains_W['solar'] = Month.all.map((month) => fabric.solarGainByMonth(month));
     data.GL = fabric.naturalLight;
 }

@@ -3,6 +3,8 @@ import { FloorType } from '../../../../../data-schemas/scenario/fabric/floor-u-v
 export function floorTypeDisplay(floorType: FloorType): string {
     switch (floorType) {
         case 'solid':
+            return 'Solid floor (tables)';
+        case 'solid (bs13370)':
             return 'Solid floor';
         case 'suspended':
             return 'Suspended floor';

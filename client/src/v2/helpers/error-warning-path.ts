@@ -1,7 +1,7 @@
 /** Helper functions to deal with pure error and warning types that contain a
  * .path key for tracing */
-import { Result } from './result';
-import { WithWarnings } from './with-warnings';
+import type { Result } from './result';
+import type { WithWarnings } from './with-warnings';
 
 /** Transform errors and warnings by prepending elements to their .path array,
  * to be used with .mapWarnings and .mapErr */

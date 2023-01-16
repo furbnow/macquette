@@ -93,8 +93,7 @@ describe('unheated basement', () => {
     ];
     test.each(testCases)('without insulation: $name', ({ input, expected }) => {
         const model = constructFloorUValueModel(input);
-        const [out, warnings] = model.uValue.inner();
-        expect(out).toBeApproximately(expected);
-        expect(warnings.size).toBe(0);
+        expect(model.uValue).toBeApproximately(expected);
+        expect(model.warnings).toHaveLength(0);
     });
 });

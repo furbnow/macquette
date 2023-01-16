@@ -1,8 +1,5 @@
 import { cache } from '../../helpers/cache-decorators';
-import { Result } from '../../helpers/result';
-import { WithWarnings } from '../../helpers/with-warnings';
 import { Month } from '../enums/month';
-import { FabricError, FabricWarning } from './fabric';
 
 export type HeatLossDependencies = {
     ventilation: {
@@ -14,26 +11,18 @@ export type HeatLossDependencies = {
         heatLossMonthly: (month: Month) => number;
     };
     fabric: {
-        heatLoss: WithWarnings<Result<number, FabricError>, FabricWarning>;
+        heatLoss: number;
     };
 };
-
-export type HeatLossError = FabricError | 'unspecified heat loss error';
-export type HeatLossWarning = FabricWarning | 'unspecified heat loss warning';
 
 export class HeatLoss {
     constructor(_input: null, private dependencies: HeatLossDependencies) {}
 
-    heatLossMonthly(
-        month: Month,
-    ): WithWarnings<Result<number, HeatLossError>, HeatLossWarning> {
-        return this.dependencies.fabric.heatLoss.map((fabricHeatLoss) =>
-            fabricHeatLoss.map(
-                (fabricHeatLoss) =>
-                    fabricHeatLoss +
-                    this.dependencies.ventilation.heatLossMonthly(month) +
-                    this.dependencies.infiltration.heatLossMonthly(month),
-            ),
+    heatLossMonthly(month: Month): number {
+        return (
+            this.dependencies.fabric.heatLoss +
+            this.dependencies.ventilation.heatLossMonthly(month) +
+            this.dependencies.infiltration.heatLossMonthly(month)
         );
     }
 
@@ -60,12 +49,7 @@ export class HeatLoss {
        @typescript-eslint/consistent-type-assertions,
     */
     mutateLegacyData(data: any) {
-        data.totalWK_monthly = Month.all.map((m): number =>
-            this.heatLossMonthly(m)
-                .unwrap(() => undefined)
-                .mapErr(() => NaN)
-                .coalesce(),
-        );
+        data.totalWK_monthly = Month.all.map((m): number => this.heatLossMonthly(m));
         data.ventilation.SAP_ventilation_WK = Month.all.map((m): number =>
             this.sapVentilationHeatLossMonthly(m),
         );

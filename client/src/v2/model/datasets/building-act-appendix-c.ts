@@ -1,4 +1,8 @@
-import { TabularFunction } from './tabular-function';
+import {
+    ValuePath,
+    ParameterClampWarning,
+} from '../modules/fabric/floor-u-value-calculator/warnings';
+import { TabularFunction, TabularFunctionRangeWarning } from './tabular-function';
 
 const tableC1 = (() => {
     const xValues = [0, 0.5, 1, 1.5, 2];
@@ -38,7 +42,14 @@ export function solidFloorUValue(
     allOverInsulationResistance: number,
     perimeterAreaRatio: number,
 ) {
-    return tableC1.interpolateAtClamped(allOverInsulationResistance, perimeterAreaRatio);
+    return tableC1
+        .interpolateAtClamped(allOverInsulationResistance, perimeterAreaRatio)
+        .mapWarnings(
+            transformTabularRangeWarning(
+                ['all-over-insulation', 'resistance'],
+                ['perimeter-area-ratio'],
+            ),
+        );
 }
 
 const tableC2 = (() => {
@@ -58,7 +69,14 @@ export function edgeInsulationFactorHorizontal(
     insulationResistance: number,
     insulationWidth: number,
 ) {
-    return tableC2.interpolateAtClamped(insulationResistance, insulationWidth);
+    return tableC2
+        .interpolateAtClamped(insulationResistance, insulationWidth)
+        .mapWarnings(
+            transformTabularRangeWarning(
+                ['horizontal-insulation', 'resistance'],
+                ['horizontal-insulation', 'width'],
+            ),
+        );
 }
 
 const tableC3 = (() => {
@@ -79,7 +97,14 @@ export function edgeInsulationFactorVertical(
     insulationResistance: number,
     insulationDepth: number,
 ) {
-    return tableC3.interpolateAtClamped(insulationResistance, insulationDepth);
+    return tableC3
+        .interpolateAtClamped(insulationResistance, insulationDepth)
+        .mapWarnings(
+            transformTabularRangeWarning(
+                ['vertical-insulation', 'resistance'],
+                ['vertical-insulation', 'depth'],
+            ),
+        );
 }
 
 const tableC4 = (() => {
@@ -118,10 +143,14 @@ export function suspendedFloorUninsulatedUValue(
     ventilationAreaPerimeterRatio: number,
     perimeterAreaRatio: number,
 ) {
-    return tableC4.interpolateAtClamped(
-        ventilationAreaPerimeterRatio,
-        perimeterAreaRatio,
-    );
+    return tableC4
+        .interpolateAtClamped(ventilationAreaPerimeterRatio, perimeterAreaRatio)
+        .mapWarnings(
+            transformTabularRangeWarning(
+                ['under-floor-ventilation-perimeter-ratio'],
+                ['perimeter-area-ratio'],
+            ),
+        );
 }
 
 const tableC5 = (() => {
@@ -147,5 +176,16 @@ export function basementFloorUninsulatedUValue(
     basementDepth: number,
     perimeterAreaRatio: number,
 ) {
-    return tableC5.interpolateAtClamped(basementDepth, perimeterAreaRatio);
+    return tableC5
+        .interpolateAtClamped(basementDepth, perimeterAreaRatio)
+        .mapWarnings(transformTabularRangeWarning(['depth'], ['perimeter-area-ratio']));
+}
+
+function transformTabularRangeWarning(xPath: ValuePath, yPath: ValuePath) {
+    return (warning: TabularFunctionRangeWarning): ParameterClampWarning => ({
+        type: 'parameter clamped',
+        path: warning.dimension === 'x' ? xPath : yPath,
+        value: warning.value,
+        clampedTo: warning.clampedTo,
+    });
 }

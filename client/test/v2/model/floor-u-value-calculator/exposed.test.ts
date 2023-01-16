@@ -103,9 +103,8 @@ describe('exposed floor', () => {
     ];
     test.each(cases)('$name', ({ input, expected }) => {
         const model = constructFloorUValueModel(input);
-        const [out, warnings] = model.uValue.inner();
-        expect(out).toBeApproximately(expected);
-        expect(warnings.size).toBe(0);
+        expect(model.uValue).toBeApproximately(expected);
+        expect(model.warnings).toHaveLength(0);
     });
 
     test('area does not affect u-value', () => {
@@ -127,9 +126,7 @@ describe('exposed floor', () => {
                     perFloorType,
                 };
                 const modelDifferingArea = constructFloorUValueModel(differingArea);
-                expect(modelDifferingArea.uValue.inner()[0]).toBe(
-                    modelBaseline.uValue.inner()[0],
-                );
+                expect(modelDifferingArea.uValue).toBe(modelBaseline.uValue);
             }),
         );
     });

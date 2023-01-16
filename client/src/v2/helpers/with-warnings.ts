@@ -28,14 +28,6 @@
 export class WithWarnings<T, W> {
     constructor(private _value: T, private _warnings: Set<W>) {}
 
-    toJSON() {
-        return {
-            type: 'with warnings',
-            value: this._value,
-            warnings: Array.from(this._warnings),
-        };
-    }
-
     /** Handle the warnings, one by one, using the provided function, then
      * return the inner value */
     unwrap(fn: (warning: W) => void): T {
@@ -65,6 +57,10 @@ export class WithWarnings<T, W> {
 
     static empty<T>(val: T): WithWarnings<T, never> {
         return new WithWarnings(val, new Set());
+    }
+
+    static single<T, W>(val: T, warning: W): WithWarnings<T, W> {
+        return new WithWarnings(val, new Set([warning]));
     }
 
     static fromUnion<V1, V2, W>(val: V1 | WithWarnings<V2, W>): WithWarnings<V1 | V2, W> {

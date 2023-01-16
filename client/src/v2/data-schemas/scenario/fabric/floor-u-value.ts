@@ -2,17 +2,11 @@ import { z } from 'zod';
 
 import { isIndexable } from '../../../helpers/is-indexable';
 import { NonEmptyArray } from '../../../helpers/non-empty-array';
+import { initialPerFloorTypeSpec } from '../../../ui/modules/floor-row/u-value-calculator/state';
 import { zodNonEmptyArray } from '../../helpers/non-empty-array';
 import { proportionSchema } from '../../helpers/proportion';
 import { zodPredicateUnion } from '../../helpers/zod-predicate-union';
 import { floorInsulationMaterialItem } from '../../libraries/floor-insulation';
-import {
-    miscellaneousNonFiniteNumberWarning,
-    requiredValueMissingErrorSchema,
-    unnecessaryValueWarning,
-    valueRangeWarning,
-    zeroDivisionWarning,
-} from '../validation';
 
 const insulationSpecSchema = z.object({
     thickness: z.number().nullable(),
@@ -20,7 +14,7 @@ const insulationSpecSchema = z.object({
 });
 export type InsulationSpec = z.infer<typeof insulationSpecSchema>;
 
-const solidFloorSpecSchema = z.object({
+const solidFloorTablesSpecSchema = z.object({
     allOverInsulation: insulationSpecSchema.extend({
         enabled: z.boolean(),
     }),
@@ -34,7 +28,7 @@ const solidFloorSpecSchema = z.object({
         }),
     }),
 });
-export type SolidFloorSpec = z.infer<typeof solidFloorSpecSchema>;
+export type SolidFloorTablesSpec = z.infer<typeof solidFloorTablesSpecSchema>;
 
 const floorLayerSpecSchema = z.object({
     thickness: z.number().nullable(),
@@ -45,6 +39,31 @@ const floorLayerSpecSchema = z.object({
     }),
 });
 export type FloorLayerSpec = z.infer<typeof floorLayerSpecSchema>;
+
+const solidFloorBs13370SpecSchema = z.object({
+    wallThickness: z.number().nullable(),
+    layers: zodNonEmptyArray(floorLayerSpecSchema),
+    groundConductivity: z.object({
+        groundType: z.enum([
+            'clay or silt',
+            'sand or gravel',
+            'homogenous rock',
+            'unknown',
+            'custom',
+        ]),
+        customValue: z.number().nullable(),
+    }),
+    edgeInsulation: z.object({
+        selected: z.enum(['horizontal', 'vertical']).nullable(),
+        vertical: insulationSpecSchema.extend({
+            depth: z.number().nullable(),
+        }),
+        horizontal: insulationSpecSchema.extend({
+            width: z.number().nullable(),
+        }),
+    }),
+});
+export type SolidFloorBS13370Spec = z.infer<typeof solidFloorBs13370SpecSchema>;
 
 const suspendedFloorV1SpecSchema = z.object({
     ventilationCombinedArea: z.number().nullable(),
@@ -132,7 +151,10 @@ export type CustomFloorSpec = z.infer<typeof customFloorSpecSchema>;
 
 const combinedFloorTypeSpecs = {
     custom: customFloorSpecSchema,
-    solid: solidFloorSpecSchema,
+    solid: solidFloorTablesSpecSchema,
+    ['solid (bs13370)']: solidFloorBs13370SpecSchema.default(
+        initialPerFloorTypeSpec['solid (bs13370)'],
+    ),
     suspended: suspendedFloorSpecSchema,
     'heated basement': heatedBasementFloorSpecSchema,
     exposed: exposedFloorSpecSchema,
@@ -153,14 +175,3 @@ export const floorType = z.enum(
 export type FloorType = z.infer<typeof floorType>;
 export const perFloorTypeSpecSchema = z.object(combinedFloorTypeSpecs);
 export type PerFloorTypeSpec = z.infer<typeof perFloorTypeSpecSchema>;
-
-export const floorUValueErrorSchema = requiredValueMissingErrorSchema;
-export type FloorUValueError = z.infer<typeof floorUValueErrorSchema>;
-
-export const floorUValueWarningSchema = z.discriminatedUnion('type', [
-    valueRangeWarning,
-    zeroDivisionWarning,
-    miscellaneousNonFiniteNumberWarning,
-    unnecessaryValueWarning,
-]);
-export type FloorUValueWarning = z.infer<typeof floorUValueWarningSchema>;

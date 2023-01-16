@@ -1,16 +1,9 @@
 import { z } from 'zod';
 
 import { isIndexable } from '../../../helpers/is-indexable';
-import { resultSchema } from '../../helpers/result';
-import { withWarningsSchema } from '../../helpers/with-warnings';
 import { zodPredicateUnion } from '../../helpers/zod-predicate-union';
 import { stringyFloatSchema, stringyIntegerSchema } from '../value-schemas';
-import {
-    perFloorTypeSpecSchema,
-    floorUValueErrorSchema,
-    floorUValueWarningSchema,
-    floorType,
-} from './floor-u-value';
+import { perFloorTypeSpecSchema, floorType } from './floor-u-value';
 
 const subtractFrom = z.union([
     z.number(),
@@ -265,10 +258,6 @@ const appliedFloor = z.object({
 
     // Output fields
     wk: stringyFloatSchema.optional(),
-    uValueModelOutput: withWarningsSchema(
-        resultSchema(z.number(), floorUValueErrorSchema),
-        floorUValueWarningSchema,
-    ).optional(),
 });
 
 const appliedFloorElement = commonLibraryElement

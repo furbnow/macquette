@@ -9,7 +9,8 @@ import {
     HeatedBasementFloorInput,
     InsulationInput,
     PerFloorTypeInput,
-    SolidFloorInput,
+    SolidFloorBS13370Input,
+    SolidFloorTablesInput,
     SuspendedFloorInput,
 } from '../../../../../src/v2/model/modules/fabric/floor-u-value-calculator/input-types';
 import { fcNonEmptyArray, merge } from '../../../../helpers/arbitraries';
@@ -42,7 +43,7 @@ export function arbInsulationInput(): fc.Arbitrary<InsulationInput> {
     );
 }
 
-export function arbSolidFloorInput(): fc.Arbitrary<SolidFloorInput> {
+export function arbSolidFloorTablesInput(): fc.Arbitrary<SolidFloorTablesInput> {
     return fc.record({
         floorType: fc.constant('solid' as const),
         exposedPerimeter: sensibleFloat,
@@ -60,6 +61,41 @@ export function arbSolidFloorInput(): fc.Arbitrary<SolidFloorInput> {
                 fc.record({
                     type: fc.constant('horizontal' as const),
                     width: sensibleFloat,
+                }),
+                arbInsulationInput(),
+            ),
+        ),
+    });
+}
+
+export function arbSolidFloorBs13370Input(): fc.Arbitrary<SolidFloorBS13370Input> {
+    return fc.record({
+        floorType: fc.constant('solid (bs13370)' as const),
+        exposedPerimeter: sensibleFloat,
+        wallThickness: sensibleFloat,
+        layers: fcNonEmptyArray(arbFloorLayerInput()),
+        groundConductivity: fc.oneof(
+            fc.constant('clay or silt' as const),
+            fc.constant('sand or gravel' as const),
+            fc.constant('homogenous rock' as const),
+            fc.constant('unknown' as const),
+            sensibleFloat,
+        ),
+        edgeInsulation: fc.oneof(
+            fc.record({ type: fc.constant('none' as const) }),
+            merge(
+                fc.record({
+                    type: fc.constant('vertical' as const),
+                    depth: sensibleFloat,
+                    thickness: sensibleFloat,
+                }),
+                arbInsulationInput(),
+            ),
+            merge(
+                fc.record({
+                    type: fc.constant('horizontal' as const),
+                    width: sensibleFloat,
+                    thickness: sensibleFloat,
                 }),
                 arbInsulationInput(),
             ),
@@ -143,7 +179,8 @@ export function arbCommonInput(): fc.Arbitrary<CommonInput> {
 export function arbPerFloorTypeInput(): fc.Arbitrary<PerFloorTypeInput> {
     return fc.oneof(
         arbCustomFloorInput(),
-        arbSolidFloorInput(),
+        arbSolidFloorTablesInput(),
+        arbSolidFloorBs13370Input(),
         arbSuspendedFloorInput(),
         arbHeatedBasementFloorInput(),
         arbExposedFloorInput(),

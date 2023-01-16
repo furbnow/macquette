@@ -3,7 +3,6 @@ import { cache } from '../../../../helpers/cache-decorators';
 import { compareFloats } from '../../../../helpers/fuzzy-float-equality';
 import { NonEmptyArray } from '../../../../helpers/non-empty-array';
 import { Proportion } from '../../../../helpers/proportion';
-import { Result } from '../../../../helpers/result';
 
 export type ResistanceElement = {
     name: string;
@@ -32,13 +31,8 @@ export class CombinedMethodModel {
     }
 
     @cache
-    get lowerBoundResistance(): Result<number, 'zero division error'> {
-        const out = sum(this.layers.map((layer) => layer.lowerBoundResistance));
-        if (!Number.isFinite(out)) {
-            return Result.err('zero division error');
-        } else {
-            return Result.ok(out);
-        }
+    get lowerBoundResistance(): number {
+        return sum(this.layers.map((layer) => layer.lowerBoundResistance));
     }
 
     private get resistanceSlices(): Slice[] {
@@ -47,8 +41,8 @@ export class CombinedMethodModel {
     }
 
     @cache
-    get upperBoundResistance(): Result<number, 'zero division error'> {
-        const out =
+    get upperBoundResistance(): number {
+        return (
             1 /
             sum(
                 this.resistanceSlices.map((slice) => {
@@ -60,30 +54,16 @@ export class CombinedMethodModel {
                     );
                     return sliceProportion / sliceResistance;
                 }),
-            );
-        return !Number.isFinite(out) ? Result.err('zero division error') : Result.ok(out);
-    }
-
-    get resistance(): Result<number, 'zero division error'> {
-        if (!this.lowerBoundResistance.isOk()) {
-            return Result.err('zero division error');
-        }
-        if (!this.upperBoundResistance.isOk()) {
-            return Result.err('zero division error');
-        }
-        return Result.ok(
-            (this.lowerBoundResistance.coalesce() +
-                this.upperBoundResistance.coalesce()) /
-                2,
+            )
         );
     }
 
-    get uValue(): Result<number, 'zero division error'> {
-        return this.resistance.chain((resistance) =>
-            resistance === 0
-                ? Result.err('zero division error')
-                : Result.ok(1 / resistance),
-        );
+    get resistance(): number {
+        return (this.lowerBoundResistance + this.upperBoundResistance) / 2;
+    }
+
+    get uValue(): number {
+        return 1 / this.resistance;
     }
 }
 

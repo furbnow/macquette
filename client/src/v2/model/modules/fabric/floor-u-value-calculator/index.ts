@@ -1,13 +1,7 @@
-import { FloorUValueWarning } from '../../../../data-schemas/scenario/fabric/floor-u-value';
-import {
-    MiscellaneousNonFiniteNumberWarning,
-    ValuePath,
-    ValueRangeWarning,
-} from '../../../../data-schemas/scenario/validation';
 import { cache } from '../../../../helpers/cache-decorators';
 import { prependPath } from '../../../../helpers/error-warning-path';
 import { Proportion } from '../../../../helpers/proportion';
-import { WarningCollector, WithWarnings } from '../../../../helpers/with-warnings';
+import { WithWarnings } from '../../../../helpers/with-warnings';
 import {
     basementFloorUninsulatedUValue,
     edgeInsulationFactorHorizontal,
@@ -15,7 +9,6 @@ import {
     solidFloorUValue,
     suspendedFloorUninsulatedUValue,
 } from '../../../datasets/building-act-appendix-c';
-import { TabularFunctionRangeWarning } from '../../../datasets/tabular-function';
 import { calculateInsulationResistance } from './calculate-insulation-resistance';
 import { CombinedMethodInput, CombinedMethodModel } from './combined-method';
 import type { FloorLayerInput } from './floor-layer-input';
@@ -25,193 +18,236 @@ import {
     ExposedFloorInput,
     FloorUValueModelInput,
     HeatedBasementFloorInput,
-    SolidFloorInput,
+    SolidFloorBS13370Input,
+    SolidFloorTablesInput,
     SuspendedFloorInput,
 } from './input-types';
+import { FloorUValueWarning, NonFiniteNumberReplacementError } from './warnings';
 
-function transformTabularRangeWarning(xPath: ValuePath, yPath: ValuePath) {
-    return (warning: TabularFunctionRangeWarning): ValueRangeWarning => ({
-        type: 'value range warning',
-        namespace: 'floor u-value calculator',
-        path: warning.dimension === 'x' ? xPath : yPath,
-        value: warning.value,
-        resolution: {
-            type: 'clamped',
-            to: warning.clampedTo,
-        },
-    });
-}
-
+export type FloorUValueModel =
+    | CustomFloor
+    | SolidFloorTables
+    | SolidFloorBS13370
+    | SuspendedFloor
+    | HeatedBasementFloor
+    | ExposedFloor;
 export function constructFloorUValueModel(
     input: FloorUValueModelInput,
-): CustomFloor | SolidFloor | SuspendedFloor | HeatedBasementFloor | ExposedFloor {
+): FloorUValueModel {
     const { common, perFloorType } = input;
     switch (perFloorType.floorType) {
         case 'custom':
-            return new CustomFloor(common, perFloorType);
+            return new CustomFloor(perFloorType);
         case 'solid':
-            return new SolidFloor(common, perFloorType);
+            return new SolidFloorTables(common, perFloorType);
+        case 'solid (bs13370)':
+            return new SolidFloorBS13370(common, perFloorType);
         case 'suspended':
             return new SuspendedFloor(common, perFloorType);
         case 'heated basement':
             return new HeatedBasementFloor(common, perFloorType);
         case 'exposed':
-            return new ExposedFloor(common, perFloorType);
+            return new ExposedFloor(perFloorType);
     }
 }
 
-abstract class FloorUValueModel {
-    constructor(private common: CommonInput) {}
+export class CustomFloor {
+    constructor(private floor: CustomFloorInput) {}
 
-    @cache
-    protected get areaForDivision(): WithWarnings<number, FloorUValueWarning> {
-        const wc = new WarningCollector<FloorUValueWarning>();
-        let area: number;
-        if (this.common.area === 0) {
-            wc.log({
-                type: 'zero division warning',
-                namespace: 'floor u-value calculator',
-                path: ['perimeter-area-ratio'],
-                outputReplacedWith: 1,
-            });
-            area = 1;
-        } else {
-            area = this.common.area;
-        }
-        return wc.out(area).chain(warnForNonFinite(1, ['perimeter-area ratio']));
+    get warnings(): Array<never> {
+        return [];
     }
 
-    abstract get uValue(): WithWarnings<number, FloorUValueWarning>;
-}
-
-export class CustomFloor extends FloorUValueModel {
-    constructor(common: CommonInput, private floor: CustomFloorInput) {
-        super(common);
-    }
     get uValue() {
-        return WithWarnings.empty(this.floor.uValue);
+        return this.floor.uValue;
     }
 }
 
-export class SolidFloor extends FloorUValueModel {
-    constructor(common: CommonInput, private floor: SolidFloorInput) {
-        super(common);
+export class SolidFloorTables {
+    private _warnings: Array<FloorUValueWarning> = [];
+    get warnings() {
+        return this._warnings.map(prependPath(['solid (tables)']));
+    }
+
+    constructor(private common: CommonInput, private floor: SolidFloorTablesInput) {
+        this.uValue;
+        Object.freeze(this._warnings);
     }
 
     get allOverInsulationResistance() {
-        return calculateInsulationResistance(this.floor.allOverInsulation).mapWarnings(
-            prependPath(['solid', 'all-over-insulation']),
-        );
+        return calculateInsulationResistance(this.floor.allOverInsulation);
     }
 
     get perimeterAreaRatio() {
-        return this.areaForDivision.map((area) => this.floor.exposedPerimeter / area);
+        return this.floor.exposedPerimeter / this.common.area;
     }
 
-    get uValueWithoutEdgeInsulation(): WithWarnings<number, FloorUValueWarning> {
-        const wc = new WarningCollector<FloorUValueWarning>();
-        return wc.out(
-            solidFloorUValue(
-                this.allOverInsulationResistance.unwrap(wc.sink()),
-                this.perimeterAreaRatio.unwrap(wc.sink()),
-            )
-                .mapWarnings(
-                    transformTabularRangeWarning(
-                        ['solid', 'all-over-insulation', 'resistance'],
-                        ['common', 'perimeter-area-ratio'],
-                    ),
-                )
-                .unwrap(wc.sink()),
-        );
+    @cache
+    get uValueWithoutEdgeInsulation(): number {
+        return solidFloorUValue(
+            this.allOverInsulationResistance,
+            this.perimeterAreaRatio,
+        ).unwrap((w) => this._warnings.push(w));
     }
 
     // aka psi
-    get edgeInsulationAdjustmentFactor(): WithWarnings<number, FloorUValueWarning> {
-        const wc = new WarningCollector<FloorUValueWarning>();
+    @cache
+    get edgeInsulationAdjustmentFactor(): number {
         switch (this.floor.edgeInsulation.type) {
             case 'none':
-                return WithWarnings.empty(0);
+                return 0;
             case 'horizontal':
-                return wc.out(
-                    edgeInsulationFactorHorizontal(
-                        calculateInsulationResistance(this.floor.edgeInsulation)
-                            .mapWarnings(prependPath(['solid', 'horizontal-insulation']))
-                            .unwrap(wc.sink()),
-                        this.floor.edgeInsulation.width,
-                    )
-                        .mapWarnings(
-                            transformTabularRangeWarning(
-                                ['solid', 'horizontal-insulation', 'resistance'],
-                                ['solid', 'horizontal-insulation', 'width'],
-                            ),
-                        )
-                        .unwrap(wc.sink()),
-                );
+                return edgeInsulationFactorHorizontal(
+                    calculateInsulationResistance(this.floor.edgeInsulation),
+                    this.floor.edgeInsulation.width,
+                ).unwrap((w) => this._warnings.push(w));
             case 'vertical':
-                return wc.out(
-                    edgeInsulationFactorVertical(
-                        calculateInsulationResistance(this.floor.edgeInsulation)
-                            .mapWarnings(prependPath(['solid', 'vertical-insulation']))
-                            .unwrap(wc.sink()),
-                        this.floor.edgeInsulation.depth,
-                    )
-                        .mapWarnings(
-                            transformTabularRangeWarning(
-                                ['solid', 'vertical-insulation', 'resistance'],
-                                ['solid', 'vertical-insulation', 'depth'],
-                            ),
-                        )
-                        .unwrap(wc.sink()),
-                );
+                return edgeInsulationFactorVertical(
+                    calculateInsulationResistance(this.floor.edgeInsulation),
+                    this.floor.edgeInsulation.depth,
+                ).unwrap((w) => this._warnings.push(w));
         }
     }
 
+    @cache
     get uValue() {
-        const wc = new WarningCollector<FloorUValueWarning>();
-        return wc
-            .out(
-                this.uValueWithoutEdgeInsulation.unwrap(wc.sink()) +
-                    this.edgeInsulationAdjustmentFactor.unwrap(wc.sink()) *
-                        this.perimeterAreaRatio.unwrap(wc.sink()),
-            )
-            .chain(warnForNonFinite(0, ['solid', 'u-value']));
+        const uValueWithoutEdgeInsulation = this.uValueWithoutEdgeInsulation;
+        const edgeInsulationAdjustmentFactor = this.edgeInsulationAdjustmentFactor;
+        return warnForNonFinite(
+            uValueWithoutEdgeInsulation +
+                edgeInsulationAdjustmentFactor * this.perimeterAreaRatio,
+        ).unwrap((w) => this._warnings.push(w));
     }
 }
 
-export class SuspendedFloor extends FloorUValueModel {
-    constructor(common: CommonInput, private floor: SuspendedFloorInput) {
-        super(common);
+export class SolidFloorBS13370 {
+    private _warnings: Array<FloorUValueWarning> = [];
+    get warnings(): Array<FloorUValueWarning> {
+        return this._warnings.map(prependPath(['solid (bs13370)']));
+    }
+
+    constructor(private common: CommonInput, private floor: SolidFloorBS13370Input) {
+        this.uValue;
+        Object.freeze(this._warnings);
+    }
+
+    get edgeInsulationAdjustmentFactor(): number {
+        if (this.floor.edgeInsulation.type === 'none') {
+            return 0;
+        }
+        const insulationResistance = calculateInsulationResistance(
+            this.floor.edgeInsulation,
+        );
+        const additionalEquivalentThickness =
+            insulationResistance * this.groundConductivity -
+            this.floor.edgeInsulation.thickness;
+        let equivalentWidth: number;
+        switch (this.floor.edgeInsulation.type) {
+            case 'horizontal':
+                equivalentWidth = this.floor.edgeInsulation.width;
+                break;
+            case 'vertical':
+                equivalentWidth = 2 * this.floor.edgeInsulation.depth;
+                break;
+        }
+
+        return (
+            -(this.groundConductivity / Math.PI) *
+            (Math.log(equivalentWidth / this.equivalentThickness + 1) -
+                Math.log(
+                    equivalentWidth /
+                        (this.equivalentThickness + additionalEquivalentThickness) +
+                        1,
+                ))
+        );
+    }
+
+    get characteristicDimension(): number {
+        return (2 * this.common.area) / this.floor.exposedPerimeter;
+    }
+
+    get combinedMethodLayerModel(): CombinedMethodModel {
+        return new CombinedMethodModel(
+            transformFloorLayersToCombinedMethodInput(this.floor.layers, {
+                internal: 0.17,
+                external: 0.04,
+            }),
+        );
+    }
+
+    get groundConductivity(): number {
+        switch (this.floor.groundConductivity) {
+            case 'clay or silt':
+                return 1.5;
+            case 'unknown':
+            case 'sand or gravel':
+                return 2.0;
+            case 'homogenous rock':
+                return 3.5;
+        }
+        return this.floor.groundConductivity;
+    }
+
+    get equivalentThickness(): number {
+        return (
+            this.floor.wallThickness +
+            this.groundConductivity * this.combinedMethodLayerModel.resistance
+        );
+    }
+
+    @cache
+    get uValue(): number {
+        let unadjustedUValue: number;
+        if (this.equivalentThickness < this.characteristicDimension) {
+            unadjustedUValue =
+                ((2 * this.groundConductivity) /
+                    (Math.PI * this.characteristicDimension + this.equivalentThickness)) *
+                Math.log(
+                    (Math.PI * this.characteristicDimension) / this.equivalentThickness +
+                        1,
+                );
+        } else {
+            unadjustedUValue =
+                this.groundConductivity /
+                (0.457 * this.characteristicDimension + this.equivalentThickness);
+        }
+        const uValue =
+            unadjustedUValue +
+            (2 * this.edgeInsulationAdjustmentFactor) / this.characteristicDimension;
+        return warnForNonFinite(uValue).unwrap((w) => this._warnings.push(w));
+    }
+}
+
+export class SuspendedFloor {
+    private _warnings: Array<FloorUValueWarning> = [];
+    get warnings() {
+        return this._warnings.map(prependPath(['suspended']));
+    }
+
+    constructor(private common: CommonInput, private floor: SuspendedFloorInput) {
+        this.uValue;
+        Object.freeze(this._warnings);
     }
 
     get perimeterAreaRatio() {
-        return this.areaForDivision.map(
-            (area) => this.floor.underFloorSpacePerimeter / area,
-        );
+        return this.floor.underFloorSpacePerimeter / this.common.area;
     }
 
     get ventilationRatio() {
         return this.floor.ventilationCombinedArea / this.floor.underFloorSpacePerimeter;
     }
 
-    get uninsulatedUValue(): WithWarnings<number, FloorUValueWarning> {
-        return this.perimeterAreaRatio.chain((perimeterAreaRatio) =>
-            suspendedFloorUninsulatedUValue(
-                this.ventilationRatio,
-                perimeterAreaRatio,
-            ).mapWarnings(
-                transformTabularRangeWarning(
-                    ['suspended', 'under-floor-ventilation-perimeter-ratio'],
-                    ['common', 'perimeter-area-ratio'],
-                ),
-            ),
-        );
+    @cache
+    get uninsulatedUValue(): number {
+        return suspendedFloorUninsulatedUValue(
+            this.ventilationRatio,
+            this.perimeterAreaRatio,
+        ).unwrap((w) => this._warnings.push(w));
     }
 
-    get combinedMethodLayerModel(): WithWarnings<
-        CombinedMethodModel | null,
-        FloorUValueWarning
-    > {
-        if (this.floor.layers === null) return WithWarnings.empty(null);
+    @cache
+    get combinedMethodLayerModel(): CombinedMethodModel | null {
+        if (this.floor.layers === null) return null;
 
         /* The Building Act 1984 Appendix C specifies that in this case, we are
          * to compute the U-value of the floor using the Combined Method,
@@ -231,45 +267,29 @@ export class SuspendedFloor extends FloorUValueModel {
          *
          * The calculation used here is as specified.
          */
-        return transformFloorLayersToCombinedMethodInput(this.floor.layers, {
-            internal: 0.17,
-            external: 0.17,
-        })
-            .mapWarnings(prependPath(['suspended']))
-            .map((input) => new CombinedMethodModel(input));
+        return new CombinedMethodModel(
+            transformFloorLayersToCombinedMethodInput(this.floor.layers, {
+                internal: 0.17,
+                external: 0.17,
+            }),
+        );
     }
 
-    get uValue(): WithWarnings<number, FloorUValueWarning> {
-        const wc = new WarningCollector<FloorUValueWarning>();
-        const combinedMethodLayerModel = this.combinedMethodLayerModel.unwrap(wc.sink());
-        if (combinedMethodLayerModel === null) {
-            return wc.out(this.uninsulatedUValue.unwrap(wc.sink()));
-        }
-        const combinedMethodResistance = combinedMethodLayerModel.resistance
-            .mapErr((e) => {
-                switch (e) {
-                    case 'zero division error': {
-                        wc.log({
-                            type: 'zero division warning',
-                            namespace: 'floor u-value calculator',
-                            path: ['suspended', 'combined-method-resistance'],
-                            outputReplacedWith: 0,
-                        });
-                        return 0;
-                    }
-                }
-            })
-            .coalesce();
-        return wc
-            .out(
+    @cache
+    get uValue(): number {
+        let uValue: number;
+        if (this.combinedMethodLayerModel === null) {
+            uValue = this.uninsulatedUValue;
+        } else {
+            uValue =
                 1 /
-                    (1 / this.uninsulatedUValue.unwrap(wc.sink()) -
-                        0.2 +
-                        combinedMethodResistance -
-                        0.17 -
-                        0.17),
-            )
-            .chain(warnForNonFinite(0, ['suspended', 'u-value']));
+                (1 / this.uninsulatedUValue -
+                    0.2 +
+                    this.combinedMethodLayerModel.resistance -
+                    0.17 -
+                    0.17);
+        }
+        return warnForNonFinite(uValue).unwrap((w) => this._warnings.push(w));
     }
 }
 
@@ -280,8 +300,7 @@ function transformFloorLayersToCombinedMethodInput(
         internal: number;
         external: number;
     },
-): WithWarnings<CombinedMethodInput, FloorUValueWarning> {
-    const wc = new WarningCollector<FloorUValueWarning>();
+): CombinedMethodInput {
     const internalSurface: CombinedMethodInput['layers'][number] = {
         elements: [
             {
@@ -300,76 +319,68 @@ function transformFloorLayersToCombinedMethodInput(
             },
         ],
     };
-    return wc.out({
+    return {
         layers: [
             internalSurface,
-            ...layers.map((inputLayer, idx) =>
-                inputLayer
-                    .asCombinedMethodLayer()
-                    .mapWarnings(prependPath(['combined-method-layers', idx]))
-                    .unwrap(wc.sink()),
-            ),
+            ...layers.map((inputLayer) => inputLayer.asCombinedMethodLayer()),
             externalSurface,
         ],
-    });
+    };
 }
 
-export class HeatedBasementFloor extends FloorUValueModel {
-    constructor(common: CommonInput, private floor: HeatedBasementFloorInput) {
-        super(common);
+export class HeatedBasementFloor {
+    private _warnings: Array<FloorUValueWarning> = [];
+    get warnings() {
+        return this._warnings.map(prependPath(['heated-basement']));
+    }
+
+    constructor(private common: CommonInput, private floor: HeatedBasementFloorInput) {
+        this.uValue;
+        Object.freeze(this._warnings);
     }
 
     get perimeterAreaRatio() {
-        return this.areaForDivision.map((area) => this.floor.exposedPerimeter / area);
+        return this.floor.exposedPerimeter / this.common.area;
     }
 
-    get uninsulatedUValue(): WithWarnings<number, FloorUValueWarning> {
-        return this.perimeterAreaRatio.chain((perimeterAreaRatio) =>
-            basementFloorUninsulatedUValue(
-                this.floor.basementDepth,
-                perimeterAreaRatio,
-            ).mapWarnings(
-                transformTabularRangeWarning(
-                    ['heated-basement', 'depth'],
-                    ['common', 'perimeter-area-ratio'],
-                ),
-            ),
-        );
+    @cache
+    get uninsulatedUValue(): number {
+        return basementFloorUninsulatedUValue(
+            this.floor.basementDepth,
+            this.perimeterAreaRatio,
+        ).unwrap((w) => this._warnings.push(w));
     }
 
     get insulationResistance() {
-        return calculateInsulationResistance(this.floor.insulation).mapWarnings(
-            prependPath(['heated-basement', 'insulation']),
-        );
+        return calculateInsulationResistance(this.floor.insulation);
     }
 
-    get uValue(): WithWarnings<number, FloorUValueWarning> {
-        const wc = new WarningCollector<FloorUValueWarning>();
-        return wc
-            .out(
-                1 /
-                    (1 / this.uninsulatedUValue.unwrap(wc.sink()) +
-                        this.insulationResistance.unwrap(wc.sink())),
-            )
-            .chain(warnForNonFinite(0, ['heated basement', 'u-value']));
+    @cache
+    get uValue(): number {
+        return warnForNonFinite(
+            1 / (1 / this.uninsulatedUValue + this.insulationResistance),
+        ).unwrap((w) => this._warnings.push(w));
     }
 }
 
-export class ExposedFloor extends FloorUValueModel {
-    constructor(common: CommonInput, private floor: ExposedFloorInput) {
-        super(common);
+export class ExposedFloor {
+    private _warnings: Array<FloorUValueWarning> = [];
+    get warnings() {
+        return this._warnings.map(prependPath(['exposed']));
     }
 
-    get combinedMethodLayerModel(): WithWarnings<
-        CombinedMethodModel,
-        FloorUValueWarning
-    > {
-        return transformFloorLayersToCombinedMethodInput(this.floor.layers, {
-            internal: this.internalSurfaceResistance,
-            external: this.externalSurfaceResistance,
-        })
-            .mapWarnings(prependPath(['exposed']))
-            .map((input) => new CombinedMethodModel(input));
+    constructor(private floor: ExposedFloorInput) {
+        this.uValue;
+        Object.freeze(this._warnings);
+    }
+
+    get combinedMethodLayerModel(): CombinedMethodModel {
+        return new CombinedMethodModel(
+            transformFloorLayersToCombinedMethodInput(this.floor.layers, {
+                internal: this.internalSurfaceResistance,
+                external: this.externalSurfaceResistance,
+            }),
+        );
     }
 
     get internalSurfaceResistance() {
@@ -385,42 +396,25 @@ export class ExposedFloor extends FloorUValueModel {
         }
     }
 
-    get uValue(): WithWarnings<number, FloorUValueWarning> {
-        const wc = new WarningCollector<FloorUValueWarning>();
-        const combinedMethodUValue = this.combinedMethodLayerModel
-            .unwrap(wc.sink())
-            .uValue.mapErr((e) => {
-                switch (e) {
-                    case 'zero division error': {
-                        wc.log({
-                            type: 'zero division warning',
-                            namespace: 'floor u-value calculator',
-                            path: ['exposed', 'combined-method-uvalue'],
-                            outputReplacedWith: 0,
-                        });
-                        return 0;
-                    }
-                }
-            })
-            .coalesce();
-        return wc
-            .out(combinedMethodUValue)
-            .chain(warnForNonFinite(0, ['exposed', 'u-value']));
+    @cache
+    get uValue(): number {
+        return warnForNonFinite(this.combinedMethodLayerModel.uValue).unwrap((w) =>
+            this._warnings.push(w),
+        );
     }
 }
 
-function warnForNonFinite(default_: number, path: (string | number)[]) {
-    return (val: number): WithWarnings<number, MiscellaneousNonFiniteNumberWarning> => {
-        if (Number.isFinite(val)) {
-            return WithWarnings.empty(val);
-        } else {
-            const warning: MiscellaneousNonFiniteNumberWarning = {
-                type: 'miscellaneous non-finite number',
-                namespace: 'floor u-value calculator',
-                path,
-                outputReplacedWith: default_,
-            };
-            return new WithWarnings(default_, new Set([warning]));
-        }
-    };
+function warnForNonFinite(
+    val: number,
+    default_ = 0,
+): WithWarnings<number, NonFiniteNumberReplacementError> {
+    if (!Number.isFinite(val)) {
+        return WithWarnings.single(default_, {
+            type: 'non-finite number replaced',
+            path: [],
+            replacedWith: default_,
+        });
+    } else {
+        return WithWarnings.empty(val);
+    }
 }

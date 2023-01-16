@@ -59,7 +59,6 @@ export function Component({
                 checkboxText="Insulated floor?"
             >
                 <InsulationInput
-                    indent
                     currentValue={state.insulation}
                     onChange={(value) =>
                         dispatch({

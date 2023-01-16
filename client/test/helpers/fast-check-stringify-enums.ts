@@ -5,11 +5,13 @@
  */
 import fc, { toStringMethod } from 'fast-check';
 
+import { FloorLayerSpec } from '../../src/v2/data-schemas/scenario/fabric/floor-u-value';
 import { Proportion } from '../../src/v2/helpers/proportion';
 import { Month } from '../../src/v2/model/enums/month';
 import { Orientation } from '../../src/v2/model/enums/orientation';
 import { Overshading } from '../../src/v2/model/enums/overshading';
 import { Region } from '../../src/v2/model/enums/region';
+import { FloorLayerInput } from '../../src/v2/model/modules/fabric/floor-u-value-calculator/floor-layer-input';
 
 (Overshading.prototype as any)[toStringMethod] = function () {
     const input = fc.stringify((this as Overshading).name);
@@ -34,4 +36,24 @@ import { Region } from '../../src/v2/model/enums/region';
 (Proportion.prototype as any)[toStringMethod] = function () {
     const ratio = fc.stringify((this as Proportion).asRatio);
     return `Proportion.fromRatio(${ratio}).unwrap()`;
+};
+
+(FloorLayerInput.prototype as any)[toStringMethod] = function () {
+    const that = this as FloorLayerInput;
+    let bridging: FloorLayerSpec['bridging'];
+    if (that.bridging === null) {
+        bridging = {
+            material: null,
+            proportion: null,
+        };
+    } else {
+        bridging = that.bridging;
+    }
+    const spec: FloorLayerSpec = {
+        thickness: that.thickness,
+        mainMaterial: that.mainMaterial,
+        bridging,
+    };
+    const stringifiedSpec = fc.stringify(spec);
+    return `FloorLayerInput.validate(${stringifiedSpec}).unwrap(() => undefined).unwrap()`;
 };

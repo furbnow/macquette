@@ -30,9 +30,8 @@ describe('suspended floor', () => {
                 ],
             },
         };
-        const { uValue } = constructFloorUValueModel(input);
-        const [value, warnings] = uValue.inner();
-        expect(value).toBeApproximately(0.7219);
-        expect(warnings.size).toBe(0);
+        const model = constructFloorUValueModel(input);
+        expect(model.uValue).toBeApproximately(0.7219);
+        expect(model.warnings).toHaveLength(0);
     });
 });

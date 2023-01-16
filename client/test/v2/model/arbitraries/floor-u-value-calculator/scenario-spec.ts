@@ -7,6 +7,7 @@ import {
     SuspendedFloorSpec,
 } from '../../../../../src/v2/data-schemas/scenario/fabric/floor-u-value';
 import { Proportion } from '../../../../../src/v2/helpers/proportion';
+import { FloorSpec } from '../../../../../src/v2/model/modules/fabric/element-types';
 import { fcNonEmptyArray, merge } from '../../../../helpers/arbitraries';
 import { arbFloorInsulationMaterialItem } from '../libraries/floor-insulation-material';
 import { sensibleFloat } from '../values';
@@ -60,6 +61,37 @@ export const arbPerFloorTypeSpec: fc.Arbitrary<PerFloorTypeSpec> = fc.record({
             ),
         }),
     }),
+    'solid (bs13370)': fc.record({
+        edgeInsulation: fc.record({
+            selected: fc.option(fc.constantFrom('horizontal', 'vertical')),
+            vertical: merge(
+                arbInsulationSpec,
+                fc.record({
+                    depth: fc.option(sensibleFloat),
+                    thickness: fc.option(sensibleFloat),
+                }),
+            ),
+            horizontal: merge(
+                arbInsulationSpec,
+                fc.record({
+                    width: fc.option(sensibleFloat),
+                    thickness: fc.option(sensibleFloat),
+                }),
+            ),
+        }),
+        layers: fcNonEmptyArray(arbFloorLayerSpec),
+        groundConductivity: fc.record({
+            groundType: fc.constantFrom(
+                'clay or silt' as const,
+                'sand or gravel' as const,
+                'homogenous rock' as const,
+                'unknown' as const,
+                'custom' as const,
+            ),
+            customValue: fc.option(sensibleFloat),
+        }),
+        wallThickness: fc.option(sensibleFloat),
+    }),
     suspended: arbSuspendedFloorSpec,
     'heated basement': fc.record({
         basementDepth: fc.option(sensibleFloat),
@@ -78,9 +110,16 @@ export const arbFloorType = fc.constantFrom(
     'suspended' as const,
     'heated basement' as const,
     'exposed' as const,
+    'solid (bs13370)' as const,
 );
 
-export const arbCommon = fc.record({
+export const arbFloorSpec: fc.Arbitrary<FloorSpec> = fc.record({
+    id: fc.integer(),
+    kValue: sensibleFloat,
+    type: fc.constant('floor'),
     area: sensibleFloat,
     exposedPerimeter: sensibleFloat,
+    uValueLegacyField: sensibleFloat,
+    selectedFloorType: fc.option(arbFloorType),
+    perFloorTypeSpec: fc.option(arbPerFloorTypeSpec),
 });

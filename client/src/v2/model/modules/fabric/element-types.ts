@@ -1,23 +1,25 @@
 import {
     FloorType,
-    FloorUValueError,
-    FloorUValueWarning,
     PerFloorTypeSpec,
 } from '../../../data-schemas/scenario/fabric/floor-u-value';
 import { mean, sum } from '../../../helpers/array-reducers';
 import { assertNever } from '../../../helpers/assert-never';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
+import { prependPath } from '../../../helpers/error-warning-path';
 import { featureFlags } from '../../../helpers/feature-flags';
-import { Result } from '../../../helpers/result';
-import { WarningCollector, WithWarnings } from '../../../helpers/with-warnings';
 import { lightAccessFactor, solarAccessFactor } from '../../datasets';
 import { Month } from '../../enums/month';
 import { Orientation } from '../../enums/orientation';
 import { Overshading } from '../../enums/overshading';
 import { Region } from '../../enums/region';
 import { calculateSolarRadiationMonthly } from '../../solar-flux';
-import { constructFloorUValueModel } from './floor-u-value-calculator';
+import {
+    constructFloorUValueModel,
+    CustomFloor,
+    FloorUValueModel,
+} from './floor-u-value-calculator';
 import { validate } from './floor-u-value-calculator/validate-input';
+import { FloorUValueWarning } from './floor-u-value-calculator/warnings';
 
 export type CommonSpec = {
     id: number;
@@ -68,7 +70,15 @@ export type FloorSpec = Omit<CommonSpec, 'uValue'> & {
 };
 
 export class Floor {
-    constructor(public spec: FloorSpec) {}
+    private _warnings: Array<FloorUValueWarning> = [];
+    get warnings() {
+        return this._warnings.map(prependPath(['floor']));
+    }
+
+    constructor(public spec: FloorSpec) {
+        this.uValueModel;
+        Object.freeze(this._warnings);
+    }
 
     get type(): Floor['spec']['type'] {
         return this.spec.type;
@@ -79,32 +89,38 @@ export class Floor {
     }
 
     @cache
-    get uValue(): WithWarnings<Result<number, FloorUValueError>, FloorUValueWarning> {
-        if (!featureFlags.has('new-fuvc')) {
-            return WithWarnings.empty(Result.ok(this.spec.uValueLegacyField));
-        }
-        if (this.spec.perFloorTypeSpec !== null && this.spec.selectedFloorType !== null) {
+    get uValueModel(): FloorUValueModel {
+        if (
+            !featureFlags.has('new-fuvc') ||
+            this.spec.perFloorTypeSpec === null ||
+            this.spec.selectedFloorType === null
+        ) {
+            return new CustomFloor({
+                floorType: 'custom',
+                uValue: this.spec.uValueLegacyField,
+            });
+        } else {
             const common = {
                 area: this.spec.area,
                 exposedPerimeter: this.spec.exposedPerimeter,
             };
-            const wc = new WarningCollector<FloorUValueWarning>();
-            return wc.out(
-                validate(this.spec.selectedFloorType, common, this.spec.perFloorTypeSpec)
-                    .unwrap(wc.sink())
-                    .map((input) =>
-                        constructFloorUValueModel(input).uValue.unwrap(wc.sink()),
-                    ),
-            );
-        } else {
-            return WithWarnings.empty(Result.ok(this.spec.uValueLegacyField));
+            const input = validate(
+                this.spec.selectedFloorType,
+                common,
+                this.spec.perFloorTypeSpec,
+            )
+                .mapWarnings(prependPath(['u-value-validation']))
+                .unwrap((w) => this._warnings.push(w));
+            return constructFloorUValueModel(input);
         }
     }
 
-    get heatLoss(): WithWarnings<Result<number, FloorUValueError>, FloorUValueWarning> {
-        return this.uValue.map((uValue) =>
-            uValue.map((uValue) => uValue * this.spec.area),
-        );
+    get uValue(): number {
+        return this.uValueModel.uValue;
+    }
+
+    get heatLoss(): number {
+        return this.uValue * this.spec.area;
     }
 }
 

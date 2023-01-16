@@ -1,9 +1,5 @@
 import fc from 'fast-check';
 
-import {
-    FloorType,
-    PerFloorTypeSpec,
-} from '../../../src/v2/data-schemas/scenario/fabric/floor-u-value';
 import { mean, sum } from '../../../src/v2/helpers/array-reducers';
 import { Month } from '../../../src/v2/model/enums/month';
 import {
@@ -14,7 +10,6 @@ import {
 import {
     CommonSpec,
     DeductibleSpec,
-    FloorSpec,
     HatchSpec,
     MainElementSpec,
     netArea,
@@ -28,10 +23,7 @@ import {
     arbitraryOvershading,
     arbitraryRegion,
 } from '../../helpers/arbitrary-enums';
-import {
-    arbFloorType,
-    arbPerFloorTypeSpec,
-} from './arbitraries/floor-u-value-calculator/scenario-spec';
+import { arbFloorSpec } from './arbitraries/floor-u-value-calculator/scenario-spec';
 import { sensibleFloat } from './arbitraries/values';
 
 function arbitraryCommonSpec(): fc.Arbitrary<CommonSpec> {
@@ -40,24 +32,6 @@ function arbitraryCommonSpec(): fc.Arbitrary<CommonSpec> {
         kValue: sensibleFloat,
         uValue: sensibleFloat,
     });
-}
-
-function arbitraryFloorSpec(): fc.Arbitrary<FloorSpec> {
-    const arbitraryFloorType: fc.Arbitrary<FloorType | null> = fc.option(arbFloorType);
-    const arbitraryPerFloorTypeSpec: fc.Arbitrary<PerFloorTypeSpec | null> =
-        fc.option(arbPerFloorTypeSpec);
-    const common = arbitraryCommonSpec().map(({ uValue, ...rest }) => ({
-        ...rest,
-        uValueLegacyField: uValue,
-    }));
-    const remaining = fc.record({
-        type: fc.constant('floor' as const),
-        area: sensibleFloat,
-        exposedPerimeter: sensibleFloat,
-        selectedFloorType: arbitraryFloorType,
-        perFloorTypeSpec: arbitraryPerFloorTypeSpec,
-    });
-    return merge(common, remaining);
 }
 
 function arbitraryWallLikeSpec<T>(
@@ -112,10 +86,7 @@ function arbitraryDeductibleSpec(): fc.Arbitrary<DeductibleSpec> {
 }
 
 function arbitraryMainElementSpec(): fc.Arbitrary<MainElementSpec> {
-    return fc.oneof(
-        arbitraryFloorSpec(),
-        arbitraryWallLikeSpec(arbitraryDeductibleSpec()),
-    );
+    return fc.oneof(arbFloorSpec, arbitraryWallLikeSpec(arbitraryDeductibleSpec()));
 }
 
 function arbitraryFabricInput(): fc.Arbitrary<FabricInput> {

@@ -2,12 +2,12 @@ import { FloorInsulationConductivityMaterial } from '../../../../src/v2/data-sch
 import { constructFloorUValueModel } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator';
 import {
     FloorUValueModelInput,
-    SolidFloorInput,
+    SolidFloorTablesInput,
 } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator/input-types';
 
 type TestCase<I, O> = { name: string; input: I; expected: O };
 
-describe('solid floor', () => {
+describe('solid floor (tables)', () => {
     const withoutEdgeInsulationCases: Array<TestCase<FloorUValueModelInput, number>> = [
         {
             name: 'top left corner',
@@ -94,9 +94,8 @@ describe('solid floor', () => {
         'without edge insulation: $name',
         ({ input, expected }) => {
             const model = constructFloorUValueModel(input);
-            const [out, warnings] = model.uValue.inner();
-            expect(out).toBe(expected);
-            expect(warnings.size).toBe(0);
+            expect(model.uValue).toBeApproximately(expected);
+            expect(model.warnings).toHaveLength(0);
         },
     );
 
@@ -112,7 +111,7 @@ describe('solid floor', () => {
         };
     }
     function basicSolidFloor(
-        edgeInsulation: SolidFloorInput['edgeInsulation'],
+        edgeInsulation: SolidFloorTablesInput['edgeInsulation'],
     ): FloorUValueModelInput {
         return {
             common: {
@@ -224,9 +223,8 @@ describe('solid floor', () => {
         'with edge insulation: $name',
         ({ input, expected }) => {
             const model = constructFloorUValueModel(input);
-            const [out, warnings] = model.uValue.inner();
-            expect(out).toBeApproximately(expected);
-            expect(warnings.size).toBe(0);
+            expect(model.uValue).toBeApproximately(expected);
+            expect(model.warnings).toHaveLength(0);
         },
     );
 });

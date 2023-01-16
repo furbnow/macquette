@@ -25,7 +25,7 @@ export type ReducerComponent<
 export type UiModule<State, Action, Effect> = ReducerComponent<State, Action, Effect> & {
     shims: {
         extractUpdateAction: (
-            legacyContext: ShimContext,
+            shimContext: ShimContext,
             instanceKey: string,
         ) => Result<Action, Error>;
         mutateLegacyData: (

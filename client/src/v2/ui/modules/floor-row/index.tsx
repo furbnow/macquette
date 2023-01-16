@@ -4,21 +4,23 @@ import { createPortal } from 'react-dom';
 
 import {
     FloorType,
-    FloorUValueError,
-    FloorUValueWarning,
     PerFloorTypeSpec,
 } from '../../../data-schemas/scenario/fabric/floor-u-value';
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
 import { assertNever } from '../../../helpers/assert-never';
 import { Result } from '../../../helpers/result';
 import { safeMerge } from '../../../helpers/safe-merge';
-import { WithWarnings } from '../../../helpers/with-warnings';
+import { Floor } from '../../../model/modules/fabric/element-types';
 import { InfoTooltip } from '../../input-components/forms';
 import { NumericInput } from '../../input-components/numeric';
 import { Select } from '../../input-components/select';
 import { TextInput } from '../../input-components/text';
 import { UiModule } from '../../module-management/module-type';
-import { extractFloorElement, extractRawFloorElement } from './extract-floor-element';
+import {
+    extractFloorDataElement,
+    extractFloorModelElement,
+    extractRawFloorElement,
+} from './extract-floor-element';
 import { FUVC } from './u-value-calculator/component';
 import { floorTypeDisplay } from './u-value-calculator/shared-components/floor-type-display';
 import * as fuvcState from './u-value-calculator/state';
@@ -26,13 +28,6 @@ import * as fuvcState from './u-value-calculator/state';
 type LoadedState = {
     // Read-only
     elementId: string;
-    scenarioIsBaseline: boolean;
-
-    // Model outputs
-    modelOutput: {
-        uValue: WithWarnings<Result<number, FloorUValueError>, FloorUValueWarning>;
-        elementLoss: number;
-    };
 
     // Self-managed
     loaded: true;
@@ -41,6 +36,9 @@ type LoadedState = {
     exposedPerimeter: number;
     selectedFloorType: FloorType;
     perFloorTypeSpec: PerFloorTypeSpec;
+    showLegacySolidFloorOption: boolean;
+    modelElement: Floor | null;
+    scenarioIsBaseline: boolean;
 };
 
 type LoadingState = {
@@ -58,10 +56,7 @@ type Action =
               selectedFloorType: FloorType;
               perFloorTypeSpec: PerFloorTypeSpec;
           };
-          modelOutput: {
-              uValue: WithWarnings<Result<number, FloorUValueError>, FloorUValueWarning>;
-              elementLoss: number;
-          };
+          modelElement: Floor | null;
           scenarioIsBaseline: boolean;
       }
     | { type: 'set per-floor-type state'; perFloorTypeSpec: PerFloorTypeSpec }
@@ -105,71 +100,76 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
             case 'merge state':
                 if (!state.loaded) return [state];
                 return [safeMerge(state, action.toMerge)];
-            case 'external data update':
-                return [
-                    {
-                        ...state,
-                        ...pick(action.floorSpec, [
-                            'location',
-                            'area',
-                            'exposedPerimeter',
-                            'selectedFloorType',
-                        ]),
-                        modelOutput: action.modelOutput,
-                        loaded: true,
-                        scenarioIsBaseline: action.scenarioIsBaseline,
-                        perFloorTypeSpec: action.floorSpec.perFloorTypeSpec,
-                    },
-                ];
+            case 'external data update': {
+                // If solid floor has ever been selected, keep showing it
+                const showLegacySolidFloorOption =
+                    (state.loaded && state.showLegacySolidFloorOption) ||
+                    action.floorSpec.selectedFloorType === 'solid';
+                const newState: LoadedState = {
+                    ...state,
+                    ...pick(action.floorSpec, [
+                        'location',
+                        'area',
+                        'exposedPerimeter',
+                        'selectedFloorType',
+                    ]),
+                    loaded: true,
+                    perFloorTypeSpec: action.floorSpec.perFloorTypeSpec,
+                    showLegacySolidFloorOption,
+                    modelElement: action.modelElement,
+                    scenarioIsBaseline: action.scenarioIsBaseline,
+                };
+                return [newState];
+            }
         }
     },
     effector: assertNever,
     shims: {
-        extractUpdateAction: ({ currentScenario, scenarioId }, instanceKey) => {
+        extractUpdateAction: (
+            { currentScenario, scenarioId, currentModel },
+            instanceKey,
+        ) => {
             const elementId = instanceKey;
-            return extractFloorElement(currentScenario, elementId).chain((element) => {
-                let selectedFloorType: FloorType;
-                let perFloorTypeSpec: PerFloorTypeSpec;
-                if (
-                    element.perFloorTypeSpec === undefined ||
-                    element.selectedFloorType === undefined
-                ) {
-                    perFloorTypeSpec = fuvcState.initialPerFloorTypeSpec();
-                    selectedFloorType = 'custom';
-                    perFloorTypeSpec.custom.uValue = coalesceEmptyString(
-                        element.uvalue,
-                        null,
-                    );
-                } else {
-                    perFloorTypeSpec = element.perFloorTypeSpec;
-                    selectedFloorType = element.selectedFloorType;
-                }
-                const { uValueModelOutput } = element;
-                if (uValueModelOutput === undefined) {
-                    return Result.err(
-                        new Error(
-                            'Expected uValueModelOutput to be defined. Perhaps the model has not run?',
-                        ),
-                    );
-                }
-                const action: Action = {
-                    type: 'external data update',
-                    floorSpec: {
-                        location: element.location ?? '',
-                        area: coalesceEmptyString(element.area, 0),
-                        exposedPerimeter:
-                            coalesceEmptyString(element.perimeter, null) ?? 0,
-                        selectedFloorType,
-                        perFloorTypeSpec,
-                    },
-                    modelOutput: {
-                        elementLoss: coalesceEmptyString(element.wk, undefined) ?? 0,
-                        uValue: uValueModelOutput,
-                    },
-                    scenarioIsBaseline: scenarioId === 'master',
-                };
-                return Result.ok(action);
-            });
+            const dataElementR = extractFloorDataElement(currentScenario, elementId);
+            if (dataElementR.isErr()) {
+                return dataElementR;
+            }
+            const dataElement = dataElementR.unwrap();
+            const modelElement = currentModel
+                .chain((model) => extractFloorModelElement(model, elementId))
+                .mapErr(() => null) // Discard errors
+                .coalesce();
+
+            let selectedFloorType: FloorType;
+            let perFloorTypeSpec: PerFloorTypeSpec;
+            if (
+                dataElement.perFloorTypeSpec === undefined ||
+                dataElement.selectedFloorType === undefined
+            ) {
+                perFloorTypeSpec = fuvcState.initialPerFloorTypeSpec;
+                selectedFloorType = 'custom';
+                perFloorTypeSpec.custom.uValue = coalesceEmptyString(
+                    dataElement.uvalue,
+                    null,
+                );
+            } else {
+                perFloorTypeSpec = dataElement.perFloorTypeSpec;
+                selectedFloorType = dataElement.selectedFloorType;
+            }
+            const action: Action = {
+                type: 'external data update',
+                floorSpec: {
+                    location: dataElement.location ?? '',
+                    area: coalesceEmptyString(dataElement.area, 0),
+                    exposedPerimeter:
+                        coalesceEmptyString(dataElement.perimeter, null) ?? 0,
+                    selectedFloorType,
+                    perFloorTypeSpec,
+                },
+                modelElement: modelElement,
+                scenarioIsBaseline: scenarioId === 'master',
+            };
+            return Result.ok(action);
         },
         mutateLegacyData: (externals, state, instanceKey) => {
             if (!state.loaded) return;
@@ -196,9 +196,16 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                                     perFloorTypeSpec,
                                 });
                             }}
-                            modelUValueOutput={state.modelOutput.uValue}
+                            modelElement={state.modelElement}
                             selectedFloorType={state.selectedFloorType}
-                            scenarioIsBaseline={state.scenarioIsBaseline}
+                            suppressNonFiniteNumberErrors={
+                                // Hack: sometimes an assessor will want to remove an element in a
+                                // non-baseline scenario (e.g., to model replacing a floor). We do
+                                // not yet support this, so as a workaround we tell them to set the
+                                // area to 0. Therefore we must suppress non-finite number warnings
+                                // in non-baseline scenarios where the area is set to 0.
+                                !state.scenarioIsBaseline && state.area === 0
+                            }
                         />
                     </td>
                 </>
@@ -216,7 +223,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
         if (!state.loaded) {
             return <>Loading...</>;
         }
-        const exposedPerimeterEnabled = ['solid', 'heated basement'].includes(
+        const exposedPerimeterEnabled = ['solid (bs13370)', 'heated basement'].includes(
             state.selectedFloorType,
         );
         return (
@@ -249,7 +256,10 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                         }}
                         options={(
                             [
-                                'solid',
+                                'solid (bs13370)',
+                                ...(state.showLegacySolidFloorOption
+                                    ? ['solid' as const]
+                                    : []),
                                 'suspended',
                                 'exposed',
                                 'heated basement',
@@ -274,11 +284,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                             unit="W/K.m²"
                         />
                     ) : (
-                        state.modelOutput.uValue
-                            .inner()[0]
-                            .map((value) => <>{value.toFixed(2)} W/K.m²</>)
-                            .mapErr(() => <>[error]</>)
-                            .coalesce()
+                        <>{state.modelElement?.uValue.toFixed(2) ?? '[error]'} W/K.m²</>
                     )}
                 </td>
                 <td>
@@ -311,7 +317,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                         unit="m²"
                     />
                 </td>
-                <td>{state.modelOutput.elementLoss.toFixed(2)} W/K</td>
+                <td>{state.modelElement?.heatLoss.toFixed(2) ?? '[error]'} W/K</td>
             </>
         );
     },

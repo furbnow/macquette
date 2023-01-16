@@ -20,14 +20,30 @@ export type CustomFloorInput = {
     floorType: 'custom';
     uValue: number;
 };
-export type SolidFloorInput = {
-    floorType: 'solid';
+export type SolidFloorTablesInput = {
+    floorType: 'solid'; // Implied: using the tables
     exposedPerimeter: number;
     allOverInsulation: null | InsulationInput;
     edgeInsulation:
         | { type: 'none' }
         | ({ type: 'vertical'; depth: number } & InsulationInput)
         | ({ type: 'horizontal'; width: number } & InsulationInput);
+};
+export type SolidFloorBS13370Input = {
+    floorType: 'solid (bs13370)';
+    exposedPerimeter: number;
+    wallThickness: number;
+    layers: NonEmptyArray<FloorLayerInput>;
+    groundConductivity:
+        | 'clay or silt'
+        | 'sand or gravel'
+        | 'homogenous rock'
+        | 'unknown'
+        | number;
+    edgeInsulation:
+        | { type: 'none' }
+        | ({ type: 'vertical'; depth: number; thickness: number } & InsulationInput)
+        | ({ type: 'horizontal'; width: number; thickness: number } & InsulationInput);
 };
 export type SuspendedFloorInput = {
     floorType: 'suspended';
@@ -53,12 +69,13 @@ export type CommonInput = {
 
 export type PerFloorTypeInput =
     | CustomFloorInput
-    | SolidFloorInput
+    | SolidFloorTablesInput
+    | SolidFloorBS13370Input
     | SuspendedFloorInput
     | HeatedBasementFloorInput
     | ExposedFloorInput;
 
-export type FloorUValueModelInput = {
+export type FloorUValueModelInput<PFTI extends PerFloorTypeInput = PerFloorTypeInput> = {
     common: CommonInput;
-    perFloorType: PerFloorTypeInput;
+    perFloorType: PFTI;
 };

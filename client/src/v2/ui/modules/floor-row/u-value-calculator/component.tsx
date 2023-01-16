@@ -1,20 +1,19 @@
+import { partition } from 'lodash';
 import objectInspect from 'object-inspect';
 import React from 'react';
 
 import {
     FloorType,
-    FloorUValueError,
-    FloorUValueWarning,
     PerFloorTypeSpec,
 } from '../../../../data-schemas/scenario/fabric/floor-u-value';
-import { Result } from '../../../../helpers/result';
-import { WithWarnings } from '../../../../helpers/with-warnings';
+import { Floor } from '../../../../model/modules/fabric/element-types';
+import { severity } from '../../../../model/modules/fabric/floor-u-value-calculator/warnings';
 import { partialBem } from '../../../bem';
-import { errorDisplay } from './errors';
 import * as exposedFloor from './floor-types/exposed';
 import * as heatedBasementFloor from './floor-types/heated-basement';
-import * as solidFloor from './floor-types/solid';
+import * as solidFloor from './floor-types/solid-bs13370';
 import * as suspendedFloor from './floor-types/suspended';
+import { floorTypeDisplay } from './shared-components/floor-type-display';
 import { Action, reducer } from './state/reducer';
 import { warningDisplay } from './warnings';
 
@@ -24,9 +23,9 @@ type ControlledComponentProps<S> = {
 };
 
 type FUVCProps = ControlledComponentProps<PerFloorTypeSpec> & {
-    scenarioIsBaseline: boolean;
-    modelUValueOutput: WithWarnings<Result<number, FloorUValueError>, FloorUValueWarning>;
+    modelElement: Floor | null;
     selectedFloorType: Exclude<FloorType, 'custom'>;
+    suppressNonFiniteNumberErrors: boolean;
 };
 
 const fuvcBem = partialBem('floor-u-value-calculator');
@@ -34,57 +33,56 @@ const fuvcBem = partialBem('floor-u-value-calculator');
 export function FUVC({
     value,
     onChange,
-    scenarioIsBaseline,
-    modelUValueOutput,
+    modelElement,
     selectedFloorType,
+    suppressNonFiniteNumberErrors,
 }: FUVCProps) {
     function dispatch(action: Action) {
         onChange(reducer({ ...value, selectedFloorType }, action));
     }
-    const calculatedUValue = modelUValueOutput;
-    const uValueWarnings = Array.from(calculatedUValue.inner()[1])
-        .filter((warning) => {
-            if (
-                !scenarioIsBaseline &&
-                warning.type === 'zero division warning' &&
-                warning.path.join('.') === 'perimeter-area-ratio'
-            ) {
-                // Hack: sometimes an assessor will want to remove an element
-                // in a non-baseline scenario (e.g., to model replacing a
-                // floor). We do not yet support this, so as a workaround we
-                // tell them to set the area to 0. Therefore we must suppress
-                // division-by-zero warnings for the P/A ratio in non-baseline
-                // scenarios.
-                return false;
-            } else {
-                return true;
-            }
-        })
-        .map((warning) =>
-            warningDisplay(warning)
-                .mapErr(() => objectInspect(warning))
-                .coalesce(),
-        )
+    const [errors, warnings] = partition(
+        [
+            ...(modelElement?.warnings ?? []),
+            ...(modelElement?.uValueModel.warnings ?? []),
+        ],
+        (w) => severity(w) === 'high',
+    );
+    const warningsDisplay = warnings
+        .map((warning) => warningDisplay(warning) ?? objectInspect(warning))
         .map((element, idx) => (
             <div key={idx} className="alert alert-warning">
                 {element}
             </div>
         ));
-    const uValueError = calculatedUValue
-        .inner()[0]
-        .mapOk(() => null)
-        .mapErr((err) =>
-            errorDisplay(err)
-                .mapErr(() => objectInspect(err))
-                .coalesce(),
+    const errorsDisplay = errors
+        .filter(
+            (e) =>
+                !suppressNonFiniteNumberErrors || e.type !== 'non-finite number replaced',
         )
-        .mapErr((err) => <div className="alert alert-error">{err}</div>)
-        .coalesce();
+        .map((err) => warningDisplay(err) ?? objectInspect(err))
+        .map((element, idx) => (
+            <div key={idx} className="alert alert-error">
+                {element}
+            </div>
+        ));
     return (
         <div className={fuvcBem('root')}>
             <div className={fuvcBem('grid')}>
                 {selectedFloorType === 'solid' && (
-                    <solidFloor.Component state={value.solid} dispatch={dispatch} />
+                    <div>
+                        Solid floor U-value calculation from tables is no longer
+                        supported; existing data has not been lost but is no longer
+                        visible here. To use the new method for solid floors, select
+                        select floor type &quot;{floorTypeDisplay('solid (bs13370)')}
+                        &quot; and recalculate.
+                    </div>
+                )}
+
+                {selectedFloorType === 'solid (bs13370)' && (
+                    <solidFloor.Component
+                        state={value['solid (bs13370)']}
+                        dispatch={dispatch}
+                    />
                 )}
 
                 {selectedFloorType === 'suspended' && (
@@ -106,14 +104,11 @@ export function FUVC({
                 )}
             </div>
 
-            {uValueWarnings.length !== 0 && (
-                <div className={fuvcBem('warning-display')}>{uValueWarnings}</div>
+            {warningsDisplay.length !== 0 && (
+                <div className={fuvcBem('warning-display')}>{warningsDisplay}</div>
             )}
-            {uValueError !== null && (
-                <div className={fuvcBem('error-display')}>
-                    {uValueWarnings}
-                    {uValueError}
-                </div>
+            {errorsDisplay.length !== 0 && (
+                <div className={fuvcBem('error-display')}>{errorsDisplay}</div>
             )}
         </div>
     );

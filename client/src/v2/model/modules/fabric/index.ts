@@ -14,14 +14,8 @@
  */
 import { mapValues } from 'lodash';
 
-import {
-    FloorUValueError,
-    FloorUValueWarning,
-} from '../../../data-schemas/scenario/fabric/floor-u-value';
 import { sum } from '../../../helpers/array-reducers';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
-import { Result } from '../../../helpers/result';
-import { WarningCollector, WithWarnings } from '../../../helpers/with-warnings';
 import { Month } from '../../enums/month';
 import { Region } from '../../enums/region';
 import {
@@ -39,9 +33,6 @@ import {
 import { mutateLegacyData } from './mutate-legacy-data';
 
 export { extractFabricInputFromLegacy } from './extract-from-legacy';
-
-export type FabricWarning = FloorUValueWarning | 'unspecified fabric warning';
-export type FabricError = FloorUValueError | 'unspecified fabric error';
 
 export type FabricInput = {
     elements: {
@@ -162,20 +153,9 @@ export class Fabric {
     }
 
     @cache
-    get heatLossTotals(): WithWarnings<
-        Record<ElementCategory, Result<number, FabricError>>,
-        FabricWarning
-    > {
-        const wc = new WarningCollector<FabricWarning>();
-        return wc.out(
-            mapValues(this.elementsByCategory, (elements) => {
-                const lossesR = Result.mapArray(elements, (element) =>
-                    Result.fromUnion(
-                        WithWarnings.fromUnion(element.heatLoss).unwrap(wc.sink()),
-                    ),
-                );
-                return lossesR.mapOk((losses) => sum(losses));
-            }),
+    get heatLossTotals(): Record<ElementCategory, number> {
+        return mapValues(this.elementsByCategory, (elements) =>
+            sum(elements.map((element) => element.heatLoss)),
         );
     }
 
@@ -185,15 +165,8 @@ export class Fabric {
     }
 
     @cache
-    get fabricElementsHeatLoss(): WithWarnings<
-        Result<number, FabricError>,
-        FabricWarning
-    > {
-        const wc = new WarningCollector<FabricWarning>();
-        const lossesR = Result.mapArray(this.flatElements, (element) =>
-            Result.fromUnion(WithWarnings.fromUnion(element.heatLoss).unwrap(wc.sink())),
-        );
-        return wc.out(lossesR.mapOk((losses) => sum(losses)));
+    get fabricElementsHeatLoss(): number {
+        return sum(this.flatElements.map((element) => element.heatLoss));
     }
 
     @cache
@@ -202,13 +175,8 @@ export class Fabric {
     }
 
     @cache
-    get heatLoss(): WithWarnings<Result<number, FabricError>, FabricWarning> {
-        return this.fabricElementsHeatLoss.map((fabricElementsHeatLoss) =>
-            fabricElementsHeatLoss.map(
-                (fabricElementsHeatLoss) =>
-                    this.thermalBridgingHeatLoss + fabricElementsHeatLoss,
-            ),
-        );
+    get heatLoss(): number {
+        return this.thermalBridgingHeatLoss + this.fabricElementsHeatLoss;
     }
 
     @cache

@@ -18,7 +18,7 @@ export type ShimContext = {
     project: Project;
     scenarioId: string;
     currentScenario: Scenario;
-    currentModel: Result<CombinedModules, ZodError | ModelError>;
+    currentModel: Result<CombinedModules, ZodError<unknown> | ModelError>;
 };
 
 export class UiModuleShim<State, Action, Effect> {
@@ -72,7 +72,7 @@ export class UiModuleShim<State, Action, Effect> {
             z.union([z.instanceof(ModelError), z.instanceof(ZodError)]),
         ).parse(currentScenario.model);
         for (const instanceKey of Object.keys(this.keyedInstances)) {
-            const legacyContext: ShimContext = {
+            const shimContext: ShimContext = {
                 route,
                 project,
                 scenarioId,
@@ -80,7 +80,7 @@ export class UiModuleShim<State, Action, Effect> {
                 currentModel,
             };
             const actionR = this.module_.shims.extractUpdateAction(
-                legacyContext,
+                shimContext,
                 instanceKey,
             );
             if (!actionR.isOk()) {
