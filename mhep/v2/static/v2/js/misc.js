@@ -444,7 +444,7 @@ function getScenarioMeasures(scenarioData) {
     }
 
     // Fabric
-    if ('measures' in scenarioData.fabric) {
+    if ('fabric' in scenarioData && 'measures' in scenarioData.fabric) {
         pushedNestedMeasures(scenarioData.fabric.measures);
     }
 
