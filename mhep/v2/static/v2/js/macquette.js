@@ -590,6 +590,8 @@ function legacyModuleInitPostUpdate() {
         $('.if-not-locked').show();
     }
 
+    show_hide_if_master();
+
     // Make modals draggable
     $('#openbem .modal-header').css('cursor', 'move');
     $('#openbem .modal').draggable({
@@ -625,13 +627,14 @@ function legacyModuleUpdate() {
     }
 
     legacy_update_page_from_data();
-    show_hide_if_master();
 
     if (data.locked) {
         $('.if-not-locked').hide();
     } else {
         $('.if-not-locked').show();
     }
+
+    show_hide_if_master();
 }
 
 function legacyModuleUnload() {
