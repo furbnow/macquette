@@ -28,9 +28,9 @@ export const householdSchema = z.object({
     local_planning_authority: z.string(),
     location_density: z.enum(['urban', 'suburban', 'rural']),
     exposure: z.enum(['very severe', 'severe', 'moderate', 'sheltered']),
-    flooding_rivers_sea: z.enum(['HIGH', 'MED', 'LOW', 'VLOW']),
-    flooding_surface_water: z.enum(['HIGH', 'MED', 'LOW', 'VLOW']),
-    flooding_reservoirs: z.enum(['WITHIN', 'OUTWITH']),
+    flooding_rivers_sea: z.enum(['HIGH', 'MED', 'LOW', 'VLOW', '']),
+    flooding_surface_water: z.enum(['HIGH', 'MED', 'LOW', 'VLOW', '']),
+    flooding_reservoirs: z.enum(['WITHIN', 'OUTWITH', '']),
     radon_risk: z
         .union([z.enum(['LOW', '1-3', '3-5', '5-10', '10-30', '30']), z.literal(30)])
         .transform((val) => (val === 30 ? ('30' as const) : val)),

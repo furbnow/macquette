@@ -1106,9 +1106,13 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                     localPlanningAuthority: household?.local_planning_authority ?? '',
                     locationDensity: household?.location_density ?? null,
                     exposure: household?.exposure ?? null,
-                    floodingRiversAndSea: household?.flooding_rivers_sea ?? null,
-                    floodingSurfaceWater: household?.flooding_surface_water ?? null,
-                    floodingReservoirs: household?.flooding_reservoirs ?? null,
+                    floodingRiversAndSea:
+                        coalesceEmptyString(household?.flooding_rivers_sea, null) ?? null,
+                    floodingSurfaceWater:
+                        coalesceEmptyString(household?.flooding_surface_water, null) ??
+                        null,
+                    floodingReservoirs:
+                        coalesceEmptyString(household?.flooding_reservoirs, null) ?? null,
                     radon: household?.radon_risk ?? null,
                 },
             };
