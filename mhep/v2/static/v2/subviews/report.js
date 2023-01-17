@@ -302,9 +302,6 @@ function sumArray(arr) {
     return arr.reduce((a, b) => a + b, 0);
 }
 
-const scenarioName = (scenarioId, idx) =>
-    scenarioId === 'master' ? 'Baseline' : `Scenario ${idx}`;
-
 function get_context_data(scenarios) {
     const hh = project.master.household;
 
