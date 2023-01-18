@@ -12,7 +12,7 @@ def test_suggestions_no_api_key():
     assert isinstance(result, Failure)
 
 
-@override_settings(API_KEY={"IDEAL_POSTCODES": "iddqd"})
+@pytest.mark.skip("Requires a key")
 def test_suggestions_community_api_key():
     """Using the community API key should produce some results"""
     result_r = services.get_suggestions("Downing Street")
@@ -38,7 +38,7 @@ def test_elevation_lookup():
     assert result == Success(117)
 
 
-@pytest.mark.skip("Costs money to run")
+@pytest.mark.skip("Requires a key & costs money to run")
 def test_full_lookup():
     result = services.get_combined_address_data("paf_14407651")
     assert result == {
