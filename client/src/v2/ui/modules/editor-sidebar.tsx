@@ -7,6 +7,7 @@ import type { Scenario } from '../../data-schemas/scenario';
 import { emulateJsonRoundTrip } from '../../helpers/emulate-json-round-trip';
 import { featureFlags } from '../../helpers/feature-flags';
 import { Result } from '../../helpers/result';
+import { CombinedModules } from '../../model/combined-modules';
 import { EditIcon, LockedLock, DownCaret, RightCaret } from '../icons';
 import { FormGrid } from '../input-components/forms';
 import { TextInput } from '../input-components/text';
@@ -748,6 +749,7 @@ function duplicateScenario(
 
     const newScenario: any = emulateJsonRoundTrip(scenarioData[scenarioId]);
     newScenario.locked = false;
+    delete newScenario.model;
     newScenario.creation_hash = generateHash(JSON.stringify(newScenario));
     newScenario.created_from = scenarioId;
     newScenario.scenario_name = title;
@@ -758,6 +760,8 @@ function duplicateScenario(
             delete element.cost_total;
         }
     }
+
+    newScenario.model = CombinedModules.fromLegacy(newScenario);
 
     scenarioData[newId] = newScenario;
     scenarioData = Object.fromEntries(
