@@ -496,7 +496,13 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         <span>Links:</span>
                         <span>
                             <a
-                                href={`https://www.google.co.uk/maps/search/${state.address.value.line1},${state.address.value.line2},${state.address.value.line3},${state.address.value.postTown},${state.address.value.postcode}/`}
+                                href={`https://www.google.co.uk/maps/search/${[
+                                    state.address.value.line1,
+                                    state.address.value.line2,
+                                    state.address.value.line3,
+                                    state.address.value.postTown,
+                                    state.address.value.postcode,
+                                ].join(',')}/`}
                                 target="_blank"
                                 rel="noreferrer noopener"
                             >
@@ -573,7 +579,17 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         onChange={(val) => dispatchMerge({ localPlanningAuthority: val })}
                     />
                     <br />
-                    <small>Only if different to local authority</small>
+                    <small style={{ display: 'block', width: '35em' }}>
+                        Only if different to local authority.
+                        <br />
+                        The planning authority for properties within National Parks is
+                        usually the National Park Authority rather than the local
+                        authority. A map of National Park areas{' '}
+                        <a href="https://naturalengland-defra.opendata.arcgis.com/datasets/d333c7529754444894e2d7f5044d1bbf_0/explore?location=55.072328%2C-1.721750%2C8.45">
+                            can be found here
+                        </a>
+                        .
+                    </small>
                 </span>
 
                 <WithOriginInput
@@ -694,7 +710,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
             <h3>Risk of flooding</h3>
 
             <p>
-                Please look this up using the{' '}
+                This can be found using the{' '}
                 <a
                     href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/map"
                     rel="noreferrer"
@@ -768,7 +784,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
             <h3>Radon</h3>
 
             <p>
-                Please look this up using the{' '}
+                This can be found using the{' '}
                 <a
                     href="https://www.ukradon.org/information/ukmaps"
                     rel="noreferrer"

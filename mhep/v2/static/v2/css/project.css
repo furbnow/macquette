@@ -69,12 +69,13 @@ hr {
 }
 
 a {
+    text-decoration: underline;
+}
+a.btn {
     text-decoration: none;
-    color: #000;
 }
 
 a:hover {
-    text-decoration: none;
     color: var(--app-color);
 }
 
@@ -635,6 +636,12 @@ button.demote-role {
     background-color: var(--beige-900);
 }
 
+#editor__sidebar a,
+#editor__sidebar a:hover {
+    text-decoration: none;
+    color: black;
+}
+
 .side-section {
     padding-bottom: 10px !important;
 }
@@ -863,6 +870,7 @@ label input[type='radio'] {
     height: 40px;
     align-items: center;
     padding: 0 7px;
+    text-decoration: none;
 }
 
 .nav-main a:hover {

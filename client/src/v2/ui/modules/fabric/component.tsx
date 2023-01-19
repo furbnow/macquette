@@ -698,11 +698,11 @@ function RoofsAndLofts({ state, dispatch }: SubProps) {
             </p>
             <ul className="mb-15">
                 <li>
-                    Don't add a roof where it sits above a loft which is insulated at
+                    Don&apos;t add a roof where it sits above a loft which is insulated at
                     ceiling level.
                 </li>
                 <li>
-                    Don't add a loft where it sits below a roof which is insulated at
+                    Don&apos;t add a loft where it sits below a roof which is insulated at
                     rafter level.
                 </li>
                 <li>
