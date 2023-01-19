@@ -9,6 +9,7 @@ User = get_user_model()
 STATUS_CHOICES = [
     ("Complete", "Complete"),
     ("In progress", "In progress"),
+    ("For review", "For review"),
     ("Test", "Test"),
 ]
 

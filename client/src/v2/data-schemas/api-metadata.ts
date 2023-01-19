@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { dateSchema } from './helpers/date';
 
-export const statusSchema = z.enum(['Complete', 'In progress', 'Test']);
+export const statusSchema = z.enum(['Complete', 'In progress', 'For review', 'Test']);
 
 export const userSchema = z.object({
     id: z.string(),

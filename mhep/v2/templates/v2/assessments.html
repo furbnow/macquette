@@ -326,11 +326,12 @@
 
     function draw_assessments(element, assessments)
     {
-        const status_options = ["In progress", "Complete", "Test"];
+        const status_options = ["In progress", "For review", "Complete", "Test"];
         const status_colours = {
             "In progress": "alert-info",
+            "For review": "status--for-review",
             "Complete": "alert-success",
-            "Test": "alert-error"
+            "Test": ""
         }
         const months = [
             'Jan', 'Feb', 'Mar', 'Apr',

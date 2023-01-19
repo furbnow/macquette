@@ -742,6 +742,13 @@ button.demote-role {
     color: #735829;
 }
 
+/*** Assessment list ***/
+
+.status--for-review {
+    background-color: #ffe4bb;
+    color: #7d4f08;
+}
+
 /*** Gallery ***/
 
 .gallerycard {
