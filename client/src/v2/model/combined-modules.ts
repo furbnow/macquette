@@ -1,5 +1,9 @@
+import { ZodError } from 'zod';
+
 import { ModelBehaviourVersion, scenarioSchema } from '../data-schemas/scenario';
+import { Result } from '../helpers/result';
 import { Region } from './enums/region';
+import { ModelError } from './error';
 import { AirChangeRate } from './modules/air-change-rate';
 import {
     Appliances,
@@ -85,27 +89,39 @@ export type Input = {
     generation: GenerationInput;
 };
 
-export function extractInputFromLegacy(rawScenario: unknown): Input {
-    const scenario = scenarioSchema.parse(rawScenario);
-    return {
-        modelBehaviourVersion: scenario?.modelBehaviourVersion ?? 'legacy',
-        fuels: extractFuelsInputFromLegacy(scenario),
-        floors: extractFloorsInputFromLegacy(scenario),
-        occupancy: extractOccupancyInputFromLegacy(scenario),
-        region: extractRegionFromLegacy(scenario),
-        fabric: extractFabricInputFromLegacy(scenario),
-        ventilationInfiltrationCommon:
-            extractVentilationInfiltrationCommonInputFromLegacy(scenario),
-        ventilation: extractVentilationInputFromLegacy(scenario),
-        infiltration: extractInfiltrationInputFromLegacy(scenario),
-        waterCommon: extractWaterCommonInputFromLegacy(scenario),
-        solarHotWater: extractSolarHotWaterInputFromLegacy(scenario),
-        lighting: extractLightingSAPInputFromLegacy(scenario),
-        appliances: extractAppliancesInputFromLegacy(scenario),
-        cooking: extractCookingInputFromLegacy(scenario),
-        waterHeating: extractWaterHeatingInputFromLegacy(scenario),
-        generation: extractGenerationInputFromLegacy(scenario),
-    };
+export function extractInputFromLegacy(
+    rawScenario: unknown,
+): Result<Input, ZodError | ModelError> {
+    const parseResult = scenarioSchema.safeParse(rawScenario);
+    if (parseResult.success === false) {
+        return Result.err(parseResult.error);
+    }
+    try {
+        return Result.ok({
+            modelBehaviourVersion: parseResult.data?.modelBehaviourVersion ?? 'legacy',
+            fuels: extractFuelsInputFromLegacy(parseResult.data),
+            floors: extractFloorsInputFromLegacy(parseResult.data),
+            occupancy: extractOccupancyInputFromLegacy(parseResult.data),
+            region: extractRegionFromLegacy(parseResult.data),
+            fabric: extractFabricInputFromLegacy(parseResult.data),
+            ventilationInfiltrationCommon:
+                extractVentilationInfiltrationCommonInputFromLegacy(parseResult.data),
+            ventilation: extractVentilationInputFromLegacy(parseResult.data),
+            infiltration: extractInfiltrationInputFromLegacy(parseResult.data),
+            waterCommon: extractWaterCommonInputFromLegacy(parseResult.data),
+            solarHotWater: extractSolarHotWaterInputFromLegacy(parseResult.data),
+            lighting: extractLightingSAPInputFromLegacy(parseResult.data),
+            appliances: extractAppliancesInputFromLegacy(parseResult.data),
+            cooking: extractCookingInputFromLegacy(parseResult.data),
+            waterHeating: extractWaterHeatingInputFromLegacy(parseResult.data),
+            generation: extractGenerationInputFromLegacy(parseResult.data),
+        });
+    } catch (err) {
+        if (err instanceof ModelError) {
+            return Result.err(err);
+        }
+        throw err;
+    }
 }
 
 export class CombinedModules {
@@ -191,6 +207,24 @@ export class CombinedModules {
         });
     }
 
+    static fromLegacy(datain: unknown): Result<CombinedModules, ZodError | ModelError> {
+        const inputsR = extractInputFromLegacy(datain);
+        if (inputsR.isErr()) {
+            return inputsR;
+        }
+
+        try {
+            return Result.ok(new CombinedModules(inputsR.unwrap()));
+        } catch (err) {
+            if (err instanceof ModelError) {
+                return Result.err(err);
+            } else {
+                console.error('Non-ModelError exception in CombinedModules');
+                throw err;
+            }
+        }
+    }
+
     /* eslint-disable
        @typescript-eslint/no-explicit-any,
        @typescript-eslint/no-unsafe-argument,
@@ -219,7 +253,7 @@ export class CombinedModules {
         for (const mod of Object.values(mutatorModules)) {
             mod.mutateLegacyData(data);
         }
-        data.model = this;
+        data.model = Result.ok(this);
     }
     /* eslint-enable */
 

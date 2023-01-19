@@ -1,8 +1,5 @@
 import { scenarioSchema } from '../../../../src/v2/data-schemas/scenario';
-import {
-    CombinedModules,
-    extractInputFromLegacy,
-} from '../../../../src/v2/model/combined-modules';
+import { CombinedModules } from '../../../../src/v2/model/combined-modules';
 import { ShimContext } from '../../../../src/v2/ui/module-management/shim';
 import { solarHotWaterModule } from '../../../../src/v2/ui/modules/solar-hot-water';
 import { scenarios } from '../../fixtures';
@@ -23,8 +20,7 @@ describe('solar hot water update action extractor', () => {
     test.each(scenarios)(
         'extractUpdateAction does not return an error ($displayName)',
         (scenario) => {
-            const input = extractInputFromLegacy(scenario.data);
-            const model = new CombinedModules(input);
+            const model = CombinedModules.fromLegacy(scenario.data);
             const { extractUpdateAction } = solarHotWaterModule.shims;
             const scenarioId = 'some scenario name';
             const shimContext: ShimContext = {

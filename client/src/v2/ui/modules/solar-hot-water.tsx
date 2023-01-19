@@ -69,7 +69,7 @@ const emptyModelInput: SolarHotWaterV1['input'] = {
 };
 
 type Action =
-    | ({ type: 'external data update'; model: CombinedModules } & Pick<
+    | ({ type: 'external data update'; model: CombinedModules | null } & Pick<
           LoadedState,
           'scenarioLocked' | 'moduleEnabled' | 'modelInput' | 'pumpType'
       >)
@@ -86,11 +86,12 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
     reducer: (state, action) => {
         switch (action.type) {
             case 'external data update': {
-                const { solarHotWater, waterCommon } = action.model;
                 let modelOutput: LoadedState['modelOutput'];
-                if (solarHotWater.type === 'noop') {
+
+                if (action.model === null || action.model.solarHotWater.type === 'noop') {
                     modelOutput = null;
                 } else {
+                    const { solarHotWater, waterCommon } = action.model;
                     modelOutput = {
                         aStar: solarHotWater.aStar,
                         collectorPerformanceRatio:
@@ -142,7 +143,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
             const pumpType = SHW?.pump ?? null;
             return Result.ok({
                 type: 'external data update',
-                model: currentModel,
+                model: currentModel.isErr() ? null : currentModel.unwrap(),
                 scenarioLocked,
                 moduleEnabled,
                 modelInput,

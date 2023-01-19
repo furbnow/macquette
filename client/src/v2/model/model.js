@@ -4,7 +4,7 @@ import { scenarioSchema } from '../data-schemas/scenario';
 import { datasets } from './datasets/legacy'
 import { setBlankLegacyOutputs, setDefaultLegacyInputs } from './modules/legacy-initialisation';
 import { emulateJsonRoundTrip } from '../helpers/emulate-json-round-trip';
-import { CombinedModules, extractInputFromLegacy } from './combined-modules';
+import { CombinedModules } from './combined-modules';
 
 let g, m, x, z, fuel; // Variables used in for-loops
 
@@ -53,12 +53,20 @@ let calc = {data: {}};
  *
  ******************************************************************/
 calc.run = function (datain) {
-    const combinedModules = new CombinedModules(extractInputFromLegacy(datain))
     if (datain === undefined) {
         calc.data = {}
     } else {
         calc.data = datain;
     }
+
+    const combinedModulesR = CombinedModules.fromLegacy(datain);
+    if (combinedModulesR.isErr()) {
+        console.error(combinedModulesR.unwrapErr());
+        calc.data.model = combinedModulesR;
+        return calc.data;
+    }
+
+    const combinedModules = combinedModulesR.unwrap();
     setDefaultLegacyInputs(calc.data)
     setBlankLegacyOutputs(calc.data)
     combinedModules.mutateLegacyData(calc.data)
@@ -1141,8 +1149,13 @@ calc.fabric_energy_efficiency = function (data) {
     // N/A
 
     // Run the model
-    const validatedScenarioFEE = scenarioSchema.parse(data_FEE)
-    const combinedModules = new CombinedModules(extractInputFromLegacy(validatedScenarioFEE))
+    const combinedModulesR = CombinedModules.fromLegacy(data_FEE);
+    if (combinedModulesR.isErr()) {
+        data.FEE = NaN;
+        return;
+    }
+
+    const combinedModules = combinedModulesR.unwrap();
     setDefaultLegacyInputs(data_FEE)
     setBlankLegacyOutputs(data_FEE)
     combinedModules.mutateLegacyData(data_FEE)

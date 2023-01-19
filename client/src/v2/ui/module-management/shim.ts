@@ -1,12 +1,14 @@
 import { cloneDeep, isEqual } from 'lodash';
 import { createElement } from 'react';
 import { createRoot, Root as ReactRoot } from 'react-dom/client';
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 
+import { resultSchema } from '../../data-schemas/helpers/result';
 import { Project, projectSchema } from '../../data-schemas/project';
 import { Scenario } from '../../data-schemas/scenario';
 import { Result } from '../../helpers/result';
 import { CombinedModules } from '../../model/combined-modules';
+import { ModelError } from '../../model/error';
 import { externals } from '../../shims/typed-globals';
 import type { ResolvedRoute } from '../routes';
 import type { UiModule } from './module-type';
@@ -16,7 +18,7 @@ export type ShimContext = {
     project: Project;
     scenarioId: string;
     currentScenario: Scenario;
-    currentModel: CombinedModules;
+    currentModel: Result<CombinedModules, ZodError | ModelError>;
 };
 
 export class UiModuleShim<State, Action, Effect> {
@@ -61,12 +63,14 @@ export class UiModuleShim<State, Action, Effect> {
         if (currentScenario === undefined) {
             throw new Error('Current scenario not found in project');
         }
-        const currentModel = currentScenario.model;
-        if (!(currentModel instanceof CombinedModules)) {
-            throw new Error(
-                'Current scenario model key was not an instance of CombinedModules',
-            );
-        }
+        // We parse this here rather than in the scenario schema because:
+        // 1. It would cause cyclical imports
+        // 2. If currentScenario.model doesn't fit this shape (which could happen due
+        //    due to an unexpected error), we still need to be able to run the model.
+        const currentModel = resultSchema(
+            z.instanceof(CombinedModules),
+            z.union([z.instanceof(ModelError), z.instanceof(ZodError)]),
+        ).parse(currentScenario.model);
         for (const instanceKey of Object.keys(this.keyedInstances)) {
             const legacyContext: ShimContext = {
                 route,
