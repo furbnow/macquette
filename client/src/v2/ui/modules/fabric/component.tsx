@@ -692,13 +692,27 @@ function RoofsAndLofts({ state, dispatch }: SubProps) {
     return (
         <section className="line-top mb-45">
             <h3 className="mt-0 mb-15">Roofs and lofts</h3>
-            <p className="mb-15 text-italic">
-                Note: When creating a roof or loft element only add that area which forms
-                part of the thermal envelope of the building. Do not add a
-                &lsquo;roof&rsquo; where it sits above a loft which is insulated at
-                ceiling level. Do not add a &lsquo;loft&rsquo; where it sits below a roof
-                which is insulated at rafter level.
+            <p className="mb-0">
+                When inputting roofs and lofts, only add that area which forms part of the
+                thermal envelope of the building:
             </p>
+            <ul className="mb-15">
+                <li>
+                    Don't add a roof where it sits above a loft which is insulated at
+                    ceiling level.
+                </li>
+                <li>
+                    Don't add a loft where it sits below a roof which is insulated at
+                    rafter level.
+                </li>
+                <li>
+                    If the thermal envelope changes in a scenario (e.g. loft insulation is
+                    added and so the roof is no longer part of the envelope), then set the
+                    area of the element that is no longer part of the thermal envelope to
+                    0, and add a new element to represent the new envelope, and then apply
+                    a measure to it.
+                </li>
+            </ul>
 
             <div className="rounded-cards mb-15">
                 {state.walls
