@@ -7,7 +7,7 @@ import type { Icon } from '../../icons';
 import { CheckboxInput } from '../../input-components/checkbox';
 import {
     SelectWallLike,
-    CompleteWall,
+    CompleteWallLike,
     SelectWallLikeMeasure,
     CompleteWallMeasure,
 } from '../../input-components/libraries';
@@ -184,7 +184,7 @@ function Modals({ state, dispatch }: ModalsParams): JSX.Element | null {
             <SelectWallLike
                 type={modal.elementType}
                 onClose={closeModal}
-                onSelect={(item: CompleteWall) => {
+                onSelect={(item: CompleteWallLike) => {
                     dispatch({
                         type: 'fabric/add wall',
                         item,
@@ -198,7 +198,7 @@ function Modals({ state, dispatch }: ModalsParams): JSX.Element | null {
             <SelectWallLike
                 type={modal.elementType}
                 onClose={closeModal}
-                onSelect={(item: CompleteWall) => {
+                onSelect={(item: CompleteWallLike) => {
                     dispatch({
                         type: 'fabric/replace wall',
                         id: modal.id,

@@ -1,7 +1,7 @@
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
 import { DeepPartial, safeMerge } from '../../../helpers/safe-merge';
 import { calcMeasureQtyAndCost } from '../../../measures';
-import { CompleteWall, CompleteWallMeasure } from '../../input-components/libraries';
+import { CompleteWallLike, CompleteWallMeasure } from '../../input-components/libraries';
 import { noOutput } from '../../output-components/numeric';
 import type { AppliedWallMeasure, State, WallLike } from './state';
 
@@ -25,7 +25,7 @@ export type Action =
       }
     | {
           type: 'fabric/add wall';
-          item: CompleteWall;
+          item: CompleteWallLike;
       }
     | {
           type: 'fabric/delete wall';
@@ -34,7 +34,7 @@ export type Action =
     | {
           type: 'fabric/replace wall';
           id: WallLike['id'];
-          item: CompleteWall;
+          item: CompleteWallLike;
       }
     | {
           type: 'fabric/apply wall measures';
@@ -139,10 +139,7 @@ export function reducer(state: State, action: Action): [State] {
                         specific: { area: null },
                     },
                 },
-                element: {
-                    type: 'external wall',
-                    ...action.item,
-                },
+                element: action.item,
                 outputs: {
                     windowArea: noOutput,
                     netArea: noOutput,
@@ -172,7 +169,7 @@ export function reducer(state: State, action: Action): [State] {
         case 'fabric/replace wall': {
             state.walls = state.walls.map((wall) =>
                 wall.id === action.id && wall.type === 'element'
-                    ? { ...wall, element: { type: 'external wall', ...action.item } }
+                    ? { ...wall, element: action.item }
                     : wall,
             );
             state.modal = null;
@@ -187,7 +184,6 @@ export function reducer(state: State, action: Action): [State] {
                         ...wall,
                         type: 'measure',
                         element: {
-                            type: 'external wall',
                             ...action.item,
                             cost: coalesceEmptyString(action.item.cost, 0),
                         },

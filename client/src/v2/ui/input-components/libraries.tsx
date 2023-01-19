@@ -13,8 +13,13 @@ import {
     FabricMeasure,
     discriminateTags,
 } from '../../data-schemas/libraries/elements';
-import type { WallMeasure } from '../../data-schemas/libraries/elements';
-import type { Wall } from '../../data-schemas/libraries/elements';
+import type {
+    WallMeasure,
+    RoofMeasure,
+    PartyWallMeasure,
+    LoftMeasure,
+} from '../../data-schemas/libraries/elements';
+import type { Wall, Roof, PartyWall, Loft } from '../../data-schemas/libraries/elements';
 import {
     FloorInsulationMaterial,
     isFloorInsulationMaterialLibrary,
@@ -321,17 +326,18 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
     );
 }
 
-export type CompleteWall = Shadow<
-    Wall,
+export type CompleteWallLike = Shadow<
+    Omit<Wall, 'tags'>,
     {
         tag: string;
         uvalue: number;
         kvalue: number;
+        type: 'external wall' | 'party wall' | 'roof' | 'loft';
     }
 >;
 
 type SelectWallParams = {
-    onSelect: (item: CompleteWall) => void;
+    onSelect: (item: CompleteWallLike) => void;
     onClose: () => void;
     type: 'external wall' | 'party wall' | 'roof' | 'loft';
     currentItemTag?: string | null;
@@ -372,9 +378,13 @@ export function SelectWallLike({
         .filter(isFabricElementsLibrary)
         .map((library: FabricElementsLibrary) => ({
             ...library,
-            data: pickBy<FabricElement, Wall>(
+            data: pickBy<FabricElement, Wall | Roof | Loft | PartyWall>(
                 library.data,
-                discriminateTags<FabricElement, Wall, typeof tagType>(tagType),
+                discriminateTags<
+                    FabricElement,
+                    Wall | Roof | Loft | PartyWall,
+                    typeof tagType
+                >(tagType),
             ),
         }))
         .map((library) => ({
@@ -390,12 +400,13 @@ export function SelectWallLike({
                     element.kvalue === ''
                         ? fail(`bad kvalue: ${element.kvalue}`)
                         : element.kvalue,
+                type,
             })),
         }));
     if (!isNonEmpty(filtered)) {
         return (
             <ErrorModal onClose={onClose} title={'Library missing'}>
-                No wall libraries found
+                No {type} libraries found
             </ErrorModal>
         );
     }
@@ -412,7 +423,7 @@ export function SelectWallLike({
                 { title: 'U', type: 'number', value: (wall) => wall.uvalue.toString() },
                 { title: 'k', type: 'number', value: (wall) => wall.kvalue.toString() },
             ]}
-            getFullItemData={(wall: CompleteWall) =>
+            getFullItemData={(wall: CompleteWallLike) =>
                 wall.description === ''
                     ? []
                     : [
@@ -479,13 +490,14 @@ export function SelectFuel({ fuels, onSelect, onClose }: SelectFuelProps) {
 }
 
 export type CompleteWallMeasure = Shadow<
-    WallMeasure,
+    Omit<WallMeasure, 'tags'>,
     {
         tag: string;
         uvalue: number;
         kvalue: number;
         min_cost: number;
         cost: number;
+        type: 'external wall' | 'party wall' | 'roof' | 'loft';
     }
 >;
 
@@ -529,9 +541,16 @@ export function SelectWallLikeMeasure({
         .filter(isFabricMeasuresLibrary)
         .map((library: FabricMeasuresLibrary) => ({
             ...library,
-            data: pickBy<FabricMeasure, WallMeasure>(
+            data: pickBy<
+                FabricMeasure,
+                WallMeasure | PartyWallMeasure | LoftMeasure | RoofMeasure
+            >(
                 library.data,
-                discriminateTags<FabricMeasure, WallMeasure, typeof tagType>(tagType),
+                discriminateTags<
+                    FabricMeasure,
+                    WallMeasure | PartyWallMeasure | LoftMeasure | RoofMeasure,
+                    typeof tagType
+                >(tagType),
             ),
         }))
         .map((library) => ({
@@ -539,6 +558,8 @@ export function SelectWallLikeMeasure({
             data: mapValues(library.data, (element, tag) => ({
                 ...element,
                 tag,
+                type,
+                EWI: 'EWI' in element ? element.EWI : false,
                 uvalue:
                     element.uvalue === ''
                         ? fail(`bad uvalue: ${element.uvalue}`)
@@ -609,9 +630,13 @@ export function SelectWallLikeMeasure({
     );
 }
 
+// DELETE: When the new wall-like fabric section is turned on permanently,
+// this function will no longer be required.
+// The type shadowing is there to make the new style output conform to the shape
+// required by the legacy code.
 export function selectWall(
     mountPoint: HTMLDivElement,
-    callback: (item: CompleteWall) => void,
+    callback: (item: Shadow<CompleteWallLike, { type: 'Wall'; tags: ['Wall'] }>) => void,
     currentItemTag: string | null,
 ) {
     const root = createRoot(mountPoint);
@@ -619,7 +644,11 @@ export function selectWall(
         <SelectWallLike
             type="external wall"
             onSelect={(item) => {
-                callback(item);
+                callback({
+                    ...item,
+                    type: 'Wall',
+                    tags: ['Wall'],
+                });
                 root.unmount();
             }}
             onClose={() => {

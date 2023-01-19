@@ -103,24 +103,36 @@ const partyWall = commonFabricElement
         tags: singleElementArray('Party_wall'),
     })
     .merge(libraryItemCommonSchema);
+export type PartyWall = z.infer<typeof partyWall>;
 
-const partyWallMeasure = partyWall.merge(measureCommonSchema);
+const partyWallMeasure = partyWall.merge(measureCommonSchema).extend({
+    cost_units: z.literal('sqm' as const),
+});
+export type PartyWallMeasure = z.infer<typeof partyWallMeasure>;
 
 const loft = commonFabricElement
     .extend({
         tags: singleElementArray('Loft'),
     })
     .merge(libraryItemCommonSchema);
+export type Loft = z.infer<typeof loft>;
 
-const loftMeasure = loft.merge(measureCommonSchema);
+const loftMeasure = loft.merge(measureCommonSchema).extend({
+    cost_units: z.literal('sqm' as const),
+});
+export type LoftMeasure = z.infer<typeof loftMeasure>;
 
 const roof = commonFabricElement
     .extend({
         tags: singleElementArray('Roof'),
     })
     .merge(libraryItemCommonSchema);
+export type Roof = z.infer<typeof roof>;
 
-const roofMeasure = roof.merge(measureCommonSchema);
+const roofMeasure = roof.merge(measureCommonSchema).extend({
+    cost_units: z.literal('sqm' as const),
+});
+export type RoofMeasure = z.infer<typeof roofMeasure>;
 
 function tagsFieldContains(validTags: string[]) {
     return (elem: unknown) =>

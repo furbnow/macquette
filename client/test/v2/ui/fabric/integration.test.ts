@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { projectSchema } from '../../../../src/v2/data-schemas/project';
 import { scenarioSchema } from '../../../../src/v2/data-schemas/scenario';
 import type {
-    CompleteWall,
+    CompleteWallLike,
     CompleteWallMeasure,
 } from '../../../../src/v2/ui/input-components/libraries';
 import { fabricModule } from '../../../../src/v2/ui/modules/fabric';
@@ -75,13 +75,13 @@ function wrapScenarioData(scenarioData: z.input<typeof scenarioSchema>) {
     };
 }
 
-function fillWall(partial?: Partial<CompleteWall>): CompleteWall {
+function fillWall(partial?: Partial<CompleteWallLike>): CompleteWallLike {
     return {
         tag: 'TAG',
         name: 'name',
         description: 'description',
         source: 'nowhere',
-        tags: ['Wall'],
+        type: 'external wall',
         uvalue: 1,
         kvalue: 135,
         ...partial,
@@ -94,7 +94,7 @@ function fillWallMeasure(partial?: Partial<CompleteWallMeasure>): CompleteWallMe
         name: 'measure name',
         description: 'measure description',
         source: 'nowhere',
-        tags: ['Wall'],
+        type: 'external wall',
         uvalue: 1,
         kvalue: 135,
         min_cost: 100,
@@ -109,6 +109,19 @@ function fillWallMeasure(partial?: Partial<CompleteWallMeasure>): CompleteWallMe
         performance: 'none',
         who_by: 'noone',
         EWI: false,
+        ...partial,
+    };
+}
+
+function fillRoof(partial?: Partial<CompleteWallLike>): CompleteWallLike {
+    return {
+        tag: 'TAG',
+        name: 'name',
+        description: 'description',
+        source: 'nowhere',
+        uvalue: 1,
+        kvalue: 135,
+        type: 'roof',
         ...partial,
     };
 }
@@ -328,6 +341,27 @@ describe('applying a measure', () => {
 
         expect((scenarioData as any).fabric.elements[0].cost_total).toBe(1000 + 50 * 50);
     });
+});
+
+test('adding a roof should add it as a roof', () => {
+    const scenarioData: z.input<typeof scenarioSchema> = {};
+    const { project, scenarioId } = wrapScenarioData(scenarioData);
+    const state = cloneDeep(fabricModule.initialState(''));
+
+    runReducerActions(
+        state,
+        [
+            {
+                type: 'fabric/add wall',
+                item: fillRoof({ tag: 'TAG1' }),
+            },
+        ],
+        project,
+        scenarioId,
+    );
+
+    expect(Object.keys(scenarioData.fabric?.elements ?? [])).toHaveLength(1);
+    expect(scenarioData.fabric?.elements?.[0]?.type).toBe('Roof');
 });
 
 test('applying and removing bulk measures', () => {
