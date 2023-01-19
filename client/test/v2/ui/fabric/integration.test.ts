@@ -1,6 +1,8 @@
 import { cloneDeep } from 'lodash';
+import { z } from 'zod';
 
 import { projectSchema } from '../../../../src/v2/data-schemas/project';
+import { scenarioSchema } from '../../../../src/v2/data-schemas/scenario';
 import type {
     CompleteWall,
     CompleteWallMeasure,
@@ -53,7 +55,7 @@ function runReducerActions(
     return state;
 }
 
-function wrapScenarioData<T>(scenarioData: T) {
+function wrapScenarioData(scenarioData: z.input<typeof scenarioSchema>) {
     return {
         project: {
             id: '2',
@@ -232,7 +234,7 @@ describe('reverting an element', () => {
 
 describe('applying a measure', () => {
     test('to a element in a bulk measure should remove the measure from the bulk measure', () => {
-        const scenarioData = {};
+        const scenarioData: z.input<typeof scenarioSchema> = {};
         const { project, scenarioId } = wrapScenarioData(scenarioData);
 
         runReducerActions(
@@ -261,16 +263,16 @@ describe('applying a measure', () => {
             scenarioId,
         );
 
-        // @ts-expect-error because we have no type for an unparsed scenario
-        expect(Object.keys(scenarioData.fabric.measures)).toHaveLength(2);
-        // @ts-expect-error because we have no type for an unparsed scenario
-        expect(Object.values(scenarioData.fabric.measures)[1].original_elements).toEqual({
+        expect(Object.keys(scenarioData?.fabric?.measures ?? [])).toHaveLength(2);
+        expect(
+            Object.values(scenarioData?.fabric?.measures ?? {})[1]?.original_elements,
+        ).toEqual({
             '2': { id: 2 },
         });
     });
 
     test("and then changing the element's dimensions should change the cost", () => {
-        const scenarioData = {};
+        const scenarioData: z.input<typeof scenarioSchema> = {};
         const { project, scenarioId } = wrapScenarioData(scenarioData);
 
         let state = runReducerActions(
@@ -329,7 +331,7 @@ describe('applying a measure', () => {
 });
 
 test('applying and removing bulk measures', () => {
-    const scenarioData = {};
+    const scenarioData: z.input<typeof scenarioSchema> = {};
     const { project, scenarioId } = wrapScenarioData(scenarioData);
     const state = cloneDeep(fabricModule.initialState(''));
 
@@ -355,8 +357,7 @@ test('applying and removing bulk measures', () => {
     );
 
     // should only produce a single measure
-    // @ts-expect-error because we have no type for an unparsed scenario
-    expect(Object.keys(scenarioData.fabric.measures)).toHaveLength(1);
+    expect(Object.keys(scenarioData?.fabric?.measures ?? [])).toHaveLength(1);
 
     runReducerActions(
         state,
