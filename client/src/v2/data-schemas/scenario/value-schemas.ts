@@ -28,10 +28,17 @@ export const stringyFloatSchema = z.union([
         ),
 ]);
 
-export const numberWithNaN = z.custom<number>(
-    (val) => typeof val === 'number',
-    (val) => ({ message: `Expected number (including NaN), received ${inspect(val)}` }),
-);
+// This is always nullable so that it does not throw errors after a JSON round
+// trip. (It won't be fully round-trippable because NaNs still become null, but
+// it at least won't blow up.)
+export const numberWithNaN = z
+    .custom<number>(
+        (val) => typeof val === 'number',
+        (val) => ({
+            message: `Expected number (including NaN), received ${inspect(val)}`,
+        }),
+    )
+    .nullable();
 
 export const nullableStringyFloat = z.union([
     z.literal(null),

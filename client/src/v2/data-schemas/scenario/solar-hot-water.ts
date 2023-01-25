@@ -10,16 +10,16 @@ import { coalesceEmptyString, numberWithNaN, stringyFloatSchema } from './value-
 
 const outputsLegacy = z
     .object({
-        a: numberWithNaN.nullable(),
-        collector_performance_ratio: numberWithNaN.nullable(),
-        annual_solar: numberWithNaN.nullable(),
-        solar_energy_available: numberWithNaN.nullable(),
-        solar_load_ratio: numberWithNaN.nullable(),
+        a: numberWithNaN,
+        collector_performance_ratio: numberWithNaN,
+        annual_solar: numberWithNaN,
+        solar_energy_available: numberWithNaN,
+        solar_load_ratio: numberWithNaN,
         utilisation_factor: z.number(),
-        collector_performance_factor: numberWithNaN.nullable(),
-        Veff: numberWithNaN.nullable(),
-        volume_ratio: numberWithNaN.nullable(),
-        f2: numberWithNaN.nullable(),
+        collector_performance_factor: numberWithNaN,
+        Veff: numberWithNaN,
+        volume_ratio: numberWithNaN,
+        f2: numberWithNaN,
         Qs: z.number().nullable(),
     })
     .partial();

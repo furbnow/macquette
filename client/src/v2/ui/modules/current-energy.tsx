@@ -667,17 +667,17 @@ function extractOutputsFromLegacy(scenario: Scenario): Partial<State> {
                 outputs: {
                     co2factor:
                         coalesceEmptyString(fuels?.[name]?.co2factor, null) ?? noOutput,
-                    kgCo2: fuel.annual_co2,
+                    kgCo2: fuel.annual_co2 ?? noOutput,
                     primaryEnergyFactor:
                         coalesceEmptyString(fuels?.[name]?.primaryenergyfactor, null) ??
                         noOutput,
-                    primaryEnergykWh: fuel.primaryenergy,
+                    primaryEnergykWh: fuel.primaryenergy ?? noOutput,
                     unitCost:
                         coalesceEmptyString(fuels?.[name]?.fuelcost, null) ?? noOutput,
                     standingCharge:
                         coalesceEmptyString(fuels?.[name]?.standingcharge, null) ??
                         noOutput,
-                    totalCost: fuel.annualcost,
+                    totalCost: fuel.annualcost ?? noOutput,
                 },
             }),
         ),

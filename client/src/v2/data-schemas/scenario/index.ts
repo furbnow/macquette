@@ -112,22 +112,22 @@ export const scenarioSchema = z
                 // Outputs
                 // Only one of the structural_infiltration values is relevant,
                 // depending on the value of air_permeability_test
-                structural_infiltration_from_test: numberWithNaN.nullable(),
-                structural_infiltration: numberWithNaN.nullable(),
+                structural_infiltration_from_test: numberWithNaN,
+                structural_infiltration: numberWithNaN,
             })
             .partial(),
         num_of_floors_override: z.number(), // Used only in ventilation
-        FEE: numberWithNaN.nullable(),
-        total_cost: numberWithNaN.nullable(),
-        annualco2: numberWithNaN.nullable(),
-        totalWK: numberWithNaN.nullable(),
-        kwhdpp: numberWithNaN.nullable(),
-        kgco2perm2: numberWithNaN.nullable(),
-        primary_energy_use_m2: numberWithNaN.nullable(),
+        FEE: numberWithNaN,
+        total_cost: numberWithNaN,
+        annualco2: numberWithNaN,
+        totalWK: numberWithNaN,
+        kwhdpp: numberWithNaN,
+        kgco2perm2: numberWithNaN,
+        primary_energy_use_m2: numberWithNaN,
         TFA: stringyFloatSchema,
         fuel_requirements: z.record(
             z.object({
-                quantity: numberWithNaN.nullable(),
+                quantity: numberWithNaN,
             }),
         ),
         temperature: z
@@ -139,17 +139,17 @@ export const scenarioSchema = z
             z.object({
                 name: z.string(),
                 quantity: z.number().nullable(),
-                annualcost: numberWithNaN.nullable(),
+                annualcost: numberWithNaN,
             }),
         ),
         currentenergy: z
             .object({
                 primaryenergy_annual_kwh: numberWithNaN,
-                primaryenergy_annual_kwhm2: numberWithNaN.nullable(),
-                total_co2m2: numberWithNaN.nullable(),
+                primaryenergy_annual_kwhm2: numberWithNaN,
+                total_co2m2: numberWithNaN,
                 total_cost: numberWithNaN,
-                annual_net_cost: numberWithNaN.nullable(),
-                energyuseperperson: numberWithNaN.nullable(),
+                annual_net_cost: numberWithNaN,
+                energyuseperperson: numberWithNaN,
                 enduse_annual_kwh: stringyFloatSchema,
                 use_by_fuel: z.record(
                     z.object({
@@ -174,21 +174,21 @@ export const scenarioSchema = z
             .partial(),
         space_heating: z
             .object({
-                annual_heating_demand_m2: numberWithNaN.nullable(),
+                annual_heating_demand_m2: numberWithNaN,
             })
             .partial(),
-        space_heating_demand_m2: numberWithNaN.nullable(),
+        space_heating_demand_m2: numberWithNaN,
         annual_useful_gains_kWh_m2: z
             .object({
-                Solar: numberWithNaN.nullable(),
-                Internal: numberWithNaN.nullable(),
+                Solar: numberWithNaN,
+                Internal: numberWithNaN,
             })
             .partial(),
         annual_losses_kWh_m2: z
             .object({
-                fabric: numberWithNaN.nullable(),
-                ventilation: numberWithNaN.nullable(),
-                infiltration: numberWithNaN.nullable(),
+                fabric: numberWithNaN,
+                ventilation: numberWithNaN,
+                infiltration: numberWithNaN,
             })
             .partial(),
         heating_systems: heatingSystems,
