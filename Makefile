@@ -9,7 +9,7 @@ help:
 
 .PHONY: dev
 dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for changes)
-	./client/node_modules/.bin/concurrently -n "server,js-v2 " -c green "make server" "make js-watch"
+	./client/node_modules/.bin/concurrently -n "server  ,js-watch" -c green "make server" "make js-watch"
 
 .PHONY: js-watch
 js-watch:  ## Compile JS (watching, for development)
