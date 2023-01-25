@@ -183,7 +183,7 @@ export const datasets = {
     },
     'Standard Tariff': {
         category: 'Electricity',
-        standingcharge: 97,
+        standingcharge: 168,
         fuelcost: 34.49,
         co2factor: 0.136,
         primaryenergyfactor: 1.501,

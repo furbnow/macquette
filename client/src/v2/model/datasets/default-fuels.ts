@@ -171,13 +171,13 @@ export const defaultFuels = {
     },
     'Standard Tariff': {
         category: 'Electricity' as const,
-        standingcharge: 97,
+        standingcharge: 168,
         fuelcost: 34.49,
         co2factor: 0.136,
         primaryenergyfactor: 1.501,
         SAP_code: 30,
         notes: 'NW Fuel Prices, https://www.gov.uk/government/publications/energy-price-guarantee-regional-rates/energy-price-guarantee-regional-rates',
-        updatedAt: '2022-11-29',
+        updatedAt: '2023-01-25',
     },
     generation: {
         category: 'Generation' as const,
