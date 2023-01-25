@@ -206,6 +206,7 @@ function ScenarioBlock({
                     <li style={{ padding: '4px 20px' }}>
                         <button
                             className="btn mr-7"
+                            title={`Create a new scenario based on "${title}"`}
                             onClick={() => {
                                 const newTitle = window.prompt(
                                     'What do you want the call the new scenario?',
@@ -220,7 +221,7 @@ function ScenarioBlock({
                                 }
                             }}
                         >
-                            Copy
+                            New
                         </button>
                         <button
                             className="btn mr-7"
