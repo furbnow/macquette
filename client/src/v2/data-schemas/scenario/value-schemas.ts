@@ -60,3 +60,10 @@ export const legacyBoolean = z.union([
     z.literal('true').transform(() => true),
     z.literal('false').transform(() => false),
 ]);
+
+/** Undo opportunistic string -> number parsing for legacy fields that should
+ * be strings */
+export const legacyString = z.union([
+    z.string(),
+    numberWithNaN.transform((n) => n?.toString() ?? 'null'),
+]);

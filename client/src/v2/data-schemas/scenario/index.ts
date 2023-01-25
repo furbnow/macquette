@@ -7,6 +7,7 @@ import { householdSchema } from './household';
 import { solarHotWaterSchema } from './solar-hot-water';
 import {
     legacyBoolean,
+    legacyString,
     nullableStringyFloat,
     numberWithNaN,
     stringyFloatSchema,
@@ -18,13 +19,13 @@ const floors = z.array(
     z.object({
         area: stringyFloatSchema,
         height: stringyFloatSchema,
-        name: z.string(),
+        name: legacyString,
     }),
 );
 
 const lacFuels = z.array(
     z.object({
-        fuel: z.string(),
+        fuel: legacyString,
         fraction: z.number(),
     }),
 );
@@ -51,11 +52,8 @@ export type ModelBehaviourVersion = z.infer<typeof modelBehaviourVersionSchema>;
 export const scenarioSchema = z
     .object({
         modelBehaviourVersion: modelBehaviourVersionSchema,
-        created_from: z.string().optional(),
-        scenario_name: z.union([
-            z.string(),
-            z.number().transform((val) => val.toString()),
-        ]),
+        created_from: legacyString.optional(),
+        scenario_name: legacyString,
         creation_hash: z.number().optional(),
         sidebarExpanded: z.boolean().optional(),
         floors,
@@ -137,7 +135,7 @@ export const scenarioSchema = z
             .partial(),
         fuel_totals: z.record(
             z.object({
-                name: z.string(),
+                name: legacyString,
                 quantity: z.number().nullable(),
                 annualcost: numberWithNaN,
             }),

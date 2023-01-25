@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { legacyBoolean, stringyFloatSchema } from './value-schemas';
+import { legacyBoolean, legacyString, stringyFloatSchema } from './value-schemas';
 
 export const applianceCarbonCoop = z.object({
     list: z.array(
@@ -12,8 +12,8 @@ export const applianceCarbonCoop = z.object({
             reference_quantity: stringyFloatSchema,
             frequency: stringyFloatSchema,
             type_of_fuel: z.enum(['Electricity', 'Gas', 'Oil']),
-            fuel: z.string(),
-            category: z.string(),
+            fuel: legacyString,
+            category: legacyString,
             efficiency: stringyFloatSchema,
         }),
     ),

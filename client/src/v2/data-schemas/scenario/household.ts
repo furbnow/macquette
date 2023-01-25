@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { withOriginSchema } from '../helpers/with-origin';
+import { legacyString } from './value-schemas';
 
 const addressSchema = z.object({
     line1: z.string(),
@@ -14,16 +15,16 @@ const addressSchema = z.object({
 export const householdSchema = z.object({
     looked_up: z.boolean(),
     uniquePropertyReferenceNumber: withOriginSchema(z.string(), z.never()),
-    address_1: z.string(),
-    address_2: z.string(),
-    address_3: z.string(),
-    address_town: z.string(),
-    address_postcode: z.string(),
+    address_1: legacyString,
+    address_2: legacyString,
+    address_3: legacyString,
+    address_town: legacyString,
+    address_postcode: legacyString,
     address_country: z.string(),
     address_full: withOriginSchema(addressSchema, z.never()),
-    address_la: z.string(),
+    address_la: legacyString,
     address_la_full: withOriginSchema(z.string(), z.never()),
-    address_lsoa: z.string(),
+    address_lsoa: legacyString,
     address_lsoa_full: withOriginSchema(z.string(), z.never()),
     local_planning_authority: z.string(),
     location_density: z.enum(['urban', 'suburban', 'rural']),
