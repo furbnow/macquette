@@ -644,6 +644,19 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
             </FormGrid>
 
             <h3>Geography</h3>
+            <div className="text-callout mb-15">
+                <p>
+                    In exposed locations, water ingress from driving rain is more likely,
+                    so measures like cavity and internal wall insulation will require
+                    careful consideration and might not be appropriate.
+                </p>
+                <p>
+                    In areas of severe frost exposure, cavity wall insulation, internal
+                    insulation, materials used and external finishes will need careful
+                    consideration.
+                </p>
+            </div>
+
             <FormGrid>
                 <WithOriginInput
                     data={state.elevation}
@@ -667,22 +680,6 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                     inputId="elevation"
                 />
 
-                <label htmlFor="exposure">Exposure:</label>
-                <div>
-                    <Select<Exposure>
-                        className="input--auto-width"
-                        id="exposure"
-                        options={[
-                            { value: 'very severe', display: 'very severe' },
-                            { value: 'severe', display: 'severe' },
-                            { value: 'moderate', display: 'moderate' },
-                            { value: 'sheltered', display: 'sheltered' },
-                        ]}
-                        selected={state.exposure}
-                        callback={(val) => dispatchMerge({ exposure: val })}
-                    />
-                </div>
-
                 <label htmlFor="density">Location type:</label>
                 <div>
                     <Select<LocationDensity>
@@ -705,22 +702,47 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         callback={(val) => dispatchMerge({ locationDensity: val })}
                     />
                 </div>
+
+                <label htmlFor="exposure">Exposure:</label>
+                <div>
+                    <Select<Exposure>
+                        className="input--auto-width"
+                        id="exposure"
+                        options={[
+                            { value: 'very severe', display: 'very severe' },
+                            { value: 'severe', display: 'severe' },
+                            { value: 'moderate', display: 'moderate' },
+                            { value: 'sheltered', display: 'sheltered' },
+                        ]}
+                        selected={state.exposure}
+                        callback={(val) => dispatchMerge({ exposure: val })}
+                    />
+                </div>
             </FormGrid>
 
             <h3>Risk of flooding</h3>
 
-            <p>
-                This can be found using the{' '}
-                <a
-                    href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/map"
-                    rel="noreferrer"
-                    target="_blank"
-                    style={{ textDecoration: 'underline' }}
-                >
-                    uk.gov flood risk map
-                </a>
-                .
-            </p>
+            <div className="text-callout mb-15">
+                <p>
+                    In high risk areas, flood resilience and resistance measures should be
+                    considered. This is likely to affect decisions including floor
+                    insulation and construction, wall and floor finishes, and the position
+                    of services.
+                </p>
+
+                <p>
+                    This data can be found using the{' '}
+                    <a
+                        href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/map"
+                        rel="noreferrer"
+                        target="_blank"
+                        style={{ textDecoration: 'underline' }}
+                    >
+                        uk.gov flood risk map
+                    </a>
+                    .
+                </p>
+            </div>
 
             <FormGrid>
                 <span>Rivers and sea:</span>
@@ -783,18 +805,66 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
 
             <h3>Radon</h3>
 
-            <p>
-                This can be found using the{' '}
-                <a
-                    href="https://www.ukradon.org/information/ukmaps"
-                    rel="noreferrer"
-                    target="_blank"
-                    style={{ textDecoration: 'underline' }}
-                >
-                    UK Radon map
-                </a>
-                .
-            </p>
+            <div className="text-callout mb-15">
+                <p>
+                    Radon is a naturally occurring radioactive gas that is a known cancer
+                    risk. Levels in homes vary due to differing geology and in an
+                    individual home can depend on floor construction and levels and types
+                    of ventilation. Where a home has an existing high level of radon, or
+                    it could be made unacceptably high by making the home more air-tight,
+                    it might be necessary to:
+                </p>
+                <ul>
+                    <li>
+                        add a below-floor sump to draw radon away from occupied spaces
+                    </li>
+                    <li>
+                        adjust the ventilation strategy for the home to manage radon
+                        levels internally
+                    </li>
+                    <li>consider an alternative ground floor build up </li>
+                </ul>
+
+                <p>
+                    Specialist advice should be sought on the best approach for each home.
+                    As part of making a retrofit plan you should establish the existing
+                    radon levels and level of risk by:
+                </p>
+                <ul>
+                    <li>
+                        Consulting the map of &apos;at risk&apos; areas at scenario
+                        planning stage.
+                    </li>
+                    <li>
+                        Obtaining{' '}
+                        <a href="https://www.ukradon.org/services/address_search">
+                            a copy of the individual property report from UK Radon
+                        </a>{' '}
+                        when finalising the retrofit plan
+                    </li>
+                    <li>
+                        If the individual property report confirms a heightened risk, we
+                        recommend that{' '}
+                        <a href="https://www.ukradon.org/services/orderdomestic">
+                            on-site monitoring
+                        </a>{' '}
+                        takes place to inform detailed project decision making.
+                    </li>
+                </ul>
+
+                <p>
+                    This data can be found using the{' '}
+                    <a
+                        href="https://www.ukradon.org/information/ukmaps"
+                        rel="noreferrer"
+                        target="_blank"
+                        style={{ textDecoration: 'underline' }}
+                    >
+                        UK Radon map
+                    </a>
+                    .
+                </p>
+            </div>
 
             <FormGrid>
                 <span>Radon risk:</span>
