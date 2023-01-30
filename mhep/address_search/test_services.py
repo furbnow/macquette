@@ -33,6 +33,9 @@ def test_lookup_lsoa_invalid_postcode_should_produce_failure():
     assert result == Failure("Couldn't fetch LSOA (Invalid postcode)")
 
 
+@pytest.mark.skip(
+    "Likely to fail due to flaky API; skippable pending replacement implementation"
+)
 def test_elevation_lookup():
     result = services.get_elevation(41.161758, -8.583933)
     assert result == Success(117)
