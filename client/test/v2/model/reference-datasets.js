@@ -133,13 +133,13 @@ export const datasets = {
     },
     '7-Hour tariff - High Rate': {
         category: 'Electricity',
-        standingcharge: 0,
+        standingcharge: 152,
         fuelcost: 41.63,
         co2factor: 0.136,
         primaryenergyfactor: 1.501,
         SAP_code: 32,
         notes: 'Octopus Eco 7 Tariff for Central Manchester',
-        updatedAt: '2022-11-29',
+        updatedAt: '2023-01-31',
     },
     '7 Hour tariff - Low Rate': {
         category: 'Electricity',
