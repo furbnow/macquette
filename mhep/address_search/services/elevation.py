@@ -28,7 +28,8 @@ def get_elevation(latitude: float, longitude: float) -> Result[float, str]:
     try:
         response = requests.get(
             "https://api.open-elevation.com/api/v1/lookup"
-            f"?locations={latitude},{longitude}"
+            f"?locations={latitude},{longitude}",
+            timeout=3,
         )
     except requests.exceptions.RequestException:
         logging.exception("Network error while fetching address data")

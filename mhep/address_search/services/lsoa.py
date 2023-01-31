@@ -28,7 +28,9 @@ def _parse_lsoa_response(data: dict) -> _APISuccess | _APIError:
 
 def get_lsoa(postcode: str) -> Result[str, str]:
     try:
-        response = requests.get(f"https://api.postcodes.io/postcodes/{postcode}")
+        response = requests.get(
+            f"https://api.postcodes.io/postcodes/{postcode}", timeout=3
+        )
     except requests.exceptions.RequestException:
         logging.exception("Network error while fetching address data")
         return Failure("Couldn't fetch LSOA")

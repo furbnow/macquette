@@ -47,6 +47,7 @@ def resolve_address(id: str) -> Result[ResolveResult, str]:
         response = requests.get(
             f"https://api.ideal-postcodes.co.uk/v1/autocomplete/addresses/{id}/gbr",
             headers={"Authorization": f'api_key="{api_key}"'},
+            timeout=3,
         )
     except requests.exceptions.RequestException:
         logging.exception("Network error while fetching address data")
