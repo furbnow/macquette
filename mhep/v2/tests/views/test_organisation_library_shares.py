@@ -33,7 +33,7 @@ class TestShareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/{self.other_org.id}/"
         )
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         assert self.library in self.other_org.libraries_shared_with.all()
 
     def test_returns_204_if_sharing_library_thats_already_shared_with_organisation(
@@ -48,7 +48,7 @@ class TestShareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/{self.other_org.id}/"
         )
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         assert self.library in self.other_org.libraries_shared_with.all()
 
     def test_returns_404_if_other_organisation_id_doesnt_exist(self):
@@ -109,7 +109,7 @@ class TestUnshareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/{self.other_org.id}/"
         )
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         assert self.library not in self.other_org.libraries_shared_with.all()
 
     def test_returns_204_if_unsharing_library_thats_not_already_shared_with_organisation(
@@ -123,7 +123,7 @@ class TestUnshareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/{self.other_org.id}/"
         )
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         assert self.library not in self.other_org.libraries_shared_with.all()
 
     def test_returns_404_is_sharing_organisation_id_does_not_exist(self):
@@ -179,7 +179,7 @@ class TestListOrganisationLibraryShares(SetUpMixin, AssertErrorMixin, APITestCas
             f"/{VERSION}/api/organisations/{self.my_org.id}/libraries/{self.library.id}/shares/"
         )
 
-        assert status.HTTP_200_OK == response.status_code
+        assert response.status_code == status.HTTP_200_OK
         expected = [{"id": f"{self.other_org.id}", "name": self.other_org.name}]
 
         assert expected == response.json()

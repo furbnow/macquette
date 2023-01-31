@@ -43,7 +43,7 @@ class TestListAssessments(APITestCase):
         response = self.client.get(f"/{VERSION}/api/assessments/")
 
         expected_structure = {
-            "id": "{}".format(a1.pk),
+            "id": f"{a1.pk}",
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
             "status": "In progress",
@@ -78,7 +78,7 @@ class TestListAssessments(APITestCase):
         response = self.client.get(f"/{VERSION}/api/assessments/")
 
         expected_structure = {
-            "id": "{}".format(a1.pk),
+            "id": f"{a1.pk}",
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
             "status": "In progress",
@@ -260,7 +260,7 @@ class TestGetAssessment(APITestCase):
 
     def test_returns_404_for_bad_id(self):
         response = self.client.get(f"/{VERSION}/api/assessments/bad-id/")
-        assert status.HTTP_404_NOT_FOUND == response.status_code
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_structure_of_featured_and_normal_image(self):
         a = AssessmentFactory.create(
@@ -334,7 +334,7 @@ class TestUpdateAssessment(APITestCase):
                 format="json",
             )
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b""
 
         updated_assessment = Assessment.objects.get(pk=self.assessment.pk)
@@ -354,7 +354,7 @@ class TestUpdateAssessment(APITestCase):
                 format="json",
             )
 
-        assert status.HTTP_400_BAD_REQUEST == response.status_code
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == {
             "data": [
                 exceptions.ErrorDetail(
@@ -377,7 +377,7 @@ class TestUpdateAssessment(APITestCase):
                 format="json",
             )
 
-        assert status.HTTP_400_BAD_REQUEST == response.status_code
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == {
             "detail": "can't update data when status is 'complete'"
         }
@@ -396,7 +396,7 @@ class TestUpdateAssessment(APITestCase):
                 format="json",
             )
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 class TestDestroyAssessment(APITestCase):
@@ -428,7 +428,7 @@ class TestDestroyAssessment(APITestCase):
         self.client.force_authenticate(self.me)
         response = self.client.delete(f"/{VERSION}/api/assessments/{a.pk}/")
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b""
 
         assert (assessment_count - 1) == Assessment.objects.count()
@@ -454,7 +454,7 @@ class TestDuplicateAssessment(APITestCase):
             f"/{VERSION}/api/assessments/{self.assessment.pk}/duplicate/"
         )
 
-        assert status.HTTP_200_OK == response.status_code
+        assert response.status_code == status.HTTP_200_OK
         assert (assessment_count + 1) == Assessment.objects.count()
 
     def test_new_owner(self):
@@ -463,7 +463,7 @@ class TestDuplicateAssessment(APITestCase):
             f"/{VERSION}/api/assessments/{self.assessment.pk}/duplicate/"
         )
 
-        assert status.HTTP_200_OK == response.status_code
+        assert response.status_code == status.HTTP_200_OK
         assert response.data["owner"]["id"] == str(self.other.id)
 
     def test_returns_404_if_user_is_not_owner(self):
@@ -475,6 +475,6 @@ class TestDuplicateAssessment(APITestCase):
             f"/{VERSION}/api/assessments/{self.assessment.pk}/duplicate/"
         )
 
-        assert status.HTTP_404_NOT_FOUND == response.status_code
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert assessment_count == Assessment.objects.count()
         assert self.assessment.data == Assessment.objects.last().data

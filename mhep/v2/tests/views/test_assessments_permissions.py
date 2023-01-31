@@ -73,7 +73,7 @@ class TestGetAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCase):
         return self.client.get(f"/{VERSION}/api/assessments/{assessment.id}/")
 
     def _assert_success(self, response):
-        assert status.HTTP_200_OK == response.status_code
+        assert response.status_code == status.HTTP_200_OK
 
     def _assert_error(self, response, expected_status_code):
         assert expected_status_code == response.status_code
@@ -88,7 +88,7 @@ class TestUpdateAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCas
         )
 
     def _assert_success(self, response):
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def _assert_error(self, response, expected_status_code):
         assert expected_status_code == response.status_code
@@ -99,7 +99,7 @@ class TestDeleteAssessmentPermissions(AssessmentPermissionTestsMixin, APITestCas
         return self.client.delete(f"/{VERSION}/api/assessments/{assessment.id}/")
 
     def _assert_success(self, response):
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def _assert_error(self, response, expected_status_code):
         assert expected_status_code == response.status_code

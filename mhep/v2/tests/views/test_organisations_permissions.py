@@ -24,7 +24,7 @@ class TestPromoteAsLibrarianPermissions(AssertErrorMixin, APITestCase):
     def test_organisation_admin_can_promote_user_as_librarian(self):
         self.client.force_authenticate(self.org_admin)
         response = self._call_endpoint(self.org, self.member_1)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_promote_user_as_librarian(self):
         response = self._call_endpoint(self.org, self.member_1)
@@ -66,7 +66,7 @@ class TestDemoteAsLibrarianPermissions(AssertErrorMixin, APITestCase):
     def test_organisation_admin_can_demote_user_as_librarian(self):
         self.client.force_authenticate(self.org_admin)
         response = self._call_endpoint(self.org, self.librarian)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_demote_user_as_librarian(self):
         response = self._call_endpoint(self.org, self.librarian)
@@ -106,7 +106,7 @@ class TestShareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase):
     def test_organisation_admin_can_share_organisation_library(self):
         self.client.force_authenticate(self.org_admin)
         response = self._call_endpoint(self.my_org, self.library, self.other_org)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_share_organisation_library(self):
         response = self._call_endpoint(self.my_org, self.library, self.other_org)
@@ -149,7 +149,7 @@ class TestAddMemberPermissions(AssertErrorMixin, APITestCase):
     def test_organisation_admin_can_add_user_as_member(self):
         self.client.force_authenticate(self.org_admin)
         response = self._call_endpoint(self.org, self.non_member)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_add_user_as_member(self):
         response = self._call_endpoint(self.org, self.non_member)
@@ -188,7 +188,7 @@ class TestRemoveMemberPermissions(AssertErrorMixin, APITestCase):
     def test_organisation_admin_can_remove_user_as_member(self):
         self.client.force_authenticate(self.org_admin)
         response = self._call_endpoint(self.org, self.member)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_remove_user_as_member(self):
         response = self._call_endpoint(self.org, self.member)
@@ -229,7 +229,7 @@ class TestUnshareOrganisationLibrariesPermissions(AssertErrorMixin, APITestCase)
     def test_organisation_admin_can_share_organisation_library(self):
         self.client.force_authenticate(self.org_admin)
         response = self._call_endpoint(self.my_org, self.shared_library, self.other_org)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_share_organisation_library(self):
         response = self._call_endpoint(self.my_org, self.shared_library, self.other_org)
@@ -273,7 +273,7 @@ class TestListOrganisationLibrarySharesPermissions(AssertErrorMixin, APITestCase
     def test_organisation_admin_can_list_library_shares(self):
         self.client.force_authenticate(self.org_admin)
         response = self._call_endpoint(self.my_org, self.shared_library)
-        assert status.HTTP_200_OK == response.status_code
+        assert response.status_code == status.HTTP_200_OK
 
     def test_unauthenticated_user_cannot_list_library_shares(self):
         response = self._call_endpoint(self.my_org, self.shared_library)

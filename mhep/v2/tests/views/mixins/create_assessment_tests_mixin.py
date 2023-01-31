@@ -97,7 +97,7 @@ class CreateAssessmentTestsMixin:
 
         response = self.post_to_create_endpoint(new_assessment)
 
-        assert status.HTTP_403_FORBIDDEN == response.status_code
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_create_assessment_fails_if_name_missing(self):
         self.client.force_authenticate(self.user)

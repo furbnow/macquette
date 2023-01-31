@@ -31,7 +31,7 @@ class TestListAssessmentsHTMLView(TestCase):
         self.client.login(username=self.me.username, password="foo")
         my_assessments_url = reverse(f"{VERSION}:list-assessments")
         response = self.client.get(my_assessments_url)
-        assert status.HTTP_200_OK == response.status_code
+        assert response.status_code == status.HTTP_200_OK
 
 
 class TestAssessmentHTMLView(TestCase):
@@ -55,7 +55,7 @@ class TestAssessmentHTMLView(TestCase):
         self.client.login(username=self.me.username, password="foo")
         my_assessment_url = f"/{VERSION}/assessments/{self.my_assessment.pk}/"
         response = self.client.get(my_assessment_url)
-        assert status.HTTP_200_OK == response.status_code
+        assert response.status_code == status.HTTP_200_OK
 
     def test_returns_not_found_if_not_organisation_admin(self):
         organisation = OrganisationFactory.create()
@@ -65,7 +65,7 @@ class TestAssessmentHTMLView(TestCase):
         self.client.login(username=self.me.username, password="foo")
         not_my_assessment_url = f"/{VERSION}/assessments/{organisation_assessment.pk}/"
         response = self.client.get(not_my_assessment_url)
-        assert status.HTTP_404_NOT_FOUND == response.status_code
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_returns_not_found_if_not_owner(self):
         someone_else = UserFactory.create()
@@ -76,4 +76,4 @@ class TestAssessmentHTMLView(TestCase):
         self.client.login(username=self.me.username, password="foo")
         not_my_assessment_url = f"/{VERSION}/assessments/{someone_elses_assessment.pk}/"
         response = self.client.get(not_my_assessment_url)
-        assert status.HTTP_404_NOT_FOUND == response.status_code
+        assert response.status_code == status.HTTP_404_NOT_FOUND

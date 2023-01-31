@@ -33,6 +33,9 @@ ignore = [
     "BLE001",
     "Q002",
     "DTZ005",
+    "PLR2004",
+    "RUF005",
+    "SIM108",
 ]
 line-length = 120
 target-version = "py310"

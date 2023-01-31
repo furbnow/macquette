@@ -70,7 +70,7 @@ class TestCreateOrganisationLibraries(APITestCase):
                     format="json",
                 )
 
-            assert status.HTTP_400_BAD_REQUEST == response.status_code
+            assert response.status_code == status.HTTP_400_BAD_REQUEST
             assert {
                 "data": [
                     exceptions.ErrorDetail(

@@ -21,7 +21,7 @@ class TestCreateLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint()
-        assert status.HTTP_201_CREATED == response.status_code
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_unauthenticated_user_cannot_create_a_library(self):
         response = self._call_endpoint()
@@ -52,7 +52,7 @@ class TestCreateOrganisationLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(organisation)
-        assert status.HTTP_201_CREATED == response.status_code
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_member_of_organisation_cannot_create_a_library_in_organisation(self):
         person = UserFactory.create()
@@ -107,7 +107,7 @@ class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
         self.client.force_authenticate(library.owner_user)
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_update_library(self):
         library = LibraryFactory.create()
@@ -136,7 +136,7 @@ class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_member_of_organisation_cannot_update_a_library_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -171,7 +171,7 @@ class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
         self.client.force_authenticate(UserFactory.create(is_superuser=True))
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_user_who_isnt_superuser_cannot_update_a_global_library(self):
         library = LibraryFactory.create(owner_organisation=None, owner_user=None)
@@ -199,7 +199,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
         self.client.force_authenticate(library.owner_user)
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_delete_library(self):
         response = self._call_endpoint(LibraryFactory.create())
@@ -227,7 +227,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_member_of_organisation_cannot_delete_a_library_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -262,7 +262,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
         self.client.force_authenticate(UserFactory.create(is_superuser=True))
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_user_who_isnt_superuser_cannot_delete_a_global_library(self):
         library = LibraryFactory.create(owner_organisation=None, owner_user=None)
@@ -288,7 +288,7 @@ class TestCreateLibraryItemPermissions(
         self.client.force_authenticate(library.owner_user)
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_create_library_item(self):
         library = self.create_library()
@@ -315,7 +315,7 @@ class TestCreateLibraryItemPermissions(
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_member_of_organisation_cannot_create_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -348,7 +348,7 @@ class TestCreateLibraryItemPermissions(
         self.client.force_authenticate(UserFactory.create(is_superuser=True))
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_user_who_isnt_superuser_cannot_create_item_in_global_library(self):
         library = LibraryFactory.create(owner_organisation=None, owner_user=None)
@@ -378,7 +378,7 @@ class TestUpdateLibraryItemPermissions(
         self.client.force_authenticate(library.owner_user)
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_update_library_item(self):
         response = self._call_endpoint(self.create_library())
@@ -404,7 +404,7 @@ class TestUpdateLibraryItemPermissions(
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_member_of_organisation_cannot_update_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -437,7 +437,7 @@ class TestUpdateLibraryItemPermissions(
         self.client.force_authenticate(UserFactory.create(is_superuser=True))
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_user_who_isnt_superuser_cannot_update_item_in_global_library(self):
         library = self.create_library(owner_organisation=None, owner_user=None)
@@ -469,7 +469,7 @@ class TestDeleteLibraryItemPermissions(
         self.client.force_authenticate(library.owner_user)
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_unauthenticated_user_cannot_delete_library_item(self):
         response = self._call_endpoint(self.create_library())
@@ -495,7 +495,7 @@ class TestDeleteLibraryItemPermissions(
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_member_of_organisation_can_delete_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -528,7 +528,7 @@ class TestDeleteLibraryItemPermissions(
         self.client.force_authenticate(UserFactory.create(is_superuser=True))
 
         response = self._call_endpoint(library)
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_user_who_isnt_superuser_cannot_delete_item_in_global_library(self):
         library = self.create_library(owner_organisation=None, owner_user=None)

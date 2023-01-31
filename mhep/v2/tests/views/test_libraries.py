@@ -30,7 +30,7 @@ class TestListLibraries(APITestCase):
         assert len(response.data) == 3
 
         assert {
-            "id": "{}".format(l1.pk),
+            "id": f"{l1.pk}",
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
             "name": l1.name,
@@ -45,7 +45,7 @@ class TestListLibraries(APITestCase):
         } == response.data[0]
 
         assert {
-            "id": "{}".format(l2.pk),
+            "id": f"{l2.pk}",
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
             "name": l2.name,
@@ -60,7 +60,7 @@ class TestListLibraries(APITestCase):
         } == response.data[1]
 
         assert {
-            "id": "{}".format(global_lib.pk),
+            "id": f"{global_lib.pk}",
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
             "name": global_lib.name,
@@ -226,7 +226,7 @@ class TestListLibraries(APITestCase):
         LibraryFactory.create(owner_user=self.me)
 
         response = self.client.get(f"/{VERSION}/api/libraries/")
-        assert status.HTTP_403_FORBIDDEN == response.status_code
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 class TestCreateLibraries(APITestCase):
@@ -283,7 +283,7 @@ class TestCreateLibraries(APITestCase):
                     f"/{VERSION}/api/libraries/", new_library, format="json"
                 )
 
-            assert status.HTTP_400_BAD_REQUEST == response.status_code
+            assert response.status_code == status.HTTP_400_BAD_REQUEST
             assert {
                 "data": [
                     exceptions.ErrorDetail(
@@ -334,7 +334,7 @@ class TestUpdateLibrary(APITestCase):
                 f"/{VERSION}/api/libraries/{lib.pk}/", updateFields, format="json"
             )
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b""
 
         updated_library = Library.objects.get(pk=lib.pk)
@@ -355,7 +355,7 @@ class TestUpdateLibrary(APITestCase):
                 f"/{VERSION}/api/libraries/{lib.pk}/", updateFields, format="json"
             )
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b""
 
         updated_library = Library.objects.get(pk=lib.pk)
@@ -370,7 +370,7 @@ class TestUpdateLibrary(APITestCase):
         self.client.force_authenticate(self.me)
         response = self.client.delete(f"/{VERSION}/api/libraries/{lib.pk}/")
 
-        assert status.HTTP_204_NO_CONTENT == response.status_code
+        assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b""
 
         assert (assessment_count - 1) == Library.objects.count()

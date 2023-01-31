@@ -67,7 +67,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
         )
 
         expected_result = {
-            "id": "{}".format(assessment.pk),
+            "id": f"{assessment.pk}",
             "created_at": "2019-06-01T16:35:34Z",
             "updated_at": "2019-06-01T16:35:34Z",
             "status": "In progress",
@@ -90,7 +90,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
         self.client.force_authenticate(self.org_member)
         response = self.client.get(f"/{VERSION}/api/organisations/2/assessments/")
 
-        assert status.HTTP_404_NOT_FOUND == response.status_code
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert {"detail": "Organisation not found"} == response.json()
 
     def test_doesnt_return_assessments_that_arent_connected_to_organisation(self):
@@ -109,7 +109,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
             f"/{VERSION}/api/organisations/{self.organisation.pk}/assessments/"
         )
 
-        assert status.HTTP_403_FORBIDDEN == response.status_code
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         assert {
             "detail": "Authentication credentials were not provided."
         } == response.json()
@@ -122,7 +122,7 @@ class TestListAssessmentsForOrganisation(APITestCase):
             f"/{VERSION}/api/organisations/{self.organisation.pk}/assessments/"
         )
 
-        assert status.HTTP_403_FORBIDDEN == response.status_code
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         assert {
             "detail": "You are not a member of the Organisation."
         } == response.json()
@@ -170,7 +170,7 @@ class TestCreateAssessmentForOrganisation(CreateAssessmentTestsMixin, APITestCas
             format="json",
         )
 
-        assert status.HTTP_201_CREATED == response.status_code
+        assert response.status_code == status.HTTP_201_CREATED
 
         assessment = Assessment.objects.get(pk=response.data["id"])
         assert self.organisation == assessment.organisation
@@ -191,7 +191,7 @@ class TestCreateAssessmentForOrganisation(CreateAssessmentTestsMixin, APITestCas
             format="json",
         )
 
-        assert status.HTTP_403_FORBIDDEN == response.status_code
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         assert {
             "detail": "You are not a member of the Organisation."
         } == response.json()

@@ -1,6 +1,5 @@
-
-from .base import ENV, env
 from .base import *  # noqa
+from .base import ENV, env
 
 # GENERAL
 # ------------------------------------------------------------------------------
