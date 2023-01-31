@@ -69,6 +69,7 @@ hr {
 }
 
 a {
+    color: #1f75cb;
     text-decoration: underline;
 }
 a.btn {
