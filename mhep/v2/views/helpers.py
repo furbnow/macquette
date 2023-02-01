@@ -142,4 +142,4 @@ def get_assessments_for_user(user: User):
 
     return models.Assessment.objects.filter(
         my_assessments | in_organisations_i_administrate | assessments_shared_with_me
-    )
+    ).distinct()
