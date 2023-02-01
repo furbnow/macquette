@@ -489,9 +489,6 @@ calc.space_heating = function (data) {
     if (annual_heating_demand > 0) {
         data.energy_requirements.space_heating = {name: 'Space Heating', quantity: annual_heating_demand, monthly: heat_demand_kwh};
     }
-    if (annual_cooling_demand > 0) {
-        data.energy_requirements.space_cooling = {name: 'Space Cooling', quantity: annual_cooling_demand, monthly: cooling_demand_kwh};
-    }
     data.space_heating_demand_m2 = (annual_heating_demand + annual_cooling_demand) / data.TFA;
     return data;
 };

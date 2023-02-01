@@ -124,6 +124,14 @@ export function checkOutputBugs(legacyScenario: any) {
         }
     }
 
+    function spaceCoolingBug(): Messages {
+        // If legacy says we need space cooling, it is wrong
+        if (legacyScenario.energy_requirements.space_cooling !== undefined) {
+            return bug('.energy_requirements.space_cooling is not undefined', {});
+        }
+        return noBug;
+    }
+
     return combineBugCheckers([
         fabricBugs,
         wideSpectrumNaNBug,
@@ -131,6 +139,7 @@ export function checkOutputBugs(legacyScenario: any) {
         ventilationStringConcatenationBug,
         ventilationFloorsOverrideBug,
         floorAreaStringConcatenationBug,
+        spaceCoolingBug,
     ]);
 }
 
