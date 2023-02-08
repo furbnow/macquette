@@ -3,11 +3,11 @@ import { isEqual } from 'lodash';
 import { featureFlags } from '../helpers/feature-flags';
 import { isIndexable } from '../helpers/is-indexable';
 import { externals } from '../shims/typed-globals';
-import { modules } from './modules';
 import type { Module } from './modules';
-import type { StandalonePageName, ScenarioPageName } from './pages';
-import { resolveRoute, parseRoute, DEFAULT_ROUTE } from './routes';
+import { modules } from './modules';
+import type { ScenarioPageName, StandalonePageName } from './pages';
 import type { ResolvedRoute } from './routes';
+import { DEFAULT_ROUTE, parseRoute, resolveRoute } from './routes';
 
 type PageData = { style: 'legacy' } | { style: 'modern'; module: Module };
 

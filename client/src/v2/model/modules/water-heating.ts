@@ -4,11 +4,11 @@ import { sum } from '../../helpers/array-reducers';
 import { cacheMonth } from '../../helpers/cache-decorators';
 import { Month } from '../enums/month';
 import {
-    WaterHeatingSystemInput,
-    extractHeatingSystemHelper,
-    IWaterHeatingSystem,
     constructWaterHeatingSystem,
+    extractHeatingSystemHelper,
     isNonCombiWithPrimaryCircuit,
+    IWaterHeatingSystem,
+    WaterHeatingSystemInput,
 } from './water-heating/heating-system';
 
 export type WaterHeatingDependencies = {

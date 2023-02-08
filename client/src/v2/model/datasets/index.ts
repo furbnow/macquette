@@ -1,7 +1,7 @@
 import { Overshading, OvershadingName } from '../enums/overshading';
 
-export * from './shims';
 export { defaultFuels } from './default-fuels';
+export * from './shims';
 
 function reverseLookup<K extends string, V>(table: Record<K, V>) {
     return (val: V): K | null => {

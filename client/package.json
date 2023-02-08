@@ -11,14 +11,12 @@
         "esbuild": "^0.14.27",
         "lodash": "^4.17.21",
         "object-inspect": "^1.12.0",
-        "prettier": "^2.7.1",
         "react": "^18.0.0",
         "react-dom": "^18.0.0",
         "validator": "^13.7.0",
         "zod": "^3.14.4"
     },
     "devDependencies": {
-        "@trivago/prettier-plugin-sort-imports": "^3.2.0",
         "@types/inquirer": "^8.1.3",
         "@types/jest": "^27.0.2",
         "@types/lodash": "^4.14.176",
@@ -45,6 +43,8 @@
         "fast-check": "^2.22.0",
         "inquirer": "^8.2.0",
         "jest": "^27.0.0-next.8",
+        "prettier": "=2.7.1",
+        "prettier-plugin-organize-imports": "=3.2.2",
         "ts-jest": "^27.0.0-next.10",
         "ts-node": "^10.7.0",
         "typescript": "^4.9.5"

@@ -1,9 +1,9 @@
 import { sum } from '../helpers/array-reducers';
 import {
-    solarFluxK,
     latitudeRadians,
     meanGlobalSolarIrradianceHorizontal,
     solarDeclinationRadians,
+    solarFluxK,
 } from './datasets';
 import { Month } from './enums/month';
 import { Orientation } from './enums/orientation';

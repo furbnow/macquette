@@ -1,14 +1,14 @@
 import {
     CustomFloorSpec,
     ExposedFloorSpec,
-    FloorType,
     FloorLayerSpec,
+    FloorType,
     HeatedBasementFloorSpec,
     InsulationSpec,
     PerFloorTypeSpec,
+    SolidFloorBS13370Spec,
     SolidFloorTablesSpec,
     SuspendedFloorSpec,
-    SolidFloorBS13370Spec,
 } from '../../../../data-schemas/scenario/fabric/floor-u-value';
 import { assertNever } from '../../../../helpers/assert-never';
 import { withPathPrefix } from '../../../../helpers/error-warning-path';

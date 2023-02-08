@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import Bottleneck from 'bottleneck';
-import { opendir, stat, open } from 'fs/promises';
+import { open, opendir, stat } from 'fs/promises';
 import { prompt } from 'inquirer';
 import { join, resolve } from 'path';
 

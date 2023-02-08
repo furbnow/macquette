@@ -3,8 +3,7 @@ import fc from 'fast-check';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import { Overshading } from '../../../../src/v2/model/enums/overshading';
 import { LoadedState } from '../../../../src/v2/ui/modules/solar-hot-water';
-import { arbFloat, merge } from '../../../helpers/arbitraries';
-import { recordWith } from '../../../helpers/arbitraries';
+import { arbFloat, merge, recordWith } from '../../../helpers/arbitraries';
 import { sensibleFloat } from '../../model/arbitraries/values';
 
 export function arbModelInput(): fc.Arbitrary<

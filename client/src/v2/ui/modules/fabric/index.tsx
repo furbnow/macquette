@@ -3,10 +3,10 @@ import type { UiModule } from '../../module-management/module-type';
 import { Fabric } from './component';
 import { extractUpdateAction } from './extractor';
 import { mutateLegacyData } from './mutator';
-import { reducer } from './reducer';
 import type { Action } from './reducer';
-import { initialState } from './state';
+import { reducer } from './reducer';
 import type { State } from './state';
+import { initialState } from './state';
 
 export const fabricModule: UiModule<State, Action, never> = {
     name: 'fabric',

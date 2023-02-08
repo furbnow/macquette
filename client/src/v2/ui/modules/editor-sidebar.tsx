@@ -1,5 +1,5 @@
-import React, { useRef, useContext, ReactElement } from 'react';
 import type { RefObject } from 'react';
+import React, { ReactElement, useContext, useRef } from 'react';
 
 import { HTTPClient } from '../../api/http';
 import type { Project } from '../../data-schemas/project';
@@ -8,14 +8,14 @@ import { emulateJsonRoundTrip } from '../../helpers/emulate-json-round-trip';
 import { featureFlags } from '../../helpers/feature-flags';
 import { Result } from '../../helpers/result';
 import { CombinedModules } from '../../model/combined-modules';
-import { EditIcon, LockedLock, DownCaret, RightCaret } from '../icons';
+import { DownCaret, EditIcon, LockedLock, RightCaret } from '../icons';
 import { FormGrid } from '../input-components/forms';
 import { TextInput } from '../input-components/text';
-import type { UiModule, Dispatcher } from '../module-management/module-type';
-import { Modal, ModalBody, ModalHeader, ModalFooter } from '../output-components/modal';
-import { NumericOutput, noOutput } from '../output-components/numeric';
+import type { Dispatcher, UiModule } from '../module-management/module-type';
+import { Modal, ModalBody, ModalFooter, ModalHeader } from '../output-components/modal';
+import { noOutput, NumericOutput } from '../output-components/numeric';
 import { Spinner } from '../output-components/spinner';
-import type { StandalonePageName, ScenarioPageName } from '../pages';
+import type { ScenarioPageName, StandalonePageName } from '../pages';
 import { pageTitles } from '../pages';
 import type { ResolvedRoute } from '../routes';
 

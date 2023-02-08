@@ -1,8 +1,8 @@
 import {
     FloorUValueWarning,
+    ParameterClampWarning,
     RequiredValueMissingError,
     UnnecessaryValueWarning,
-    ParameterClampWarning,
 } from '../../../../model/modules/fabric/floor-u-value-calculator/warnings';
 
 export function warningDisplay(warning: FloorUValueWarning): string | null {

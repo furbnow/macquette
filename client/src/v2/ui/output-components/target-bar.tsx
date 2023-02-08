@@ -1,4 +1,4 @@
-import React, { useId, ReactElement } from 'react';
+import React, { ReactElement, useId } from 'react';
 
 import { zip } from '../../helpers/zip';
 import type { Target } from '../../model/datasets/targets';

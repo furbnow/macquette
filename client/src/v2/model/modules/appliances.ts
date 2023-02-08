@@ -6,8 +6,8 @@ import {
     extractAppliancesCarbonCoopInputFromLegacy,
 } from './lighting-appliances-cooking/appliances-cooking-carbon-coop';
 import {
-    AppliancesSAPDependencies,
     AppliancesSAP,
+    AppliancesSAPDependencies,
     AppliancesSAPInput,
     extractAppliancesSAPInputFromLegacy,
 } from './lighting-appliances-cooking/appliances-sap';

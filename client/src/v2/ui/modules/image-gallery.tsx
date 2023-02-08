@@ -1,11 +1,11 @@
 import Bottleneck from 'bottleneck';
-import React, { useId, useEffect, useState, ReactElement } from 'react';
+import React, { ReactElement, useEffect, useId, useState } from 'react';
 
 import { HTTPClient } from '../../api/http';
 import type { Image as ServerImage } from '../../data-schemas/image';
 import { Result } from '../../helpers/result';
-import { EditIcon, DeleteIcon, UploadIcon } from '../icons';
-import type { UiModule, Dispatcher } from '../module-management/module-type';
+import { DeleteIcon, EditIcon, UploadIcon } from '../icons';
+import type { Dispatcher, UiModule } from '../module-management/module-type';
 
 type Image = {
     // Server data

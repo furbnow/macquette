@@ -10,11 +10,11 @@ import { Result } from '../../helpers/result';
 import { DeepPartial, safeMerge } from '../../helpers/safe-merge';
 import * as targets from '../../model/datasets/targets';
 import { CheckboxInput } from '../input-components/checkbox';
-import { InfoTooltip, FormGrid } from '../input-components/forms';
-import { SelectFuel, Fuel } from '../input-components/libraries';
+import { FormGrid, InfoTooltip } from '../input-components/forms';
+import { Fuel, SelectFuel } from '../input-components/libraries';
 import { NumericInput } from '../input-components/numeric';
 import type { UiModule } from '../module-management/module-type';
-import { NumericOutput, noOutput } from '../output-components/numeric';
+import { noOutput, NumericOutput } from '../output-components/numeric';
 import { TargetBar } from '../output-components/target-bar';
 
 type EnergySourceOutput = {

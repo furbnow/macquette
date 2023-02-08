@@ -1,6 +1,6 @@
 import { Result } from '../helpers/result';
-import { isStandalonePage, isScenarioPage } from './pages';
-import type { StandalonePageName, ScenarioPageName } from './pages';
+import type { ScenarioPageName, StandalonePageName } from './pages';
+import { isScenarioPage, isStandalonePage } from './pages';
 
 export const DEFAULT_ROUTE: StandaloneRoute = {
     type: 'standalone',

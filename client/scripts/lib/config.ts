@@ -1,6 +1,6 @@
 import { readFile } from 'fs';
 import { mkdir, writeFile } from 'fs/promises';
-import { join, dirname } from 'path';
+import { dirname, join } from 'path';
 import { z } from 'zod';
 
 export function getConfigDir(): string {

@@ -6,9 +6,9 @@ import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import { Region } from '../../../../src/v2/model/enums/region';
 import { fcPartialRecord, merge } from '../../../helpers/arbitraries';
-import { arbLAC, arbLAC_calculation_type } from './LAC';
 import { arbFabric } from './fabric';
 import { arbFuels } from './fuels';
+import { arbLAC, arbLAC_calculation_type } from './LAC';
 import { shwInputIsComplete, shwInputs } from './solar-hot-water';
 import {
     legacyBoolean,

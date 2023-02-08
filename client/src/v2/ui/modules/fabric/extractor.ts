@@ -6,12 +6,11 @@ import type {
 import { isWallLike } from '../../../data-schemas/scenario/fabric';
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
 import { Result } from '../../../helpers/result';
-import { calcMeasureQtyAndCost } from '../../../measures';
-import { reverseCalcQuantity } from '../../../measures';
+import { calcMeasureQtyAndCost, reverseCalcQuantity } from '../../../measures';
 import type { ShimContext } from '../../module-management/shim';
 import { noOutput } from '../../output-components/numeric';
 import type { Action } from './reducer';
-import type { State, WallLike, AreaSpec } from './state';
+import type { AreaSpec, State, WallLike } from './state';
 
 export const thermalMassParameterTable: {
     value: null | 100 | 250 | 450;

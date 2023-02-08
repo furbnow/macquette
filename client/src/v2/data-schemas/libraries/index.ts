@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { appliancesAndCooking } from './appliances-and-cooking';
 import { clothesDryingFacilitiesMeasures } from './clothes-drying-facilities';
 import { draughtProofingMeasures } from './draught-proofing-measures';
-import { fabricMeasures, fabricElements } from './elements';
+import { fabricElements, fabricMeasures } from './elements';
 import { extractVentilationPointsMeasures } from './extract-ventilation-points';
 import { floorInsulation } from './floor-insulation';
 import { generationMeasures } from './generation-measures';

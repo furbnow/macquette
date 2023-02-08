@@ -1,6 +1,6 @@
 import {
-    ValuePath,
     ParameterClampWarning,
+    ValuePath,
 } from '../modules/fabric/floor-u-value-calculator/warnings';
 import { TabularFunction, TabularFunctionRangeWarning } from './tabular-function';
 

@@ -16,9 +16,9 @@ import { stricterParseFloat } from '../../helpers/stricter-parse-float';
 import { scenarios, shouldSkipScenario } from '../fixtures';
 import { arbScenarioInputs } from './arbitraries/scenario';
 import {
-    shwLegacyInputKeys,
     shwInputIsComplete,
     shwInputs,
+    shwLegacyInputKeys,
 } from './arbitraries/solar-hot-water';
 import { calcRun as referenceCalcRun } from './reference-model';
 import { checkInputBugs, checkOutputBugs, hasNewBehaviour } from './scenario-predicates';

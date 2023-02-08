@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { isIndexable } from '../../../helpers/is-indexable';
 import { zodPredicateUnion } from '../../helpers/zod-predicate-union';
 import { stringyFloatSchema, stringyIntegerSchema } from '../value-schemas';
-import { perFloorTypeSpecSchema, floorType } from './floor-u-value';
+import { floorType, perFloorTypeSpecSchema } from './floor-u-value';
 
 const subtractFrom = z.union([
     z.number(),

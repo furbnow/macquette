@@ -2,14 +2,14 @@ import React, { useLayoutEffect, useState } from 'react';
 
 import type { PropsOf } from '../../../helpers/props-of';
 import type { Shadow } from '../../../helpers/shadow-object-type';
-import { DeleteIcon, UndoIcon, HammerIcon, PlusIcon } from '../../icons';
 import type { Icon } from '../../icons';
+import { DeleteIcon, HammerIcon, PlusIcon, UndoIcon } from '../../icons';
 import { CheckboxInput } from '../../input-components/checkbox';
 import {
-    SelectWallLike,
     CompleteWallLike,
-    SelectWallLikeMeasure,
     CompleteWallMeasure,
+    SelectWallLike,
+    SelectWallLikeMeasure,
 } from '../../input-components/libraries';
 import { NumericInput, NumericInputProps } from '../../input-components/numeric';
 import type { RadioGroupProps } from '../../input-components/radio-group';
@@ -18,12 +18,11 @@ import { TextualInput, TextualInputProps } from '../../input-components/textual'
 import { LockedWarning } from '../../output-components/locked-warning';
 import {
     Modal,
-    ModalHeader,
     ModalBody,
     ModalFooter,
+    ModalHeader,
 } from '../../output-components/modal';
-import { noOutput } from '../../output-components/numeric';
-import { NumericOutput } from '../../output-components/numeric';
+import { noOutput, NumericOutput } from '../../output-components/numeric';
 import type { Action } from './reducer';
 import type { State, WallLike } from './state';
 

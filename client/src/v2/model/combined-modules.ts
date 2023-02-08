@@ -39,10 +39,10 @@ import {
 } from './modules/occupancy';
 import { extractRegionFromLegacy } from './modules/region';
 import {
-    extractSolarHotWaterInputFromLegacy,
     constructSolarHotWater,
-    SolarHotWaterInput,
+    extractSolarHotWaterInputFromLegacy,
     SolarHotWater,
+    SolarHotWaterInput,
 } from './modules/solar-hot-water';
 import {
     extractVentilationInfiltrationCommonInputFromLegacy,
