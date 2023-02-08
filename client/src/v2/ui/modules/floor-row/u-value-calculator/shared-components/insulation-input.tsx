@@ -6,12 +6,16 @@ import { MaterialSelector } from './material-selector';
 
 type InsulationInputProps = {
     thicknessMandatory?: boolean;
+    thicknessLabel?: string;
+    materialLabel?: string;
     currentValue: InsulationSpec;
     onChange: (value: Partial<InsulationSpec>) => void;
 };
 
 export function InsulationInput({
     thicknessMandatory,
+    thicknessLabel,
+    materialLabel,
     currentValue,
     onChange,
 }: InsulationInputProps) {
@@ -23,7 +27,7 @@ export function InsulationInput({
         currentValue.material?.mechanism === 'conductivity';
     return (
         <>
-            <label htmlFor={thicknessId}>Thickness</label>
+            <label htmlFor={thicknessId}>{thicknessLabel ?? 'Thickness'}</label>
             <NumericInput
                 id={thicknessId}
                 disabled={!thicknessRequired}
@@ -35,7 +39,7 @@ export function InsulationInput({
                 }
                 unit="mm"
             />
-            <label htmlFor={materialId}>Material</label>
+            <label htmlFor={materialId}>{materialLabel ?? 'Material'}</label>
             <MaterialSelector
                 selectButtonId={materialId}
                 value={material}

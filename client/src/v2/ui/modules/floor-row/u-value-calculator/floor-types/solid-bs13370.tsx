@@ -155,16 +155,6 @@ function HorizontalEdgeInsulation({
     const widthId = useId();
     return (
         <>
-            <InsulationInput
-                thicknessMandatory
-                currentValue={state}
-                onChange={(value) =>
-                    dispatch({
-                        type: 'solid floor (bs13370)/merge input',
-                        payload: { edgeInsulation: { horizontal: value } },
-                    })
-                }
-            />
             <LabelWithInfo
                 htmlFor={widthId}
                 infoText={
@@ -175,7 +165,7 @@ function HorizontalEdgeInsulation({
                     </>
                 }
             >
-                Width
+                Edge insulation width
             </LabelWithInfo>
             <NumericInput
                 value={state.width === null ? null : state.width * 1000}
@@ -193,6 +183,18 @@ function HorizontalEdgeInsulation({
                 }
                 unit="mm"
             />
+            <InsulationInput
+                thicknessMandatory
+                thicknessLabel="Edge insulation thickness"
+                materialLabel="Edge insulation material"
+                currentValue={state}
+                onChange={(value) =>
+                    dispatch({
+                        type: 'solid floor (bs13370)/merge input',
+                        payload: { edgeInsulation: { horizontal: value } },
+                    })
+                }
+            />
         </>
     );
 }
@@ -207,16 +209,6 @@ function VerticalEdgeInsulation({
     const depthId = useId();
     return (
         <>
-            <InsulationInput
-                thicknessMandatory
-                currentValue={state}
-                onChange={(value) =>
-                    dispatch({
-                        type: 'solid floor (bs13370)/merge input',
-                        payload: { edgeInsulation: { vertical: value } },
-                    })
-                }
-            />
             <LabelWithInfo
                 htmlFor={depthId}
                 infoText={
@@ -227,7 +219,7 @@ function VerticalEdgeInsulation({
                     </>
                 }
             >
-                Depth
+                Edge insulation depth
             </LabelWithInfo>
             <NumericInput
                 id={depthId}
@@ -243,6 +235,18 @@ function VerticalEdgeInsulation({
                     })
                 }
                 unit="mm"
+            />
+            <InsulationInput
+                thicknessMandatory
+                thicknessLabel="Edge insulation thickness"
+                materialLabel="Edge insulation material"
+                currentValue={state}
+                onChange={(value) =>
+                    dispatch({
+                        type: 'solid floor (bs13370)/merge input',
+                        payload: { edgeInsulation: { vertical: value } },
+                    })
+                }
             />
         </>
     );
