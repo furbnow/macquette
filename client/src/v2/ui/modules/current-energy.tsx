@@ -76,10 +76,10 @@ export type Action =
     | { type: 'current energy/add fuel use'; fuel: Fuel }
     | {
           type: 'current energy/update fuel use';
-          key: string;
+          fuelName: string;
           inputs: ConsumptionData['inputs'];
       }
-    | { type: 'current energy/delete fuel use'; key: string }
+    | { type: 'current energy/delete fuel use'; fuelName: string }
     | {
           type: 'current energy/update generation';
           value: DeepPartial<State['generation']>;
@@ -224,8 +224,8 @@ function AddFuelModal({
     const fuelNamesInUse = Object.keys(consumption);
     const availableFuels = filterValues(
         fuels,
-        (name, row) =>
-            row.category !== 'Generation' && !fuelNamesInUse.includes(row.name),
+        (_, fuel) =>
+            fuel.category !== 'Generation' && !fuelNamesInUse.includes(fuel.name),
     );
 
     return (
@@ -293,7 +293,7 @@ function ConsumptionTable({
                                     callback={(value) =>
                                         dispatch({
                                             type: 'current energy/update fuel use',
-                                            key,
+                                            fuelName: key,
                                             inputs: {
                                                 kWh: value,
                                             },
@@ -345,7 +345,7 @@ function ConsumptionTable({
                                     onClick={() => {
                                         dispatch({
                                             type: 'current energy/delete fuel use',
-                                            key,
+                                            fuelName: key,
                                         });
                                     }}
                                 >
@@ -746,21 +746,15 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
             }
 
             case 'current energy/update fuel use': {
-                state.consumption = mapValues(state.consumption, (energySource, key) => {
-                    if (key === action.key) {
-                        return {
-                            ...energySource,
-                            inputs: safeMerge(energySource.inputs, action.inputs),
-                        };
-                    } else {
-                        return energySource;
-                    }
-                });
+                const energySource = state.consumption[action.fuelName];
+                if (energySource !== undefined) {
+                    energySource.inputs = safeMerge(energySource.inputs, action.inputs);
+                }
                 return [state];
             }
 
             case 'current energy/delete fuel use': {
-                delete state.consumption[action.key];
+                delete state.consumption[action.fuelName];
                 return [state];
             }
 

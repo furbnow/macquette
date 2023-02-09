@@ -1,6 +1,5 @@
 /* eslint-disable */
 
-import { scenarioSchema } from '../data-schemas/scenario';
 import { datasets } from './datasets/legacy'
 import { setBlankLegacyOutputs, setDefaultLegacyInputs } from './modules/legacy-initialisation';
 import { emulateJsonRoundTrip } from '../helpers/emulate-json-round-trip';
