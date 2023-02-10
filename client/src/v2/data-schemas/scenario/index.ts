@@ -144,6 +144,7 @@ export const scenarioSchema = z
             .object({
                 primaryenergy_annual_kwh: numberWithNaN,
                 primaryenergy_annual_kwhm2: numberWithNaN,
+                total_co2: numberWithNaN,
                 total_co2m2: numberWithNaN,
                 total_cost: numberWithNaN,
                 annual_net_cost: numberWithNaN,

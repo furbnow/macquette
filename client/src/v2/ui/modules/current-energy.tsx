@@ -652,7 +652,7 @@ function extractOutputsFromLegacy(scenario: Scenario): Partial<State> {
                 dailyPersonalkWh: currentenergy?.energyuseperperson ?? noOutput,
                 primaryEnergykWh: currentenergy?.primaryenergy_annual_kwh ?? noOutput,
                 primaryEnergykWhm2: currentenergy?.primaryenergy_annual_kwhm2 ?? noOutput,
-                co2: currentenergy?.total_co2m2 ?? noOutput,
+                co2: currentenergy?.total_co2 ?? noOutput,
                 co2m2: currentenergy?.total_co2m2 ?? noOutput,
                 grossCost: currentenergy?.total_cost ?? noOutput,
                 netCost: currentenergy?.annual_net_cost ?? noOutput,
