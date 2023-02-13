@@ -601,12 +601,18 @@ function Generation({
 function extractGeneration(scenario: Scenario): State['generation'] {
     const { currentenergy, fuels } = scenario ?? {};
     const onsite = {
-        annualkWh: currentenergy?.generation?.annual_generation ?? null,
-        fractionUsedOnsite: currentenergy?.generation?.fraction_used_onsite ?? null,
-        fitAnnualIncome: currentenergy?.generation?.annual_FIT_income ?? null,
+        annualkWh:
+            coalesceEmptyString(currentenergy?.generation?.annual_generation, null) ??
+            null,
+        fractionUsedOnsite:
+            coalesceEmptyString(currentenergy?.generation?.fraction_used_onsite, null) ??
+            null,
+        fitAnnualIncome:
+            coalesceEmptyString(currentenergy?.generation?.annual_FIT_income, null) ??
+            null,
     };
 
-    if (currentenergy?.onsite_generation !== true) {
+    if (currentenergy?.onsite_generation !== 1) {
         return {
             type: 'none',
             onsite,
@@ -850,11 +856,8 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
             dataAny.currentenergy.use_by_fuel = mapValues(
                 state.consumption,
                 (energySource) => ({
-                    annual_co2: NaN,
                     annual_use:
                         energySource.inputs.kWh === null ? '' : energySource.inputs.kWh,
-                    annualcost: NaN,
-                    primaryenergy: NaN,
                 }),
             );
             /* eslint-enable */

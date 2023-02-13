@@ -80,6 +80,23 @@ export function arbScenarioInputs(): fc.Arbitrary<z.input<typeof scenarioSchema>
                             hydro_export_FIT: stringySensibleFloat(),
                         }),
                     ),
+                    currentenergy: fcPartialRecord({
+                        use_by_fuel: fc.dictionary(
+                            fc.constantFrom(...Object.keys(fuels)),
+                            fc.record({
+                                annual_use: stringySensibleFloat(),
+                            }),
+                        ),
+                        onsite_generation: fc.constantFrom(1 as const, false as const),
+                        generation: fc.option(
+                            fc.record({
+                                annual_generation: stringySensibleFloat(),
+                                fraction_used_onsite: stringySensibleFloat(),
+                                annual_FIT_income: stringySensibleFloat(),
+                            }),
+                            { nil: undefined },
+                        ),
+                    }),
                 }),
             ),
         )

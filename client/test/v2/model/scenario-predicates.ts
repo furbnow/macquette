@@ -297,6 +297,25 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
         return noBug;
     }
 
+    function currentEnergyFeedInTariffBug(): Messages {
+        // If on-site generation is _not_ selected, but FIT income is
+        // specified, the legacy model will deduct the FIT income anyway
+
+        if (isTruthy(inputs?.currentenergy?.onsite_generation)) return noBug;
+        const { annual_FIT_income } = inputs?.currentenergy?.generation ?? {};
+        if (
+            annual_FIT_income !== '' &&
+            annual_FIT_income !== 0 &&
+            annual_FIT_income !== undefined
+        ) {
+            return bug(
+                'on-site generation was not selected but annual_FIT_income was specified',
+                { annual_FIT_income },
+            );
+        }
+        return noBug;
+    }
+
     return combineBugCheckers([
         spaceHeatingEnergyRequirementsBugs,
         solarHotWaterFlagBug,
@@ -305,6 +324,7 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
         heatingSystemPrimaryCircuitInvariants,
         fuelBugs,
         generationStringConcatenationBug,
+        currentEnergyFeedInTariffBug,
     ]);
 }
 

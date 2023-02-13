@@ -251,9 +251,14 @@ function fuelUse(project: ProjectData, scenarioIds: string[]): BarChart {
 
     // Add consumption from generation
     billsData[0] +=
-        (project.scenario('master').currentenergy?.generation?.fraction_used_onsite ??
-            0) *
-        (project.scenario('master').currentenergy?.generation?.annual_generation ?? 0);
+        (coalesceEmptyString(
+            project.scenario('master').currentenergy?.generation?.fraction_used_onsite,
+            0,
+        ) ?? 0) *
+        (coalesceEmptyString(
+            project.scenario('master').currentenergy?.generation?.annual_generation,
+            0,
+        ) ?? 0);
 
     return {
         type: 'bar',
@@ -279,8 +284,12 @@ function energyUseIntensity(project: ProjectData, scenarioIds: string[]): BarCha
 
     // We have to undo the generation amount here so we can show it separately.
     const billsAssumedConsumedGeneration =
-        ((baseline.currentenergy?.generation?.annual_generation ?? 0) *
-            (baseline.currentenergy?.generation?.fraction_used_onsite ?? 0)) /
+        ((coalesceEmptyString(baseline.currentenergy?.generation?.annual_generation, 0) ??
+            0) *
+            (coalesceEmptyString(
+                baseline.currentenergy?.generation?.fraction_used_onsite,
+                0,
+            ) ?? 0)) /
         (coalesceEmptyString(baseline.TFA, 1) ?? 1);
 
     const billsData =

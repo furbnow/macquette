@@ -302,6 +302,15 @@ function normaliseScenario(scenario: any) {
                 }
             >;
         };
+        currentenergy?: {
+            total_costm2?: unknown;
+            enduse_annual_kwhm2: unknown;
+            generation?: {
+                annual_generation?: unknown;
+                fraction_used_onsite?: unknown;
+                annual_FIT_income?: unknown;
+            };
+        };
     };
 
     // Delete pointer to instantiated new model
@@ -502,6 +511,22 @@ function normaliseScenario(scenario: any) {
     ) {
         castScenario.generation.total_income = 0;
     }
+
+    // Current energy
+
+    // delete inputs
+    delete castScenario.currentenergy?.generation?.annual_generation;
+    delete castScenario.currentenergy?.generation?.fraction_used_onsite;
+    delete castScenario.currentenergy?.generation?.annual_FIT_income;
+    // delete unused outputs
+    delete castScenario.currentenergy?.total_costm2;
+    delete castScenario.currentenergy?.enduse_annual_kwhm2;
+    // set defaults for outputs
+    defaults(castScenario.currentenergy?.generation, {
+        primaryenergy: 0,
+        annual_CO2: 0,
+        annual_savings: 0,
+    });
 
     return castScenario;
 }

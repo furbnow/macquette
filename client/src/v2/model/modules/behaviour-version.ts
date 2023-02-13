@@ -11,6 +11,10 @@ export type ModelBehaviourFlags = {
     generation: {
         includeAllSystemsInPrimaryEnergyTotal: boolean; // Minor bug
     };
+    currentEnergy: {
+        countSavingsCorrectlyInUsage: boolean; // Minor bug
+        calculateSavingsIncorporatingOnsiteUse: boolean; // Minor improvement
+    };
 };
 
 export function constructModelBehaviourFlags(
@@ -26,6 +30,10 @@ export function constructModelBehaviourFlags(
         generation: {
             includeAllSystemsInPrimaryEnergyTotal: false,
         },
+        currentEnergy: {
+            countSavingsCorrectlyInUsage: false,
+            calculateSavingsIncorporatingOnsiteUse: false,
+        },
     };
     const v1Flags = safeMerge(legacyFlags, {
         carbonCoopAppliancesCooking: {
@@ -40,6 +48,12 @@ export function constructModelBehaviourFlags(
             includeAllSystemsInPrimaryEnergyTotal: true,
         },
     });
+    const v3Flags = safeMerge(v2Flags, {
+        currentEnergy: {
+            countSavingsCorrectlyInUsage: true,
+            calculateSavingsIncorporatingOnsiteUse: true,
+        },
+    });
     switch (version) {
         case 'legacy':
             return legacyFlags;
@@ -47,5 +61,7 @@ export function constructModelBehaviourFlags(
             return v1Flags;
         case 2:
             return v2Flags;
+        case 3:
+            return v3Flags;
     }
 }

@@ -18,6 +18,11 @@ import {
     CookingInput,
     extractCookingInputFromLegacy,
 } from './modules/cooking';
+import {
+    CurrentEnergy,
+    CurrentEnergyInput,
+    extractCurrentEnergyInputFromLegacy,
+} from './modules/current-energy';
 import { extractFabricInputFromLegacy, Fabric, FabricInput } from './modules/fabric';
 import { extractFloorsInputFromLegacy, Floors, FloorsInput } from './modules/floors';
 import { extractFuelsInputFromLegacy, Fuels, FuelsDict } from './modules/fuels';
@@ -72,7 +77,7 @@ import {
 
 export type Input = {
     modelBehaviourVersion: ModelBehaviourVersion;
-    fuels: FuelsDict;
+    fuels: { fuels: FuelsDict };
     floors: FloorsInput;
     occupancy: OccupancyInput;
     region: Region;
@@ -87,6 +92,7 @@ export type Input = {
     cooking: CookingInput;
     waterHeating: WaterHeatingInput;
     generation: GenerationInput;
+    currentEnergy: CurrentEnergyInput;
 };
 
 export function extractInputFromLegacy(
@@ -97,24 +103,26 @@ export function extractInputFromLegacy(
         return Result.err(parseResult.error);
     }
     try {
+        const scenario = parseResult.data;
         return Result.ok({
-            modelBehaviourVersion: parseResult.data?.modelBehaviourVersion ?? 'legacy',
-            fuels: extractFuelsInputFromLegacy(parseResult.data),
-            floors: extractFloorsInputFromLegacy(parseResult.data),
-            occupancy: extractOccupancyInputFromLegacy(parseResult.data),
-            region: extractRegionFromLegacy(parseResult.data),
-            fabric: extractFabricInputFromLegacy(parseResult.data),
+            modelBehaviourVersion: scenario?.modelBehaviourVersion ?? 'legacy',
+            fuels: extractFuelsInputFromLegacy(scenario),
+            floors: extractFloorsInputFromLegacy(scenario),
+            occupancy: extractOccupancyInputFromLegacy(scenario),
+            region: extractRegionFromLegacy(scenario),
+            fabric: extractFabricInputFromLegacy(scenario),
             ventilationInfiltrationCommon:
-                extractVentilationInfiltrationCommonInputFromLegacy(parseResult.data),
-            ventilation: extractVentilationInputFromLegacy(parseResult.data),
-            infiltration: extractInfiltrationInputFromLegacy(parseResult.data),
-            waterCommon: extractWaterCommonInputFromLegacy(parseResult.data),
-            solarHotWater: extractSolarHotWaterInputFromLegacy(parseResult.data),
-            lighting: extractLightingSAPInputFromLegacy(parseResult.data),
-            appliances: extractAppliancesInputFromLegacy(parseResult.data),
-            cooking: extractCookingInputFromLegacy(parseResult.data),
-            waterHeating: extractWaterHeatingInputFromLegacy(parseResult.data),
-            generation: extractGenerationInputFromLegacy(parseResult.data),
+                extractVentilationInfiltrationCommonInputFromLegacy(scenario),
+            ventilation: extractVentilationInputFromLegacy(scenario),
+            infiltration: extractInfiltrationInputFromLegacy(scenario),
+            waterCommon: extractWaterCommonInputFromLegacy(scenario),
+            solarHotWater: extractSolarHotWaterInputFromLegacy(scenario),
+            lighting: extractLightingSAPInputFromLegacy(scenario),
+            appliances: extractAppliancesInputFromLegacy(scenario),
+            cooking: extractCookingInputFromLegacy(scenario),
+            waterHeating: extractWaterHeatingInputFromLegacy(scenario),
+            generation: extractGenerationInputFromLegacy(scenario),
+            currentEnergy: extractCurrentEnergyInputFromLegacy(scenario),
         });
     } catch (err) {
         if (err instanceof ModelError) {
@@ -140,6 +148,7 @@ export class CombinedModules {
     cooking: Cooking;
     waterHeating: WaterHeating;
     generation: Generation;
+    currentEnergy: CurrentEnergy;
 
     constructor(input: Input) {
         const { region } = input;
@@ -205,6 +214,12 @@ export class CombinedModules {
             region,
             fuels,
         });
+        this.currentEnergy = new CurrentEnergy(input.currentEnergy, {
+            fuels,
+            floors: this.floors,
+            occupancy: this.occupancy,
+            modelBehaviourFlags,
+        });
     }
 
     static fromLegacy(datain: unknown): Result<CombinedModules, ZodError | ModelError> {
@@ -249,6 +264,7 @@ export class CombinedModules {
             this.cooking,
             this.waterHeating,
             this.generation,
+            this.currentEnergy,
         ];
         for (const mod of Object.values(mutatorModules)) {
             mod.mutateLegacyData(data);

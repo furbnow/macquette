@@ -46,6 +46,7 @@ export const modelBehaviourVersionSchema = z.union([
     z.literal('legacy'),
     z.literal(1),
     z.literal(2),
+    z.literal(3),
 ]);
 export type ModelBehaviourVersion = z.infer<typeof modelBehaviourVersionSchema>;
 
@@ -153,20 +154,23 @@ export const scenarioSchema = z
                 use_by_fuel: z.record(
                     z.object({
                         annual_use: stringyFloatSchema,
-                        annual_co2: numberWithNaN,
-                        primaryenergy: numberWithNaN,
-                        annualcost: numberWithNaN,
+                        annual_co2: numberWithNaN.optional(),
+                        primaryenergy: numberWithNaN.optional(),
+                        annualcost: numberWithNaN.optional(),
                     }),
                 ),
-                onsite_generation: legacyBoolean,
+
+                // Not legacyBoolean because legacy model uses a "=== 1" check on this value
+                onsite_generation: z.union([z.literal(1), z.literal(false)]),
+
                 generation: z
                     .object({
                         annual_CO2: numberWithNaN,
                         primaryenergy: numberWithNaN,
                         annual_savings: numberWithNaN,
-                        annual_FIT_income: numberWithNaN,
-                        annual_generation: numberWithNaN,
-                        fraction_used_onsite: numberWithNaN,
+                        annual_FIT_income: stringyFloatSchema,
+                        annual_generation: stringyFloatSchema,
+                        fraction_used_onsite: stringyFloatSchema,
                     })
                     .partial(),
             })
