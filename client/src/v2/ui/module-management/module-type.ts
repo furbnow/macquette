@@ -1,6 +1,19 @@
+import { ZodError } from 'zod';
+import { Project } from '../../data-schemas/project';
+import { Scenario } from '../../data-schemas/scenario';
 import type { Result } from '../../helpers/result';
+import { CombinedModules } from '../../model/combined-modules';
+import { ModelError } from '../../model/error';
 import type { Externals } from '../../shims/typed-globals';
-import type { ShimContext } from './shim';
+import { ResolvedRoute } from '../routes';
+
+export type AppContext = {
+    route: ResolvedRoute;
+    project: Project;
+    scenarioId: string;
+    currentScenario: Scenario;
+    currentModel: Result<CombinedModules, ZodError<unknown> | ModelError>;
+};
 
 export type Dispatcher<Action> = (action: Action) => void;
 
@@ -25,7 +38,7 @@ export type ReducerComponent<
 export type UiModule<State, Action, Effect> = ReducerComponent<State, Action, Effect> & {
     shims: {
         extractUpdateAction: (
-            shimContext: ShimContext,
+            context: AppContext,
             instanceKey: string,
         ) => Result<Action, Error>;
         mutateLegacyData: (

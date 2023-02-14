@@ -4,22 +4,13 @@ import { createRoot, Root as ReactRoot } from 'react-dom/client';
 import { z, ZodError } from 'zod';
 
 import { resultSchema } from '../../data-schemas/helpers/result';
-import { Project, projectSchema } from '../../data-schemas/project';
-import { Scenario } from '../../data-schemas/scenario';
+import { projectSchema } from '../../data-schemas/project';
 import { Result } from '../../helpers/result';
 import { CombinedModules } from '../../model/combined-modules';
 import { ModelError } from '../../model/error';
 import { externals } from '../../shims/typed-globals';
 import type { ResolvedRoute } from '../routes';
-import type { UiModule } from './module-type';
-
-export type ShimContext = {
-    route: ResolvedRoute;
-    project: Project;
-    scenarioId: string;
-    currentScenario: Scenario;
-    currentModel: Result<CombinedModules, ZodError<unknown> | ModelError>;
-};
+import type { AppContext, UiModule } from './module-type';
 
 export class UiModuleShim<State, Action, Effect> {
     private keyedInstances: Record<string, { root: ReactRoot; state: State }> = {};
@@ -72,17 +63,14 @@ export class UiModuleShim<State, Action, Effect> {
             z.union([z.instanceof(ModelError), z.instanceof(ZodError)]),
         ).parse(currentScenario.model);
         for (const instanceKey of Object.keys(this.keyedInstances)) {
-            const shimContext: ShimContext = {
+            const context: AppContext = {
                 route,
                 project,
                 scenarioId,
                 currentScenario,
                 currentModel,
             };
-            const actionR = this.module_.shims.extractUpdateAction(
-                shimContext,
-                instanceKey,
-            );
+            const actionR = this.module_.shims.extractUpdateAction(context, instanceKey);
             if (!actionR.isOk()) {
                 console.error(actionR.coalesce());
                 continue;

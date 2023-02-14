@@ -1,6 +1,6 @@
 import { scenarioSchema } from '../../../../src/v2/data-schemas/scenario';
 import { CombinedModules } from '../../../../src/v2/model/combined-modules';
-import { ShimContext } from '../../../../src/v2/ui/module-management/shim';
+import { AppContext } from '../../../../src/v2/ui/module-management/module-type';
 import { solarHotWaterModule } from '../../../../src/v2/ui/modules/solar-hot-water';
 import { scenarios } from '../../fixtures';
 
@@ -23,7 +23,7 @@ describe('solar hot water update action extractor', () => {
             const model = CombinedModules.fromLegacy(scenario.data);
             const { extractUpdateAction } = solarHotWaterModule.shims;
             const scenarioId = 'some scenario name';
-            const shimContext: ShimContext = {
+            const fakeContext: AppContext = {
                 route: {
                     type: 'with scenario',
                     page: 'solarhotwater',
@@ -37,7 +37,7 @@ describe('solar hot water update action extractor', () => {
                 currentModel: model,
                 scenarioId,
             };
-            const result = extractUpdateAction(shimContext, '');
+            const result = extractUpdateAction(fakeContext, '');
             expect(() => result.unwrap()).not.toThrow();
         },
     );

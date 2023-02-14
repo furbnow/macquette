@@ -7,7 +7,7 @@ import { isWallLike } from '../../../data-schemas/scenario/fabric';
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
 import { Result } from '../../../helpers/result';
 import { calcMeasureQtyAndCost, reverseCalcQuantity } from '../../../measures';
-import type { ShimContext } from '../../module-management/shim';
+import { AppContext } from '../../module-management/module-type';
 import { noOutput } from '../../output-components/numeric';
 import type { Action } from './reducer';
 import type { AreaSpec, State, WallLike } from './state';
@@ -284,7 +284,7 @@ export function extractUpdateAction({
     project,
     currentScenario,
     scenarioId,
-}: ShimContext): Result<Action, never> {
+}: AppContext): Result<Action, never> {
     const { fabric } = currentScenario ?? {};
 
     const bulkMeasuresByScenario = Object.fromEntries(
