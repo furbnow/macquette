@@ -1,5 +1,7 @@
 import { mapValues } from 'lodash';
 import React, { ReactElement } from 'react';
+import { z } from 'zod';
+import { projectSchema } from '../../data-schemas/project';
 
 import { Scenario } from '../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../data-schemas/scenario/value-schemas';
@@ -9,6 +11,7 @@ import { PropsOf } from '../../helpers/props-of';
 import { Result } from '../../helpers/result';
 import { DeepPartial, safeMerge } from '../../helpers/safe-merge';
 import * as targets from '../../model/datasets/targets';
+import { CurrentEnergy } from '../../model/modules/current-energy';
 import { CheckboxInput } from '../input-components/checkbox';
 import { FormGrid, InfoTooltip } from '../input-components/forms';
 import { Fuel, SelectFuel } from '../input-components/libraries';
@@ -17,67 +20,45 @@ import type { UiModule } from '../module-management/module-type';
 import { noOutput, NumericOutput } from '../output-components/numeric';
 import { TargetBar } from '../output-components/target-bar';
 
-type EnergySourceOutput = {
-    co2factor: number | typeof noOutput;
-    kgCo2: number | typeof noOutput;
-    primaryEnergyFactor: number | typeof noOutput;
-    primaryEnergykWh: number | typeof noOutput;
-    unitCost: number | typeof noOutput;
-    standingCharge: number | typeof noOutput;
-    totalCost: number | typeof noOutput;
-};
-
 type OnsiteGenerationInput = {
-    annualkWh: number | null;
+    annualEnergy: number | null;
     fractionUsedOnsite: number | null;
     fitAnnualIncome: number | null;
 };
 
-type ConsumptionData = {
-    inputs: {
-        kWh: number | null;
-    };
-    outputs: EnergySourceOutput;
-};
-
 export type State = {
     modal: 'select fuel' | null;
+    modelOutput: CurrentEnergy | null;
     totals: {
-        currentEnergy: {
-            dailyPersonalkWh: number | typeof noOutput;
-            primaryEnergykWh: number | typeof noOutput;
-            primaryEnergykWhm2: number | typeof noOutput;
-            co2: number | typeof noOutput;
-            co2m2: number | typeof noOutput;
-            grossCost: number | typeof noOutput;
-            netCost: number | typeof noOutput;
-        };
         baseline: {
-            dailyPersonalkWh: number | typeof noOutput;
-            primaryEnergykWhm2: number | typeof noOutput;
-            co2m2: number | typeof noOutput;
+            dailyEnergyUsePerPerson: number | typeof noOutput;
+            annualPrimaryEnergyPerArea: number | typeof noOutput;
+            annualCarbonEmissionsPerArea: number | typeof noOutput;
         };
     };
-    consumption: Record<string, ConsumptionData>;
+    annualEnergyConsumptionByFuel: Record<string, number | null>;
     generation:
         | {
               type: 'none';
-              onsite: OnsiteGenerationInput;
+              onSite: OnsiteGenerationInput;
           }
         | {
               type: 'onsite';
-              onsite: OnsiteGenerationInput;
-              outputs: EnergySourceOutput;
+              onSite: OnsiteGenerationInput;
           };
     fuels: Record<string, Fuel>;
 };
 export type Action =
-    | { type: 'external data update'; state: Partial<State> }
+    | {
+          type: 'external data update';
+          state: Partial<State>;
+          modelOutput: CurrentEnergy | null;
+      }
     | { type: 'current energy/add fuel use'; fuel: Fuel }
     | {
           type: 'current energy/update fuel use';
           fuelName: string;
-          inputs: ConsumptionData['inputs'];
+          annualEnergy: number | null;
       }
     | { type: 'current energy/delete fuel use'; fuelName: string }
     | {
@@ -89,9 +70,9 @@ export type Action =
 type Dispatcher = (action: Action) => void;
 
 function EnergyTotals({
-    totals,
+    modelOutput,
 }: {
-    totals: State['totals']['currentEnergy'];
+    modelOutput: CurrentEnergy | null;
 }): ReactElement {
     return (
         <div>
@@ -112,7 +93,7 @@ function EnergyTotals({
                         </th>
                         <td>
                             <NumericOutput
-                                value={totals.primaryEnergykWh}
+                                value={modelOutput?.annualPrimaryEnergy ?? noOutput}
                                 dp={0}
                                 unit="kWh"
                             />
@@ -122,7 +103,10 @@ function EnergyTotals({
                         <th>Primary energy consumption per m² floor area</th>
                         <td>
                             <NumericOutput
-                                value={totals.primaryEnergykWhm2}
+                                value={
+                                    modelOutput?.annualPrimaryEnergyPerFloorArea ??
+                                    noOutput
+                                }
                                 dp={0}
                                 unit="kWh/m²"
                             />
@@ -138,14 +122,21 @@ function EnergyTotals({
                             </InfoTooltip>
                         </th>
                         <td>
-                            <NumericOutput value={totals.co2} dp={0} unit="kg" />
+                            <NumericOutput
+                                value={modelOutput?.annualCarbonEmissions ?? noOutput}
+                                dp={0}
+                                unit="kg"
+                            />
                         </td>
                     </tr>
                     <tr>
                         <th>CO₂ emissions per m² floor area</th>
                         <td>
                             <NumericOutput
-                                value={totals.co2m2}
+                                value={
+                                    modelOutput?.annualCarbonEmissionsPerFloorArea ??
+                                    noOutput
+                                }
                                 dp={0}
                                 unit={<span>kgCO₂/m²</span>}
                             />
@@ -154,13 +145,21 @@ function EnergyTotals({
                     <tr>
                         <th>Energy cost from bills</th>
                         <td>
-                            £<NumericOutput value={totals.grossCost} dp={0} />
+                            £
+                            <NumericOutput
+                                value={modelOutput?.annualGrossCost ?? noOutput}
+                                dp={0}
+                            />
                         </td>
                     </tr>
                     <tr>
                         <th>Net energy cost, including FIT income</th>
                         <td>
-                            £<NumericOutput value={totals.netCost} dp={0} />
+                            £
+                            <NumericOutput
+                                value={modelOutput?.annualNetCost ?? noOutput}
+                                dp={0}
+                            />
                         </td>
                     </tr>
                 </tbody>
@@ -169,7 +168,13 @@ function EnergyTotals({
     );
 }
 
-function TargetBars({ totals }: { totals: State['totals'] }): ReactElement {
+function TargetBars({
+    modelOutput,
+    totals,
+}: {
+    modelOutput: CurrentEnergy | null;
+    totals: State['totals'];
+}): ReactElement {
     return (
         <div>
             <h4>Comparison charts</h4>
@@ -183,8 +188,8 @@ function TargetBars({ totals }: { totals: State['totals'] }): ReactElement {
                 name="Primary energy demand"
                 width={424.5}
                 value={[
-                    totals.currentEnergy.primaryEnergykWhm2,
-                    totals.baseline.primaryEnergykWhm2,
+                    modelOutput?.annualPrimaryEnergyPerFloorArea ?? noOutput,
+                    totals.baseline.annualPrimaryEnergyPerArea,
                 ]}
                 units="kWh/m²"
                 targets={targets.primaryEnergyDemand}
@@ -193,7 +198,10 @@ function TargetBars({ totals }: { totals: State['totals'] }): ReactElement {
             <TargetBar
                 name="CO₂ emission rate"
                 width={424.5}
-                value={[totals.currentEnergy.co2m2, totals.baseline.co2m2]}
+                value={[
+                    modelOutput?.annualCarbonEmissionsPerFloorArea ?? noOutput,
+                    totals.baseline.annualCarbonEmissionsPerArea,
+                ]}
                 units="kgCO₂/m²"
                 targets={targets.co2m2}
             />
@@ -202,8 +210,8 @@ function TargetBars({ totals }: { totals: State['totals'] }): ReactElement {
                 name="Per person energy use"
                 width={424.5}
                 value={[
-                    totals.currentEnergy.dailyPersonalkWh,
-                    totals.baseline.dailyPersonalkWh,
+                    modelOutput?.dailyEnergyEndUsePerPerson ?? noOutput,
+                    totals.baseline.dailyEnergyUsePerPerson,
                 ]}
                 units="kWh/day"
                 targets={targets.energyUsePerPerson}
@@ -217,7 +225,7 @@ function AddFuelModal({
     fuels,
     dispatch,
 }: {
-    consumption: State['consumption'];
+    consumption: State['annualEnergyConsumptionByFuel'];
     fuels: State['fuels'];
     dispatch: Dispatcher;
 }) {
@@ -248,10 +256,12 @@ function AddFuelModal({
 }
 
 function ConsumptionTable({
-    consumption,
+    annualEnergyConsumptionByFuel,
+    modelOutput,
     dispatch,
 }: {
-    consumption: State['consumption'];
+    annualEnergyConsumptionByFuel: State['annualEnergyConsumptionByFuel'];
+    modelOutput: CurrentEnergy | null;
     dispatch: Dispatcher;
 }): ReactElement {
     function MiddleAlignedCell(props: Omit<PropsOf<'td'>, 'style'>) {
@@ -276,84 +286,117 @@ function ConsumptionTable({
             </thead>
 
             <tbody>
-                {Object.keys(consumption).length === 0 ? (
+                {Object.keys(annualEnergyConsumptionByFuel).length === 0 ? (
                     <tr>
                         <td colSpan={10}>No energy use added yet</td>
                     </tr>
                 ) : (
-                    Object.entries(consumption).map(([key, row]) => (
-                        <tr key={key}>
-                            <MiddleAlignedCell>
-                                <label htmlFor={`consumption-row-${key}`}>{key}</label>
-                            </MiddleAlignedCell>
-                            <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
-                                <NumericInput
-                                    id={`consumption-row-${key}`}
-                                    value={row.inputs.kWh}
-                                    callback={(value) =>
-                                        dispatch({
-                                            type: 'current energy/update fuel use',
-                                            fuelName: key,
-                                            inputs: {
-                                                kWh: value,
-                                            },
-                                        })
-                                    }
-                                />{' '}
-                                kWh
-                            </MiddleAlignedCell>
-                            <MiddleAlignedCell className="align-right text-tabular-nums">
-                                × <NumericOutput value={row.outputs.co2factor} />
-                            </MiddleAlignedCell>
-                            <MiddleAlignedCell className="align-right text-tabular-nums">
-                                <NumericOutput
-                                    value={row.outputs.kgCo2}
-                                    unit="kg"
-                                    dp={0}
-                                />
-                            </MiddleAlignedCell>
-                            <MiddleAlignedCell className="align-right text-tabular-nums">
-                                ×{' '}
-                                <NumericOutput value={row.outputs.primaryEnergyFactor} />
-                            </MiddleAlignedCell>
-                            <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
-                                <NumericOutput
-                                    value={row.outputs.primaryEnergykWh}
-                                    unit="kWh"
-                                    dp={0}
-                                />
-                            </MiddleAlignedCell>
-                            <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
-                                <NumericOutput
-                                    value={row.outputs.unitCost}
-                                    unit="p/kWh"
-                                />
-                            </MiddleAlignedCell>
-                            <MiddleAlignedCell className="align-right text-tabular-nums">
-                                £
-                                <NumericOutput
-                                    value={row.outputs.standingCharge}
-                                    dp={2}
-                                />
-                            </MiddleAlignedCell>
-                            <MiddleAlignedCell className="align-right text-tabular-nums">
-                                £<NumericOutput value={row.outputs.totalCost} />
-                            </MiddleAlignedCell>
-                            <MiddleAlignedCell>
-                                <button
-                                    className="btn"
-                                    onClick={() => {
-                                        dispatch({
-                                            type: 'current energy/delete fuel use',
-                                            fuelName: key,
-                                        });
-                                    }}
-                                >
-                                    <i className="icon-trash" />
-                                </button>
-                            </MiddleAlignedCell>
-                        </tr>
-                    ))
+                    Object.entries(annualEnergyConsumptionByFuel).map(
+                        ([fuelName, annualEnergy]) => {
+                            const modelOutputFuel = modelOutput?.fuels[fuelName] ?? null;
+                            return (
+                                <tr key={fuelName}>
+                                    <MiddleAlignedCell>
+                                        <label htmlFor={`consumption-row-${fuelName}`}>
+                                            {fuelName}
+                                        </label>
+                                    </MiddleAlignedCell>
+                                    <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
+                                        <NumericInput
+                                            id={`consumption-row-${fuelName}`}
+                                            value={annualEnergy}
+                                            callback={(value) =>
+                                                dispatch({
+                                                    type: 'current energy/update fuel use',
+                                                    fuelName: fuelName,
+                                                    annualEnergy: value,
+                                                })
+                                            }
+                                        />{' '}
+                                        kWh
+                                    </MiddleAlignedCell>
+                                    <MiddleAlignedCell className="align-right text-tabular-nums">
+                                        ×{' '}
+                                        <NumericOutput
+                                            value={
+                                                modelOutputFuel?.fuel
+                                                    .carbonEmissionsFactor ?? noOutput
+                                            }
+                                        />
+                                    </MiddleAlignedCell>
+                                    <MiddleAlignedCell className="align-right text-tabular-nums">
+                                        <NumericOutput
+                                            value={
+                                                modelOutputFuel?.annualCarbonEmissions ??
+                                                noOutput
+                                            }
+                                            unit="kg"
+                                            dp={0}
+                                        />
+                                    </MiddleAlignedCell>
+                                    <MiddleAlignedCell className="align-right text-tabular-nums">
+                                        ×{' '}
+                                        <NumericOutput
+                                            value={
+                                                modelOutputFuel?.fuel
+                                                    .primaryEnergyFactor ?? noOutput
+                                            }
+                                        />
+                                    </MiddleAlignedCell>
+                                    <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
+                                        <NumericOutput
+                                            value={
+                                                modelOutputFuel?.annualPrimaryEnergy ??
+                                                noOutput
+                                            }
+                                            unit="kWh"
+                                            dp={0}
+                                        />
+                                    </MiddleAlignedCell>
+                                    <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
+                                        <NumericOutput
+                                            value={
+                                                modelOutputFuel?.fuel.unitPrice ??
+                                                noOutput
+                                            }
+                                            unit="p/kWh"
+                                        />
+                                    </MiddleAlignedCell>
+                                    <MiddleAlignedCell className="align-right text-tabular-nums">
+                                        £
+                                        <NumericOutput
+                                            value={
+                                                modelOutputFuel?.fuel.standingCharge ??
+                                                noOutput
+                                            }
+                                            dp={2}
+                                        />
+                                    </MiddleAlignedCell>
+                                    <MiddleAlignedCell className="align-right text-tabular-nums">
+                                        £
+                                        <NumericOutput
+                                            value={
+                                                modelOutputFuel?.annualCost ?? noOutput
+                                            }
+                                        />
+                                    </MiddleAlignedCell>
+                                    <MiddleAlignedCell>
+                                        <button
+                                            className="btn"
+                                            onClick={() => {
+                                                dispatch({
+                                                    type: 'current energy/delete fuel use',
+                                                    fuelName: fuelName,
+                                                });
+                                            }}
+                                        >
+                                            <i className="icon-trash" />
+                                        </button>
+                                    </MiddleAlignedCell>
+                                </tr>
+                            );
+                        },
+                    )
                 )}
             </tbody>
             <tfoot>
@@ -460,9 +503,9 @@ function ConversionFactors() {
 }
 
 function GenerationTable({
-    generationOutputs,
+    modelOutput,
 }: {
-    generationOutputs: EnergySourceOutput;
+    modelOutput: CurrentEnergy | null;
 }): ReactElement {
     function MiddleAlignedCell(props: Omit<PropsOf<'td'>, 'style'>) {
         return <td {...props} style={{ verticalAlign: 'middle' }} />;
@@ -484,26 +527,54 @@ function GenerationTable({
             <tbody>
                 <tr>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
-                        × <NumericOutput value={generationOutputs.co2factor} />
+                        ×{' '}
+                        <NumericOutput
+                            value={
+                                modelOutput?.generation?.fuel.carbonEmissionsFactor ??
+                                noOutput
+                            }
+                        />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
-                        <NumericOutput value={generationOutputs.kgCo2} unit="kg" dp={0} />
+                        <NumericOutput
+                            value={
+                                modelOutput?.generation?.annualCarbonEmissionsSaved ??
+                                noOutput
+                            }
+                            unit="kg"
+                            dp={0}
+                        />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
-                        × <NumericOutput value={generationOutputs.primaryEnergyFactor} />
+                        ×{' '}
+                        <NumericOutput
+                            value={
+                                modelOutput?.generation?.fuel.primaryEnergyFactor ??
+                                noOutput
+                            }
+                        />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
                         <NumericOutput
-                            value={generationOutputs.primaryEnergykWh}
+                            value={
+                                modelOutput?.generation?.annualPrimaryEnergySaved ??
+                                noOutput
+                            }
                             unit="kWh"
                             dp={0}
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
-                        <NumericOutput value={generationOutputs.unitCost} unit="p/kWh" />
+                        <NumericOutput
+                            value={modelOutput?.generation?.fuel.unitPrice ?? noOutput}
+                            unit="p/kWh"
+                        />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
-                        £<NumericOutput value={generationOutputs.totalCost} />
+                        £
+                        <NumericOutput
+                            value={modelOutput?.generation?.annualCostSaved ?? noOutput}
+                        />
                     </MiddleAlignedCell>
                 </tr>
             </tbody>
@@ -513,9 +584,11 @@ function GenerationTable({
 
 function Generation({
     generation,
+    modelOutput,
     dispatch,
 }: {
     generation: State['generation'];
+    modelOutput: CurrentEnergy | null;
     dispatch: Dispatcher;
 }): ReactElement {
     return (
@@ -542,13 +615,13 @@ function Generation({
                         <label htmlFor="generation-annual-kwh">Annual generation</label>
                         <NumericInput
                             id="generation-annual-kwh"
-                            value={generation.onsite.annualkWh}
+                            value={generation.onSite.annualEnergy}
                             unit="kWh"
                             callback={(value) =>
                                 dispatch({
                                     type: 'current energy/update generation',
                                     value: {
-                                        onsite: { annualkWh: value },
+                                        onSite: { annualEnergy: value },
                                     },
                                 })
                             }
@@ -560,12 +633,12 @@ function Generation({
                         <NumericInput
                             id="generation-fraction-onsite"
                             style={{ width: '5ch' }}
-                            value={generation.onsite.fractionUsedOnsite}
+                            value={generation.onSite.fractionUsedOnsite}
                             callback={(value) =>
                                 dispatch({
                                     type: 'current energy/update generation',
                                     value: {
-                                        onsite: { fractionUsedOnsite: value },
+                                        onSite: { fractionUsedOnsite: value },
                                     },
                                 })
                             }
@@ -576,12 +649,12 @@ function Generation({
                             £{' '}
                             <NumericInput
                                 id="generation-fit-income"
-                                value={generation.onsite.fitAnnualIncome}
+                                value={generation.onSite.fitAnnualIncome}
                                 callback={(value) =>
                                     dispatch({
                                         type: 'current energy/update generation',
                                         value: {
-                                            onsite: { fitAnnualIncome: value },
+                                            onSite: { fitAnnualIncome: value },
                                         },
                                     })
                                 }
@@ -592,107 +665,52 @@ function Generation({
             </FormGrid>
 
             {generation.type === 'onsite' && (
-                <GenerationTable generationOutputs={generation.outputs} />
+                <GenerationTable modelOutput={modelOutput} />
             )}
         </>
     );
 }
 
-function extractGeneration(scenario: Scenario): State['generation'] {
-    const { currentenergy, fuels } = scenario ?? {};
-    const onsite = {
-        annualkWh:
-            coalesceEmptyString(currentenergy?.generation?.annual_generation, null) ??
-            null,
-        fractionUsedOnsite:
-            coalesceEmptyString(currentenergy?.generation?.fraction_used_onsite, null) ??
-            null,
-        fitAnnualIncome:
-            coalesceEmptyString(currentenergy?.generation?.annual_FIT_income, null) ??
-            null,
-    };
-
-    if (currentenergy?.onsite_generation !== 1) {
-        return {
-            type: 'none',
-            onsite,
-        };
-    } else {
-        return {
-            type: 'onsite',
-            onsite,
-            outputs: {
-                co2factor:
-                    coalesceEmptyString(fuels?.['generation']?.co2factor, null) ??
-                    noOutput,
-                kgCo2: currentenergy?.generation?.annual_CO2 ?? noOutput,
-                primaryEnergyFactor:
-                    coalesceEmptyString(
-                        fuels?.['generation']?.primaryenergyfactor,
-                        null,
-                    ) ?? noOutput,
-                primaryEnergykWh: currentenergy?.generation?.primaryenergy ?? noOutput,
-                unitCost:
-                    coalesceEmptyString(fuels?.['generation']?.fuelcost, null) ??
-                    noOutput,
-                standingCharge:
-                    coalesceEmptyString(fuels?.['generation']?.standingcharge, null) ??
-                    noOutput,
-                totalCost: currentenergy?.generation?.annual_savings ?? noOutput,
-            },
-        };
-    }
-}
-
-function extractOutputsFromLegacy(scenario: Scenario): Partial<State> {
+function extractStateFromLegacy(scenario: Scenario): Partial<State> {
     const { kwhdpp, kgco2perm2, primary_energy_use_m2, currentenergy, fuels } =
         scenario ?? {};
     return {
         totals: {
             baseline: {
-                dailyPersonalkWh: kwhdpp ?? noOutput,
-                co2m2: kgco2perm2 ?? noOutput,
-                primaryEnergykWhm2: primary_energy_use_m2 ?? noOutput,
-            },
-            currentEnergy: {
-                dailyPersonalkWh: currentenergy?.energyuseperperson ?? noOutput,
-                primaryEnergykWh: currentenergy?.primaryenergy_annual_kwh ?? noOutput,
-                primaryEnergykWhm2: currentenergy?.primaryenergy_annual_kwhm2 ?? noOutput,
-                co2: currentenergy?.total_co2 ?? noOutput,
-                co2m2: currentenergy?.total_co2m2 ?? noOutput,
-                grossCost: currentenergy?.total_cost ?? noOutput,
-                netCost: currentenergy?.annual_net_cost ?? noOutput,
+                dailyEnergyUsePerPerson: kwhdpp ?? noOutput,
+                annualCarbonEmissionsPerArea: kgco2perm2 ?? noOutput,
+                annualPrimaryEnergyPerArea: primary_energy_use_m2 ?? noOutput,
             },
         },
-        consumption: mapValues(
+        annualEnergyConsumptionByFuel: mapValues(
             currentenergy?.use_by_fuel ?? {},
-            (fuel, name): ConsumptionData => ({
-                inputs: {
-                    kWh: coalesceEmptyString(fuel.annual_use, null),
-                },
-                outputs: {
-                    co2factor:
-                        coalesceEmptyString(fuels?.[name]?.co2factor, null) ?? noOutput,
-                    kgCo2: fuel.annual_co2 ?? noOutput,
-                    primaryEnergyFactor:
-                        coalesceEmptyString(fuels?.[name]?.primaryenergyfactor, null) ??
-                        noOutput,
-                    primaryEnergykWh: fuel.primaryenergy ?? noOutput,
-                    unitCost:
-                        coalesceEmptyString(fuels?.[name]?.fuelcost, null) ?? noOutput,
-                    standingCharge:
-                        coalesceEmptyString(fuels?.[name]?.standingcharge, null) ??
-                        noOutput,
-                    totalCost: fuel.annualcost ?? noOutput,
-                },
-            }),
+            (fuel) => coalesceEmptyString(fuel.annual_use, null),
         ),
-        generation: extractGeneration(scenario),
         fuels: mapValues(fuels, ({ category }, name) => ({
             tag: name,
             name,
             category,
         })),
+        generation: {
+            type: currentenergy?.onsite_generation === 1 ? 'onsite' : 'none',
+            onSite: {
+                annualEnergy:
+                    coalesceEmptyString(
+                        currentenergy?.generation?.annual_generation,
+                        null,
+                    ) ?? null,
+                fractionUsedOnsite:
+                    coalesceEmptyString(
+                        currentenergy?.generation?.fraction_used_onsite,
+                        null,
+                    ) ?? null,
+                fitAnnualIncome:
+                    coalesceEmptyString(
+                        currentenergy?.generation?.annual_FIT_income,
+                        null,
+                    ) ?? null,
+            },
+        },
     };
 }
 
@@ -700,11 +718,12 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
     name: 'current energy',
     initialState: () => ({
         modal: null,
+        modelOutput: null,
         totals: {
             baseline: {
-                dailyPersonalkWh: noOutput,
-                co2m2: noOutput,
-                primaryEnergykWhm2: noOutput,
+                dailyEnergyUsePerPerson: noOutput,
+                annualCarbonEmissionsPerArea: noOutput,
+                annualPrimaryEnergyPerArea: noOutput,
             },
             currentEnergy: {
                 dailyPersonalkWh: noOutput,
@@ -716,10 +735,14 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
                 netCost: noOutput,
             },
         },
-        consumption: {},
+        annualEnergyConsumptionByFuel: {},
         generation: {
             type: 'none',
-            onsite: { annualkWh: null, fractionUsedOnsite: null, fitAnnualIncome: null },
+            onSite: {
+                annualEnergy: null,
+                fractionUsedOnsite: null,
+                fitAnnualIncome: null,
+            },
         },
         fuels: {},
     }),
@@ -730,37 +753,25 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
                     {
                         ...state,
                         ...action.state,
+                        modelOutput: action.modelOutput,
                     },
                 ];
             }
 
             case 'current energy/add fuel use': {
-                state.consumption[action.fuel.name] = {
-                    inputs: { kWh: null },
-                    outputs: {
-                        co2factor: noOutput,
-                        kgCo2: noOutput,
-                        primaryEnergyFactor: noOutput,
-                        primaryEnergykWh: noOutput,
-                        unitCost: noOutput,
-                        standingCharge: noOutput,
-                        totalCost: noOutput,
-                    },
-                };
+                state.annualEnergyConsumptionByFuel[action.fuel.name] = null;
                 state.modal = null;
                 return [state];
             }
 
             case 'current energy/update fuel use': {
-                const energySource = state.consumption[action.fuelName];
-                if (energySource !== undefined) {
-                    energySource.inputs = safeMerge(energySource.inputs, action.inputs);
-                }
+                state.annualEnergyConsumptionByFuel[action.fuelName] =
+                    action.annualEnergy;
                 return [state];
             }
 
             case 'current energy/delete fuel use': {
-                delete state.consumption[action.fuelName];
+                delete state.annualEnergyConsumptionByFuel[action.fuelName];
                 return [state];
             }
 
@@ -802,8 +813,11 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
                     </div>
 
                     <div className="d-flex justify-content-between mb-30">
-                        <EnergyTotals totals={state.totals.currentEnergy} />
-                        <TargetBars totals={state.totals} />
+                        <EnergyTotals modelOutput={state.modelOutput} />
+                        <TargetBars
+                            totals={state.totals}
+                            modelOutput={state.modelOutput}
+                        />
                     </div>
                 </section>
                 <section className="line-top mb-45">
@@ -813,11 +827,14 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
                         <AddFuelModal
                             dispatch={dispatch}
                             fuels={state.fuels}
-                            consumption={state.consumption}
+                            consumption={state.annualEnergyConsumptionByFuel}
                         />
                     )}
                     <ConsumptionTable
-                        consumption={state.consumption}
+                        annualEnergyConsumptionByFuel={
+                            state.annualEnergyConsumptionByFuel
+                        }
+                        modelOutput={state.modelOutput}
                         dispatch={dispatch}
                     />
                     <ConversionFactors />
@@ -825,42 +842,51 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
                 <section className="line-top mb-45">
                     <h3 className="ma-0 mb-15">Generation</h3>
 
-                    <Generation generation={state.generation} dispatch={dispatch} />
+                    <Generation
+                        generation={state.generation}
+                        modelOutput={state.modelOutput}
+                        dispatch={dispatch}
+                    />
                 </section>
             </>
         );
     },
     shims: {
-        extractUpdateAction: ({ currentScenario }) => {
+        extractUpdateAction: ({ currentScenario, currentModel }) => {
             return Result.ok({
                 type: 'external data update',
-                state: extractOutputsFromLegacy(currentScenario),
+                state: extractStateFromLegacy(currentScenario),
+                modelOutput: currentModel
+                    .map((m) => m.currentEnergy)
+                    .mapErr(() => null)
+                    .coalesce(),
             });
         },
         mutateLegacyData: ({ project, scenarioId }, state) => {
-            /* eslint-disable
-               @typescript-eslint/consistent-type-assertions,
-               @typescript-eslint/no-explicit-any,
-               @typescript-eslint/no-unsafe-assignment,
-               @typescript-eslint/no-unsafe-member-access,
-            */
-            const dataAny = (project as any).data[scenarioId as any];
-            dataAny.currentenergy = dataAny.currentenergy ?? {};
-            dataAny.currentenergy.onsite_generation =
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            const data = (project as z.input<typeof projectSchema>).data[
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                scenarioId as string
+            ];
+            if (data === undefined) {
+                console.error('Could not mutate legacy data as data was undefined');
+                return;
+            }
+            data.currentenergy = data.currentenergy ?? {};
+            data.currentenergy.onsite_generation =
                 state.generation.type !== 'none' ? 1 : false;
-            dataAny.currentenergy.generation = {
-                annual_generation: state.generation.onsite.annualkWh,
-                annual_FIT_income: state.generation.onsite.fitAnnualIncome,
-                fraction_used_onsite: state.generation.onsite.fractionUsedOnsite,
+            data.currentenergy.generation = {
+                annual_generation: state.generation.onSite.annualEnergy ?? undefined,
+                annual_FIT_income: state.generation.onSite.fitAnnualIncome ?? undefined,
+                fraction_used_onsite:
+                    state.generation.onSite.fractionUsedOnsite ?? undefined,
             };
-            dataAny.currentenergy.use_by_fuel = mapValues(
-                state.consumption,
-                (energySource) => ({
-                    annual_use:
-                        energySource.inputs.kWh === null ? '' : energySource.inputs.kWh,
+            data.currentenergy.use_by_fuel = mapValues(
+                state.annualEnergyConsumptionByFuel,
+                (annualEnergy) => ({
+                    annual_use: annualEnergy === null ? '' : annualEnergy,
                 }),
             );
-            /* eslint-enable */
         },
     },
 };
