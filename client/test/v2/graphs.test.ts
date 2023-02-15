@@ -1,11 +1,13 @@
 import assert from 'assert';
 import fc from 'fast-check';
-import { mapValues } from 'lodash';
-import { z } from 'zod';
-
-import { scenarioSchema } from '../../src/v2/data-schemas/scenario';
 import { sum } from '../../src/v2/helpers/array-reducers';
-import { BarChart, generateReportGraphs } from '../../src/v2/reports/graphs';
+
+import {
+    BarChart,
+    energyCosts,
+    EnergyCostsGraphInput,
+    generateReportGraphs,
+} from '../../src/v2/reports/graphs';
 import { arbFloat } from '../helpers/arbitraries';
 
 function testArrayLengthsInvariant(chart: BarChart) {
@@ -91,21 +93,20 @@ describe('graph generation tests', () => {
         // energy costs covered by test suite below
     });
     describe('energy costs', () => {
-        function getEnergyCostsGraph(
-            projectData: unknown,
-            scenarioIds: string[],
-        ): BarChart {
-            return getBarChart('energyCosts', projectData, scenarioIds);
-        }
-
         const basicEnergyCostsChart = {
             type: 'bar' as const,
             stacked: true,
             units: '£ per year',
         };
 
-        test('an empty project', () => {
-            const graph = getEnergyCostsGraph({ master: {} }, []);
+        test('no scenarios', () => {
+            const graph = energyCosts({
+                modelModules: {
+                    fuels: { fuels: {} },
+                    currentEnergy: { fuels: {}, generation: null },
+                },
+                scenarios: [],
+            });
             testBarChartInvariants(graph);
             expect(graph).toMatchObject({
                 ...basicEnergyCostsChart,
@@ -119,58 +120,42 @@ describe('graph generation tests', () => {
                 fuels: Record<
                     string,
                     {
-                        unitCost: number;
-                        standingCharge: number | null;
+                        unitPrice: number;
+                        standingCharge: number;
                         annualUse: number;
                     }
                 >;
                 generationSavings: number | null;
             };
-            function makeMinimalBaselineScenarioFromFixture(
+            function makeEnergyCostsInputFromFixture(
                 fixture: BillsDataTestFixture,
-            ): z.input<typeof scenarioSchema> {
+            ): EnergyCostsGraphInput {
                 return {
-                    fuels: mapValues(fixture.fuels, (fuelFixture) => ({
-                        standingcharge: fuelFixture.standingCharge ?? 0,
-                        fuelcost: fuelFixture.unitCost,
-                        category: 'Solid fuel' as const,
-                        co2factor: -1,
-                        primaryenergyfactor: -1,
-                    })),
-                    currentenergy: {
-                        use_by_fuel: mapValues(fixture.fuels, (fuelFixture) => ({
-                            annualcost: -1,
-                            annual_co2: -1,
-                            primaryenergy: -1,
-                            annual_use: fuelFixture.annualUse,
-                        })),
-                        generation: {
-                            ...(fixture.generationSavings === null
-                                ? {}
-                                : {
-                                      annual_savings: fixture.generationSavings,
-                                  }),
+                    modelModules: {
+                        currentEnergy: {
+                            generation:
+                                fixture.generationSavings === null
+                                    ? null
+                                    : { annualCostSaved: fixture.generationSavings },
+                            fuels: fixture.fuels,
                         },
+                        fuels: { fuels: fixture.fuels },
                     },
+                    scenarios: [],
                 };
             }
             test('fuel with only unit cost', () => {
                 const fixture: BillsDataTestFixture = {
                     fuels: {
                         cake: {
-                            unitCost: 2,
+                            unitPrice: 2,
                             annualUse: 3,
-                            standingCharge: null,
+                            standingCharge: 0,
                         },
                     },
                     generationSavings: null,
                 };
-                const graph = getEnergyCostsGraph(
-                    {
-                        master: makeMinimalBaselineScenarioFromFixture(fixture),
-                    },
-                    [],
-                );
+                const graph = energyCosts(makeEnergyCostsInputFromFixture(fixture));
                 testBarChartInvariants(graph);
                 expect(graph).toMatchObject({
                     ...basicEnergyCostsChart,
@@ -180,7 +165,7 @@ describe('graph generation tests', () => {
                             label: 'Bills data',
                             data: [
                                 (fixture.fuels['cake']!.annualUse *
-                                    fixture.fuels['cake']!.unitCost) /
+                                    fixture.fuels['cake']!.unitPrice) /
                                     100,
                             ],
                         },
@@ -192,19 +177,14 @@ describe('graph generation tests', () => {
                 const fixture: BillsDataTestFixture = {
                     fuels: {
                         coffee: {
-                            unitCost: 2,
+                            unitPrice: 2,
                             standingCharge: 3,
                             annualUse: 5,
                         },
                     },
                     generationSavings: null,
                 };
-                const graph = getEnergyCostsGraph(
-                    {
-                        master: makeMinimalBaselineScenarioFromFixture(fixture),
-                    },
-                    [],
-                );
+                const graph = energyCosts(makeEnergyCostsInputFromFixture(fixture));
                 testBarChartInvariants(graph);
                 expect(graph).toMatchObject({
                     ...basicEnergyCostsChart,
@@ -215,7 +195,7 @@ describe('graph generation tests', () => {
                             data: [
                                 fixture.fuels['coffee']!.standingCharge,
                                 (fixture.fuels['coffee']!.annualUse *
-                                    fixture.fuels['coffee']!.unitCost) /
+                                    fixture.fuels['coffee']!.unitPrice) /
                                     100,
                             ],
                         },
@@ -228,12 +208,7 @@ describe('graph generation tests', () => {
                     fuels: {},
                     generationSavings: 3,
                 };
-                const graph = getEnergyCostsGraph(
-                    {
-                        master: makeMinimalBaselineScenarioFromFixture(fixture),
-                    },
-                    [],
-                );
+                const graph = energyCosts(makeEnergyCostsInputFromFixture(fixture));
                 testBarChartInvariants(graph);
                 expect(graph).toMatchObject({
                     ...basicEnergyCostsChart,
@@ -256,8 +231,8 @@ describe('graph generation tests', () => {
                     fuels: fc.dictionary(
                         fc.oneof(fc.string(), fc.constant('Standard Tariff')),
                         fc.record({
-                            unitCost: positiveFloat,
-                            standingCharge: fc.option(positiveFloat),
+                            unitPrice: positiveFloat,
+                            standingCharge: positiveFloat,
                             annualUse: positiveFloat,
                         }),
                     ),
@@ -266,17 +241,14 @@ describe('graph generation tests', () => {
                 });
                 fc.assert(
                     fc.property(arbFixture, (fixture) => {
-                        const graph = getEnergyCostsGraph(
-                            {
-                                master: makeMinimalBaselineScenarioFromFixture(fixture),
-                            },
-                            [],
+                        const graph = energyCosts(
+                            makeEnergyCostsInputFromFixture(fixture),
                         );
 
                         // Invariant: sum of bin data should equal sum of fuel costs
                         let expectedTotalCost = 0;
                         for (const fuel of Object.values(fixture.fuels)) {
-                            expectedTotalCost += (fuel.unitCost * fuel.annualUse) / 100;
+                            expectedTotalCost += (fuel.unitPrice * fuel.annualUse) / 100;
                             expectedTotalCost += fuel.standingCharge ?? 0;
                         }
                         expectedTotalCost += fixture.generationSavings ?? 0;

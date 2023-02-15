@@ -149,13 +149,14 @@ export class CombinedModules {
     waterHeating: WaterHeating;
     generation: Generation;
     currentEnergy: CurrentEnergy;
+    fuels: Fuels;
 
     constructor(input: Input) {
         const { region } = input;
         const modelBehaviourFlags = constructModelBehaviourFlags(
             input.modelBehaviourVersion,
         );
-        const fuels = new Fuels(input.fuels);
+        this.fuels = new Fuels(input.fuels);
         this.floors = new Floors(input.floors);
         this.occupancy = new Occupancy(input.occupancy, { floors: this.floors });
         this.fabric = new Fabric(input.fabric, { region, floors: this.floors });
@@ -189,19 +190,19 @@ export class CombinedModules {
             waterCommon: this.waterCommon,
         });
         this.lighting = new LightingSAP(input.lighting, {
-            fuels,
+            fuels: this.fuels,
             floors: this.floors,
             fabric: this.fabric,
             occupancy: this.occupancy,
         });
         this.appliances = constructAppliances(input.appliances, {
             modelBehaviourFlags,
-            fuels,
+            fuels: this.fuels,
             floors: this.floors,
             occupancy: this.occupancy,
         });
         this.cooking = constructCooking(input.cooking, {
-            fuels,
+            fuels: this.fuels,
             floors: this.floors,
             occupancy: this.occupancy,
         });
@@ -212,10 +213,10 @@ export class CombinedModules {
         this.generation = new Generation(input.generation, {
             modelBehaviourFlags,
             region,
-            fuels,
+            fuels: this.fuels,
         });
         this.currentEnergy = new CurrentEnergy(input.currentEnergy, {
-            fuels,
+            fuels: this.fuels,
             floors: this.floors,
             occupancy: this.occupancy,
             modelBehaviourFlags,

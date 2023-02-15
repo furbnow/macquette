@@ -71,11 +71,7 @@ export class CurrentEnergy {
     @cache
     get generation(): CurrentEnergyGeneration | null {
         if (this.input.generation === null) return null;
-        return new CurrentEnergyGeneration(
-            this.input.generation,
-            this.dependencies.fuels.generation,
-            this.dependencies.modelBehaviourFlags,
-        );
+        return new CurrentEnergyGeneration(this.input.generation, this.dependencies);
     }
 
     // kg CO_2
@@ -142,11 +138,18 @@ export class CurrentEnergy {
     }
 
     // kWh
+    get annualEnergyFromFuels(): number {
+        return sum(Object.values(this.input.annualEnergyByFuel));
+    }
+
+    /** "End use" means energy used in the home, including generation */
+    // kWh
     get annualEnergyEndUse(): number {
-        return (
-            sum(Object.values(this.input.annualEnergyByFuel)) +
-            (this.generation?.annualEnergyOnSite ?? 0)
-        );
+        return this.annualEnergyFromFuels + (this.generation?.annualEnergyOnSite ?? 0);
+    }
+
+    get annualEnergyFromFuelsPerArea(): number {
+        return this.annualEnergyFromFuels / this.dependencies.floors.totalFloorArea;
     }
 
     get annualEnergyEndUsePerArea(): number {
@@ -215,17 +218,25 @@ type GenerationInput = {
 class CurrentEnergyGeneration {
     constructor(
         public input: GenerationInput,
-        public fuel: Fuel,
-        private modelBehaviourFlags: ModelBehaviourFlags,
+        private dependencies: CurrentEnergyDependencies,
     ) {}
+
+    get fuel(): Fuel {
+        return this.dependencies.fuels.generation;
+    }
 
     get annualEnergyOnSite(): number {
         return this.input.annualEnergy * this.input.fractionUsedOnsite;
     }
 
+    get annualEnergyOnSitePerArea(): number {
+        return this.annualEnergyOnSite / this.dependencies.floors.totalFloorArea;
+    }
+
     get annualPrimaryEnergySaved(): number {
         if (
-            this.modelBehaviourFlags.currentEnergy.calculateSavingsIncorporatingOnsiteUse
+            this.dependencies.modelBehaviourFlags.currentEnergy
+                .calculateSavingsIncorporatingOnsiteUse
         ) {
             return this.annualEnergyOnSite * this.fuel.primaryEnergyFactor;
         } else {
@@ -235,7 +246,8 @@ class CurrentEnergyGeneration {
 
     get annualCarbonEmissionsSaved(): number {
         if (
-            this.modelBehaviourFlags.currentEnergy.calculateSavingsIncorporatingOnsiteUse
+            this.dependencies.modelBehaviourFlags.currentEnergy
+                .calculateSavingsIncorporatingOnsiteUse
         ) {
             return this.annualEnergyOnSite * this.fuel.carbonEmissionsFactor;
         } else {
