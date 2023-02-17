@@ -13,7 +13,7 @@ import { FormGrid } from '../input-components/forms';
 import { TextInput } from '../input-components/text';
 import type { Dispatcher, UiModule } from '../module-management/module-type';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from '../output-components/modal';
-import { noOutput, NumericOutput } from '../output-components/numeric';
+import { NumericOutput } from '../output-components/numeric';
 import { Spinner } from '../output-components/spinner';
 import type { ScenarioPageName, StandalonePageName } from '../pages';
 import { pageTitles } from '../pages';
@@ -50,7 +50,7 @@ type State = {
         locked: boolean;
         createdFromChanges: ChangeSinceCreation;
         createdFromName: string | null;
-        shd: number | typeof noOutput;
+        spaceHeatingDemand: number | null;
         expanded: boolean;
     }[];
     mutateAction: DuplicateScenarioAction | SetLockAction | DeleteScenarioAction | null;
@@ -192,7 +192,7 @@ function ScenarioBlock({
                     ) : null}
                 </div>
                 <div style={{ marginRight: '10px' }}>
-                    <NumericOutput value={scenario.shd} dp={0} />
+                    <NumericOutput value={scenario.spaceHeatingDemand} dp={0} />
                 </div>
             </div>
 
@@ -627,7 +627,8 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
                             num: 1,
                             createdFromChanges: getCreatedChanges(project, scenarioData),
                             createdFromName: scenarioData?.created_from ?? null,
-                            shd: scenarioData?.space_heating_demand_m2 ?? noOutput,
+                            spaceHeatingDemand:
+                                scenarioData?.space_heating_demand_m2 ?? null,
                             expanded: scenarioData?.sidebarExpanded ?? false,
                         }),
                     ),

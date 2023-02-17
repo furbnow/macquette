@@ -1,5 +1,4 @@
 import type { CompleteWallMeasure } from '../../input-components/libraries';
-import { noOutput } from '../../output-components/numeric';
 
 type AreaSpecSpecific = {
     area: number | null;
@@ -57,9 +56,9 @@ type AppliedWallElement = AppliedWallBase & {
     type: 'element';
     element: WallLibraryElement | WallLibraryMeasure;
     outputs: {
-        windowArea: number | typeof noOutput;
-        netArea: number | typeof noOutput;
-        heatLoss: number | typeof noOutput;
+        windowArea: number | null;
+        netArea: number | null;
+        heatLoss: number | null;
     };
 };
 export type AppliedWallMeasure = AppliedWallBase & {

@@ -17,7 +17,7 @@ import { FormGrid, InfoTooltip } from '../input-components/forms';
 import { Fuel, SelectFuel } from '../input-components/libraries';
 import { NumericInput } from '../input-components/numeric';
 import type { UiModule } from '../module-management/module-type';
-import { noOutput, NumericOutput } from '../output-components/numeric';
+import { NumericOutput } from '../output-components/numeric';
 import { TargetBar } from '../output-components/target-bar';
 
 type OnsiteGenerationInput = {
@@ -31,10 +31,10 @@ export type State = {
     modelOutput: CombinedModules | null;
     totals: {
         baseline: {
-            annualEnergyEndUse: number | typeof noOutput;
-            dailyEnergyUsePerPerson: number | typeof noOutput;
-            annualPrimaryEnergyPerArea: number | typeof noOutput;
-            annualCarbonEmissionsPerArea: number | typeof noOutput;
+            annualEnergyEndUse: number | null;
+            dailyEnergyUsePerPerson: number | null;
+            annualPrimaryEnergyPerArea: number | null;
+            annualCarbonEmissionsPerArea: number | null;
         };
     };
     annualEnergyConsumptionByFuel: Record<string, number | null>;
@@ -211,8 +211,8 @@ function TargetBars({
                 width={424.5}
                 value={[
                     currentEnergy.annualEnergyEndUse / floors.totalFloorArea,
-                    totals.baseline.annualEnergyEndUse === noOutput
-                        ? noOutput
+                    totals.baseline.annualEnergyEndUse === null
+                        ? null
                         : totals.baseline.annualEnergyEndUse / floors.totalFloorArea,
                 ]}
                 units="kWh/m²"
@@ -356,16 +356,13 @@ function ConsumptionTable({
                                         <NumericOutput
                                             value={
                                                 modelOutputFuel?.fuel
-                                                    .carbonEmissionsFactor ?? noOutput
+                                                    .carbonEmissionsFactor
                                             }
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums">
                                         <NumericOutput
-                                            value={
-                                                modelOutputFuel?.annualCarbonEmissions ??
-                                                noOutput
-                                            }
+                                            value={modelOutputFuel?.annualCarbonEmissions}
                                             unit="kg"
                                             dp={0}
                                         />
@@ -374,46 +371,34 @@ function ConsumptionTable({
                                         ×{' '}
                                         <NumericOutput
                                             value={
-                                                modelOutputFuel?.fuel
-                                                    .primaryEnergyFactor ?? noOutput
+                                                modelOutputFuel?.fuel.primaryEnergyFactor
                                             }
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
                                         <NumericOutput
-                                            value={
-                                                modelOutputFuel?.annualPrimaryEnergy ??
-                                                noOutput
-                                            }
+                                            value={modelOutputFuel?.annualPrimaryEnergy}
                                             unit="kWh"
                                             dp={0}
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
                                         <NumericOutput
-                                            value={
-                                                modelOutputFuel?.fuel.unitPrice ??
-                                                noOutput
-                                            }
+                                            value={modelOutputFuel?.fuel.unitPrice}
                                             unit="p/kWh"
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums">
                                         £
                                         <NumericOutput
-                                            value={
-                                                modelOutputFuel?.fuel.standingCharge ??
-                                                noOutput
-                                            }
+                                            value={modelOutputFuel?.fuel.standingCharge}
                                             dp={2}
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums">
                                         £
                                         <NumericOutput
-                                            value={
-                                                modelOutputFuel?.annualCost ?? noOutput
-                                            }
+                                            value={modelOutputFuel?.annualCost}
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell>
@@ -563,18 +548,12 @@ function GenerationTable({
                     <MiddleAlignedCell className="align-right text-tabular-nums">
                         ×{' '}
                         <NumericOutput
-                            value={
-                                currentEnergy?.generation?.fuel.carbonEmissionsFactor ??
-                                noOutput
-                            }
+                            value={currentEnergy?.generation?.fuel.carbonEmissionsFactor}
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
                         <NumericOutput
-                            value={
-                                currentEnergy?.generation?.annualCarbonEmissionsSaved ??
-                                noOutput
-                            }
+                            value={currentEnergy?.generation?.annualCarbonEmissionsSaved}
                             unit="kg"
                             dp={0}
                         />
@@ -582,32 +561,26 @@ function GenerationTable({
                     <MiddleAlignedCell className="align-right text-tabular-nums">
                         ×{' '}
                         <NumericOutput
-                            value={
-                                currentEnergy?.generation?.fuel.primaryEnergyFactor ??
-                                noOutput
-                            }
+                            value={currentEnergy?.generation?.fuel.primaryEnergyFactor}
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
                         <NumericOutput
-                            value={
-                                currentEnergy?.generation?.annualPrimaryEnergySaved ??
-                                noOutput
-                            }
+                            value={currentEnergy?.generation?.annualPrimaryEnergySaved}
                             unit="kWh"
                             dp={0}
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
                         <NumericOutput
-                            value={currentEnergy?.generation?.fuel.unitPrice ?? noOutput}
+                            value={currentEnergy?.generation?.fuel.unitPrice}
                             unit="p/kWh"
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
                         £
                         <NumericOutput
-                            value={currentEnergy?.generation?.annualCostSaved ?? noOutput}
+                            value={currentEnergy?.generation?.annualCostSaved}
                         />
                     </MiddleAlignedCell>
                 </tr>
@@ -720,10 +693,10 @@ function extractStateFromLegacy(scenario: Scenario): Partial<State> {
     return {
         totals: {
             baseline: {
-                annualEnergyEndUse: energy_use ?? noOutput,
-                dailyEnergyUsePerPerson: kwhdpp ?? noOutput,
-                annualCarbonEmissionsPerArea: kgco2perm2 ?? noOutput,
-                annualPrimaryEnergyPerArea: primary_energy_use_m2 ?? noOutput,
+                annualEnergyEndUse: energy_use ?? null,
+                dailyEnergyUsePerPerson: kwhdpp ?? null,
+                annualCarbonEmissionsPerArea: kgco2perm2 ?? null,
+                annualPrimaryEnergyPerArea: primary_energy_use_m2 ?? null,
             },
         },
         annualEnergyConsumptionByFuel: mapValues(
@@ -765,19 +738,19 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
         modelOutput: null,
         totals: {
             baseline: {
-                annualEnergyEndUse: noOutput,
-                dailyEnergyUsePerPerson: noOutput,
-                annualCarbonEmissionsPerArea: noOutput,
-                annualPrimaryEnergyPerArea: noOutput,
+                annualEnergyEndUse: null,
+                dailyEnergyUsePerPerson: null,
+                annualCarbonEmissionsPerArea: null,
+                annualPrimaryEnergyPerArea: null,
             },
             currentEnergy: {
-                dailyPersonalkWh: noOutput,
-                primaryEnergykWh: noOutput,
-                primaryEnergykWhm2: noOutput,
-                co2: noOutput,
-                co2m2: noOutput,
-                grossCost: noOutput,
-                netCost: noOutput,
+                dailyPersonalkWh: null,
+                primaryEnergykWh: null,
+                primaryEnergykWhm2: null,
+                co2: null,
+                co2m2: null,
+                grossCost: null,
+                netCost: null,
             },
         },
         annualEnergyConsumptionByFuel: {},

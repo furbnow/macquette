@@ -2,7 +2,6 @@ import React, { ReactElement, useId } from 'react';
 
 import { zip } from '../../helpers/zip';
 import type { Target } from '../../model/datasets/targets';
-import { noOutput } from './numeric';
 
 const COLOURS = ['fill-beige-700', 'fill-beige-400'];
 const AXIS_COLOUR = 'black';
@@ -58,7 +57,7 @@ interface TargetBarProps {
     /** Graph label */
     name: string;
     /** Value or array of values to display */
-    value: (number | typeof noOutput)[];
+    value: (number | null)[];
     /** Units for values */
     units: string;
     /** Array of label, value pairs for targets */
@@ -84,17 +83,19 @@ export function TargetBar({
     const values = !Array.isArray(value) ? [value] : value;
 
     function determineStatus() {
-        const filteredValues = values.filter((datapoint): datapoint is number => {
-            if (
-                datapoint === noOutput ||
-                Number.isNaN(datapoint) ||
-                datapoint === Infinity
-            ) {
-                return false;
-            } else {
-                return true;
-            }
-        });
+        const filteredValues = values.filter(
+            (datapoint): datapoint is Exclude<typeof datapoint, null> => {
+                if (
+                    datapoint === null ||
+                    Number.isNaN(datapoint) ||
+                    datapoint === Infinity
+                ) {
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+        );
 
         if (values.length !== filteredValues.length) {
             return {
@@ -152,7 +153,7 @@ export function TargetBar({
                 style={{ maxWidth: '100%' }}
             >
                 {values.map((val, idx) =>
-                    val === noOutput ? null : (
+                    val === null ? null : (
                         <g key={idx}>
                             <rect
                                 x={1}

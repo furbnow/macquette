@@ -1,5 +1,4 @@
 import { sum } from '../../../helpers/array-reducers';
-import { noOutput } from '../../output-components/numeric';
 import { thermalMassParameterTable } from './extractor';
 import type { AppliedWallMeasure, State, WallLike } from './state';
 
@@ -55,13 +54,13 @@ function wallLikeToLegacy(
                   area: wall.inputs.area[wall.inputs.area.type].area ?? '',
                   areaInputs: wall.inputs.area,
                   location: wall.inputs.location,
-                  ...(wall.outputs.netArea !== noOutput
+                  ...(wall.outputs.netArea !== null
                       ? { netarea: wall.outputs.netArea }
                       : null),
-                  ...(wall.outputs.windowArea !== noOutput
+                  ...(wall.outputs.windowArea !== null
                       ? { windowarea: wall.outputs.windowArea }
                       : null),
-                  ...(wall.outputs.heatLoss !== noOutput
+                  ...(wall.outputs.heatLoss !== null
                       ? { wk: wall.outputs.heatLoss }
                       : null),
                   ...(wall.type === 'measure'

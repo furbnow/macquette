@@ -2,7 +2,6 @@ import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schema
 import { DeepPartial, safeMerge } from '../../../helpers/safe-merge';
 import { calcMeasureQtyAndCost } from '../../../measures';
 import { CompleteWallLike, CompleteWallMeasure } from '../../input-components/libraries';
-import { noOutput } from '../../output-components/numeric';
 import type { AppliedWallMeasure, State, WallLike } from './state';
 
 export type Action =
@@ -141,9 +140,9 @@ export function reducer(state: State, action: Action): [State] {
                 },
                 element: action.item,
                 outputs: {
-                    windowArea: noOutput,
-                    netArea: noOutput,
-                    heatLoss: noOutput,
+                    windowArea: null,
+                    netArea: null,
+                    heatLoss: null,
                 },
                 revertTo: null,
             };

@@ -22,7 +22,7 @@ import {
     ModalFooter,
     ModalHeader,
 } from '../../output-components/modal';
-import { noOutput, NumericOutput } from '../../output-components/numeric';
+import { NumericOutput } from '../../output-components/numeric';
 import type { Action } from './reducer';
 import type { State, WallLike } from './state';
 
@@ -567,10 +567,7 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                             </label>
                             <br />
                             <NumericOutput
-                                value={
-                                    wall.inputs.area[wall.inputs.area.type].area ??
-                                    noOutput
-                                }
+                                value={wall.inputs.area[wall.inputs.area.type].area}
                                 unit="m²"
                             />
                         </div>

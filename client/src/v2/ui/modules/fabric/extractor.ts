@@ -8,7 +8,6 @@ import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schema
 import { Result } from '../../../helpers/result';
 import { calcMeasureQtyAndCost, reverseCalcQuantity } from '../../../measures';
 import { AppContext } from '../../module-management/module-type';
-import { noOutput } from '../../output-components/numeric';
 import type { Action } from './reducer';
 import type { AreaSpec, State, WallLike } from './state';
 
@@ -91,9 +90,9 @@ function extractWallElementFromLegacy(legacyWall: LegacyAppliedWall): WallLike {
             ),
         },
         outputs: {
-            windowArea: legacyWall.windowarea ?? noOutput,
-            netArea: legacyWall.netarea ?? noOutput,
-            heatLoss: legacyWall.wk ?? noOutput,
+            windowArea: legacyWall.windowarea ?? null,
+            netArea: legacyWall.netarea ?? null,
+            heatLoss: legacyWall.wk ?? null,
         },
         revertTo: null,
     };
@@ -229,9 +228,9 @@ function extractWallFromLegacy(
                 ),
             },
             outputs: {
-                windowArea: legacyWall.windowarea ?? noOutput,
-                netArea: legacyWall.netarea ?? noOutput,
-                heatLoss: legacyWall.wk ?? noOutput,
+                windowArea: legacyWall.windowarea ?? null,
+                netArea: legacyWall.netarea ?? null,
+                heatLoss: legacyWall.wk ?? null,
                 costQuantity,
                 costTotal,
             },
