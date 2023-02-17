@@ -62,7 +62,7 @@ interface TargetBarProps {
     /** Units for values */
     units: string;
     /** Array of label, value pairs for targets */
-    targets: Target[];
+    targets?: Target[];
 }
 
 /**
@@ -109,26 +109,33 @@ export function TargetBar({
     }
     const status = determineStatus();
 
-    const hasZeroTarget = targets.filter((target) => target.value === 0).length !== 0;
-    if (hasZeroTarget) {
+    const hasZeroTarget =
+        targets !== undefined &&
+        targets.filter((target) => target.value === 0).length !== 0;
+    if (targets !== undefined && hasZeroTarget) {
         targets = [{ label: '', value: 0 }, ...targets];
     }
 
-    // Always 25% larger than max target or value
-    const targetValues = targets.map((t) => t.value);
-    const maxval =
-        status.hasData === false
-            ? Math.max(...targetValues) * 1.25
-            : Math.max(...status.data, ...targetValues) * 1.25;
-    const xscale = width / maxval;
+    let maxVal = 0;
+    if (status.hasData) {
+        maxVal = Math.max(maxVal, ...status.data);
+    }
+    if (targets !== undefined) {
+        const targetValues = targets?.map((t) => t.value);
+        maxVal = Math.max(maxVal, ...targetValues);
+    }
+    // Always 25% larger than max target or value or 0
+    maxVal *= 1.25;
+    const xscale = width / maxVal;
 
     const barHeight = 20;
     const barsHeight = 20 * values.length;
     const axisHeight = 1;
-    const targetsHeight = 38;
+    const targetsHeight = targets === undefined ? 0 : 38;
     const totalHeight = barsHeight + axisHeight + targetsHeight;
 
-    const targetBoxes = calculateTargetBoxes(targets, xscale, width);
+    const targetBoxes =
+        targets === undefined ? undefined : calculateTargetBoxes(targets, xscale, width);
 
     return (
         <div className="targetbar">
@@ -185,61 +192,51 @@ export function TargetBar({
                     stroke={AXIS_COLOUR}
                 />
 
-                {targetBoxes.map(([xpos, width], idx) => (
-                    <clipPath key={idx} id={`clip-target-${id}-${idx}`}>
-                        <rect
-                            x={xpos}
-                            y={barsHeight + axisHeight}
-                            width={width - 1}
-                            height={targetsHeight - 0.5}
-                        />
-                    </clipPath>
-                ))}
-
-                {/* Useful for debugging so leaving in here.
-                {targetBoxes.map(([xpos, width], idx) => (
-                    <rect
-                        key={idx}
-                        x={xpos}
-                        y={barsHeight + axisHeight}
-                        width={width}
-                        height={targetsHeight - 0.5}
-                        stroke={AXIS_COLOUR}
-                        fill="transparent"
-                    />
-                ))}*/}
-
-                {zip(targets, targetBoxes).map(([target, targetBox], idx) => {
-                    const x = targetBox[0];
-                    const y = barsHeight + axisHeight;
-                    const height = targetsHeight;
-
-                    return (
-                        <g key={idx} clipPath={`url(#clip-target-${id}-${idx})`}>
-                            <line
-                                x1={x + 0.5}
-                                y1={y}
-                                x2={x + 0.5}
-                                y2={y + height / 3}
-                                stroke={AXIS_COLOUR}
+                {targetBoxes !== undefined &&
+                    targetBoxes.map(([xpos, width], idx) => (
+                        <clipPath key={idx} id={`clip-target-${id}-${idx}`}>
+                            <rect
+                                x={xpos}
+                                y={barsHeight + axisHeight}
+                                width={width - 1}
+                                height={targetsHeight - 0.5}
                             />
-                            <text
-                                x={x + 5}
-                                y={y + height - 22}
-                                className="fill-beige-200"
-                            >
-                                {target.value} {units}
-                            </text>
-                            <text
-                                x={x + 5}
-                                y={y + height - 8}
-                                className="fill-beige-200 text-bold"
-                            >
-                                {target.label}
-                            </text>
-                        </g>
-                    );
-                })}
+                        </clipPath>
+                    ))}
+
+                {targets !== undefined &&
+                    targetBoxes !== undefined &&
+                    zip(targets, targetBoxes).map(([target, targetBox], idx) => {
+                        const x = targetBox[0];
+                        const y = barsHeight + axisHeight;
+                        const height = targetsHeight;
+
+                        return (
+                            <g key={idx} clipPath={`url(#clip-target-${id}-${idx})`}>
+                                <line
+                                    x1={x + 0.5}
+                                    y1={y}
+                                    x2={x + 0.5}
+                                    y2={y + height / 3}
+                                    stroke={AXIS_COLOUR}
+                                />
+                                <text
+                                    x={x + 5}
+                                    y={y + height - 22}
+                                    className="fill-beige-200"
+                                >
+                                    {target.value} {units}
+                                </text>
+                                <text
+                                    x={x + 5}
+                                    y={y + height - 8}
+                                    className="fill-beige-200 text-bold"
+                                >
+                                    {target.label}
+                                </text>
+                            </g>
+                        );
+                    })}
             </svg>
         </div>
     );

@@ -31,6 +31,7 @@ export type State = {
     modelOutput: CombinedModules | null;
     totals: {
         baseline: {
+            annualEnergyEndUse: number | typeof noOutput;
             dailyEnergyUsePerPerson: number | typeof noOutput;
             annualPrimaryEnergyPerArea: number | typeof noOutput;
             annualCarbonEmissionsPerArea: number | typeof noOutput;
@@ -90,13 +91,28 @@ function EnergyTotals({
                 <tbody>
                     <tr>
                         <th style={{ fontWeight: 'normal' }}>
+                            <span style={{ fontWeight: 'bold' }}>Energy end use</span>
+                            <InfoTooltip>
+                                The total energy used in the household, including the
+                                on-site portion of generated energy.
+                            </InfoTooltip>
+                        </th>
+                        <td>
+                            <NumericOutput
+                                value={currentEnergy.annualEnergyEndUse}
+                                dp={0}
+                                unit="kWh"
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style={{ fontWeight: 'normal' }}>
                             <span style={{ fontWeight: 'bold' }}>
                                 Primary energy consumption
                             </span>
                             <InfoTooltip>
-                                All energy use (including the fraction used onsite from
-                                renewable generation) minus the total savings due to
-                                generation
+                                All primary energy from all energy sources, not including
+                                generation.
                             </InfoTooltip>
                         </th>
                         <td>
@@ -124,9 +140,9 @@ function EnergyTotals({
                         <th style={{ fontWeight: 'normal' }}>
                             <span style={{ fontWeight: 'bold' }}>CO₂ emissions</span>
                             <InfoTooltip>
-                                All CO₂ emittted from all energy sources (including the
-                                fraction used onsite from renewable generation) minus the
-                                total savings due to generation
+                                All CO₂ emitted from all energy sources, not including
+                                generation (since generation is assumed to be
+                                zero-carbon).
                             </InfoTooltip>
                         </th>
                         <td>
@@ -191,7 +207,19 @@ function TargetBars({
             </p>
 
             <TargetBar
-                name="Primary energy demand"
+                name="End-use energy intensity"
+                width={424.5}
+                value={[
+                    currentEnergy.annualEnergyEndUse / floors.totalFloorArea,
+                    totals.baseline.annualEnergyEndUse === noOutput
+                        ? noOutput
+                        : totals.baseline.annualEnergyEndUse / floors.totalFloorArea,
+                ]}
+                units="kWh/m²"
+            />
+
+            <TargetBar
+                name="Primary energy intensity"
                 width={424.5}
                 value={[
                     currentEnergy.annualPrimaryEnergy / floors.totalFloorArea,
@@ -213,7 +241,7 @@ function TargetBars({
             />
 
             <TargetBar
-                name="Per person energy use"
+                name="Daily per-person energy use"
                 width={424.5}
                 value={[
                     currentEnergy.annualEnergyEndUse / 365.0 / occupancy.occupancy,
@@ -681,11 +709,18 @@ function Generation({
 }
 
 function extractStateFromLegacy(scenario: Scenario): Partial<State> {
-    const { kwhdpp, kgco2perm2, primary_energy_use_m2, currentenergy, fuels } =
-        scenario ?? {};
+    const {
+        kwhdpp,
+        kgco2perm2,
+        primary_energy_use_m2,
+        currentenergy,
+        fuels,
+        energy_use,
+    } = scenario ?? {};
     return {
         totals: {
             baseline: {
+                annualEnergyEndUse: energy_use ?? noOutput,
                 dailyEnergyUsePerPerson: kwhdpp ?? noOutput,
                 annualCarbonEmissionsPerArea: kgco2perm2 ?? noOutput,
                 annualPrimaryEnergyPerArea: primary_energy_use_m2 ?? noOutput,
@@ -730,6 +765,7 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
         modelOutput: null,
         totals: {
             baseline: {
+                annualEnergyEndUse: noOutput,
                 dailyEnergyUsePerPerson: noOutput,
                 annualCarbonEmissionsPerArea: noOutput,
                 annualPrimaryEnergyPerArea: noOutput,

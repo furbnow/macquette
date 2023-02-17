@@ -123,6 +123,7 @@ export const scenarioSchema = z
         kwhdpp: numberWithNaN,
         kgco2perm2: numberWithNaN,
         primary_energy_use_m2: numberWithNaN,
+        energy_use: numberWithNaN,
         TFA: stringyFloatSchema,
         fuel_requirements: z.record(
             z.object({
