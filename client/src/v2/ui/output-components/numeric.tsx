@@ -4,7 +4,7 @@ export const noOutput: unique symbol = Symbol.for('no output');
 export const loading: unique symbol = Symbol.for('loading');
 
 export type NumericOutputProps = {
-    value: number | typeof noOutput | typeof loading;
+    value: number | typeof noOutput | typeof loading | null | undefined; // TODO: make this a bit nicer. do we really need all these singleton types?
     unit?: string | JSX.Element;
     dp?: number;
 };
@@ -16,6 +16,10 @@ export function NumericOutput(props: NumericOutputProps) {
         return <>[loading...]</>;
     } else if (value === noOutput) {
         return <>[no output]</>;
+    } else if (value === null) {
+        return <>[null]</>;
+    } else if (value === undefined) {
+        return <>[undefined]</>;
     }
 
     const valString = new Intl.NumberFormat('en', {

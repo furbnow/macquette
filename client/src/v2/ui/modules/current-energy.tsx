@@ -10,8 +10,8 @@ import { filterValues } from '../../helpers/filter-values';
 import { PropsOf } from '../../helpers/props-of';
 import { Result } from '../../helpers/result';
 import { DeepPartial, safeMerge } from '../../helpers/safe-merge';
+import { CombinedModules } from '../../model/combined-modules';
 import * as targets from '../../model/datasets/targets';
-import { CurrentEnergy } from '../../model/modules/current-energy';
 import { CheckboxInput } from '../input-components/checkbox';
 import { FormGrid, InfoTooltip } from '../input-components/forms';
 import { Fuel, SelectFuel } from '../input-components/libraries';
@@ -28,7 +28,7 @@ type OnsiteGenerationInput = {
 
 export type State = {
     modal: 'select fuel' | null;
-    modelOutput: CurrentEnergy | null;
+    modelOutput: CombinedModules | null;
     totals: {
         baseline: {
             dailyEnergyUsePerPerson: number | typeof noOutput;
@@ -52,7 +52,7 @@ export type Action =
     | {
           type: 'external data update';
           state: Partial<State>;
-          modelOutput: CurrentEnergy | null;
+          modelOutput: CombinedModules | null;
       }
     | { type: 'current energy/add fuel use'; fuel: Fuel }
     | {
@@ -69,11 +69,19 @@ export type Action =
 
 type Dispatcher = (action: Action) => void;
 
+function MiddleAlignedCell(props: PropsOf<'td'>) {
+    return <td {...props} style={{ ...props.style, verticalAlign: 'middle' }} />;
+}
+
 function EnergyTotals({
     modelOutput,
 }: {
-    modelOutput: CurrentEnergy | null;
+    modelOutput: CombinedModules | null;
 }): ReactElement {
+    if (modelOutput === null) {
+        return <></>;
+    }
+    const { currentEnergy, floors } = modelOutput;
     return (
         <div>
             <h4>Annual totals</h4>
@@ -93,7 +101,7 @@ function EnergyTotals({
                         </th>
                         <td>
                             <NumericOutput
-                                value={modelOutput?.annualPrimaryEnergy ?? noOutput}
+                                value={currentEnergy.annualPrimaryEnergy}
                                 dp={0}
                                 unit="kWh"
                             />
@@ -104,8 +112,8 @@ function EnergyTotals({
                         <td>
                             <NumericOutput
                                 value={
-                                    modelOutput?.annualPrimaryEnergyPerFloorArea ??
-                                    noOutput
+                                    currentEnergy.annualPrimaryEnergy /
+                                    floors.totalFloorArea
                                 }
                                 dp={0}
                                 unit="kWh/m²"
@@ -123,7 +131,7 @@ function EnergyTotals({
                         </th>
                         <td>
                             <NumericOutput
-                                value={modelOutput?.annualCarbonEmissions ?? noOutput}
+                                value={currentEnergy.annualCarbonEmissions}
                                 dp={0}
                                 unit="kg"
                             />
@@ -134,8 +142,8 @@ function EnergyTotals({
                         <td>
                             <NumericOutput
                                 value={
-                                    modelOutput?.annualCarbonEmissionsPerFloorArea ??
-                                    noOutput
+                                    currentEnergy.annualCarbonEmissions /
+                                    floors.totalFloorArea
                                 }
                                 dp={0}
                                 unit={<span>kgCO₂/m²</span>}
@@ -146,20 +154,14 @@ function EnergyTotals({
                         <th>Energy cost from bills</th>
                         <td>
                             £
-                            <NumericOutput
-                                value={modelOutput?.annualGrossCost ?? noOutput}
-                                dp={0}
-                            />
+                            <NumericOutput value={currentEnergy.annualGrossCost} dp={0} />
                         </td>
                     </tr>
                     <tr>
                         <th>Net energy cost, including FIT income</th>
                         <td>
                             £
-                            <NumericOutput
-                                value={modelOutput?.annualNetCost ?? noOutput}
-                                dp={0}
-                            />
+                            <NumericOutput value={currentEnergy.annualNetCost} dp={0} />
                         </td>
                     </tr>
                 </tbody>
@@ -172,9 +174,13 @@ function TargetBars({
     modelOutput,
     totals,
 }: {
-    modelOutput: CurrentEnergy | null;
+    modelOutput: CombinedModules | null;
     totals: State['totals'];
 }): ReactElement {
+    if (modelOutput === null) {
+        return <></>;
+    }
+    const { currentEnergy, floors, occupancy } = modelOutput;
     return (
         <div>
             <h4>Comparison charts</h4>
@@ -188,7 +194,7 @@ function TargetBars({
                 name="Primary energy demand"
                 width={424.5}
                 value={[
-                    modelOutput?.annualPrimaryEnergyPerFloorArea ?? noOutput,
+                    currentEnergy.annualPrimaryEnergy / floors.totalFloorArea,
                     totals.baseline.annualPrimaryEnergyPerArea,
                 ]}
                 units="kWh/m²"
@@ -199,7 +205,7 @@ function TargetBars({
                 name="CO₂ emission rate"
                 width={424.5}
                 value={[
-                    modelOutput?.annualCarbonEmissionsPerFloorArea ?? noOutput,
+                    currentEnergy.annualCarbonEmissions / floors.totalFloorArea,
                     totals.baseline.annualCarbonEmissionsPerArea,
                 ]}
                 units="kgCO₂/m²"
@@ -210,7 +216,7 @@ function TargetBars({
                 name="Per person energy use"
                 width={424.5}
                 value={[
-                    modelOutput?.dailyEnergyEndUsePerPerson ?? noOutput,
+                    currentEnergy.annualEnergyEndUse / 365.0 / occupancy.occupancy,
                     totals.baseline.dailyEnergyUsePerPerson,
                 ]}
                 units="kWh/day"
@@ -261,12 +267,13 @@ function ConsumptionTable({
     dispatch,
 }: {
     annualEnergyConsumptionByFuel: State['annualEnergyConsumptionByFuel'];
-    modelOutput: CurrentEnergy | null;
+    modelOutput: CombinedModules | null;
     dispatch: Dispatcher;
 }): ReactElement {
-    function MiddleAlignedCell(props: Omit<PropsOf<'td'>, 'style'>) {
-        return <td {...props} style={{ verticalAlign: 'middle' }} />;
+    if (modelOutput === null) {
+        return <></>;
     }
+    const { currentEnergy } = modelOutput;
 
     return (
         <table className="table mb-15">
@@ -293,7 +300,8 @@ function ConsumptionTable({
                 ) : (
                     Object.entries(annualEnergyConsumptionByFuel).map(
                         ([fuelName, annualEnergy]) => {
-                            const modelOutputFuel = modelOutput?.fuels[fuelName] ?? null;
+                            const modelOutputFuel =
+                                currentEnergy?.fuels[fuelName] ?? null;
                             return (
                                 <tr key={fuelName}>
                                     <MiddleAlignedCell>
@@ -505,11 +513,9 @@ function ConversionFactors() {
 function GenerationTable({
     modelOutput,
 }: {
-    modelOutput: CurrentEnergy | null;
+    modelOutput: CombinedModules;
 }): ReactElement {
-    function MiddleAlignedCell(props: Omit<PropsOf<'td'>, 'style'>) {
-        return <td {...props} style={{ verticalAlign: 'middle' }} />;
-    }
+    const { currentEnergy } = modelOutput;
 
     return (
         <table className="table mb-15">
@@ -530,7 +536,7 @@ function GenerationTable({
                         ×{' '}
                         <NumericOutput
                             value={
-                                modelOutput?.generation?.fuel.carbonEmissionsFactor ??
+                                currentEnergy?.generation?.fuel.carbonEmissionsFactor ??
                                 noOutput
                             }
                         />
@@ -538,7 +544,7 @@ function GenerationTable({
                     <MiddleAlignedCell className="align-right text-tabular-nums">
                         <NumericOutput
                             value={
-                                modelOutput?.generation?.annualCarbonEmissionsSaved ??
+                                currentEnergy?.generation?.annualCarbonEmissionsSaved ??
                                 noOutput
                             }
                             unit="kg"
@@ -549,7 +555,7 @@ function GenerationTable({
                         ×{' '}
                         <NumericOutput
                             value={
-                                modelOutput?.generation?.fuel.primaryEnergyFactor ??
+                                currentEnergy?.generation?.fuel.primaryEnergyFactor ??
                                 noOutput
                             }
                         />
@@ -557,7 +563,7 @@ function GenerationTable({
                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
                         <NumericOutput
                             value={
-                                modelOutput?.generation?.annualPrimaryEnergySaved ??
+                                currentEnergy?.generation?.annualPrimaryEnergySaved ??
                                 noOutput
                             }
                             unit="kWh"
@@ -566,14 +572,14 @@ function GenerationTable({
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
                         <NumericOutput
-                            value={modelOutput?.generation?.fuel.unitPrice ?? noOutput}
+                            value={currentEnergy?.generation?.fuel.unitPrice ?? noOutput}
                             unit="p/kWh"
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
                         £
                         <NumericOutput
-                            value={modelOutput?.generation?.annualCostSaved ?? noOutput}
+                            value={currentEnergy?.generation?.annualCostSaved ?? noOutput}
                         />
                     </MiddleAlignedCell>
                 </tr>
@@ -588,9 +594,12 @@ function Generation({
     dispatch,
 }: {
     generation: State['generation'];
-    modelOutput: CurrentEnergy | null;
+    modelOutput: CombinedModules | null;
     dispatch: Dispatcher;
 }): ReactElement {
+    if (modelOutput === null) {
+        return <></>;
+    }
     return (
         <>
             <FormGrid>
@@ -856,10 +865,7 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
             return Result.ok({
                 type: 'external data update',
                 state: extractStateFromLegacy(currentScenario),
-                modelOutput: currentModel
-                    .map((m) => m.currentEnergy)
-                    .mapErr(() => null)
-                    .coalesce(),
+                modelOutput: currentModel.mapErr(() => null).coalesce(),
             });
         },
         mutateLegacyData: ({ project, scenarioId }, state) => {

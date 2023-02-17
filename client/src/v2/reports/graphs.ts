@@ -324,9 +324,11 @@ function energyUseIntensity(project: ProjectData, scenarioIds: string[]): BarCha
     const baselineModel = project.scenario('master')[1];
 
     const generation =
-        baselineModel?.currentEnergy.generation?.annualEnergyOnSitePerArea ?? 0;
+        (baselineModel?.currentEnergy.generation?.annualEnergyOnSite ?? 0) /
+        (baselineModel?.floors.totalFloorArea ?? 1);
     const billsConsumption =
-        baselineModel?.currentEnergy.annualEnergyFromFuelsPerArea ?? 0;
+        (baselineModel?.currentEnergy.annualEnergyFromFuels ?? 0) /
+        (baselineModel?.floors.totalFloorArea ?? 1);
 
     return {
         type: 'bar',

@@ -9,8 +9,6 @@ import { Fuel } from './fuels';
 
 export type CurrentEnergyDependencies = {
     fuels: { fuels: Record<string, Fuel>; generation: Fuel };
-    floors: { totalFloorArea: number };
-    occupancy: { occupancy: number };
     modelBehaviourFlags: ModelBehaviourFlags;
 };
 
@@ -96,10 +94,6 @@ export class CurrentEnergy {
         }
     }
 
-    get annualCarbonEmissionsPerFloorArea(): number {
-        return this.annualCarbonEmissions / this.dependencies.floors.totalFloorArea;
-    }
-
     // £
     get annualGrossCost(): number {
         return sum(Object.values(this.fuels).map((fuel) => fuel.annualCost));
@@ -133,10 +127,6 @@ export class CurrentEnergy {
         }
     }
 
-    get annualPrimaryEnergyPerFloorArea(): number {
-        return this.annualPrimaryEnergy / this.dependencies.floors.totalFloorArea;
-    }
-
     // kWh
     get annualEnergyFromFuels(): number {
         return sum(Object.values(this.input.annualEnergyByFuel));
@@ -146,18 +136,6 @@ export class CurrentEnergy {
     // kWh
     get annualEnergyEndUse(): number {
         return this.annualEnergyFromFuels + (this.generation?.annualEnergyOnSite ?? 0);
-    }
-
-    get annualEnergyFromFuelsPerArea(): number {
-        return this.annualEnergyFromFuels / this.dependencies.floors.totalFloorArea;
-    }
-
-    get annualEnergyEndUsePerArea(): number {
-        return this.annualEnergyEndUse / this.dependencies.floors.totalFloorArea;
-    }
-
-    get dailyEnergyEndUsePerPerson(): number {
-        return this.annualEnergyEndUse / 365 / this.dependencies.occupancy.occupancy;
     }
 
     mutateLegacyData(scenario: z.input<typeof scenarioSchema>): void {
@@ -177,13 +155,10 @@ export class CurrentEnergy {
                 annualcost: fuel.annualCost,
             })),
             primaryenergy_annual_kwh: this.annualPrimaryEnergy,
-            primaryenergy_annual_kwhm2: this.annualPrimaryEnergyPerFloorArea,
             total_co2: this.annualCarbonEmissions,
-            total_co2m2: this.annualCarbonEmissionsPerFloorArea,
             total_cost: this.annualGrossCost,
             annual_net_cost: this.annualNetCost,
             enduse_annual_kwh: this.annualEnergyEndUse,
-            energyuseperperson: this.dailyEnergyEndUsePerPerson,
         };
     }
 }
@@ -227,10 +202,6 @@ class CurrentEnergyGeneration {
 
     get annualEnergyOnSite(): number {
         return this.input.annualEnergy * this.input.fractionUsedOnsite;
-    }
-
-    get annualEnergyOnSitePerArea(): number {
-        return this.annualEnergyOnSite / this.dependencies.floors.totalFloorArea;
     }
 
     get annualPrimaryEnergySaved(): number {

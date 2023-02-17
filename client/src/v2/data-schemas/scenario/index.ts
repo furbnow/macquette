@@ -144,12 +144,9 @@ export const scenarioSchema = z
         currentenergy: z
             .object({
                 primaryenergy_annual_kwh: numberWithNaN,
-                primaryenergy_annual_kwhm2: numberWithNaN,
                 total_co2: numberWithNaN,
-                total_co2m2: numberWithNaN,
                 total_cost: numberWithNaN,
                 annual_net_cost: numberWithNaN,
-                energyuseperperson: numberWithNaN,
                 enduse_annual_kwh: stringyFloatSchema,
                 use_by_fuel: z.record(
                     z.object({

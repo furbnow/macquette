@@ -217,8 +217,6 @@ export class CombinedModules {
         });
         this.currentEnergy = new CurrentEnergy(input.currentEnergy, {
             fuels: this.fuels,
-            floors: this.floors,
-            occupancy: this.occupancy,
             modelBehaviourFlags,
         });
     }

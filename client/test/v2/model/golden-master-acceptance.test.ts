@@ -304,7 +304,10 @@ function normaliseScenario(scenario: any) {
         };
         currentenergy?: {
             total_costm2?: unknown;
-            enduse_annual_kwhm2: unknown;
+            enduse_annual_kwhm2?: unknown;
+            primaryenergy_annual_kwhm2?: unknown;
+            total_co2m2?: unknown;
+            energyuseperperson?: unknown;
             generation?: {
                 annual_generation?: unknown;
                 fraction_used_onsite?: unknown;
@@ -518,9 +521,13 @@ function normaliseScenario(scenario: any) {
     delete castScenario.currentenergy?.generation?.annual_generation;
     delete castScenario.currentenergy?.generation?.fraction_used_onsite;
     delete castScenario.currentenergy?.generation?.annual_FIT_income;
-    // delete unused outputs
+    // delete outputs that depend on floor area and occupancy since these are
+    // not calculated in the new model
     delete castScenario.currentenergy?.total_costm2;
     delete castScenario.currentenergy?.enduse_annual_kwhm2;
+    delete castScenario.currentenergy?.primaryenergy_annual_kwhm2;
+    delete castScenario.currentenergy?.total_co2m2;
+    delete castScenario.currentenergy?.energyuseperperson;
     // set defaults for outputs
     defaults(castScenario.currentenergy?.generation, {
         primaryenergy: 0,
