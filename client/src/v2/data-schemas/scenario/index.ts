@@ -221,6 +221,13 @@ export const scenarioSchema = z
         altitude: stringyFloatSchema,
         altitude_full: withOriginSchema(z.number(), z.null()),
         household: householdSchema.partial(),
+        gains_W: z
+            .object({
+                metabolic: z.array(numberWithNaN),
+                losses: z.array(numberWithNaN),
+                fans_and_pumps: z.array(numberWithNaN),
+            })
+            .partial(),
     })
     .partial()
     .optional();

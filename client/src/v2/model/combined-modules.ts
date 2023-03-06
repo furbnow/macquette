@@ -32,6 +32,8 @@ import {
     GenerationInput,
 } from './modules/generation';
 import { HeatLoss } from './modules/heat-loss';
+import { InternalLosses } from './modules/internal-gains/losses';
+import { MetabolicGains } from './modules/internal-gains/metabolic';
 import {
     extractLightingSAPInputFromLegacy,
     LightingSAP,
@@ -150,6 +152,8 @@ export class CombinedModules {
     generation: Generation;
     currentEnergy: CurrentEnergy;
     fuels: Fuels;
+    metabolicGains: MetabolicGains;
+    internalLosses: InternalLosses;
 
     constructor(input: Input) {
         const { region } = input;
@@ -219,6 +223,8 @@ export class CombinedModules {
             fuels: this.fuels,
             modelBehaviourFlags,
         });
+        this.metabolicGains = new MetabolicGains(null, { occupancy: this.occupancy });
+        this.internalLosses = new InternalLosses(null, { occupancy: this.occupancy });
     }
 
     static fromLegacy(datain: unknown): Result<CombinedModules, ZodError | ModelError> {
@@ -264,6 +270,8 @@ export class CombinedModules {
             this.waterHeating,
             this.generation,
             this.currentEnergy,
+            this.metabolicGains,
+            this.internalLosses,
         ];
         for (const mod of Object.values(mutatorModules)) {
             mod.mutateLegacyData(data);

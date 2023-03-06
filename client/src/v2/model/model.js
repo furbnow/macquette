@@ -855,21 +855,6 @@ calc.fans_and_pumps_and_combi_keep_hot = function (data) {
  //---------------------------------------------------------------------------------------------*/
 
 calc.metabolic_losses_fans_and_pumps_gains = function (data) {
-    //Internal gains for "Metabolic" and "Losses"
-    data.gains_W['metabolic'] = new Array();
-    data.gains_W['losses'] = new Array();
-    for (m = 0; m < 12; m++) {
-        if (typeof data.space_heating === 'object') {
-            if (data.space_heating.use_utilfactor_forgains) {
-                data.gains_W['metabolic'][m] = 60 * data.occupancy;
-                data.gains_W['losses'][m] = -40 * data.occupancy;
-            } else {
-                data.gains_W['metabolic'][m] = 50 * data.occupancy;
-                data.gains_W['losses'][m] = -40 * data.occupancy;
-            }
-        }
-    }
-
     //  Fans and Pumps - SAP2012 table 5, p. 215
     let monthly_heat_gains = 0;
     data.gains_W['fans_and_pumps'] = new Array();
