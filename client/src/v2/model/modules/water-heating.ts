@@ -3,15 +3,17 @@ import { coalesceEmptyString } from '../../data-schemas/scenario/value-schemas';
 import { sum } from '../../helpers/array-reducers';
 import { cacheMonth } from '../../helpers/cache-decorators';
 import { Month } from '../enums/month';
-import {
-    constructWaterHeatingSystem,
-    extractHeatingSystemHelper,
-    isNonCombiWithPrimaryCircuit,
-    IWaterHeatingSystem,
-    WaterHeatingSystemInput,
-} from './water-heating/heating-system';
 
 export type WaterHeatingDependencies = {
+    heatingSystems: {
+        waterHeatingSystems: Array<{
+            distributionLossMonthly: (m: Month) => number;
+            combiLossMonthly: (m: Month) => number;
+            primaryCircuitLossMonthly: (m: Month) => number;
+            usefulOutputMonthly: (m: Month) => number;
+            pipeworkInsulatedFraction: number | null;
+        }>;
+    };
     waterCommon: {
         annualEnergyContentOverride: false | number;
         hotWaterEnergyContentByMonth: (m: Month) => number;
@@ -24,7 +26,6 @@ export type WaterHeatingDependencies = {
 };
 
 export type WaterHeatingInput = {
-    systems: WaterHeatingSystemInput[];
     storage: StorageInput;
     communityHeating: boolean;
     hotWaterStoreInDwelling: boolean;
@@ -51,16 +52,6 @@ type StorageSpecific =
 export function extractWaterHeatingInputFromLegacy(
     scenario: Scenario,
 ): WaterHeatingInput {
-    const systems = (scenario?.heating_systems ?? []).flatMap(
-        (legacySystem): [WaterHeatingSystemInput] | [] => {
-            const out = extractHeatingSystemHelper(legacySystem, scenario);
-            if (out === null) {
-                return [];
-            } else {
-                return [out];
-            }
-        },
-    );
     let storage: WaterHeatingInput['storage'];
     const { storage_type, contains_dedicated_solar_storage_or_WWHRS } =
         scenario?.water_heating ?? {};
@@ -113,7 +104,6 @@ export function extractWaterHeatingInputFromLegacy(
     const hotWaterStoreInDwelling =
         scenario?.water_heating?.hot_water_store_in_dwelling ?? false;
     return {
-        systems,
         storage,
         communityHeating,
         hotWaterStoreInDwelling,
@@ -121,14 +111,14 @@ export function extractWaterHeatingInputFromLegacy(
 }
 
 export class WaterHeating {
-    private systems: IWaterHeatingSystem[];
     constructor(
         private input: WaterHeatingInput,
         private dependencies: WaterHeatingDependencies,
-    ) {
-        this.systems = input.systems.map((input) =>
-            constructWaterHeatingSystem(input, dependencies),
-        );
+    ) {}
+
+    private get systems(): WaterHeatingDependencies['heatingSystems']['waterHeatingSystems'] {
+        // alias
+        return this.dependencies.heatingSystems.waterHeatingSystems;
     }
 
     @cacheMonth
@@ -271,12 +261,12 @@ export class WaterHeating {
             quantity: this.heatOutputAnnual,
             monthly: Month.all.map((m) => this.heatOutputMonthly(m)),
         };
-        const firstPrimaryCircuitLossHeatingSystem = this.systems.find(
-            isNonCombiWithPrimaryCircuit,
-        );
-        if (firstPrimaryCircuitLossHeatingSystem !== undefined) {
+        const primaryCircuitPipeworkInsulationFraction = this.systems
+            .map((system) => system.pipeworkInsulatedFraction)
+            .find((val) => val !== null);
+        if (primaryCircuitPipeworkInsulationFraction !== undefined) {
             water_heating.pipework_insulated_fraction =
-                firstPrimaryCircuitLossHeatingSystem.pipeworkInsulatedFraction;
+                primaryCircuitPipeworkInsulationFraction;
         }
     }
     /* eslint-enable */

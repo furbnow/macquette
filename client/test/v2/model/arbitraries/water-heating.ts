@@ -26,6 +26,16 @@ export function heatingSystemInputs(fuelNames: string[]) {
                 ] as const),
             ),
             fuel: fc.constantFrom(...fuelNames),
+            category: fc.constantFrom(
+                ...([
+                    'Combi boilers',
+                    'System boilers',
+                    'Heat pumps',
+                    'Room heaters',
+                    'Warm air systems',
+                    'Hot water only',
+                ] as const),
+            ),
         }),
     );
 }

@@ -22,6 +22,14 @@ export const heatingSystems = z.array(
                 'Storage combi boiler  55 litres',
             ]),
         ]),
+        category: z.enum([
+            'Combi boilers',
+            'System boilers',
+            'Heat pumps',
+            'Room heaters',
+            'Warm air systems',
+            'Hot water only',
+        ]),
     }),
 );
 

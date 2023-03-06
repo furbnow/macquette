@@ -32,6 +32,11 @@ import {
     GenerationInput,
 } from './modules/generation';
 import { HeatLoss } from './modules/heat-loss';
+import {
+    extractHeatingSystemsInputFromLegacy,
+    HeatingSystemInput,
+    HeatingSystems,
+} from './modules/heating-systems';
 import { InternalLosses } from './modules/internal-gains/losses';
 import { MetabolicGains } from './modules/internal-gains/metabolic';
 import {
@@ -95,6 +100,7 @@ export type Input = {
     waterHeating: WaterHeatingInput;
     generation: GenerationInput;
     currentEnergy: CurrentEnergyInput;
+    heatingSystems: HeatingSystemInput[];
 };
 
 export function extractInputFromLegacy(
@@ -125,6 +131,7 @@ export function extractInputFromLegacy(
             waterHeating: extractWaterHeatingInputFromLegacy(scenario),
             generation: extractGenerationInputFromLegacy(scenario),
             currentEnergy: extractCurrentEnergyInputFromLegacy(scenario),
+            heatingSystems: extractHeatingSystemsInputFromLegacy(scenario),
         });
     } catch (err) {
         if (err instanceof ModelError) {
@@ -210,7 +217,11 @@ export class CombinedModules {
             floors: this.floors,
             occupancy: this.occupancy,
         });
+        const heatingSystems = new HeatingSystems(input.heatingSystems, {
+            waterCommon: this.waterCommon,
+        });
         this.waterHeating = new WaterHeating(input.waterHeating, {
+            heatingSystems,
             waterCommon: this.waterCommon,
             solarHotWater: this.solarHotWater,
         });
