@@ -590,7 +590,7 @@ function add_heating_systems() {
                                 <input class="form-control" style="width: 55px" type="number" key="data.heating_systems.${z}.fraction_water_heating">
                             </div>
 
-                            <label>Instantaneous water heating?</label>
+                            <label>Instantaneous water heating at point of use?</label>
                             <div>
                                 <input type="checkbox" key="data.heating_systems.${z}.instantaneous_water_heating">
                             </div>
