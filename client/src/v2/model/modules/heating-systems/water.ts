@@ -193,10 +193,13 @@ export function extractWaterHeatingSystemInput(
     ) {
         return null;
     }
-    if (legacySystem.fraction_water_heating === 0) {
+    if (
+        legacySystem.fraction_water_heating === undefined ||
+        legacySystem.fraction_water_heating <= 0
+    ) {
         return null;
     }
-    const isInstantaneous = legacySystem.instantaneous_water_heating;
+    const isInstantaneous = legacySystem.instantaneous_water_heating ?? false;
     let combiLoss: WaterHeatingSystemInput['combiLoss'];
     if (isInstantaneous) {
         combiLoss = null;
@@ -204,6 +207,7 @@ export function extractWaterHeatingSystemInput(
         switch (legacySystem.combi_loss) {
             case '0':
             case 0:
+            case undefined:
                 // Category was "Combi boilers" but `combi_loss` was 0. This
                 // does not make sense, but occurs in some library items as a
                 // hack for skipping the combi loss calcs.
@@ -266,6 +270,7 @@ export function extractWaterHeatingSystemInput(
     } else {
         switch (legacySystem.primary_circuit_loss) {
             case 'No':
+            case undefined:
                 primaryCircuitLoss = null;
                 break;
             case 'Yes': {
@@ -323,7 +328,7 @@ export function extractWaterHeatingSystemInput(
         }
     }
     return {
-        fractionWaterHeating: legacySystem.fraction_water_heating,
+        fractionWaterHeating: legacySystem.fraction_water_heating ?? 0,
         combiLoss,
         primaryCircuitLoss,
         distributionLoss: !isInstantaneous,
