@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { legacyBoolean } from './value-schemas';
+import { legacyBoolean, stringyFloatSchema } from './value-schemas';
 
 export const heatingSystems = z.array(
     z
@@ -31,6 +31,7 @@ export const heatingSystems = z.array(
                 'Warm air systems',
                 'Hot water only',
             ]),
+            sfp: z.union([z.literal('undefined'), stringyFloatSchema]),
         })
         .partial()
         .extend({ fuel: z.string() }),

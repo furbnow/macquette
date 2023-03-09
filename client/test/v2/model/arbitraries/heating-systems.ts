@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { heatingSystems } from '../../../../src/v2/data-schemas/scenario/heating-systems';
 import { fcPartialRecord, merge } from '../../../helpers/arbitraries';
 
-import { legacyBoolean } from './values';
+import { legacyBoolean, stringySensibleFloat } from './values';
 
 export function heatingSystemInputs(
     fuelNames: string[],
@@ -44,6 +44,7 @@ export function heatingSystemInputs(
                         'Hot water only',
                     ] as const),
                 ),
+                sfp: fc.oneof(stringySensibleFloat(), fc.constant('undefined' as const)),
             }),
         ),
     );
