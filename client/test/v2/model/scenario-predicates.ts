@@ -316,6 +316,51 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
         return noBug;
     }
 
+    function heatingSystemCentralHeatingPumpBug(): Messages {
+        for (const system of inputs?.heating_systems ?? []) {
+            if (
+                // SAFETY: This (!= undefined) check is what the legacy model uses
+                // eslint-disable-next-line eqeqeq
+                system.central_heating_pump_inside != undefined &&
+                system.central_heating_pump_inside !== false &&
+                Number.isNaN((system.central_heating_pump as any) * 1.0)
+            ) {
+                return bug(
+                    'some heating system specified a central heating pump but did not specify its power',
+                    { heating_systems: inputs?.heating_systems, system },
+                );
+            }
+        }
+        return noBug;
+    }
+
+    function ventilationSpecificFanPowerBug(): Messages {
+        if (
+            new Array<string | undefined>('MEV', 'DEV', 'MV').includes(
+                inputs?.ventilation?.ventilation_type,
+            ) &&
+            Number.isNaN((inputs?.ventilation?.system_specific_fan_power as any) * 1.0)
+        ) {
+            return bug(
+                'ventilation system must specify specific fan power, but it did not',
+                { ventilation: inputs?.ventilation },
+            );
+        }
+        return noBug;
+    }
+
+    function heatingSystemWarmAirSystemBug(): Messages {
+        for (const system of inputs?.heating_systems ?? []) {
+            if (system.category === 'Warm air systems') {
+                return bug(
+                    'some heating system was a warm air system, but these are mishandled in the legacy model',
+                    { systems: inputs?.heating_systems, system },
+                );
+            }
+        }
+        return noBug;
+    }
+
     return combineBugCheckers([
         spaceHeatingEnergyRequirementsBugs,
         solarHotWaterFlagBug,
@@ -325,6 +370,9 @@ export function checkInputBugs(inputs: z.input<typeof scenarioSchema>) {
         fuelBugs,
         generationStringConcatenationBug,
         currentEnergyFeedInTariffBug,
+        heatingSystemCentralHeatingPumpBug,
+        ventilationSpecificFanPowerBug,
+        heatingSystemWarmAirSystemBug,
     ]);
 }
 

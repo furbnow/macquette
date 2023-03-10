@@ -108,6 +108,7 @@ export const scenarioSchema = z
                 EVP: z.array(z.object({ ventilation_rate: stringyFloatSchema })),
                 system_air_change_rate: nullableStringyFloat,
                 balanced_heat_recovery_efficiency: nullableStringyFloat,
+                system_specific_fan_power: nullableStringyFloat,
 
                 // Outputs
                 // Only one of the structural_infiltration values is relevant,

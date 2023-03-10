@@ -2,7 +2,7 @@
 
 In SAP 9, ventilation and infiltration are not clearly distinguished - any
 mechanism by which air flows through a building is referred to as
-"ventilation", with "infiltration being a sub-category of it. We have chosen to
+"ventilation", with "infiltration" being a sub-category of it. We have chosen to
 deviate from SAP by considering ventilation and infiltration as separate
 effects with separate modules.
 

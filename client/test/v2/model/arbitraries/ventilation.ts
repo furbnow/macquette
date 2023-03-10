@@ -31,5 +31,10 @@ export function arbVentilation() {
             fc.constant('n/a'),
             stringySensibleFloat(),
         ),
+        system_specific_fan_power: fc.oneof(
+            fc.constant('na'),
+            fc.constant('n/a'),
+            stringySensibleFloat(),
+        ),
     });
 }

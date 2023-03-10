@@ -45,6 +45,8 @@ export function heatingSystemInputs(
                     ] as const),
                 ),
                 sfp: fc.oneof(stringySensibleFloat(), fc.constant('undefined' as const)),
+                central_heating_pump_inside: legacyBoolean(),
+                central_heating_pump: stringySensibleFloat(),
             }),
         ),
     );

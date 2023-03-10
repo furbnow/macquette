@@ -32,6 +32,8 @@ export const heatingSystems = z.array(
                 'Hot water only',
             ]),
             sfp: z.union([z.literal('undefined'), stringyFloatSchema]),
+            central_heating_pump_inside: legacyBoolean,
+            central_heating_pump: stringyFloatSchema,
         })
         .partial()
         .extend({ fuel: z.string() }),

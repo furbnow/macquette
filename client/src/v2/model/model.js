@@ -70,7 +70,6 @@ calc.run = function (datain) {
     setBlankLegacyOutputs(calc.data)
     combinedModules.mutateLegacyData(calc.data)
 
-    calc.metabolic_losses_fans_and_pumps_gains(calc.data);
     calc.temperature(calc.data);
     calc.fans_and_pumps_and_combi_keep_hot(calc.data);
     calc.gains_summary(calc.data);
@@ -834,80 +833,6 @@ calc.fans_and_pumps_and_combi_keep_hot = function (data) {
     }
 };
 
-
-/*---------------------------------------------------------------------------------------------
- // gains
- // Calculates gains for "metabolic", "losses", "fans and pumps"
- //
- // Inputs from other modules:
- //     - data.space_heating.use_utilfactor_forgains
- //     - data.heating_systems
- //	- data.occupancy
- //	- data.ventilation.ventilation_type
- //	- data.ventilation.system_specific_fan_power
- //	- data.volume
- //
- // Global Outputs:
- //	- data.gains_W['fans_and_pumps']
- //	- data.gains_W['metabolic']
- //	- data.gains_W['losses']
- //
- //---------------------------------------------------------------------------------------------*/
-
-calc.metabolic_losses_fans_and_pumps_gains = function (data) {
-    //  Fans and Pumps - SAP2012 table 5, p. 215
-    let monthly_heat_gains = 0;
-    data.gains_W['fans_and_pumps'] = new Array();
-
-    // From heating systems
-    data.heating_systems.forEach(function (system) {
-        if (system.category == 'Warm air system') {
-            monthly_heat_gains += 1.0 * system.sfp * 0.04 * data.volume;
-        } else if (system.central_heating_pump_inside != undefined && system.central_heating_pump_inside !== false) {
-            let power = system.central_heating_pump * 1000 / (24 * 365); // kWh/year to W
-            monthly_heat_gains += power;
-        }
-    });
-    // Note: From if there was an oil boiler with pump inside dwelling we should add 10W of gains, the problem is that i don't know where in MHEP we can as this. Therefor we assume that in the case of havin an oil boiler the pump is outside :(
-
-    // From ventilation
-    let ventilation_type = '';
-    switch (data.ventilation.ventilation_type) {
-        case 'NV':
-        case 'IE':
-        case 'PS':
-            ventilation_type = 'd'; // Natural ventilation or whole house positive input ventilation from loft'
-            break;
-        case 'DEV':
-        case'MEV':
-            ventilation_type = 'c'; // Whole house extract ventilation or positive input ventilation from outside
-            break;
-        case 'MV':
-            ventilation_type = 'b'; // Balanced mechanical ventilation without heat recovery (MV)
-            break;
-        case 'MVHR':
-            ventilation_type = 'a'; //Balanced mechanical ventilation with heat recovery (MVHR)
-            break;
-    }
-    switch (ventilation_type) {
-        case 'a':  //Balanced mechanical ventilation with heat recovery (MVHR), the heat gains in this case are included in the MVHR efficiency
-        case 'd':  //Positive input ventilation (from loft space)
-            // Do nothing
-            break;
-        case 'c':  //Positive input ventilation (from outside) or mechanical extract ventilation
-            monthly_heat_gains += 2.5 * data.ventilation.system_specific_fan_power * 0.12 * data.volume; // monthly_heat_gains += IUF * SFP *  0.12 *  V;
-            break;
-        case 'b':  //Balanced mechanical ventilation without heat recovery (MV)
-            monthly_heat_gains += 2.5 * data.ventilation.system_specific_fan_power * 0.06 * data.volume; //monthly_heat_gains += IUF * SFP *  0.06 *  V;
-            break;
-    }
-
-    for (let i = 0; i < 12; i++) {
-        data.gains_W['fans_and_pumps'][i] = monthly_heat_gains;
-    }
-
-};
-
 /*---------------------------------------------------------------------------------------------
  // gains_summary
  // Calculates total solar gains, total internal gains and both together
@@ -1044,7 +969,6 @@ calc.fabric_energy_efficiency = function (data) {
     setBlankLegacyOutputs(data_FEE)
     combinedModules.mutateLegacyData(data_FEE)
 
-    calc.metabolic_losses_fans_and_pumps_gains(data_FEE);
     data_FEE.gains_W['fans_and_pumps'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     calc.temperature(data_FEE);
     calc.fans_and_pumps_and_combi_keep_hot(data_FEE);

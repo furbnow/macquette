@@ -1,12 +1,21 @@
 import { Scenario } from '../../../data-schemas/scenario';
 import {
+    extractFansAndPumpsHeatingSystemInput,
+    FansAndPumpsHeatingSystem,
+    FansAndPumpsHeatingSystemDependencies,
+    FansAndPumpsHeatingSystemInput,
+} from './fans-and-pumps';
+import {
     extractWaterHeatingSystemInput,
     WaterHeatingSystem,
     WaterHeatingSystemDependencies,
     WaterHeatingSystemInput,
 } from './water';
 
-export type HeatingSystemInput = { waterHeating: null | WaterHeatingSystemInput };
+export type HeatingSystemInput = {
+    waterHeating: null | WaterHeatingSystemInput;
+    fansAndPumps: null | FansAndPumpsHeatingSystemInput;
+};
 
 export function extractHeatingSystemsInputFromLegacy(
     scenario: Scenario,
@@ -34,10 +43,12 @@ function extractSingleHeatingSystemInput(
 ): HeatingSystemInput {
     return {
         waterHeating: extractWaterHeatingSystemInput(legacySystem, scenario),
+        fansAndPumps: extractFansAndPumpsHeatingSystemInput(legacySystem),
     };
 }
 
-export type HeatingSystemDependencies = WaterHeatingSystemDependencies;
+export type HeatingSystemDependencies = WaterHeatingSystemDependencies &
+    FansAndPumpsHeatingSystemDependencies;
 
 export class HeatingSystems {
     constructor(
@@ -45,11 +56,28 @@ export class HeatingSystems {
         private dependencies: HeatingSystemDependencies,
     ) {}
 
+    /** A view of the heating systems which heat domestic hot water */
     get waterHeatingSystems(): WaterHeatingSystem[] {
         return this.input.flatMap((inputSystem) => {
             if (inputSystem.waterHeating !== null) {
                 return [
                     new WaterHeatingSystem(inputSystem.waterHeating, this.dependencies),
+                ];
+            } else {
+                return [];
+            }
+        });
+    }
+
+    /** A view of the heating systems which have fans and/or pumps */
+    get fansAndPumpsHeatingSystems(): FansAndPumpsHeatingSystem[] {
+        return this.input.flatMap((inputSystem) => {
+            if (inputSystem.fansAndPumps !== null) {
+                return [
+                    new FansAndPumpsHeatingSystem(
+                        inputSystem.fansAndPumps,
+                        this.dependencies,
+                    ),
                 ];
             } else {
                 return [];

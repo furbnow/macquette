@@ -14,6 +14,7 @@ type IntermittentExtract = {
 type PositiveInputOrMechanicalExtract = {
     type: 'positive input or mechanical extract';
     systemAirChangeRate: number;
+    systemSpecificFanPower: number; // W/(l/s)
 };
 type PassiveStack = {
     type: 'passive stack';
@@ -29,6 +30,7 @@ type MechanicalVentilationWithHeatRecovery = {
 type MechanicalVentilation = {
     type: 'mechanical ventilation';
     systemAirChangeRate: number;
+    systemSpecificFanPower: number; // W/(l/s)
 };
 
 export type VentilationInput =
@@ -68,6 +70,8 @@ export function extractVentilationInputFromLegacy(scenario: Scenario): Ventilati
             return {
                 type: 'positive input or mechanical extract',
                 systemAirChangeRate,
+                systemSpecificFanPower:
+                    coalesceEmptyString(ventilation?.system_specific_fan_power, 0) ?? 0,
             };
         }
         case 'PS': {
@@ -91,6 +95,8 @@ export function extractVentilationInputFromLegacy(scenario: Scenario): Ventilati
             return {
                 type: 'mechanical ventilation',
                 systemAirChangeRate,
+                systemSpecificFanPower:
+                    coalesceEmptyString(ventilation?.system_specific_fan_power, 0) ?? 0,
             };
         }
     }
@@ -189,6 +195,31 @@ export class Ventilation {
     @cache
     get heatLossAverage(): number {
         return mean(Month.all.map((m) => this.heatLossMonthly(m) ?? 0));
+    }
+
+    get fanHeatGain(): number {
+        // SAP tables 4h and 5a
+        switch (this.input.type) {
+            case 'unplanned/natural ventilation':
+            case 'intermittent extract':
+            case 'passive stack':
+            case 'mechanical ventilation with heat recovery':
+                return 0;
+            case 'mechanical ventilation':
+                return (
+                    2.5 *
+                    this.input.systemSpecificFanPower *
+                    0.06 *
+                    this.dependencies.floors.totalVolume
+                );
+            case 'positive input or mechanical extract':
+                return (
+                    2.5 *
+                    this.input.systemSpecificFanPower *
+                    0.12 *
+                    this.dependencies.floors.totalVolume
+                );
+        }
     }
 
     /* eslint-disable

@@ -37,6 +37,7 @@ import {
     HeatingSystemInput,
     HeatingSystems,
 } from './modules/heating-systems';
+import { FansAndPumpsGains } from './modules/internal-gains/fans-and-pumps';
 import { InternalLosses } from './modules/internal-gains/losses';
 import { MetabolicGains } from './modules/internal-gains/metabolic';
 import {
@@ -161,6 +162,7 @@ export class CombinedModules {
     fuels: Fuels;
     metabolicGains: MetabolicGains;
     internalLosses: InternalLosses;
+    fansAndPumpsGains: FansAndPumpsGains;
 
     constructor(input: Input) {
         const { region } = input;
@@ -218,6 +220,7 @@ export class CombinedModules {
             occupancy: this.occupancy,
         });
         const heatingSystems = new HeatingSystems(input.heatingSystems, {
+            floors: this.floors,
             waterCommon: this.waterCommon,
         });
         this.waterHeating = new WaterHeating(input.waterHeating, {
@@ -236,6 +239,10 @@ export class CombinedModules {
         });
         this.metabolicGains = new MetabolicGains(null, { occupancy: this.occupancy });
         this.internalLosses = new InternalLosses(null, { occupancy: this.occupancy });
+        this.fansAndPumpsGains = new FansAndPumpsGains(null, {
+            ventilation: this.ventilation,
+            heatingSystems,
+        });
     }
 
     static fromLegacy(datain: unknown): Result<CombinedModules, ZodError | ModelError> {
@@ -283,6 +290,7 @@ export class CombinedModules {
             this.currentEnergy,
             this.metabolicGains,
             this.internalLosses,
+            this.fansAndPumpsGains,
         ];
         for (const mod of Object.values(mutatorModules)) {
             mod.mutateLegacyData(data);
