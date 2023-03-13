@@ -584,9 +584,13 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         <br />
                         The planning authority for properties within National Parks is
                         usually the National Park Authority rather than the local
-                        authority. A map of National Park areas{' '}
-                        <a href="https://naturalengland-defra.opendata.arcgis.com/datasets/d333c7529754444894e2d7f5044d1bbf_0/explore?location=55.072328%2C-1.721750%2C8.45">
-                            can be found here
+                        authority. You can check the planning authority at{' '}
+                        <a
+                            rel="noreferrer"
+                            target="_blank"
+                            href="https://www.planningportal.co.uk/find-your-local-planning-authority"
+                        >
+                            the Planning Portal
                         </a>
                         .
                     </small>
