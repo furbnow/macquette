@@ -47,7 +47,7 @@ export function ChoiceSection<T extends string>(props: ChoiceSectionProps<T>) {
             <Select
                 options={props.choices}
                 selected={props.value}
-                callback={props.onChange}
+                onChange={props.onChange}
             />
             {choice?.child}
         </>

@@ -246,7 +246,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                     <Select
                         className="input--auto-width"
                         selected={state.selectedFloorType}
-                        callback={(selectedFloorType) => {
+                        onChange={(selectedFloorType) => {
                             dispatch({
                                 type: 'merge state',
                                 toMerge: {

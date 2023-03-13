@@ -49,7 +49,7 @@ export function Component({
                         { value: 'outside air', display: 'Outside air' },
                     ]}
                     selected={state.exposedTo}
-                    callback={(value) =>
+                    onChange={(value) =>
                         dispatch({
                             type: 'exposed floor/merge state',
                             payload: { exposedTo: value },

@@ -269,7 +269,7 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
                                     display: lib.name,
                                 }))}
                                 selected={selectedLibrary.id}
-                                callback={selectLibraryById}
+                                onChange={selectLibraryById}
                             />
                         ) : (
                             <div

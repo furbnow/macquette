@@ -632,7 +632,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                                 display: region.name,
                             }))}
                             selected={region === null ? null : region.name}
-                            callback={(val) =>
+                            onChange={(val) =>
                                 dispatchMerge({
                                     region: withUserData(box, new Region(val)),
                                 })
@@ -699,7 +699,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             },
                         ]}
                         selected={state.locationDensity}
-                        callback={(val) => dispatchMerge({ locationDensity: val })}
+                        onChange={(val) => dispatchMerge({ locationDensity: val })}
                     />
                 </div>
 
@@ -715,7 +715,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             { value: 'sheltered', display: 'sheltered' },
                         ]}
                         selected={state.exposure}
-                        callback={(val) => dispatchMerge({ exposure: val })}
+                        onChange={(val) => dispatchMerge({ exposure: val })}
                     />
                 </div>
             </FormGrid>
@@ -756,7 +756,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             { value: 'VLOW', display: 'very low' },
                         ]}
                         selected={state.floodingRiversAndSea}
-                        callback={(val) => dispatchMerge({ floodingRiversAndSea: val })}
+                        onChange={(val) => dispatchMerge({ floodingRiversAndSea: val })}
                     />
                 </div>
 
@@ -771,7 +771,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             { value: 'VLOW', display: 'very low' },
                         ]}
                         selected={state.floodingSurfaceWater}
-                        callback={(val) =>
+                        onChange={(val) =>
                             dispatchMerge({
                                 floodingSurfaceWater: val,
                             })
@@ -794,7 +794,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             },
                         ]}
                         selected={state.floodingReservoirs}
-                        callback={(val) =>
+                        onChange={(val) =>
                             dispatchMerge({
                                 floodingReservoirs: val,
                             })
@@ -881,7 +881,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             { value: '30', display: 'greater than 30%' },
                         ]}
                         selected={state.radon}
-                        callback={(val) => dispatchMerge({ radon: val })}
+                        onChange={(val) => dispatchMerge({ radon: val })}
                     />{' '}
                     chance of a high level of radon
                 </span>

@@ -9,7 +9,7 @@ type BasicSelectProps<T> = {
         display: string;
     }[];
     selected: T | null;
-    callback: (value: T) => void;
+    onChange: (value: T) => void;
 };
 
 export type SelectProps<T> = Shadow<PropsOf<'select'>, BasicSelectProps<T>>;
@@ -18,7 +18,7 @@ const UNSELECTED_VALUE = '__unselected__';
 
 export function Select<T extends string>({
     options,
-    callback,
+    onChange,
     selected,
     ...passthrough
 }: SelectProps<T>) {
@@ -38,7 +38,7 @@ export function Select<T extends string>({
     }
     return (
         <select
-            onChange={(evt) => callback(castTargetValue(evt))}
+            onChange={(evt) => onChange(castTargetValue(evt))}
             value={selected ?? UNSELECTED_VALUE}
             {...passthrough}
         >
