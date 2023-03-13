@@ -393,7 +393,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                             <MyTd>
                                 <CheckboxInput
                                     checked={moduleEnabled}
-                                    callback={(checked) =>
+                                    onChange={(checked) =>
                                         dispatchMerge({
                                             moduleEnabled: checked,
                                         })

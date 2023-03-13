@@ -609,7 +609,7 @@ function Generation({
                     <CheckboxInput
                         id="onsite-generation"
                         checked={generation.type === 'onsite'}
-                        callback={(checked) =>
+                        onChange={(checked) =>
                             dispatch({
                                 type: 'current energy/update generation',
                                 value: {

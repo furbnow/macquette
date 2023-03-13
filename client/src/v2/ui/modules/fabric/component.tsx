@@ -128,7 +128,7 @@ function SelectBulkElements({
                                 <td>
                                     <CheckboxInput
                                         checked={selected.includes(item.id)}
-                                        callback={() => toggleSelected(item.id)}
+                                        onChange={() => toggleSelected(item.id)}
                                     />
                                 </td>
                                 <td className="text-nowrap" style={{ width: 0 }}>

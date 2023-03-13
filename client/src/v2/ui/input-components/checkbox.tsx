@@ -5,12 +5,12 @@ import { Shadow } from '../../helpers/shadow-object-type';
 
 type BasicCheckboxProps = {
     checked: boolean;
-    callback: (checked: boolean) => void;
+    onChange: (checked: boolean) => void;
 };
 
 export type CheckboxProps = Shadow<PropsOf<'input'>, BasicCheckboxProps>;
 
-export function CheckboxInput({ checked, callback, ...passthrough }: CheckboxProps) {
+export function CheckboxInput({ checked, onChange, ...passthrough }: CheckboxProps) {
     return (
         <input
             type="checkbox"
@@ -19,7 +19,7 @@ export function CheckboxInput({ checked, callback, ...passthrough }: CheckboxPro
                 if (passthrough.readOnly === true || passthrough.disabled === true) {
                     return;
                 } else {
-                    callback(evt.target.checked);
+                    onChange(evt.target.checked);
                 }
             }}
             {...passthrough}
