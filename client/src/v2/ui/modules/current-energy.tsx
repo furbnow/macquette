@@ -341,7 +341,7 @@ function ConsumptionTable({
                                         <NumberInput
                                             id={`consumption-row-${fuelName}`}
                                             value={annualEnergy}
-                                            callback={(value) =>
+                                            onChange={(value) =>
                                                 dispatch({
                                                     type: 'current energy/update fuel use',
                                                     fuelName: fuelName,
@@ -627,7 +627,7 @@ function Generation({
                             id="generation-annual-kwh"
                             value={generation.onSite.annualEnergy}
                             unit="kWh"
-                            callback={(value) =>
+                            onChange={(value) =>
                                 dispatch({
                                     type: 'current energy/update generation',
                                     value: {
@@ -644,7 +644,7 @@ function Generation({
                             id="generation-fraction-onsite"
                             style={{ width: '5ch' }}
                             value={generation.onSite.fractionUsedOnsite}
-                            callback={(value) =>
+                            onChange={(value) =>
                                 dispatch({
                                     type: 'current energy/update generation',
                                     value: {
@@ -660,7 +660,7 @@ function Generation({
                             <NumberInput
                                 id="generation-fit-income"
                                 value={generation.onSite.fitAnnualIncome}
-                                callback={(value) =>
+                                onChange={(value) =>
                                     dispatch({
                                         type: 'current energy/update generation',
                                         value: {

@@ -480,7 +480,7 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                             <MyNumericInput
                                 id={`e${wall.id}-length`}
                                 value={wall.inputs.area.dimensions.length}
-                                callback={(length) =>
+                                onChange={(length) =>
                                     dispatch({
                                         type: 'fabric/merge wall input',
                                         id: wall.id,
@@ -511,7 +511,7 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                             <MyNumericInput
                                 id={`e${wall.id}-height`}
                                 value={wall.inputs.area.dimensions.height}
-                                callback={(height) =>
+                                onChange={(height) =>
                                     dispatch({
                                         type: 'fabric/merge wall input',
                                         id: wall.id,
@@ -548,7 +548,7 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                             <MyNumericInput
                                 id={`e${wall.id}-area`}
                                 value={wall.inputs.area.specific.area}
-                                callback={(area) =>
+                                onChange={(area) =>
                                     dispatch({
                                         type: 'fabric/merge wall input',
                                         id: wall.id,

@@ -65,7 +65,7 @@ export function Component({ state, dispatch }: Props) {
                             ? null
                             : state.ventilationCombinedArea * 1_000_000
                     }
-                    callback={(value) =>
+                    onChange={(value) =>
                         dispatch({
                             type: 'suspended floor/merge state',
                             payload: {
@@ -95,7 +95,7 @@ export function Component({ state, dispatch }: Props) {
                 <NumberInput
                     id={underFloorId}
                     value={state.underFloorSpacePerimeter}
-                    callback={(value) =>
+                    onChange={(value) =>
                         dispatch({
                             type: 'suspended floor/merge state',
                             payload: { underFloorSpacePerimeter: value },

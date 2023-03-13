@@ -39,7 +39,7 @@ export function Component({
             <NumberInput
                 id={depthId}
                 value={state.basementDepth}
-                callback={(value) =>
+                onChange={(value) =>
                     dispatch({
                         type: 'unheated basement/merge state',
                         payload: { basementDepth: value },

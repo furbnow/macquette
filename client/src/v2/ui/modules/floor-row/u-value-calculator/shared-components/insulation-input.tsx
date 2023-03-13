@@ -32,7 +32,7 @@ export function InsulationInput({
                 id={thicknessId}
                 disabled={!thicknessRequired}
                 value={thicknessRequired && thickness !== null ? thickness * 1000 : null}
-                callback={(value) =>
+                onChange={(value) =>
                     onChange({
                         thickness: value === null ? null : value / 1000,
                     })

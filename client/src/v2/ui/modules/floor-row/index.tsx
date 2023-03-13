@@ -275,7 +275,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                     {state.selectedFloorType === 'custom' ? (
                         <NumberInput
                             value={state.perFloorTypeSpec.custom.uValue}
-                            callback={(value) =>
+                            onChange={(value) =>
                                 dispatch({
                                     type: 'set custom u-value',
                                     uValue: value ?? 0,
@@ -291,7 +291,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                     <NumberInput
                         disabled={!exposedPerimeterEnabled}
                         value={exposedPerimeterEnabled ? state.exposedPerimeter : null}
-                        callback={(exposedPerimeter) =>
+                        onChange={(exposedPerimeter) =>
                             dispatch({
                                 type: 'merge state',
                                 toMerge: { exposedPerimeter: exposedPerimeter ?? 0 },
@@ -308,7 +308,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                 <td>
                     <NumberInput
                         value={state.area}
-                        callback={(area) =>
+                        onChange={(area) =>
                             dispatch({
                                 type: 'merge state',
                                 toMerge: { area: area ?? 0 },

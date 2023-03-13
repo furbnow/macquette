@@ -5,7 +5,7 @@ import { Shadow } from '../../helpers/shadow-object-type';
 
 type BasicNumberInputProps = {
     value: number | null;
-    callback: (value: number | null) => void;
+    onChange: (value: number | null) => void;
     unit?: string;
 };
 
@@ -13,7 +13,7 @@ export type NumberInputProps = Shadow<PropsOf<'input'>, BasicNumberInputProps>;
 
 export function NumberInput({
     value: outerValue,
-    callback,
+    onChange,
     style: styleProp,
     unit,
     ...passthroughProps
@@ -28,9 +28,9 @@ export function NumberInput({
         function handleBlur() {
             if (modifiedValue !== null) {
                 if (modifiedValue === '') {
-                    callback(null);
+                    onChange(null);
                 } else if (parseable) {
-                    callback(parseFloat(modifiedValue));
+                    onChange(parseFloat(modifiedValue));
                 }
             }
         }

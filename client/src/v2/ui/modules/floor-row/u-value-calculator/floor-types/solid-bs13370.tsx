@@ -57,7 +57,7 @@ export function Component({
                     value={
                         state.wallThickness === null ? null : state.wallThickness * 1000
                     }
-                    callback={(value) =>
+                    onChange={(value) =>
                         mergeInput({
                             wallThickness: value === null ? null : value / 1000,
                         })
@@ -94,7 +94,7 @@ export function Component({
                             {' '}
                             <NumberInput
                                 value={state.groundConductivity.customValue}
-                                callback={(value) =>
+                                onChange={(value) =>
                                     mergeInput({
                                         groundConductivity: { customValue: value },
                                     })
@@ -169,7 +169,7 @@ function HorizontalEdgeInsulation({
             </LabelWithInfo>
             <NumberInput
                 value={state.width === null ? null : state.width * 1000}
-                callback={(value) =>
+                onChange={(value) =>
                     dispatch({
                         type: 'solid floor (bs13370)/merge input',
                         payload: {
@@ -224,7 +224,7 @@ function VerticalEdgeInsulation({
             <NumberInput
                 id={depthId}
                 value={state.depth === null ? null : state.depth * 1000}
-                callback={(value) =>
+                onChange={(value) =>
                     dispatch({
                         type: 'solid floor (bs13370)/merge input',
                         payload: {

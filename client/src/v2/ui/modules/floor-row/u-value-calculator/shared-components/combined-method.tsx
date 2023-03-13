@@ -168,7 +168,7 @@ function Layer({ layer, dispatch, index }: LayerProps) {
                 <NumberInput
                     value={thickness !== null ? thickness * 1000 : null}
                     unit="mm"
-                    callback={(value) =>
+                    onChange={(value) =>
                         dispatch({
                             type: 'merge layer state',
                             layerIndex: index,
@@ -207,7 +207,7 @@ function Layer({ layer, dispatch, index }: LayerProps) {
                     value={bridging.proportion?.asPercent ?? null}
                     disabled={bridging.material === null}
                     unit="%"
-                    callback={(value) =>
+                    onChange={(value) =>
                         dispatch({
                             type: 'merge layer state',
                             layerIndex: index,

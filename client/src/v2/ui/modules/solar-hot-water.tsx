@@ -213,7 +213,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                         <MyTd>
                             <MyNumericInput
                                 value={state.modelInput.collector.apertureArea}
-                                callback={(value) =>
+                                onChange={(value) =>
                                     dispatchMerge({
                                         modelInput: {
                                             collector: {
@@ -236,7 +236,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                     state.modelInput.collector.testCertificate
                                         .zeroLossEfficiency
                                 }
-                                callback={(value) =>
+                                onChange={(value) =>
                                     dispatchMerge({
                                         modelInput: {
                                             collector: {
@@ -261,7 +261,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                     state.modelInput.collector.testCertificate
                                         .linearHeatLossCoefficient
                                 }
-                                callback={(value) =>
+                                onChange={(value) =>
                                     dispatchMerge({
                                         modelInput: {
                                             collector: {
@@ -286,7 +286,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                     state.modelInput.collector.testCertificate
                                         .secondOrderHeatLossCoefficient
                                 }
-                                callback={(value) =>
+                                onChange={(value) =>
                                     dispatchMerge({
                                         modelInput: {
                                             collector: {
@@ -347,7 +347,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                         <MyTd>
                             <MyNumericInput
                                 value={state.modelInput.collector.apertureArea}
-                                callback={(value) =>
+                                onChange={(value) =>
                                     dispatchMerge({
                                         modelInput: {
                                             collector: {
@@ -493,7 +493,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                             <MyTd>
                                 <MyNumericInput
                                     value={state.modelInput.collector.inclination}
-                                    callback={(value) =>
+                                    onChange={(value) =>
                                         dispatchMerge({
                                             modelInput: {
                                                 collector: { inclination: value },
@@ -611,7 +611,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                             <MyTd>
                                 <MyNumericInput
                                     value={state.modelInput.dedicatedSolarStorageVolume}
-                                    callback={(value) =>
+                                    onChange={(value) =>
                                         dispatchMerge({
                                             modelInput: {
                                                 dedicatedSolarStorageVolume: value,
@@ -629,7 +629,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                             <MyTd>
                                 <MyNumericInput
                                     value={state.modelInput.combinedCylinderVolume}
-                                    callback={(value) =>
+                                    onChange={(value) =>
                                         dispatchMerge({
                                             modelInput: { combinedCylinderVolume: value },
                                         })

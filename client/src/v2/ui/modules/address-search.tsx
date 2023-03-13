@@ -670,7 +670,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             id="elevation"
                             value={elevation}
                             unit="m"
-                            callback={(val) =>
+                            onChange={(val) =>
                                 dispatchMerge({
                                     elevation: withUserData(state.elevation, val),
                                 })
