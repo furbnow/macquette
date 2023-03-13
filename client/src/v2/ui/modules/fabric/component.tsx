@@ -317,7 +317,7 @@ function ThermalMassParameter({ state, dispatch }: SubProps) {
                 ]}
                 labelClasses={['mb-7']}
                 radioClasses={['mr-7', 'big-checkbox']}
-                selected={state.thermalMassParameter}
+                value={state.thermalMassParameter}
                 onChange={(value) =>
                     dispatch({
                         type: 'fabric/set thermal mass parameter',
@@ -453,7 +453,7 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                         ]}
                         labelClasses={['mb-0']}
                         radioClasses={['mr-3']}
-                        selected={wall.inputs.area.type}
+                        value={wall.inputs.area.type}
                         onChange={(value) => {
                             dispatch({
                                 type: 'fabric/merge wall input',

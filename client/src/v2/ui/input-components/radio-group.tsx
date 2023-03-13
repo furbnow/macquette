@@ -5,7 +5,7 @@ export type RadioGroupProps<T> = {
         value: T;
         display: string;
     }[];
-    selected: T | null;
+    value: T | null;
     onChange: (value: T) => void;
     radioClasses?: string[];
     labelClasses?: string[];
@@ -15,7 +15,7 @@ export type RadioGroupProps<T> = {
 export function RadioGroup<T extends string>({
     options,
     onChange,
-    selected,
+    value,
     radioClasses = [],
     labelClasses = [],
     disabled = false,
@@ -29,7 +29,7 @@ export function RadioGroup<T extends string>({
 
     return (
         <>
-            {options.map(({ value, display }, idx) => (
+            {options.map(({ value: optionValue, display }, idx) => (
                 <label
                     key={idx}
                     className={['radio', 'd-flex', ...labelClasses].join(' ')}
@@ -39,8 +39,8 @@ export function RadioGroup<T extends string>({
                         type="radio"
                         className={radioClasses.join(' ')}
                         id={`${groupId}-${idx}`}
-                        value={value}
-                        checked={selected === value}
+                        value={optionValue}
+                        checked={optionValue === value}
                         disabled={disabled}
                         onChange={(evt) => {
                             console.log(evt);
