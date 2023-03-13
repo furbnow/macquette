@@ -8,7 +8,7 @@ type BasicSelectProps<T> = {
         value: T;
         display: string;
     }[];
-    selected: T | null;
+    value: T | null;
     onChange: (value: T) => void;
 };
 
@@ -19,7 +19,7 @@ const UNSELECTED_VALUE = '__unselected__';
 export function Select<T extends string>({
     options,
     onChange,
-    selected,
+    value,
     ...passthrough
 }: SelectProps<T>) {
     function castTargetValue(evt: React.ChangeEvent<HTMLSelectElement>) {
@@ -27,7 +27,7 @@ export function Select<T extends string>({
         return evt.target.value as T;
     }
     let unselected;
-    if (selected === null) {
+    if (value === null) {
         unselected = (
             <option key={null} value={UNSELECTED_VALUE} disabled>
                 Select...
@@ -39,7 +39,7 @@ export function Select<T extends string>({
     return (
         <select
             onChange={(evt) => onChange(castTargetValue(evt))}
-            value={selected ?? UNSELECTED_VALUE}
+            value={value ?? UNSELECTED_VALUE}
             {...passthrough}
         >
             {unselected}

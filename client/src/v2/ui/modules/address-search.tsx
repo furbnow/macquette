@@ -631,7 +631,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                                 value: region.name,
                                 display: region.name,
                             }))}
-                            selected={region === null ? null : region.name}
+                            value={region === null ? null : region.name}
                             onChange={(val) =>
                                 dispatchMerge({
                                     region: withUserData(box, new Region(val)),
@@ -698,7 +698,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                                     'Dense urban (mostly closely spaced buildings of >3 storeys)',
                             },
                         ]}
-                        selected={state.locationDensity}
+                        value={state.locationDensity}
                         onChange={(val) => dispatchMerge({ locationDensity: val })}
                     />
                 </div>
@@ -714,7 +714,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             { value: 'moderate', display: 'moderate' },
                             { value: 'sheltered', display: 'sheltered' },
                         ]}
-                        selected={state.exposure}
+                        value={state.exposure}
                         onChange={(val) => dispatchMerge({ exposure: val })}
                     />
                 </div>
@@ -755,7 +755,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             { value: 'LOW', display: 'low' },
                             { value: 'VLOW', display: 'very low' },
                         ]}
-                        selected={state.floodingRiversAndSea}
+                        value={state.floodingRiversAndSea}
                         onChange={(val) => dispatchMerge({ floodingRiversAndSea: val })}
                     />
                 </div>
@@ -770,7 +770,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             { value: 'LOW', display: 'low' },
                             { value: 'VLOW', display: 'very low' },
                         ]}
-                        selected={state.floodingSurfaceWater}
+                        value={state.floodingSurfaceWater}
                         onChange={(val) =>
                             dispatchMerge({
                                 floodingSurfaceWater: val,
@@ -793,7 +793,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                                 display: 'not within extent of flooding',
                             },
                         ]}
-                        selected={state.floodingReservoirs}
+                        value={state.floodingReservoirs}
                         onChange={(val) =>
                             dispatchMerge({
                                 floodingReservoirs: val,
@@ -880,7 +880,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             { value: '10-30', display: '10-30%' },
                             { value: '30', display: 'greater than 30%' },
                         ]}
-                        selected={state.radon}
+                        value={state.radon}
                         onChange={(val) => dispatchMerge({ radon: val })}
                     />{' '}
                     chance of a high level of radon

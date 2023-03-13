@@ -48,7 +48,7 @@ export function Component({
                         { value: 'unheated space', display: 'Unheated space' },
                         { value: 'outside air', display: 'Outside air' },
                     ]}
-                    selected={state.exposedTo}
+                    value={state.exposedTo}
                     onChange={(value) =>
                         dispatch({
                             type: 'exposed floor/merge state',

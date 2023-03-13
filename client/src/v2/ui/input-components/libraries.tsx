@@ -268,7 +268,7 @@ export function SelectLibraryItem<T extends MinimalLibraryItem>({
                                     value: lib.id,
                                     display: lib.name,
                                 }))}
-                                selected={selectedLibrary.id}
+                                value={selectedLibrary.id}
                                 onChange={selectLibraryById}
                             />
                         ) : (

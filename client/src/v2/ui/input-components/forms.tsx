@@ -46,7 +46,7 @@ export function ChoiceSection<T extends string>(props: ChoiceSectionProps<T>) {
             <label htmlFor={id}>{props.selectText}</label>
             <Select
                 options={props.choices}
-                selected={props.value}
+                value={props.value}
                 onChange={props.onChange}
             />
             {choice?.child}

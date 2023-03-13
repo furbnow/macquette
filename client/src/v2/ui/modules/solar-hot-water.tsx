@@ -327,9 +327,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                     },
                                     { value: 'unglazed', display: 'Unglazed' },
                                 ]}
-                                selected={
-                                    state.modelInput.collector.estimate.collectorType
-                                }
+                                value={state.modelInput.collector.estimate.collectorType}
                                 onChange={(value) =>
                                     dispatchMerge({
                                         modelInput: {
@@ -363,7 +361,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                     { value: 'exact', display: 'exact' },
                                     { value: 'gross', display: 'gross' },
                                 ]}
-                                selected={
+                                value={
                                     state.modelInput.collector.estimate.apertureAreaType
                                 }
                                 onChange={(value) =>
@@ -413,7 +411,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                             display: 'Electrically powered',
                                         },
                                     ]}
-                                    selected={state.pumpType}
+                                    value={state.pumpType}
                                     onChange={(value) =>
                                         dispatchMerge({
                                             pumpType: value,
@@ -433,7 +431,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                         },
                                         { value: 'estimate', display: 'Estimated' },
                                     ]}
-                                    selected={state.modelInput.collector.parameterSource}
+                                    value={state.modelInput.collector.parameterSource}
                                     onChange={(value) =>
                                         dispatchMerge({
                                             modelInput: {
@@ -476,7 +474,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                         value: orientationName,
                                         display: orientationName,
                                     }))}
-                                    selected={state.modelInput.collector.orientation}
+                                    value={state.modelInput.collector.orientation}
                                     onChange={(value) =>
                                         dispatchMerge({
                                             modelInput: {
@@ -528,7 +526,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                         value: name,
                                         display,
                                     }))}
-                                    selected={state.modelInput.collector.overshading}
+                                    value={state.modelInput.collector.overshading}
                                     onChange={(value) =>
                                         dispatchMerge({
                                             modelInput: {

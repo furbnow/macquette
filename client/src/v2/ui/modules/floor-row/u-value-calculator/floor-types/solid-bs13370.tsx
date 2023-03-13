@@ -84,7 +84,7 @@ export function Component({
                             },
                             { value: 'custom', display: 'Custom' },
                         ]}
-                        selected={state.groundConductivity.groundType}
+                        value={state.groundConductivity.groundType}
                         onChange={(value) =>
                             mergeInput({ groundConductivity: { groundType: value } })
                         }
