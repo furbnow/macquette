@@ -29,6 +29,11 @@ export const householdSchema = z.object({
     local_planning_authority: z.string(),
     location_density: z.enum(['urban', 'suburban', 'rural']),
     exposure: z.enum(['very severe', 'severe', 'moderate', 'sheltered']),
+    frostAttackRisk: z.enum([
+        'high risk',
+        'within a postcode with high risk',
+        'not at high risk',
+    ]),
     flooding_rivers_sea: z.enum(['HIGH', 'MED', 'LOW', 'VLOW', '']),
     flooding_surface_water: z.enum(['HIGH', 'MED', 'LOW', 'VLOW', '']),
     flooding_reservoirs: z.enum(['WITHIN', 'OUTWITH', '']),

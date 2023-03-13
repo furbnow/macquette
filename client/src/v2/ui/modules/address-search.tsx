@@ -33,6 +33,10 @@ type Address = {
 
 type LocationDensity = 'urban' | 'suburban' | 'rural';
 type Exposure = 'very severe' | 'severe' | 'moderate' | 'sheltered';
+type FrostAttackRisk =
+    | 'high risk'
+    | 'within a postcode with high risk'
+    | 'not at high risk';
 type FloodRiskReservoirs = 'WITHIN' | 'OUTWITH';
 type FloodRisk = 'HIGH' | 'MED' | 'LOW' | 'VLOW';
 type RadonRisk = 'LOW' | '1-3' | '3-5' | '5-10' | '10-30' | '30';
@@ -73,6 +77,7 @@ type State = {
     localPlanningAuthority: string;
     locationDensity: LocationDensity | null;
     exposure: Exposure | null;
+    frostAttackRisk: FrostAttackRisk | null;
     floodingRiversAndSea: FloodRisk | null;
     floodingSurfaceWater: FloodRisk | null;
     floodingReservoirs: FloodRiskReservoirs | null;
@@ -667,6 +672,14 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         href="http://nhbccampaigns.co.uk/landingpages/techzone/previous_versions/2010/Part6/section1/appendix.htm#61A2"
                     >
                         an exposure map here
+                    </a>{' '}
+                    and{' '}
+                    <a
+                        rel="noreferrer"
+                        target="_blank"
+                        href="http://nhbccampaigns.co.uk/landingpages/techzone/previous_versions/2010/Part6/section1/appendix.htm#61B"
+                    >
+                        severe frost attack risk map here
                     </a>
                     .
                 </p>
@@ -731,6 +744,31 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         ]}
                         value={state.exposure}
                         onChange={(val) => dispatchMerge({ exposure: val })}
+                    />
+                </div>
+
+                <label htmlFor="frost-attack">Frost attack risk:</label>
+                <div>
+                    <Select<FrostAttackRisk>
+                        className="input--auto-width"
+                        id="frost-attack"
+                        options={[
+                            {
+                                value: 'high risk',
+                                display: 'high risk of severe exposure to frost attack',
+                            },
+                            {
+                                value: 'within a postcode with high risk',
+                                display:
+                                    'within a postcode with high risk of severe exposure to frost attack',
+                            },
+                            {
+                                value: 'not at high risk',
+                                display: 'not at risk of severe exposure to frost attack',
+                            },
+                        ]}
+                        value={state.frostAttackRisk}
+                        onChange={(val) => dispatchMerge({ frostAttackRisk: val })}
                     />
                 </div>
             </FormGrid>
@@ -914,6 +952,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
             localPlanningAuthority: '',
             locationDensity: null,
             exposure: null,
+            frostAttackRisk: null,
             floodingRiversAndSea: null,
             floodingSurfaceWater: null,
             floodingReservoirs: null,
@@ -1205,6 +1244,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                     localPlanningAuthority: household?.local_planning_authority ?? '',
                     locationDensity: household?.location_density ?? null,
                     exposure: household?.exposure ?? null,
+                    frostAttackRisk: household?.frostAttackRisk ?? null,
                     floodingRiversAndSea:
                         coalesceEmptyString(household?.flooding_rivers_sea, null) ?? null,
                     floodingSurfaceWater:
@@ -1281,6 +1321,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                 local_planning_authority: state.localPlanningAuthority,
                 location_density: state.locationDensity ?? undefined,
                 exposure: state.exposure ?? undefined,
+                frostAttackRisk: state.frostAttackRisk ?? undefined,
                 flooding_rivers_sea: state.floodingRiversAndSea ?? undefined,
                 flooding_surface_water: state.floodingSurfaceWater ?? undefined,
                 flooding_reservoirs: state.floodingReservoirs ?? undefined,
