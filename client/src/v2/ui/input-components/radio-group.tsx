@@ -6,7 +6,7 @@ export type RadioGroupProps<T> = {
         display: string;
     }[];
     selected: T | null;
-    callback: (value: T) => void;
+    onChange: (value: T) => void;
     radioClasses?: string[];
     labelClasses?: string[];
     disabled?: boolean;
@@ -14,7 +14,7 @@ export type RadioGroupProps<T> = {
 
 export function RadioGroup<T extends string>({
     options,
-    callback,
+    onChange,
     selected,
     radioClasses = [],
     labelClasses = [],
@@ -44,7 +44,7 @@ export function RadioGroup<T extends string>({
                         disabled={disabled}
                         onChange={(evt) => {
                             console.log(evt);
-                            callback(castTargetValue(evt));
+                            onChange(castTargetValue(evt));
                         }}
                     />
                     {display}
