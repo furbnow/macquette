@@ -655,6 +655,17 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                     insulation, materials used and external finishes will need careful
                     consideration.
                 </p>
+                <p>
+                    You can find{' '}
+                    <a
+                        rel="noreferrer"
+                        target="_blank"
+                        href="http://nhbccampaigns.co.uk/landingpages/techzone/previous_versions/2010/Part6/section1/appendix.htm#61A2"
+                    >
+                        an exposure map here
+                    </a>
+                    .
+                </p>
             </div>
 
             <FormGrid>
