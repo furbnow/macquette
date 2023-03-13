@@ -802,10 +802,10 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                     <Select<FloodRisk>
                         id="rivers_and_sea"
                         options={[
-                            { value: 'HIGH', display: 'high' },
-                            { value: 'MED', display: 'medium' },
-                            { value: 'LOW', display: 'low' },
-                            { value: 'VLOW', display: 'very low' },
+                            { value: 'HIGH', display: 'high risk' },
+                            { value: 'MED', display: 'medium risk' },
+                            { value: 'LOW', display: 'low risk' },
+                            { value: 'VLOW', display: 'very low risk' },
                         ]}
                         value={state.floodingRiversAndSea}
                         onChange={(val) => dispatchMerge({ floodingRiversAndSea: val })}
@@ -817,10 +817,10 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                     <Select<FloodRisk>
                         id="surface_water"
                         options={[
-                            { value: 'HIGH', display: 'high' },
-                            { value: 'MED', display: 'medium' },
-                            { value: 'LOW', display: 'low' },
-                            { value: 'VLOW', display: 'very low' },
+                            { value: 'HIGH', display: 'high risk' },
+                            { value: 'MED', display: 'medium risk' },
+                            { value: 'LOW', display: 'low risk' },
+                            { value: 'VLOW', display: 'very low risk' },
                         ]}
                         value={state.floodingSurfaceWater}
                         onChange={(val) =>
@@ -838,11 +838,11 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         options={[
                             {
                                 value: 'WITHIN',
-                                display: 'within extent of flooding',
+                                display: 'within potential extent of flooding',
                             },
                             {
                                 value: 'OUTWITH',
-                                display: 'not within extent of flooding',
+                                display: 'not within potential extent of flooding',
                             },
                         ]}
                         value={state.floodingReservoirs}
