@@ -329,24 +329,49 @@ function ThermalMassParameter({ state, dispatch }: SubProps) {
     );
 }
 
+type WallStatus = 'new measure' | 'previous measure' | 'none';
+
+function wallStatus(wall: WallLike): WallStatus {
+    if (wall.type === 'measure') {
+        return 'new measure';
+    } else if (wall.element.tag.includes('-M')) {
+        return 'previous measure';
+    } else {
+        return 'none';
+    }
+}
+
 type WallProps = SubProps & { wall: WallLike };
 
 function WallRow({ state, dispatch, wall }: WallProps) {
+    const status = wallStatus(wall);
+    const colourForStatus: Record<WallStatus, string> = {
+        'new measure': '--green-5',
+        'previous measure': '--blue-5',
+        none: '--gray',
+    };
+
+    const isDeleted =
+        (wall.inputs.area.type === 'dimensions' &&
+            wall.inputs.area.dimensions.length === 0 &&
+            wall.inputs.area.dimensions.height === 0) ||
+        (wall.inputs.area.type === 'specific' && wall.inputs.area.specific.area === 0);
+
     return (
         <div
             className="card"
             style={{
-                borderLeft:
-                    wall.type === 'measure'
-                        ? '10px solid var(--green-5)'
-                        : wall.element.tag.includes('-M')
-                        ? '10px solid var(--blue-5)'
-                        : '10px solid var(--gray)',
+                borderLeft: `10px solid var(${colourForStatus[status]})`,
             }}
         >
             <div className="d-flex justify-content-between align-items-center mb-15">
                 <div>
-                    <b>{wall.element.name}</b>
+                    <span>
+                        {isDeleted && (
+                            <span className="label label-important mr-7">Deleted</span>
+                        )}
+                        <b>{wall.element.name}</b>
+                    </span>
                     <div className="d-flex">
                         <span>{wall.element.tag}</span>
                         <span className="ml-15">
@@ -355,12 +380,12 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                         <span className="ml-15">
                             k value: {wall.element.kvalue} kJ/K·m²
                         </span>
-                        {wall.type === 'measure' ? (
+                        {wall.type === 'measure' && (
                             <span className="ml-15">
                                 Measure cost: £
                                 <NumberOutput value={wall.outputs.costTotal} dp={0} />
                             </span>
-                        ) : null}
+                        )}
                     </div>
                 </div>
 

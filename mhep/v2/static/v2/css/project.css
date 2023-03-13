@@ -137,6 +137,10 @@ body .modal {
     background-color: #eee;
 }
 
+.text-muted {
+    color: #6a6a6a;
+}
+
 .text-callout {
     max-width: 50em;
     padding: 15px;
