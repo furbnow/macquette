@@ -392,7 +392,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                             <MyTd>Use a solar hot water system</MyTd>
                             <MyTd>
                                 <CheckboxInput
-                                    checked={moduleEnabled}
+                                    value={moduleEnabled}
                                     onChange={(checked) =>
                                         dispatchMerge({
                                             moduleEnabled: checked,

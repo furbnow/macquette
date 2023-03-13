@@ -22,7 +22,7 @@ export function OptionalSection({
         <>
             <label htmlFor={id}>{checkboxText}</label>
             <span>
-                <CheckboxInput id={id} checked={open} onChange={onChange} />
+                <CheckboxInput id={id} value={open} onChange={onChange} />
             </span>
             {open ? children : null}
         </>

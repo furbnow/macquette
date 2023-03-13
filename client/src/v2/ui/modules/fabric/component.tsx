@@ -127,7 +127,7 @@ function SelectBulkElements({
                             >
                                 <td>
                                     <CheckboxInput
-                                        checked={selected.includes(item.id)}
+                                        value={selected.includes(item.id)}
                                         onChange={() => toggleSelected(item.id)}
                                     />
                                 </td>
