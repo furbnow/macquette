@@ -1086,7 +1086,14 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                                 : state.lowerLayerSuperOutputArea,
                         elevation:
                             elevation !== null
-                                ? withDatabaseData(state.elevation, elevation)
+                                ? withDatabaseData(
+                                      state.elevation.type === 'user provided' &&
+                                          state.elevation.value !== null &&
+                                          state.elevation.value === 0
+                                          ? { type: 'no data' }
+                                          : state.elevation,
+                                      elevation,
+                                  )
                                 : state.elevation,
                         uniquePropertyReferenceNumber: withDatabaseData(
                             state.uniquePropertyReferenceNumber,
@@ -1097,7 +1104,11 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                             localAuthority,
                         ),
                         region: withDatabaseData(
-                            state.region,
+                            state.region.type === 'user provided' &&
+                                state.region.value !== null &&
+                                state.region.value.name === 'UK average'
+                                ? { type: 'no data' }
+                                : state.region,
                             Region.fromPostcode(address.postcode).unwrap(),
                         ),
                     },
