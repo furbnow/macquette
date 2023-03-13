@@ -7,7 +7,7 @@ import { Proportion } from '../../../../../helpers/proportion';
 import { safeMerge } from '../../../../../helpers/safe-merge';
 import { partialBem } from '../../../../bem';
 import { InfoTooltip } from '../../../../input-components/forms';
-import { NumericInput } from '../../../../input-components/numeric';
+import { NumberInput } from '../../../../input-components/number';
 import { MaterialSelector } from './material-selector';
 
 type Layers = NonEmptyArray<FloorLayerSpec>;
@@ -165,7 +165,7 @@ function Layer({ layer, dispatch, index }: LayerProps) {
                 {(index + 1).toString(10)}
             </td>
             <td>
-                <NumericInput
+                <NumberInput
                     value={thickness !== null ? thickness * 1000 : null}
                     unit="mm"
                     callback={(value) =>
@@ -203,7 +203,7 @@ function Layer({ layer, dispatch, index }: LayerProps) {
                 />
             </td>
             <td>
-                <NumericInput
+                <NumberInput
                     value={bridging.proportion?.asPercent ?? null}
                     disabled={bridging.material === null}
                     unit="%"

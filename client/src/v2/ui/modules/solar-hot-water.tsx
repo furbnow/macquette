@@ -10,7 +10,7 @@ import { CombinedModules } from '../../model/combined-modules';
 import { Orientation } from '../../model/enums/orientation';
 import { Overshading } from '../../model/enums/overshading';
 import { CheckboxInput } from '../input-components/checkbox';
-import { NumericInput, NumericInputProps } from '../input-components/numeric';
+import { NumberInput, NumberInputProps } from '../input-components/number';
 import { Select, SelectProps } from '../input-components/select';
 import { UiModule } from '../module-management/module-type';
 import { LockedWarning } from '../output-components/locked-warning';
@@ -186,9 +186,9 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                 />
             );
         }
-        function MyNumericInput(props: Omit<NumericInputProps, 'readOnly' | 'style'>) {
+        function MyNumericInput(props: Omit<NumberInputProps, 'readOnly' | 'style'>) {
             return (
-                <NumericInput
+                <NumberInput
                     {...props}
                     readOnly={!moduleEnabled || scenarioLocked}
                     style={{ width: '50px', marginBottom: 0 }}

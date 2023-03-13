@@ -11,7 +11,7 @@ import {
     SelectWallLike,
     SelectWallLikeMeasure,
 } from '../../input-components/libraries';
-import { NumericInput, NumericInputProps } from '../../input-components/numeric';
+import { NumberInput, NumberInputProps } from '../../input-components/number';
 import type { RadioGroupProps } from '../../input-components/radio-group';
 import { RadioGroup } from '../../input-components/radio-group';
 import { TextualInput, TextualInputProps } from '../../input-components/textual';
@@ -36,11 +36,11 @@ export const PageContext = React.createContext<PageContextInterface>({
     locked: false,
 });
 
-function MyNumericInput(props: Omit<NumericInputProps, 'readOnly' | 'style'>) {
+function MyNumericInput(props: Omit<NumberInputProps, 'readOnly' | 'style'>) {
     const { locked } = React.useContext(PageContext);
 
     return (
-        <NumericInput
+        <NumberInput
             {...props}
             readOnly={locked}
             style={{ width: '50px', marginBottom: 0 }}

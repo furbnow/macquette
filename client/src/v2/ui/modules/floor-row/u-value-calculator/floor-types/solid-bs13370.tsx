@@ -7,7 +7,7 @@ import {
     FormGrid,
     LabelWithInfo,
 } from '../../../../input-components/forms';
-import { NumericInput } from '../../../../input-components/numeric';
+import { NumberInput } from '../../../../input-components/number';
 import { Select } from '../../../../input-components/select';
 import { CombinedMethod } from '../shared-components/combined-method';
 import { InsulationInput } from '../shared-components/insulation-input';
@@ -52,7 +52,7 @@ export function Component({
         <>
             <FormGrid>
                 <label htmlFor={wallThicknessId}>Wall thickness</label>
-                <NumericInput
+                <NumberInput
                     id={wallThicknessId}
                     value={
                         state.wallThickness === null ? null : state.wallThickness * 1000
@@ -92,7 +92,7 @@ export function Component({
                     {state.groundConductivity.groundType === 'custom' && (
                         <>
                             {' '}
-                            <NumericInput
+                            <NumberInput
                                 value={state.groundConductivity.customValue}
                                 callback={(value) =>
                                     mergeInput({
@@ -167,7 +167,7 @@ function HorizontalEdgeInsulation({
             >
                 Edge insulation width
             </LabelWithInfo>
-            <NumericInput
+            <NumberInput
                 value={state.width === null ? null : state.width * 1000}
                 callback={(value) =>
                     dispatch({
@@ -221,7 +221,7 @@ function VerticalEdgeInsulation({
             >
                 Edge insulation depth
             </LabelWithInfo>
-            <NumericInput
+            <NumberInput
                 id={depthId}
                 value={state.depth === null ? null : state.depth * 1000}
                 callback={(value) =>

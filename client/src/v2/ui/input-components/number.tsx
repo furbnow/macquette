@@ -3,21 +3,21 @@ import React, { useState } from 'react';
 import { PropsOf } from '../../helpers/props-of';
 import { Shadow } from '../../helpers/shadow-object-type';
 
-type BasicNumericInputProps = {
+type BasicNumberInputProps = {
     value: number | null;
     callback: (value: number | null) => void;
     unit?: string;
 };
 
-export type NumericInputProps = Shadow<PropsOf<'input'>, BasicNumericInputProps>;
+export type NumberInputProps = Shadow<PropsOf<'input'>, BasicNumberInputProps>;
 
-export function NumericInput({
+export function NumberInput({
     value: outerValue,
     callback,
     style: styleProp,
     unit,
     ...passthroughProps
-}: NumericInputProps) {
+}: NumberInputProps) {
     // Use a nested inner component to make sure internal state gets reset when
     // props are updated
     function Inner() {

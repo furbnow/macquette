@@ -8,7 +8,7 @@ import { Result } from '../../helpers/result';
 import type { RegionName } from '../../model/enums/region';
 import { Region } from '../../model/enums/region';
 import { FormGrid } from '../input-components/forms';
-import { NumericInput } from '../input-components/numeric';
+import { NumberInput } from '../input-components/number';
 import { Select } from '../input-components/select';
 import { TextInput } from '../input-components/text';
 import type { UiModule } from '../module-management/module-type';
@@ -666,7 +666,7 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                     initialValue={null}
                     onChange={(val) => dispatchMerge({ elevation: val })}
                     inputComponent={(box, elevation) => (
-                        <NumericInput
+                        <NumberInput
                             id="elevation"
                             value={elevation}
                             unit="m"

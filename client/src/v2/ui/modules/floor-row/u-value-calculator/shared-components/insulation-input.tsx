@@ -1,7 +1,7 @@
 import React, { useId } from 'react';
 
 import { InsulationSpec } from '../../../../../data-schemas/scenario/fabric/floor-u-value';
-import { NumericInput } from '../../../../input-components/numeric';
+import { NumberInput } from '../../../../input-components/number';
 import { MaterialSelector } from './material-selector';
 
 type InsulationInputProps = {
@@ -28,7 +28,7 @@ export function InsulationInput({
     return (
         <>
             <label htmlFor={thicknessId}>{thicknessLabel ?? 'Thickness'}</label>
-            <NumericInput
+            <NumberInput
                 id={thicknessId}
                 disabled={!thicknessRequired}
                 value={thicknessRequired && thickness !== null ? thickness * 1000 : null}

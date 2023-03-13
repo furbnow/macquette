@@ -15,7 +15,7 @@ import * as targets from '../../model/datasets/targets';
 import { CheckboxInput } from '../input-components/checkbox';
 import { FormGrid, InfoTooltip } from '../input-components/forms';
 import { Fuel, SelectFuel } from '../input-components/libraries';
-import { NumericInput } from '../input-components/numeric';
+import { NumberInput } from '../input-components/number';
 import type { UiModule } from '../module-management/module-type';
 import { NumericOutput } from '../output-components/numeric';
 import { TargetBar } from '../output-components/target-bar';
@@ -338,7 +338,7 @@ function ConsumptionTable({
                                         </label>
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
-                                        <NumericInput
+                                        <NumberInput
                                             id={`consumption-row-${fuelName}`}
                                             value={annualEnergy}
                                             callback={(value) =>
@@ -623,7 +623,7 @@ function Generation({
                 {generation.type === 'onsite' && (
                     <>
                         <label htmlFor="generation-annual-kwh">Annual generation</label>
-                        <NumericInput
+                        <NumberInput
                             id="generation-annual-kwh"
                             value={generation.onSite.annualEnergy}
                             unit="kWh"
@@ -640,7 +640,7 @@ function Generation({
                         <label htmlFor="generation-fraction-onsite">
                             Fraction used onsite
                         </label>
-                        <NumericInput
+                        <NumberInput
                             id="generation-fraction-onsite"
                             style={{ width: '5ch' }}
                             value={generation.onSite.fractionUsedOnsite}
@@ -657,7 +657,7 @@ function Generation({
                         <label htmlFor="generation-fit-income">FIT annual income</label>
                         <span>
                             £{' '}
-                            <NumericInput
+                            <NumberInput
                                 id="generation-fit-income"
                                 value={generation.onSite.fitAnnualIncome}
                                 callback={(value) =>

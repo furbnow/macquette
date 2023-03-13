@@ -3,7 +3,7 @@ import React, { useId } from 'react';
 import { SuspendedFloorSpec } from '../../../../../data-schemas/scenario/fabric/floor-u-value';
 import { safeMerge } from '../../../../../helpers/safe-merge';
 import { FormGrid, LabelWithInfo } from '../../../../input-components/forms';
-import { NumericInput } from '../../../../input-components/numeric';
+import { NumberInput } from '../../../../input-components/number';
 import { CombinedMethod } from '../shared-components/combined-method';
 import type { Action as FloorUValueCalculatorAction } from '../state/reducer';
 
@@ -58,7 +58,7 @@ export function Component({ state, dispatch }: Props) {
                 >
                     Total area of ventilation points
                 </LabelWithInfo>
-                <NumericInput
+                <NumberInput
                     id={ventilationId}
                     value={
                         state.ventilationCombinedArea === null
@@ -92,7 +92,7 @@ export function Component({ state, dispatch }: Props) {
                 >
                     Perimeter of underfloor space
                 </LabelWithInfo>
-                <NumericInput
+                <NumberInput
                     id={underFloorId}
                     value={state.underFloorSpacePerimeter}
                     callback={(value) =>

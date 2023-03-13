@@ -12,7 +12,7 @@ import { Result } from '../../../helpers/result';
 import { safeMerge } from '../../../helpers/safe-merge';
 import { Floor } from '../../../model/modules/fabric/element-types';
 import { InfoTooltip } from '../../input-components/forms';
-import { NumericInput } from '../../input-components/numeric';
+import { NumberInput } from '../../input-components/number';
 import { Select } from '../../input-components/select';
 import { TextInput } from '../../input-components/text';
 import { UiModule } from '../../module-management/module-type';
@@ -273,7 +273,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                 </td>
                 <td>
                     {state.selectedFloorType === 'custom' ? (
-                        <NumericInput
+                        <NumberInput
                             value={state.perFloorTypeSpec.custom.uValue}
                             callback={(value) =>
                                 dispatch({
@@ -288,7 +288,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                     )}
                 </td>
                 <td>
-                    <NumericInput
+                    <NumberInput
                         disabled={!exposedPerimeterEnabled}
                         value={exposedPerimeterEnabled ? state.exposedPerimeter : null}
                         callback={(exposedPerimeter) =>
@@ -306,7 +306,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                     </InfoTooltip>
                 </td>
                 <td>
-                    <NumericInput
+                    <NumberInput
                         value={state.area}
                         callback={(area) =>
                             dispatch({

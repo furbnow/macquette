@@ -3,7 +3,7 @@ import React, { useId } from 'react';
 import { HeatedBasementFloorSpec } from '../../../../../data-schemas/scenario/fabric/floor-u-value';
 import { safeMerge } from '../../../../../helpers/safe-merge';
 import { FormGrid, OptionalSection } from '../../../../input-components/forms';
-import { NumericInput } from '../../../../input-components/numeric';
+import { NumberInput } from '../../../../input-components/number';
 import { InsulationInput } from '../shared-components/insulation-input';
 import type { Action as FloorUValueCalculatorAction } from '../state/reducer';
 
@@ -36,7 +36,7 @@ export function Component({
     return (
         <FormGrid>
             <label htmlFor={depthId}>Basement depth</label>
-            <NumericInput
+            <NumberInput
                 id={depthId}
                 value={state.basementDepth}
                 callback={(value) =>
