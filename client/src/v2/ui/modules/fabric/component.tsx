@@ -14,7 +14,7 @@ import {
 import { NumberInput, NumberInputProps } from '../../input-components/number';
 import type { RadioGroupProps } from '../../input-components/radio-group';
 import { RadioGroup } from '../../input-components/radio-group';
-import { TextualInput, TextualInputProps } from '../../input-components/textual';
+import { TextInput, TextInputProps } from '../../input-components/text';
 import { LockedWarning } from '../../output-components/locked-warning';
 import {
     Modal,
@@ -48,10 +48,10 @@ function MyNumericInput(props: Omit<NumberInputProps, 'readOnly' | 'style'>) {
     );
 }
 
-function MyTextualInput(props: Omit<TextualInputProps, 'readOnly' | 'style'>) {
+function MyTextInput(props: Omit<TextInputProps, 'readOnly' | 'style'>) {
     const { locked } = React.useContext(PageContext);
 
-    return <TextualInput {...props} readOnly={locked} style={{ marginBottom: 0 }} />;
+    return <TextInput {...props} readOnly={locked} style={{ marginBottom: 0 }} />;
 }
 
 function MyRadioGroup<T extends string>(props: Omit<RadioGroupProps<T>, 'disabled'>) {
@@ -425,10 +425,10 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                         Location
                     </label>
                     <br />
-                    <MyTextualInput
+                    <MyTextInput
                         id={`e${wall.id}-location`}
                         value={wall.inputs.location}
-                        callback={(location) =>
+                        onChange={(location) =>
                             dispatch({
                                 type: 'fabric/merge wall input',
                                 id: wall.id,
