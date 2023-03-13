@@ -736,7 +736,6 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/map"
                         rel="noreferrer"
                         target="_blank"
-                        style={{ textDecoration: 'underline' }}
                     >
                         uk.gov flood risk map
                     </a>
@@ -858,7 +857,6 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         href="https://www.ukradon.org/information/ukmaps"
                         rel="noreferrer"
                         target="_blank"
-                        style={{ textDecoration: 'underline' }}
                     >
                         UK Radon map
                     </a>
