@@ -1,12 +1,12 @@
 import React from 'react';
 
-export type NumericOutputProps = {
+export type NumberOutputProps = {
     value?: number | undefined | null;
     unit?: string | JSX.Element;
     dp?: number;
 };
 
-export function NumericOutput(props: NumericOutputProps) {
+export function NumberOutput(props: NumberOutputProps) {
     const { value, unit, dp = 2 } = props;
 
     const valString =

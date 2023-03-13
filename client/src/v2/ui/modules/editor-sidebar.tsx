@@ -13,7 +13,7 @@ import { FormGrid } from '../input-components/forms';
 import { TextInput } from '../input-components/text';
 import type { Dispatcher, UiModule } from '../module-management/module-type';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from '../output-components/modal';
-import { NumericOutput } from '../output-components/numeric';
+import { NumberOutput } from '../output-components/numeric';
 import { Spinner } from '../output-components/spinner';
 import type { ScenarioPageName, StandalonePageName } from '../pages';
 import { pageTitles } from '../pages';
@@ -192,7 +192,7 @@ function ScenarioBlock({
                     ) : null}
                 </div>
                 <div style={{ marginRight: '10px' }}>
-                    <NumericOutput value={scenario.spaceHeatingDemand} dp={0} />
+                    <NumberOutput value={scenario.spaceHeatingDemand} dp={0} />
                 </div>
             </div>
 

@@ -22,7 +22,7 @@ import {
     ModalFooter,
     ModalHeader,
 } from '../../output-components/modal';
-import { NumericOutput } from '../../output-components/numeric';
+import { NumberOutput } from '../../output-components/numeric';
 import type { Action } from './reducer';
 import type { State, WallLike } from './state';
 
@@ -358,7 +358,7 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                         {wall.type === 'measure' ? (
                             <span className="ml-15">
                                 Measure cost: £
-                                <NumericOutput value={wall.outputs.costTotal} dp={0} />
+                                <NumberOutput value={wall.outputs.costTotal} dp={0} />
                             </span>
                         ) : null}
                     </div>
@@ -566,7 +566,7 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                                 Area
                             </label>
                             <br />
-                            <NumericOutput
+                            <NumberOutput
                                 value={wall.inputs.area[wall.inputs.area.type].area}
                                 unit="m²"
                             />
@@ -578,7 +578,7 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                     </span>
                     <div>
                         <span className="small-caps">Windows</span> <br />
-                        <NumericOutput value={wall.outputs.windowArea} unit="m²" />
+                        <NumberOutput value={wall.outputs.windowArea} unit="m²" />
                     </div>
 
                     <span style={{ fontSize: '1.5rem', margin: '0 0.2rem' }}>
@@ -587,12 +587,12 @@ function WallRow({ state, dispatch, wall }: WallProps) {
 
                     <div>
                         <span className="small-caps">Net area</span> <br />
-                        <NumericOutput value={wall.outputs.netArea} unit="m²" />
+                        <NumberOutput value={wall.outputs.netArea} unit="m²" />
                     </div>
 
                     <div className="ml-30">
                         <span className="small-caps">Heat loss</span> <br />
-                        <NumericOutput value={wall.outputs.heatLoss} unit="W/K" />
+                        <NumberOutput value={wall.outputs.heatLoss} unit="W/K" />
                     </div>
                 </div>
             </div>

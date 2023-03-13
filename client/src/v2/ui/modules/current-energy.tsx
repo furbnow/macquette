@@ -17,7 +17,7 @@ import { FormGrid, InfoTooltip } from '../input-components/forms';
 import { Fuel, SelectFuel } from '../input-components/libraries';
 import { NumberInput } from '../input-components/number';
 import type { UiModule } from '../module-management/module-type';
-import { NumericOutput } from '../output-components/numeric';
+import { NumberOutput } from '../output-components/numeric';
 import { TargetBar } from '../output-components/target-bar';
 
 type OnsiteGenerationInput = {
@@ -98,7 +98,7 @@ function EnergyTotals({
                             </InfoTooltip>
                         </th>
                         <td>
-                            <NumericOutput
+                            <NumberOutput
                                 value={currentEnergy.annualEnergyEndUse}
                                 dp={0}
                                 unit="kWh"
@@ -116,7 +116,7 @@ function EnergyTotals({
                             </InfoTooltip>
                         </th>
                         <td>
-                            <NumericOutput
+                            <NumberOutput
                                 value={currentEnergy.annualPrimaryEnergy}
                                 dp={0}
                                 unit="kWh"
@@ -126,7 +126,7 @@ function EnergyTotals({
                     <tr>
                         <th>Primary energy consumption per m² floor area</th>
                         <td>
-                            <NumericOutput
+                            <NumberOutput
                                 value={
                                     currentEnergy.annualPrimaryEnergy /
                                     floors.totalFloorArea
@@ -146,7 +146,7 @@ function EnergyTotals({
                             </InfoTooltip>
                         </th>
                         <td>
-                            <NumericOutput
+                            <NumberOutput
                                 value={currentEnergy.annualCarbonEmissions}
                                 dp={0}
                                 unit="kg"
@@ -156,7 +156,7 @@ function EnergyTotals({
                     <tr>
                         <th>CO₂ emissions per m² floor area</th>
                         <td>
-                            <NumericOutput
+                            <NumberOutput
                                 value={
                                     currentEnergy.annualCarbonEmissions /
                                     floors.totalFloorArea
@@ -170,14 +170,14 @@ function EnergyTotals({
                         <th>Energy cost from bills</th>
                         <td>
                             £
-                            <NumericOutput value={currentEnergy.annualGrossCost} dp={0} />
+                            <NumberOutput value={currentEnergy.annualGrossCost} dp={0} />
                         </td>
                     </tr>
                     <tr>
                         <th>Net energy cost, including FIT income</th>
                         <td>
                             £
-                            <NumericOutput value={currentEnergy.annualNetCost} dp={0} />
+                            <NumberOutput value={currentEnergy.annualNetCost} dp={0} />
                         </td>
                     </tr>
                 </tbody>
@@ -353,7 +353,7 @@ function ConsumptionTable({
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums">
                                         ×{' '}
-                                        <NumericOutput
+                                        <NumberOutput
                                             value={
                                                 modelOutputFuel?.fuel
                                                     .carbonEmissionsFactor
@@ -361,7 +361,7 @@ function ConsumptionTable({
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums">
-                                        <NumericOutput
+                                        <NumberOutput
                                             value={modelOutputFuel?.annualCarbonEmissions}
                                             unit="kg"
                                             dp={0}
@@ -369,35 +369,35 @@ function ConsumptionTable({
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums">
                                         ×{' '}
-                                        <NumericOutput
+                                        <NumberOutput
                                             value={
                                                 modelOutputFuel?.fuel.primaryEnergyFactor
                                             }
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
-                                        <NumericOutput
+                                        <NumberOutput
                                             value={modelOutputFuel?.annualPrimaryEnergy}
                                             unit="kWh"
                                             dp={0}
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
-                                        <NumericOutput
+                                        <NumberOutput
                                             value={modelOutputFuel?.fuel.unitPrice}
                                             unit="p/kWh"
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums">
                                         £
-                                        <NumericOutput
+                                        <NumberOutput
                                             value={modelOutputFuel?.fuel.standingCharge}
                                             dp={2}
                                         />
                                     </MiddleAlignedCell>
                                     <MiddleAlignedCell className="align-right text-tabular-nums">
                                         £
-                                        <NumericOutput
+                                        <NumberOutput
                                             value={modelOutputFuel?.annualCost}
                                         />
                                     </MiddleAlignedCell>
@@ -547,12 +547,12 @@ function GenerationTable({
                 <tr>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
                         ×{' '}
-                        <NumericOutput
+                        <NumberOutput
                             value={currentEnergy?.generation?.fuel.carbonEmissionsFactor}
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
-                        <NumericOutput
+                        <NumberOutput
                             value={currentEnergy?.generation?.annualCarbonEmissionsSaved}
                             unit="kg"
                             dp={0}
@@ -560,26 +560,26 @@ function GenerationTable({
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
                         ×{' '}
-                        <NumericOutput
+                        <NumberOutput
                             value={currentEnergy?.generation?.fuel.primaryEnergyFactor}
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
-                        <NumericOutput
+                        <NumberOutput
                             value={currentEnergy?.generation?.annualPrimaryEnergySaved}
                             unit="kWh"
                             dp={0}
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums text-nowrap">
-                        <NumericOutput
+                        <NumberOutput
                             value={currentEnergy?.generation?.fuel.unitPrice}
                             unit="p/kWh"
                         />
                     </MiddleAlignedCell>
                     <MiddleAlignedCell className="align-right text-tabular-nums">
                         £
-                        <NumericOutput
+                        <NumberOutput
                             value={currentEnergy?.generation?.annualCostSaved}
                         />
                     </MiddleAlignedCell>

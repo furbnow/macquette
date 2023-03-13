@@ -33,7 +33,7 @@ import { Shadow } from '../../helpers/shadow-object-type';
 import { externals } from '../../shims/typed-globals';
 import { Select } from '../input-components/select';
 import { ErrorModal, Modal, ModalBody, ModalHeader } from '../output-components/modal';
-import { NumericOutput } from '../output-components/numeric';
+import { NumberOutput } from '../output-components/numeric';
 
 function nl2br(input: string): ReactNode {
     const lines = input.split('\n');
@@ -599,7 +599,7 @@ export function SelectWallLikeMeasure({
                               title: '£',
                               type: 'number' as const,
                               value: (row: CompleteWallMeasure) => (
-                                  <NumericOutput
+                                  <NumberOutput
                                       value={Math.round(
                                           row.min_cost +
                                               areaSqm * row.cost * (row.EWI ? 1.15 : 1),

@@ -14,7 +14,7 @@ import { NumberInput, NumberInputProps } from '../input-components/number';
 import { Select, SelectProps } from '../input-components/select';
 import { UiModule } from '../module-management/module-type';
 import { LockedWarning } from '../output-components/locked-warning';
-import { NumericOutput } from '../output-components/numeric';
+import { NumberOutput } from '../output-components/numeric';
 
 type ModelOutputs = {
     aStar: number;
@@ -453,7 +453,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                 a* = 0.892 (a<sub>1</sub> + 45 a<sub>2</sub>)
                             </MyTd>
                             <MyTd>
-                                <NumericOutput value={modelOutput?.aStar} />
+                                <NumberOutput value={modelOutput?.aStar} />
                             </MyTd>
                         </tr>
 
@@ -462,7 +462,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                 Collector performance ratio a*/η<sub>0</sub>
                             </MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.collectorPerformanceRatio}
                                 />
                             </MyTd>
@@ -513,7 +513,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                 the collector
                             </MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.annualSolarRadiation}
                                     unit={'kWh'}
                                 />
@@ -543,7 +543,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                         <tr>
                             <MyTd>Solar energy available</MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.availableSolarEnergy}
                                     unit={'kWh'}
                                 />
@@ -567,7 +567,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                         <tr>
                             <MyTd>Load</MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.utilisation.load}
                                     unit={'kWh'}
                                 />
@@ -577,7 +577,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                         <tr>
                             <MyTd>Solar-to-load ratio</MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.utilisation.solarToLoadRatio}
                                 />
                             </MyTd>
@@ -586,7 +586,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                         <tr>
                             <MyTd>Utilisation factor</MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.utilisation.utilisationFactor}
                                 />
                             </MyTd>
@@ -595,7 +595,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                         <tr>
                             <MyTd>Collector performance factor</MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={
                                         modelOutput?.utilisation
                                             .collectorPerformanceFactor
@@ -643,7 +643,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                 Effective solar volume, V<sub>eff</sub>
                             </MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.utilisation.effectiveSolarVolume}
                                     unit={'litres'}
                                 />
@@ -656,7 +656,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                 heating page]
                             </MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.utilisation.dailyHotWaterDemand}
                                     unit={'litres'}
                                 />
@@ -668,7 +668,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                 Volume ratio V<sub>eff</sub>/V<sub>d,average</sub>
                             </MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.utilisation.volumeRatio}
                                 />
                             </MyTd>
@@ -680,7 +680,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                 ln(Volume Ratio)
                             </MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={
                                         modelOutput?.utilisation.solarStorageVolumeFactor
                                     }
@@ -693,7 +693,7 @@ export const solarHotWaterModule: UiModule<LoadedState | 'loading', Action, neve
                                 Annual solar input Q<sub>s</sub>
                             </MyTd>
                             <MyTd>
-                                <NumericOutput
+                                <NumberOutput
                                     value={modelOutput?.utilisation.annualSolarInput}
                                     unit={'kWh'}
                                 />
