@@ -1337,6 +1337,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                 flooding_surface_water: state.floodingSurfaceWater ?? undefined,
                 flooding_reservoirs: state.floodingReservoirs ?? undefined,
                 radon_risk: state.radon ?? undefined,
+                uniquePropertyReferenceNumber: state.uniquePropertyReferenceNumber,
             };
 
             /* eslint-disable
@@ -1378,8 +1379,6 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                         };
                         break;
                 }
-
-                householdAny.uprn = state.uniquePropertyReferenceNumber;
 
                 householdAny.address_la = getWithOriginValue(state.localAuthority);
                 householdAny.address_la_full = state.localAuthority;
