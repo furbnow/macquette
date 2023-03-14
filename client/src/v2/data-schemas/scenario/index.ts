@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { withOriginSchema } from '../helpers/with-origin';
 import { applianceCarbonCoop } from './appliance-carbon-coop';
 import { fabric } from './fabric';
+import { heatingSystems } from './heating-systems';
 import { householdSchema } from './household';
 import { solarHotWaterSchema } from './solar-hot-water';
 import {
@@ -13,7 +14,7 @@ import {
     stringyFloatSchema,
     stringyIntegerSchema,
 } from './value-schemas';
-import { heatingSystems, waterHeating } from './water-heating';
+import { waterHeating } from './water-heating';
 
 const floors = z.array(
     z.object({

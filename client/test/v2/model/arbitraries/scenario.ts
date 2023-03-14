@@ -8,6 +8,7 @@ import { Region } from '../../../../src/v2/model/enums/region';
 import { chainMerge, fcPartialRecord, merge } from '../../../helpers/arbitraries';
 import { arbFabric } from './fabric';
 import { arbFuels } from './fuels';
+import { heatingSystemInputs } from './heating-systems';
 import { arbLAC, arbLAC_calculation_type } from './LAC';
 import { shwInputIsComplete, shwInputs } from './solar-hot-water';
 import {
@@ -17,7 +18,7 @@ import {
     stringySensibleFloat,
 } from './values';
 import { arbVentilation } from './ventilation';
-import { heatingSystemInputs, waterHeatingInputs } from './water-heating';
+import { waterHeatingInputs } from './water-heating';
 
 function arbFloors() {
     return fc.array(
