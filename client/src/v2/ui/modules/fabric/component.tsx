@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 
+import { sum } from '../../../helpers/array-reducers';
 import type { PropsOf } from '../../../helpers/props-of';
 import type { Shadow } from '../../../helpers/shadow-object-type';
 import type { Icon } from '../../icons';
@@ -628,24 +629,54 @@ function WallRow({ state, dispatch, wall, secondDimension }: WallProps) {
     );
 }
 
+function Totals({ walls }: { walls: WallLike[] }) {
+    if (walls.length === 0) {
+        return null;
+    }
+
+    return (
+        <table className="mb-15 table" style={{ width: 'auto' }}>
+            <tr>
+                <th className="text-left">Total net area</th>
+                <td>
+                    <NumberOutput
+                        value={sum(walls.map((wall) => wall.outputs.netArea ?? 0))}
+                        unit="m²"
+                    />
+                </td>
+            </tr>
+            <tr>
+                <th className="text-left">Total heat loss</th>
+                <td>
+                    <NumberOutput
+                        value={sum(walls.map((wall) => wall.outputs.heatLoss ?? 0))}
+                        unit="W/K"
+                    />
+                </td>
+            </tr>
+        </table>
+    );
+}
+
 function Walls({ state, dispatch }: SubProps) {
+    const walls = state.walls.filter((wall) => wall.element.type === 'external wall');
     return (
         <section className="line-top mb-45">
             <h3 className="mt-0 mb-15">Walls</h3>
 
             <div className="rounded-cards mb-15">
-                {state.walls
-                    .filter((wall) => wall.element.type === 'external wall')
-                    .map((wall) => (
-                        <WallRow
-                            wall={wall}
-                            key={wall.id}
-                            state={state}
-                            dispatch={dispatch}
-                            secondDimension={'height'}
-                        />
-                    ))}
+                {walls.map((wall) => (
+                    <WallRow
+                        wall={wall}
+                        key={wall.id}
+                        state={state}
+                        dispatch={dispatch}
+                        secondDimension={'height'}
+                    />
+                ))}
             </div>
+
+            <Totals walls={walls} />
 
             <Button
                 title="New wall"
@@ -672,23 +703,24 @@ function Walls({ state, dispatch }: SubProps) {
 }
 
 function PartyWalls({ state, dispatch }: SubProps) {
+    const walls = state.walls.filter((wall) => wall.element.type === 'party wall');
     return (
         <section className="line-top mb-45">
             <h3 className="mt-0 mb-15">Party walls</h3>
 
             <div className="rounded-cards mb-15">
-                {state.walls
-                    .filter((wall) => wall.element.type === 'party wall')
-                    .map((wall) => (
-                        <WallRow
-                            wall={wall}
-                            key={wall.id}
-                            state={state}
-                            dispatch={dispatch}
-                            secondDimension={'height'}
-                        />
-                    ))}
+                {walls.map((wall) => (
+                    <WallRow
+                        wall={wall}
+                        key={wall.id}
+                        state={state}
+                        dispatch={dispatch}
+                        secondDimension={'height'}
+                    />
+                ))}
             </div>
+
+            <Totals walls={walls} />
 
             <Button
                 title="New wall"
@@ -715,6 +747,9 @@ function PartyWalls({ state, dispatch }: SubProps) {
 }
 
 function RoofsAndLofts({ state, dispatch }: SubProps) {
+    const walls = state.walls.filter(
+        (wall) => wall.element.type === 'roof' || wall.element.type === 'loft',
+    );
     return (
         <section className="line-top mb-45">
             <h3 className="mt-0 mb-15">Roofs and lofts</h3>
@@ -741,21 +776,18 @@ function RoofsAndLofts({ state, dispatch }: SubProps) {
             </ul>
 
             <div className="rounded-cards mb-15">
-                {state.walls
-                    .filter(
-                        (wall) =>
-                            wall.element.type === 'roof' || wall.element.type === 'loft',
-                    )
-                    .map((wall) => (
-                        <WallRow
-                            wall={wall}
-                            key={wall.id}
-                            state={state}
-                            dispatch={dispatch}
-                            secondDimension={'width'}
-                        />
-                    ))}
+                {walls.map((wall) => (
+                    <WallRow
+                        wall={wall}
+                        key={wall.id}
+                        state={state}
+                        dispatch={dispatch}
+                        secondDimension={'width'}
+                    />
+                ))}
             </div>
+
+            <Totals walls={walls} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                 <div>
