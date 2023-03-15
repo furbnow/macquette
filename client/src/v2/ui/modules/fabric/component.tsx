@@ -341,9 +341,12 @@ function wallStatus(wall: WallLike): WallStatus {
     }
 }
 
-type WallProps = SubProps & { wall: WallLike };
+type WallProps = SubProps & {
+    wall: WallLike;
+    secondDimension: 'width' | 'height';
+};
 
-function WallRow({ state, dispatch, wall }: WallProps) {
+function WallRow({ state, dispatch, wall, secondDimension }: WallProps) {
     const status = wallStatus(wall);
     const colourForStatus: Record<WallStatus, string> = {
         'new measure': '--green-5',
@@ -529,7 +532,7 @@ function WallRow({ state, dispatch, wall }: WallProps) {
                                 className="d-i small-caps"
                                 htmlFor={`e${wall.id}-height`}
                             >
-                                Height
+                                {secondDimension === 'height' ? 'Height' : 'Width'}
                             </label>{' '}
                             <span className="text-units">m</span>
                             <br />
@@ -639,6 +642,7 @@ function Walls({ state, dispatch }: SubProps) {
                             key={wall.id}
                             state={state}
                             dispatch={dispatch}
+                            secondDimension={'height'}
                         />
                     ))}
             </div>
@@ -681,6 +685,7 @@ function PartyWalls({ state, dispatch }: SubProps) {
                             key={wall.id}
                             state={state}
                             dispatch={dispatch}
+                            secondDimension={'height'}
                         />
                     ))}
             </div>
@@ -747,6 +752,7 @@ function RoofsAndLofts({ state, dispatch }: SubProps) {
                             key={wall.id}
                             state={state}
                             dispatch={dispatch}
+                            secondDimension={'width'}
                         />
                     ))}
             </div>
