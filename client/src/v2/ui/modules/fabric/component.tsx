@@ -261,7 +261,9 @@ function Modals({ state, dispatch }: ModalsParams): JSX.Element | null {
                     })
                 }
                 measureToApply={modal.measure}
-                items={state.walls}
+                items={state.walls.filter(
+                    (wall) => wall.element.type === modal.measure.type,
+                )}
             />
         );
     }
