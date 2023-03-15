@@ -286,8 +286,11 @@ describe('fabric page extractor & mutator round trip should roundtrip the data a
             (modifiedProject as any).data,
         )) {
             normaliseOutputScenario(currentScenario);
-            expect((currentScenario as any)?.fabric).toEqualBy(
-                (project.rawData as any).data[currentScenarioId]?.fabric,
+            expect({ [currentScenarioId]: (currentScenario as any)?.fabric }).toEqualBy(
+                {
+                    [currentScenarioId]: (project.rawData as any).data[currentScenarioId]
+                        ?.fabric,
+                },
                 isVariationAcceptable(),
             );
         }
