@@ -696,6 +696,7 @@ function Walls({ state, dispatch }: SubProps) {
                         elementType: 'external wall',
                     })}
                     className={'ml-15'}
+                    disabled={walls.length === 0}
                 />
             )}
         </section>
@@ -740,6 +741,7 @@ function PartyWalls({ state, dispatch }: SubProps) {
                         elementType: 'party wall',
                     })}
                     className={'ml-15'}
+                    disabled={walls.length === 0}
                 />
             )}
         </section>
@@ -809,6 +811,7 @@ function RoofsAndLofts({ state, dispatch }: SubProps) {
                                 elementType: 'loft',
                             })}
                             className={'ml-15'}
+                            disabled={walls.length === 0}
                         />
                     )}
                 </div>
@@ -831,6 +834,7 @@ function RoofsAndLofts({ state, dispatch }: SubProps) {
                                 elementType: 'roof',
                             })}
                             className={'ml-15'}
+                            disabled={walls.length === 0}
                         />
                     )}
                 </div>
