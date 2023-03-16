@@ -19,6 +19,12 @@ export function merge<
     }));
 }
 
+export function chainMerge<V extends Record<string, unknown>>(arbV: fc.Arbitrary<V>) {
+    return <U extends Record<string, unknown>>(uu: U): fc.Arbitrary<U & V> => {
+        return arbV.map((vv) => ({ ...uu, ...vv }));
+    };
+}
+
 export function arbFloat(options: fc.FloatNextConstraints = {}) {
     return fc.float({ ...options, next: true });
 }
