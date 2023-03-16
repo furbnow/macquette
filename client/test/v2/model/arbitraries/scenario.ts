@@ -124,7 +124,10 @@ export function arbScenarioInputs(): fc.Arbitrary<z.input<typeof scenarioSchema>
                             use_by_fuel: fc.dictionary(
                                 fc.constantFrom(...Object.keys(fuels)),
                                 fc.record({
-                                    annual_use: stringySensibleFloat(),
+                                    annual_use: fc.oneof(
+                                        fc.constant('' as const),
+                                        sensibleFloat,
+                                    ),
                                 }),
                             ),
                             onsite_generation: fc.constantFrom(

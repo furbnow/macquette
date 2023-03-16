@@ -153,7 +153,7 @@ export const scenarioSchema = z
                 enduse_annual_kwh: stringyFloatSchema,
                 use_by_fuel: z.record(
                     z.object({
-                        annual_use: stringyFloatSchema,
+                        annual_use: z.union([z.literal(''), z.number()]),
                         annual_co2: numberWithNaN.optional(),
                         primaryenergy: numberWithNaN.optional(),
                         annualcost: numberWithNaN.optional(),

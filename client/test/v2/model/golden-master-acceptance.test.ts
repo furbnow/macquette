@@ -96,6 +96,8 @@ describe('golden master acceptance tests', () => {
                     (inputs) => !hasNewBehaviour(inputs) && !checkInputBugs(inputs).bugs,
                 ),
                 (scenario) => {
+                    expect(hasNewBehaviour(scenario)).toBe(false);
+                    expect(checkInputBugs(scenario).bugs).toBe(false);
                     const legacyReference = runLegacyModel(scenario);
                     fc.pre(!checkOutputBugs(legacyReference).bugs);
                     const actual = runLiveModel(scenario);

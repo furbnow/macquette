@@ -899,7 +899,7 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
             data.currentenergy.use_by_fuel = mapValues(
                 state.annualEnergyConsumptionByFuel,
                 (annualEnergy) => ({
-                    annual_use: annualEnergy === null ? '' : annualEnergy,
+                    annual_use: annualEnergy === null ? ('' as const) : annualEnergy,
                 }),
             );
         },
