@@ -9,20 +9,25 @@ export type FcInfer<ArbT> = ArbT extends fc.Arbitrary<infer T>
     ? T
     : never;
 
-export function merge<
-    U extends Record<string, unknown>,
-    V extends Record<string, unknown>,
->(arbU: fc.Arbitrary<U>, arbV: fc.Arbitrary<V>) {
-    return fc.tuple(arbU, arbV).map(([uu, vv]) => ({
-        ...uu,
-        ...vv,
-    }));
-}
+/** Recursively compute the intersection of a set of types */
+type Intersection<Ts> = Ts extends []
+    ? unknown
+    : Ts extends [infer T, ...infer Rest]
+    ? T & Intersection<Rest>
+    : never;
 
-export function chainMerge<V extends Record<string, unknown>>(arbV: fc.Arbitrary<V>) {
-    return <U extends Record<string, unknown>>(uu: U): fc.Arbitrary<U & V> => {
-        return arbV.map((vv) => ({ ...uu, ...vv }));
-    };
+export function merge<Ts extends Record<string, unknown>[]>(
+    ...arbs: { [K in keyof Ts]: fc.Arbitrary<Ts[K]> }
+): fc.Arbitrary<Intersection<Ts>> {
+    return fc.tuple<Ts>(...arbs).map((vals) => {
+        // SAFETY: Intersection<Ts> intersects its parameter types, and
+        // Object.assign merges its parameter objects. This cast is therefore
+        // sound as long as none of the keys overlap.
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const merged: Intersection<Ts> = Object.assign({}, ...vals);
+        return merged;
+    });
 }
 
 export function arbFloat(options: fc.FloatNextConstraints = {}) {
