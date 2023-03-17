@@ -151,6 +151,33 @@ const knownBuggy: Array<{ reason: string; scenarios: Array<[string, string]> }> 
             ['private/393.json', 'scenario1'],
         ],
     },
+    {
+        reason: 'some heating system was a warm air system, but these are mishandled in the legacy model',
+        scenarios: [
+            ['private/239.json', 'master'],
+            ['private/239.json', 'scenario1'],
+            ['private/239.json', 'scenario2'],
+            ['private/376.json', 'master'],
+            ['private/376.json', 'scenario1'],
+            ['private/376.json', 'scenario2'],
+            ['private/376.json', 'scenario3'],
+            ['private/415.json', 'master'],
+            ['private/415.json', 'scenario1'],
+            ['private/415.json', 'scenario2'],
+            ['private/439.json', 'master'],
+            ['private/439.json', 'scenario1'],
+            ['private/439.json', 'scenario2'],
+            ['private/439.json', 'scenario3'],
+            ['private/440.json', 'master'],
+            ['private/440.json', 'scenario1'],
+            ['private/440.json', 'scenario2'],
+            ['private/440.json', 'scenario3'],
+            ['private/445.json', 'master'],
+            ['private/445.json', 'scenario1'],
+            ['private/445.json', 'scenario2'],
+            ['private/73.json', 'master'],
+        ],
+    },
 ];
 const knownBuggyFlat: Array<[string, string, string]> = knownBuggy.flatMap(
     ({ reason, scenarios }) =>
