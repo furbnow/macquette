@@ -79,6 +79,7 @@ export function arbitraryState(): fc.Arbitrary<LoadedState | 'loading'> {
         merge(
             fc.record({
                 scenarioLocked: fc.boolean(),
+                showAllCalcs: fc.boolean(),
                 modelOutput,
             }),
             arbModelInput(),
