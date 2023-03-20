@@ -4,7 +4,7 @@ import { parseRoute } from '../../../src/v2/ui/routes';
 describe('routes', () => {
     describe('parseRoute', () => {
         const results = [
-            { hash: '#', result: Result.ok({ type: 'default' }) },
+            { hash: '#', result: Result.ok(null) },
             {
                 hash: '#/nonsense',
                 result: Result.err(

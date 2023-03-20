@@ -1,25 +1,16 @@
-import { cloneDeep, isEqual } from 'lodash';
-import { createElement } from 'react';
-import { createRoot, Root as ReactRoot } from 'react-dom/client';
-import { z, ZodError } from 'zod';
-
-import { resultSchema } from '../../data-schemas/helpers/result';
-import { projectSchema } from '../../data-schemas/project';
 import { Result } from '../../helpers/result';
-import { CombinedModules } from '../../model/combined-modules';
-import { ModelError } from '../../model/error';
-import { externals } from '../../shims/typed-globals';
-import type { ResolvedRoute } from '../routes';
-import type { AppContext, UiModule } from './module-type';
+import { applyDataMutator, getAppContext } from '../../shims/typed-globals';
+import { InstantiatedUiModule } from './instantiated-module';
+import type { UiModule } from './module-type';
 
-export class UiModuleShim<State, Action, Effect> {
-    private keyedInstances: Record<string, { root: ReactRoot; state: State }> = {};
-
-    constructor(private module_: UiModule<State, Action, Effect>) {}
+/** Shim to be called from legacy code, for mounting a UI module on a legacy page */
+export class MultipleModuleShim<State, Action, Effect> {
+    private keyedInstances: Record<string, InstantiatedUiModule<State, Action, Effect>> =
+        {};
 
     private getInstance(
         instanceKey: string,
-    ): Result<{ root: ReactRoot; state: State }, string> {
+    ): Result<InstantiatedUiModule<State, Action, Effect>, string> {
         const instance = this.keyedInstances[instanceKey];
         if (instance === undefined) {
             return Result.err(`module not found: ${instanceKey}`);
@@ -27,17 +18,21 @@ export class UiModuleShim<State, Action, Effect> {
         return Result.ok(instance);
     }
 
-    init(element: Element, instanceKey: string) {
-        this.keyedInstances[instanceKey] = {
-            root: createRoot(element),
-            state: this.module_.initialState(instanceKey),
-        };
-        this.render(instanceKey);
+    constructor(private module_: UiModule<State, Action, Effect>) {}
+
+    init(domElement: Element, instanceKey: string) {
+        const instance = new InstantiatedUiModule(
+            this.module_,
+            instanceKey,
+            domElement,
+            applyDataMutator,
+        );
+        this.keyedInstances[instanceKey] = instance;
     }
 
     unmount(instanceKey: string) {
-        const { root } = this.getInstance(instanceKey).unwrap();
-        root.unmount();
+        const instance = this.getInstance(instanceKey).unwrap();
+        instance.unmount();
         delete this.keyedInstances[instanceKey];
     }
 
@@ -47,73 +42,42 @@ export class UiModuleShim<State, Action, Effect> {
         }
     }
 
-    update(route: ResolvedRoute) {
-        const project = projectSchema.parse(externals().project);
-        const scenarioId = z.string().parse(externals().scenarioId);
-        const currentScenario = project.data[scenarioId];
-        if (currentScenario === undefined) {
-            throw new Error('Current scenario not found in project');
-        }
-        // We parse this here rather than in the scenario schema because:
-        // 1. It would cause cyclical imports
-        // 2. If currentScenario.model doesn't fit this shape (which could happen due
-        //    due to an unexpected error), we still need to be able to run the model.
-        const currentModel = resultSchema(
-            z.instanceof(CombinedModules),
-            z.union([z.instanceof(ModelError), z.instanceof(ZodError)]),
-        ).parse(currentScenario.model);
-        for (const instanceKey of Object.keys(this.keyedInstances)) {
-            const context: AppContext = {
-                route,
-                project,
-                scenarioId,
-                currentScenario,
-                currentModel,
-            };
-            const actionR = this.module_.shims.extractUpdateAction(context, instanceKey);
-            if (!actionR.isOk()) {
-                console.error(actionR.coalesce());
-                continue;
-            }
-            const action = actionR.coalesce();
-            this.dispatch(action, instanceKey, false);
+    update() {
+        const context = getAppContext();
+        for (const instance of Object.values(this.keyedInstances)) {
+            instance.update(context);
         }
     }
+}
 
-    private reduceModuleInstance(action: Action, instanceKey: string) {
-        const instance = this.getInstance(instanceKey).unwrap();
-        const result = this.module_.reducer(instance.state, action);
+/** Shim to be called from legacy code, for mounting a UI module on a legacy page */
+export class SingleModuleShim<State, Action, Effect> {
+    private instance: InstantiatedUiModule<State, Action, Effect> | null = null;
+    constructor(private module_: UiModule<State, Action, Effect>) {}
 
-        const [state, effects = []] = result;
-        instance.state = state;
-
-        for (const effect of effects) {
-            this.module_
-                .effector(effect, (action) => this.dispatch(action, instanceKey, true))
-                .catch((err) => console.error(err));
-        }
-    }
-
-    private render(instanceKey: string) {
-        const { root, state } = this.getInstance(instanceKey).unwrap();
-        root.render(
-            createElement(this.module_.component, {
-                state,
-                dispatch: (action) => this.dispatch(action, instanceKey, true),
-            }),
+    init(domElement: Element) {
+        this.instance = new InstantiatedUiModule(
+            this.module_,
+            '',
+            domElement,
+            applyDataMutator,
         );
     }
 
-    private dispatch(action: Action, instanceKey: string, internal: boolean) {
-        this.reduceModuleInstance(action, instanceKey);
-        this.render(instanceKey);
-        if (internal) {
-            const { state } = this.getInstance(instanceKey).unwrap();
-            const origProject = cloneDeep(externals().project);
-            this.module_.shims.mutateLegacyData(externals(), state, instanceKey);
-            if (!isEqual(origProject, externals().project)) {
-                externals().update();
-            }
+    unmount() {
+        if (this.instance === null) {
+            console.warn('Tried to unmount an uninitialised instance');
+            return;
         }
+        this.instance.unmount();
+        this.instance = null;
+    }
+
+    update() {
+        if (this.instance === null) {
+            console.warn('Tried to unmount an uninitialised instance');
+            return;
+        }
+        this.instance.update(getAppContext());
     }
 }

@@ -1,32 +1,41 @@
-import { isEqual } from 'lodash';
-
 import { featureFlags } from '../helpers/feature-flags';
 import { isIndexable } from '../helpers/is-indexable';
-import { externals } from '../shims/typed-globals';
-import type { Module } from './modules';
-import { modules } from './modules';
+import {
+    applyDataMutator,
+    externals,
+    getAppContext,
+    getCurrentRoute,
+} from '../shims/typed-globals';
+import { InstantiatedUiModule } from './module-management/instantiated-module';
+import { UiModule } from './module-management/module-type';
+import { addressSearchModule } from './modules/address-search';
+import { currentEnergyModule } from './modules/current-energy';
+import * as editorSidebar from './modules/editor-sidebar';
+import { imageGalleryModule } from './modules/image-gallery';
+import { sandboxModule } from './modules/sandbox';
+import { solarHotWaterModule } from './modules/solar-hot-water';
 import type { ScenarioPageName, StandalonePageName } from './pages';
-import type { ResolvedRoute } from './routes';
-import { DEFAULT_ROUTE, parseRoute, resolveRoute } from './routes';
+import { Route } from './routes';
 
-type PageData = { style: 'legacy' } | { style: 'modern'; module: Module };
-
-export const standalonePages: Record<StandalonePageName, PageData> = {
+export const standalonePages = {
     householdquestionnaire: { style: 'legacy' },
     commentary: { style: 'legacy' },
-    currentenergy: { style: 'modern', module: modules.currentEnergy },
-    imagegallery: { style: 'modern', module: modules.imageGallery },
+    currentenergy: { style: 'modern', module: currentEnergyModule },
+    imagegallery: { style: 'modern', module: imageGalleryModule },
     compare: { style: 'legacy' },
     report: { style: 'legacy' },
     scopeofworks: { style: 'legacy' },
     export: { style: 'legacy' },
     librariesmanager: { style: 'legacy' },
     fuelsmanager: { style: 'legacy' },
-    sandbox: { style: 'modern', module: modules.sandbox },
-    'address-search': { style: 'modern', module: modules.addressSearch },
-};
+    sandbox: { style: 'modern', module: sandboxModule },
+    'address-search': { style: 'modern', module: addressSearchModule },
+} satisfies Record<
+    StandalonePageName,
+    { style: 'legacy' } | { style: 'modern'; module: unknown }
+>;
 
-export const scenarioPages: Record<ScenarioPageName, PageData> = {
+export const scenarioPages = {
     context: { style: 'legacy' },
     ventilation: { style: 'legacy' },
     elements: { style: 'legacy' },
@@ -34,11 +43,14 @@ export const scenarioPages: Record<ScenarioPageName, PageData> = {
     heating: { style: 'legacy' },
     fuel_requirements: { style: 'legacy' },
     generation: { style: 'legacy' },
-    solarhotwater: { style: 'modern', module: modules.solarHotWater },
+    solarhotwater: { style: 'modern', module: solarHotWaterModule },
     worksheets: { style: 'legacy' },
-};
+} satisfies Record<
+    ScenarioPageName,
+    { style: 'legacy' } | { style: 'modern'; module: unknown }
+>;
 
-function pageDataForRoute(route: ResolvedRoute): PageData {
+function pageDataForRoute(route: Route) {
     switch (route.type) {
         case 'standalone': {
             return standalonePages[route.page];
@@ -50,7 +62,11 @@ function pageDataForRoute(route: ResolvedRoute): PageData {
 }
 
 export class PageManager {
-    private currentRoute: ResolvedRoute | null = null;
+    private currentModule:
+        | InstantiatedUiModule<unknown, unknown, unknown>
+        | 'legacy'
+        | null = null;
+    private sidebarManager: SidebarManager;
 
     constructor(
         private legacySharedInit: () => void,
@@ -59,54 +75,71 @@ export class PageManager {
         private legacyModuleUpdate: () => void,
         private legacyModuleUnload: () => void,
     ) {
-        PageManager.initEnvirons();
-
-        const currentPage = parseRoute(window.location.hash);
-        if (currentPage.isOk()) {
-            this.takeRoute(resolveRoute(currentPage.unwrap())).catch((err) =>
-                console.error(err),
-            );
-        } else {
-            alert('Could not navigate to page, going to default page');
-            this.takeRoute(resolveRoute(DEFAULT_ROUTE)).catch((err) =>
-                console.error(err),
-            );
-        }
-
+        this.sidebarManager = new SidebarManager();
+        this.handleNavigation().catch((err) => console.error(err));
         window.addEventListener('hashchange', () => {
-            const currentPage = parseRoute(window.location.hash);
-            if (currentPage.isOk()) {
-                this.takeRoute(resolveRoute(currentPage.unwrap())).catch((err) => {
-                    alert('Could not navigate to page');
-                    console.error(err);
-                });
-            } else {
-                alert('Could not navigate to page');
-            }
+            this.handleNavigation().catch((err) => console.error(err));
         });
     }
 
-    private unload() {
-        if (this.currentRoute === null) {
+    externalDataUpdate() {
+        if (this.currentModule === null) {
             return;
         }
 
-        const pageData = pageDataForRoute(this.currentRoute);
-        if (pageData.style === 'legacy') {
-            this.legacyModuleUnload();
-        } else {
-            pageData.module.unmountAll();
+        // Check if the scenario we're on still exists
+        const route = getCurrentRoute();
+        if (route.type === 'with scenario') {
+            const { project } = externals();
+            const { scenarioId } = route;
+
+            if (isIndexable(project['data']) && !(scenarioId in project['data'])) {
+                window.location.hash = '';
+                return;
+            }
         }
 
-        this.currentRoute = null;
+        this.sidebarManager.update();
+
+        if (this.currentModule === 'legacy') {
+            this.legacyModuleUpdate();
+        } else {
+            this.currentModule.update(getAppContext());
+        }
     }
 
-    private async init(route: ResolvedRoute) {
-        this.updateEnvirons(route);
-        window.scrollTo({ top: 0 });
+    async handleNavigation() {
+        const route = getCurrentRoute();
 
+        // Unload existing module, if there is one
+        if (this.currentModule !== null) {
+            if (this.currentModule === 'legacy') {
+                this.legacyModuleUnload();
+            } else {
+                this.currentModule.unmount();
+            }
+            this.currentModule = null;
+        }
+
+        // Set up globals as legacy expects
+        if (!isIndexable(window)) {
+            throw new Error('not running in browser');
+        }
+        const scenarioId = route.type === 'standalone' ? 'master' : route.scenarioId;
+        window['scenario'] = scenarioId;
+        window['page'] = route.page;
+        const { project } = externals();
+        if (isIndexable(project['data'])) {
+            window['data'] = project['data'][scenarioId];
+        } else {
+            throw new Error('project.data not indexable');
+        }
+
+        // Load new module
+        window.scrollTo({ top: 0 });
         const pageData = pageDataForRoute(route);
         if (pageData.style === 'legacy') {
+            this.currentModule = 'legacy';
             await this.legacyModuleInit();
         } else {
             const element = document.querySelector('#editor__main-content');
@@ -115,85 +148,60 @@ export class PageManager {
                     'main content area not available for view initialisation',
                 );
             }
-            pageData.module.init(element, '');
+            /*
+             * SAFETY: The type parameters of this.currentModule vary depending
+             * on what is currently loaded. Due to the way that TypeScript
+             * deals with subtyping of functions, this is impossible to express
+             * in a general way (try it and see!). The cast is sound, because
+             * none of the `any` type parameters are exposed in public methods.
+             */
+            this.currentModule = new InstantiatedUiModule(
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+                pageData.module as UiModule<any, any, any>,
+                '',
+                element,
+                applyDataMutator,
+            );
         }
-
         this.legacySharedInit();
-        this.currentRoute = route;
-    }
 
-    async externalDataUpdate() {
-        if (this.currentRoute === null) {
-            return;
-        }
+        // Run updaters
+        this.sidebarManager.update();
+        this.externalDataUpdate();
 
-        // Check if the scenario we're on still exists
-        if (this.currentRoute.type === 'with scenario') {
-            const { project } = externals();
-            const { scenarioId } = this.currentRoute;
-
-            if (isIndexable(project['data']) && !(scenarioId in project['data'])) {
-                return await this.takeRoute(resolveRoute(DEFAULT_ROUTE));
-            }
-        }
-
-        this.updateEnvirons(this.currentRoute);
-
-        const pageData = pageDataForRoute(this.currentRoute);
-        if (pageData.style === 'legacy') {
-            this.legacyModuleUpdate();
-        } else {
-            pageData.module.update(this.currentRoute);
-        }
-    }
-
-    async takeRoute(newRoute: ResolvedRoute) {
-        if (isEqual(this.currentRoute, newRoute)) {
-            return;
-        }
-
-        this.unload();
-
-        // We are using this global to share state between here and the UiModuleShim.
-        // The exercise of removing this global state this is left to future readers.
-        if (!isIndexable(window)) {
-            throw new Error('not running in browser');
-        }
-        const scenarioId =
-            newRoute.type === 'standalone' ? 'master' : newRoute.scenarioId;
-        window['scenario'] = scenarioId;
-        window['page'] = newRoute.page;
-
-        const { project } = externals();
-        if (isIndexable(project['data'])) {
-            window['data'] = project['data'][scenarioId];
-        } else {
-            throw new Error('project.data not indexable');
-        }
-
-        await this.init(newRoute);
-        await this.externalDataUpdate();
-
-        const pageData = pageDataForRoute(newRoute);
-        if (pageData.style === 'legacy') {
+        // Run legacy post-update init
+        if (this.currentModule === 'legacy') {
             this.legacyModuleInitPostUpdate();
         }
     }
+}
 
-    private static initEnvirons() {
+class SidebarManager {
+    private sidebarModule: InstantiatedUiModule<
+        editorSidebar.State,
+        editorSidebar.Action,
+        editorSidebar.Effect
+    > | null = null;
+
+    constructor() {
         if (featureFlags.has('new-sidebar')) {
             const sidebarElement = document.querySelector('#editor__sidebar');
             if (sidebarElement === null) {
                 throw new Error('sidebar area not available for view initialisation');
             }
 
-            modules.editorSidebar.init(sidebarElement, '');
+            this.sidebarModule = new InstantiatedUiModule(
+                editorSidebar.editorSidebarModule,
+                '',
+                sidebarElement,
+                applyDataMutator,
+            );
         }
     }
 
-    private updateEnvirons(route: ResolvedRoute) {
+    update() {
         if (featureFlags.has('new-sidebar')) {
-            modules.editorSidebar.update(route);
+            this.sidebarModule?.update(getAppContext());
         }
     }
 }

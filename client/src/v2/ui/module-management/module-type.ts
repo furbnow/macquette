@@ -5,10 +5,10 @@ import type { Result } from '../../helpers/result';
 import { CombinedModules } from '../../model/combined-modules';
 import { ModelError } from '../../model/error';
 import type { Externals } from '../../shims/typed-globals';
-import { ResolvedRoute } from '../routes';
+import { Route } from '../routes';
 
 export type AppContext = {
-    route: ResolvedRoute;
+    route: Route;
     project: Project;
     scenarioId: string;
     currentScenario: Scenario;

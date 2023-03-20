@@ -2,7 +2,7 @@ import { Result } from '../helpers/result';
 import type { ScenarioPageName, StandalonePageName } from './pages';
 import { isScenarioPage, isStandalonePage } from './pages';
 
-export const DEFAULT_ROUTE: StandaloneRoute = {
+export const DEFAULT_ROUTE: Route = {
     type: 'standalone',
     page: 'address-search',
 };
@@ -13,19 +13,17 @@ type ScenarioRoute = {
     page: ScenarioPageName;
     scenarioId: string;
 };
-type UnresolvedDefaultRoute = { type: 'default' };
 
-export type UnresolvedRoute = StandaloneRoute | ScenarioRoute | UnresolvedDefaultRoute;
-export type ResolvedRoute = StandaloneRoute | ScenarioRoute;
+export type Route = StandaloneRoute | ScenarioRoute;
 
 export type ParserState =
     | { type: 'initial' }
     | { type: 'empty initial segment' }
     | { type: 'first segment received'; firstSegment: string };
 
-export function parseRoute(hashContents: string): Result<UnresolvedRoute, string> {
+export function parseRoute(hashContents: string): Result<Route | null, string> {
     if (hashContents === '') {
-        return Result.ok({ type: 'default' });
+        return Result.ok(null);
     } else if (hashContents[0] !== '#') {
         return Result.err('invalid hash passed, needs leading #');
     }
@@ -79,7 +77,7 @@ export function parseRoute(hashContents: string): Result<UnresolvedRoute, string
     }
 
     if (state.type === 'empty initial segment') {
-        return Result.ok({ type: 'default' });
+        return Result.ok(null);
     } else if (state.type === 'first segment received') {
         if (isStandalonePage(state.firstSegment)) {
             return Result.ok({ type: 'standalone', page: state.firstSegment });
@@ -90,13 +88,5 @@ export function parseRoute(hashContents: string): Result<UnresolvedRoute, string
         }
     } else {
         return Result.err('generic failure');
-    }
-}
-
-export function resolveRoute(route: UnresolvedRoute): ResolvedRoute {
-    if (route.type === 'default') {
-        return DEFAULT_ROUTE;
-    } else {
-        return route;
     }
 }

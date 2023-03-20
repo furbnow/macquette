@@ -117,7 +117,7 @@ $('#openbem').on('click', '.delete-element', function () {
     var item_id = 1.0 * $(this).attr('item_id');
     $(this).closest('tr').remove();
     if (window.features.includes('new-fuvc') && this.dataset.type === "floor") {
-        window.Macquette.uiModules.floorRow.unmount(item_id);
+        window.Macquette.uiModuleShims.floorRow.unmount(item_id);
     }
     data.fabric.elements.splice(row, 1);
     elements_initUI();
@@ -430,7 +430,7 @@ function add_floor(z) {
         reactFuvcRow.setAttribute('data-element-id', element.id);
         const legacyRow = root.querySelector('.legacy-row')
         root.removeChild(legacyRow)
-        window.Macquette.uiModules.floorRow.init(reactFloorDataRow, element.id);
+        window.Macquette.uiModuleShims.floorRow.init(reactFloorDataRow, element.id);
     } else {
         root.removeChild(reactFloorDataRow)
         const summaryCell = root.querySelector('.floors-table__floor-summary-cell')
@@ -588,13 +588,13 @@ function elements_UpdateUI() {
         option.innerHTML = subtractOptions;
     }
 
-    window.Macquette.uiModules.fabric.update();
-    window.Macquette.uiModules.floorRow.update();
+    window.Macquette.uiModuleShims.fabric.update();
+    window.Macquette.uiModuleShims.floorRow.update();
 }
 
 function elements_UnloadUI() {
-    window.Macquette.uiModules.fabric.unmountAll();
-    window.Macquette.uiModules.floorRow.unmountAll();
+    window.Macquette.uiModuleShims.fabric.unmount();
+    window.Macquette.uiModuleShims.floorRow.unmountAll();
 }
 
 function get_elements_max_id() {

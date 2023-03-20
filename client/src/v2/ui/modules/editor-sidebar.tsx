@@ -16,10 +16,10 @@ import { NumberOutput } from '../output-components/numeric';
 import { Spinner } from '../output-components/spinner';
 import type { ScenarioPageName, StandalonePageName } from '../pages';
 import { pageTitles } from '../pages';
-import type { ResolvedRoute } from '../routes';
+import type { Route } from '../routes';
 
 type SidebarContextType = {
-    route: ResolvedRoute | null;
+    route: Route | null;
 };
 
 export const SidebarContext = React.createContext<SidebarContextType>({
@@ -35,11 +35,11 @@ type MetadataEditorModalState = {
     requestStatus: FetchStatus;
 };
 
-type State = {
+export type State = {
     assessmentId: string;
     projectName: string;
     projectDescription: string;
-    route: ResolvedRoute | null;
+    route: Route | null;
     hasReports: boolean;
     scenarios: {
         id: string;
@@ -74,7 +74,7 @@ type MetadataSaveStatusAction = {
     status: FetchStatus;
 };
 
-type Action =
+export type Action =
     | MergeDataAction
     | ToggleExpansionAction
     | DuplicateScenarioAction
@@ -83,7 +83,7 @@ type Action =
     | SaveMetadataAction
     | MetadataSaveStatusAction;
 
-type Effect = {
+export type Effect = {
     type: 'save project info';
     assessmentId: string;
     name: string;
@@ -137,7 +137,7 @@ function ScenarioBlock({
     dispatch,
 }: {
     scenario: State['scenarios'][0];
-    route: ResolvedRoute | null;
+    route: Route | null;
     dispatch: Dispatcher<Action>;
 }) {
     const { id, title, isBaseline, locked } = scenario;

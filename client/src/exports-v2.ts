@@ -5,7 +5,9 @@ import { emulateJsonRoundTrip } from './v2/helpers/emulate-json-round-trip';
 import { datasets } from './v2/model/datasets/legacy';
 import { calcRun as calcRunAny } from './v2/model/model';
 import { generateReportGraphs, getHeatingLoad } from './v2/reports/graphs';
-import { modules } from './v2/ui/modules';
+import { MultipleModuleShim, SingleModuleShim } from './v2/ui/module-management/shim';
+import { fabricModule } from './v2/ui/modules/fabric';
+import { floorRowModule } from './v2/ui/modules/floor-row';
 import { PageManager } from './v2/ui/page-manager';
 
 declare global {
@@ -19,7 +21,10 @@ const calcRun: unknown = calcRunAny;
 window.Macquette = {
     datasets,
     calcRun,
-    uiModules: modules,
+    uiModuleShims: {
+        floorRow: new MultipleModuleShim(floorRowModule),
+        fabric: new SingleModuleShim(fabricModule),
+    },
     generateReportGraphs,
     getHeatingLoad,
     HTTPClient,
