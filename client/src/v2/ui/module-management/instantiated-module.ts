@@ -62,7 +62,10 @@ export class InstantiatedUiModule<State, Action, Effect> {
         for (const effect of effects ?? []) {
             this.module_
                 .effector(effect, (action) => this.dispatch(action, true))
-                .catch((err) => console.error(err));
+                .catch((err) => {
+                    alert(err);
+                    console.error(err);
+                });
         }
         this.render();
         if (internal && this.handleDataMutator !== undefined) {
