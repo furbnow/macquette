@@ -1,4 +1,5 @@
 import Bottleneck from 'bottleneck';
+import objectInspect from 'object-inspect';
 import React, { ReactElement, useEffect, useId, useState } from 'react';
 
 import { HTTPClient } from '../../api/http';
@@ -794,18 +795,23 @@ export const imageGalleryModule: UiModule<State, Action, Effect> = {
                 const bottleneck = new Bottleneck({ maxConcurrent: 3 });
 
                 for (const { file, id } of effect.files) {
-                    void bottleneck.schedule(async () => {
-                        try {
-                            dispatch({ type: 'image started uploading', id });
-                            const img = await apiClient.uploadImage(
-                                effect.assessmentId,
-                                file,
-                            );
-                            dispatch({ type: 'image uploaded', id, image: img });
-                        } catch (err) {
-                            dispatch({ type: 'upload failed', id });
-                        }
-                    });
+                    bottleneck
+                        .schedule(async () => {
+                            try {
+                                dispatch({ type: 'image started uploading', id });
+                                const img = await apiClient.uploadImage(
+                                    effect.assessmentId,
+                                    file,
+                                );
+                                dispatch({ type: 'image uploaded', id, image: img });
+                            } catch (err) {
+                                dispatch({ type: 'upload failed', id });
+                            }
+                        })
+                        .catch((err) => {
+                            alert(`dispatch failed: ${objectInspect(err)}`);
+                            console.error('dispatch failed', err);
+                        });
                 }
 
                 break;
