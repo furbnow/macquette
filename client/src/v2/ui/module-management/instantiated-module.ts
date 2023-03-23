@@ -6,7 +6,7 @@ import type { AppContext, UiModule } from './module-type';
 
 export class InstantiatedUiModule<State, Action, Effect> {
     private state: State;
-    private root: ReactDOMRoot;
+    private root: ReactDOMRoot | null;
 
     constructor(
         private module_: UiModule<State, Action, Effect>,
@@ -22,7 +22,12 @@ export class InstantiatedUiModule<State, Action, Effect> {
     }
 
     unmount() {
-        this.root.unmount();
+        if (this.root === null) {
+            console.error('Tried to unmount an already unmounted UI module');
+        } else {
+            this.root.unmount();
+            this.root = null;
+        }
     }
 
     update(context: AppContext) {
@@ -37,6 +42,12 @@ export class InstantiatedUiModule<State, Action, Effect> {
     }
 
     private render() {
+        if (this.root === null) {
+            // Root has gone away; maybe we are processing an async effect
+            // after we have been unmounted
+            console.warn('Cannot render on an unmounted root');
+            return;
+        }
         this.root.render(
             createElement(this.module_.component, {
                 state: this.state,
