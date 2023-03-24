@@ -9,7 +9,6 @@ import sentry_sdk
 from corsheaders.defaults import default_headers, default_methods
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
-from ssm_parameter_store import EC2ParameterStore
 
 ROOT_DIR = environ.Path(__file__) - 3  # (mhep/config/settings/base.py - 3 = mhep/)
 APPS_DIR = ROOT_DIR.path("mhep")
@@ -19,6 +18,8 @@ env = environ.Env()
 # Get parameters and populate os.environ, if desired
 AWS_PARAM_STORE = env("AWS_PARAM_STORE", default="")
 if AWS_PARAM_STORE != "":
+    from ssm_parameter_store import EC2ParameterStore
+
     store = EC2ParameterStore()
     params = store.get_parameters_by_path(f"/{AWS_PARAM_STORE}/", strip_path=True)
     EC2ParameterStore.set_env(params)
