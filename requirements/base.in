@@ -13,8 +13,6 @@ django-environ        # https://github.com/joke2k/django-environ
 django-model-utils    # https://github.com/jazzband/django-model-utils
 django-crispy-forms   # https://github.com/django-crispy-forms/django-crispy-forms
 django-cors-headers   # https://pypi.org/project/django-cors-headers/
-django-import-export  # https://django-import-export.readthedocs.io/
-nplusone              # https://github.com/jmcarp/nplusone
 django-waffle         # https://github.com/django-waffle/django-waffle
 
 # Django REST Framework

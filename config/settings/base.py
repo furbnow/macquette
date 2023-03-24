@@ -114,14 +114,12 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
     # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
-    "import_export",
 ]
 THIRD_PARTY_APPS = [
     "corsheaders",
     "crispy_forms",
     "social_django",
     "rest_framework",
-    "nplusone.ext.django",
     "waffle",
 ]
 LOCAL_APPS = [
@@ -209,16 +207,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "nplusone.ext.django.NPlusOneMiddleware",
     "waffle.middleware.WaffleMiddleware",
     "mhep.users.backends.ExceptionMiddleware",
 ]
-
-# n+1 logging
-# ------------------------------------------------------------------------------
-# https://github.com/jmcarp/nplusone
-NPLUSONE_LOGGER = logging.getLogger("nplusone")
-NPLUSONE_LOG_LEVEL = logging.ERROR
 
 # STATIC
 # ------------------------------------------------------------------------------
