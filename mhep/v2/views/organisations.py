@@ -53,7 +53,6 @@ class ListOrganisations(generics.ListAPIView):
 class ListCreateOrganisationAssessments(
     AddURLOrganisationToSerializerContextMixin, generics.ListCreateAPIView
 ):
-
     permission_classes = [IsAuthenticated, IsMemberOfOrganisation]
     serializer_class = AssessmentMetadataSerializer
 
@@ -77,7 +76,9 @@ class ListCreateOrganisationAssessments(
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField()
         description = serializers.CharField(allow_blank=True, required=False)
-        data = serializers.JSONField(allow_null=True, default=dict)
+        # SAFETY: this field shadows a property of the same name but with a
+        # different type. This is fine at runtime but not in typechecking (yet).
+        data = serializers.JSONField(allow_null=True, default=dict)  # type: ignore[assignment]
 
     def post(self, request, *args, **kwargs):
         serializer = self.InputSerializer(data=request.data)
@@ -96,7 +97,6 @@ class ListCreateOrganisationAssessments(
 class CreateOrganisationLibraries(
     AddURLOrganisationToSerializerContextMixin, generics.CreateAPIView
 ):
-
     serializer_class = LibrarySerializer
     permission_classes = [IsAuthenticated, IsLibrarianOfOrganisation]
 

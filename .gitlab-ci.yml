@@ -40,7 +40,7 @@ python-test:
     script:
         # Silence warnings
         - mkdir staticfiles
-        - make test-python
+        - make check-types-python test-python
         - coverage xml
 
     artifacts:
@@ -62,7 +62,7 @@ js-test:
     before_script:
         - (cd client && npm clean-install)
     script:
-        - make check-types lint-js format-prettier test-js
+        - make check-types-js lint-js format-prettier test-js
 
 pre-commit:
     stage: test

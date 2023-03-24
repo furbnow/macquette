@@ -148,4 +148,4 @@ def test_bad_colours():
     with pytest.raises(ValueError) as excinfo:
         parse(input)
 
-    assert "string does not match regex" in str(excinfo.value)
+    assert "invalid colour" in str(excinfo.value).lower()

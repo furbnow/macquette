@@ -1,3 +1,16 @@
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+exclude = ['^test_*\.py$']
+plugins = [
+    "returns.contrib.mypy.returns_plugin",
+    "mypy_django_plugin.main",
+    "mypy_drf_plugin.main"
+]
+
+[tool.django-stubs]
+django_settings_module = "config.settings.test"
+
 [tool.ruff]
 select = ["E", "W", "F", "C90", "I", "UP", "N", "YTT", "S", "BLE", "FBT", "B", "A", "C4", "T10", "EM", "ISC", "ICN", "T20", "PT", "Q", "RET", "SIM", "TID", "ARG", "DTZ", "PD", "PGH", "PLC", "PLE", "PLR", "PLW", "PIE", "RUF"]
 

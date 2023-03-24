@@ -1,7 +1,7 @@
 import pytest
-from django.conf import settings
 from django.test import RequestFactory
 
+from mhep.users import models as user_models
 from mhep.users.tests.factories import UserFactory
 
 
@@ -11,7 +11,7 @@ def media_storage(settings, tmpdir):
 
 
 @pytest.fixture()
-def user() -> settings.AUTH_USER_MODEL:
+def user() -> user_models.User:
     return UserFactory()
 
 

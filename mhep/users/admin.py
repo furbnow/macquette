@@ -11,10 +11,13 @@ User = get_user_model()
 
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
-
     form = UserChangeForm
     add_form = UserCreationForm
-    fieldsets = (("User", {"fields": ("name",)}),) + auth_admin.UserAdmin.fieldsets
+    # SAFETY: the type stubs don't type fieldsets correctly
+    fieldsets = [  # type: ignore[misc]
+        ("User", {"fields": ("name",)}),
+        *auth_admin.UserAdmin.fieldsets,
+    ]
     list_display = ["username", "name", "email", "_usa", "is_staff", "is_superuser"]
     search_fields = ["name"]
     actions = ["username_to_email", "fill_in_full_name"]
@@ -35,6 +38,7 @@ class UserAdmin(auth_admin.UserAdmin):
 
         return format_html(", ".join(links))
 
+    @admin.action(description="Set username to email address")
     def username_to_email(self, request, queryset):
         done = 0
         no_email = 0
@@ -55,8 +59,7 @@ class UserAdmin(auth_admin.UserAdmin):
             f"{no_email} with no email, {already} already had the same username + email, {done} records updated.",
         )
 
-    username_to_email.short_description = "Set username to email address"
-
+    @admin.action(description="Set full name field to first+last names")
     def fill_in_full_name(self, request, queryset):
         done = 0
         no_name = 0
@@ -80,5 +83,3 @@ class UserAdmin(auth_admin.UserAdmin):
             request,
             f"{no_name} with no name, {already} already had full names, {done} records updated.",
         )
-
-    fill_in_full_name.short_description = "Set full name field to first+last names"

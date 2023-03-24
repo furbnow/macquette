@@ -88,8 +88,12 @@ test-python:  ## Run Python tests
 test-js:  ## Run non-browser JS tests
 	cd client && ./node_modules/.bin/jest
 
-.PHONY: check-types
-check-types:  ## Check types with tsc (without emitting)
+.PHONY: check-types-python
+check-types-python:  ## Check types with tsc (without emitting)
+	mypy mhep
+
+.PHONY: check-types-js
+check-types-js:  ## Check types with tsc (without emitting)
 	./client/node_modules/.bin/tsc --noEmit --allowJs -p client/tsconfig.json
 
 .PHONY: test-js-watch

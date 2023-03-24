@@ -217,13 +217,13 @@ class LibraryItemSerializer(serializers.Serializer):
 class OrganisationLibrarianSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
-        fields = []
+        fields: list[str] = []
 
 
 class OrganisationMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
-        fields = []
+        fields: list[str] = []
 
 
 class OrganisationInviteSerializer(serializers.Serializer):

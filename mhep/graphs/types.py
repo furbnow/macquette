@@ -1,6 +1,7 @@
+import re
 from typing import Literal
 
-from pydantic import BaseModel, constr, root_validator, validator
+from pydantic import BaseModel, root_validator, validator
 
 
 def to_camel(underscored: str) -> str:
@@ -39,7 +40,7 @@ class BarChart(BaseModel):
     bins: list[Bin]
     num_categories: int
     category_labels: list[str] | None
-    category_colours: list[constr(regex="^#[a-f0-9]{6}$")] | None  # noqa:F722
+    category_colours: list[str] | None
     lines: list[Line] | None
     areas: list[ShadedArea] | None
 
@@ -56,8 +57,16 @@ class BarChart(BaseModel):
             [bin.data[idx] for bin in self.bins] for idx in range(self.num_categories)
         ]
 
+    @validator("category_colours")
+    def _check_colours_are_valid(cls, v: list[str]) -> list[str]:
+        valid = r"^#[a-f0-9]{6}$"
+        for colour in v:
+            if not re.match(valid, colour):
+                raise ValueError(f"Invalid colour: {colour}")
+        return v
+
     @validator("bins")
-    def _must_have_data(cls, v):
+    def _must_have_data(cls, v: list[Bin]) -> list[Bin]:
         if len(v) == 0:
             raise ValueError(
                 "A bar chart must have some data to plot but none was provided"
@@ -160,3 +169,5 @@ def parse_figure(figure: dict) -> BarChart | LineGraph:
         return BarChart(**figure)
     elif figure["type"] == "line":
         return LineGraph(**figure)
+    else:
+        raise TypeError(f"Unsupported type: {figure['type']}")

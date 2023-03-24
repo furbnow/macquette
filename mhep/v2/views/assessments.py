@@ -28,7 +28,9 @@ class ListCreateAssessments(AssessmentQuerySetMixin, generics.ListAPIView):
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField()
         description = serializers.CharField(allow_blank=True, required=False)
-        data = serializers.JSONField(allow_null=True, default=dict)
+        # SAFETY: this field shadows a property of the same name but with a
+        # different type. This is fine at runtime but not in typechecking (yet).
+        data = serializers.JSONField(allow_null=True, default=dict)  # type: ignore[assignment]
 
     def post(self, request, *args, **kwargs):
         serializer = self.InputSerializer(data=request.data)
@@ -115,7 +117,7 @@ class UploadAssessmentImage(AssessmentQuerySetMixin, generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     @staticmethod
-    def _make_thumbnail(image: PIL.Image, record: Image):
+    def _make_thumbnail(image, record: Image):
         image = PIL.ImageOps.exif_transpose(image)
 
         record.width = image.width

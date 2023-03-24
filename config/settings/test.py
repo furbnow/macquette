@@ -4,8 +4,8 @@ With these settings, tests run faster.
 import os
 
 os.environ["DJANGO_READ_DOT_ENV_FILE"] = "true"
-from .base import *  # noqa
-from .base import env  # noqa
+from .base import *  # noqa: E402,F403,I001
+from .base import env, TEMPLATES  # noqa: E402
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
-TEMPLATES[0]["OPTIONS"]["loaders"] = [  # noqa F405
+TEMPLATES[0]["OPTIONS"]["loaders"] = [
     (
         "django.template.loaders.cached.Loader",
         [

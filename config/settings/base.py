@@ -2,6 +2,7 @@
 Base settings to build other settings files upon.
 """
 import logging
+from typing import Any
 
 import environ
 import sentry_sdk
@@ -244,7 +245,7 @@ MEDIA_URL = "/media/"
 # TEMPLATES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
-TEMPLATES = [
+TEMPLATES: list[dict[str, Any]] = [
     {
         # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES-BACKEND
         "BACKEND": "django.template.backends.django.DjangoTemplates",

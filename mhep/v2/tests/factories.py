@@ -97,7 +97,7 @@ class ReportTemplateFactory(DjangoModelFactory):
 class LibraryFactory(DjangoModelFactory):
     name = "Standard Library - exampleuser"
     type = "generation_measures"
-    data = {}
+    data: dict[str, dict] = {}
     owner_user = factory.SubFactory(UserFactory)
     owner_organisation = None
 

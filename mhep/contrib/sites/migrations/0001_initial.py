@@ -1,10 +1,12 @@
 import django.contrib.sites.models
-from django.contrib.sites.models import _simple_domain_name_validator
+
+# SAFETY: This function exists but isn't public, which is why the type stubs
+# don't have it.
+from django.contrib.sites.models import _simple_domain_name_validator  # type: ignore[attr-defined]
 from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = []
 
     operations = [

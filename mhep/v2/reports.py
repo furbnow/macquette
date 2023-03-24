@@ -22,15 +22,15 @@ def _nl2br(eval_ctx, value):
     return escape("\n\n").join(processed_paragraphs)
 
 
-def _sqrt(value):
+def _sqrt(value) -> float:
     return math.sqrt(value)
 
 
-def _round_half_up(num):
+def _round_half_up(num: float) -> float:
     return math.floor(num * 10 + 0.5) / 10
 
 
-def _to_hours_and_minutes(value):
+def _to_hours_and_minutes(value: str) -> str:
     (minutes, hours) = math.modf(float(value))
     hours = int(hours)
     minutes = int(_round_half_up(minutes * 60))

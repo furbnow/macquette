@@ -1,6 +1,7 @@
 import random
 
 from django.conf import settings
+from returns.primitives.exceptions import UnwrapFailedError
 from returns.result import Failure, Success
 
 from .elevation import get_elevation
@@ -38,35 +39,30 @@ def get_combined_address_data(id: str):
         lambda result: get_elevation(result.latitude, result.longitude)
     )
 
-    return (
-        main_data_r.map(
-            lambda main_data: {
-                "error": None,
-                "result": {
-                    "id": id,
-                    "address": {
-                        "line_1": main_data.line_1,
-                        "line_2": main_data.line_2,
-                        "line_3": main_data.line_3,
-                        "post_town": main_data.post_town,
-                        "postcode": main_data.postcode,
-                        "country": main_data.country,
-                    },
-                    "uprn": main_data.uprn,
-                    "local_authority": main_data.district,
-                    "coordinates": [main_data.latitude, main_data.longitude],
-                    "elevation": elevation_r.lash(lambda err: Success(None)).unwrap(),
-                    "lsoa": lsoa_r.lash(lambda err: Success(None)).unwrap(),
+    try:
+        main_data = main_data_r.unwrap()
+    except UnwrapFailedError:
+        return {
+            "error": main_data_r.failure(),
+            "result": None,
+        }
+    else:
+        return {
+            "error": None,
+            "result": {
+                "id": id,
+                "address": {
+                    "line_1": main_data.line_1,
+                    "line_2": main_data.line_2,
+                    "line_3": main_data.line_3,
+                    "post_town": main_data.post_town,
+                    "postcode": main_data.postcode,
+                    "country": main_data.country,
                 },
-            }
-        )
-        .lash(
-            lambda error: Success(
-                {
-                    "error": error,
-                    "result": None,
-                }
-            )
-        )
-        .unwrap()
-    )
+                "uprn": main_data.uprn,
+                "local_authority": main_data.district,
+                "coordinates": [main_data.latitude, main_data.longitude],
+                "elevation": elevation_r.value_or(None),
+                "lsoa": lsoa_r.value_or(None),
+            },
+        }

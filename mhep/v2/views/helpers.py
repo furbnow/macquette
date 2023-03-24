@@ -2,14 +2,13 @@ import logging
 import os
 from os.path import abspath, dirname, join
 
-from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.templatetags.static import static
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 
-from .. import VERSION, models
+from mhep.users import models as user_models
 
-User = get_user_model()
+from .. import VERSION, models
 
 
 def build_static_dictionary():
@@ -131,7 +130,7 @@ def check_library_share_permissions(library, original_request):
     return True
 
 
-def get_assessments_for_user(user: User):
+def get_assessments_for_user(user: user_models.User):
     """Return a list of all assessments a user can access."""
 
     my_assessments = Q(owner=user)

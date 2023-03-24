@@ -18,7 +18,9 @@ class GenerateReport(APIView):
     class InputSerializer(serializers.Serializer):
         filename = serializers.CharField(required=False, default="report")
         preview = serializers.BooleanField(required=False, default=False)
-        context = serializers.JSONField(allow_null=True)
+        # SAFETY: this field shadows a property of the same name but with a
+        # different type. This is fine at runtime but not in typechecking (yet).
+        context = serializers.JSONField(allow_null=True)  # type: ignore[assignment]
         graphs = serializers.JSONField(allow_null=True)
 
     def post(self, request, pk):

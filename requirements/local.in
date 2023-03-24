@@ -20,8 +20,9 @@ coverage                # https://github.com/nedbat/coveragepy
 # ------------------------------------------------------------------------------
 pre-commit              # https://github.com/pre-commit/pre-commit
 mypy
-django-stubs
-djangorestframework-stubs
+django-stubs[compatible-mypy]
+djangorestframework-stubs[compatible-mypy]
+types-python-jose
 
 # Django
 # ------------------------------------------------------------------------------
