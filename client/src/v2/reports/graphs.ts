@@ -64,9 +64,10 @@ class ProjectData {
         };
         const scenarios = scenarioIds.map(
             (scenarioId): EnergyCostsGraphInput['scenarios'][number] => {
-                const { fuel_totals } = this.scenario(scenarioId)[0];
-                const generationCostSaving =
-                    coalesceEmptyString(fuel_totals?.['generation']?.annualcost, 0) ?? 0;
+                const [{ fuel_totals }] = this.scenario(scenarioId);
+                const generationCostSaving = -(
+                    coalesceEmptyString(fuel_totals?.['generation']?.annualcost, 0) ?? 0
+                );
                 const energyUseByFuel = mapValues(
                     fuel_totals ?? {},
                     ({ quantity }) => quantity ?? 0,
