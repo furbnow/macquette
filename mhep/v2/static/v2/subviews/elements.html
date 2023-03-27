@@ -7,51 +7,8 @@
     }
 </style>
 
-<div id="new-selector-mountpoint"></div>
-
 <div id="react-container">
-
-<section class="line-top mb-45">
-    <h3 class="ma-0 mb-15">Thermal Mass Parameter (TMP)</h3>
-
-    <p>The thermal mass parameter (TMP) gives an indication of how quickly a structure will absorb and release heat.  You can choose to ignore the k value of individual elements and use a global TMP value instead.</p>
-
-    <p>In multi-layered constructions - e.g. timber frame with external masonry leaf - the construction of the inner leaf is the more important factor.</p>
-
-    <p>Use:</p>
-
-    <label class="radio d-flex mb-7" for="tmp_override_1">
-        <input type="radio" class="mr-7 big-checkbox"
-                id="tmp_override_1"
-                name="tmp_override"
-                value="NONE">
-        the k value of individual elements
-    </label>
-
-    <label class="radio d-flex mb-7" for="tmp_override_2">
-        <input type="radio" class="mr-7 big-checkbox"
-                id="tmp_override_2"
-                name="tmp_override"
-                value="LOW">
-        timber or steel frame with lightweight infill (low TMP)
-    </label>
-
-    <label class="radio d-flex mb-7" for="tmp_override_3">
-        <input type="radio" class="mr-7 big-checkbox"
-                id="tmp_override_3"
-                name="tmp_override"
-                value="MED">
-        masonry walls with timber floors or other mixed structure (medium TMP)
-    </label>
-
-    <label class="radio d-flex mb-7" for="tmp_override_4">
-        <input type="radio" class="mr-7 big-checkbox"
-                id="tmp_override_4"
-                name="tmp_override"
-                value="HIGH">
-        masonry walls and solid floors (high TMP)
-    </label>
-</section>
+</div>
 
 <template id="element-table-template">
     <table class="table">
@@ -87,160 +44,6 @@
         </tfoot>
     </table>
 </template>
-
-<!-- This template is re-used for everything apart from openings and floors -->
-<template id="element-template">
-    <tr>
-        <td style="width: 0">
-        </td>
-        <td colspan="7">
-            <b>
-                <span data-key="lib"></span> - <span data-key="name"></span>
-            </b>
-            <br>
-
-            U-value:
-            <span data-key="uvalue"></span> <span class="text-units">W/K.m²</span>,
-
-            k-value:
-            <span data-key="kvalue"></span> <span class="text-units">kJ/K.m²</span>
-
-            <span data-section="cost">
-                <br>
-                £<span data-key="cost_total"></span>
-
-                <span
-                    class="ml-7"
-                    data-section="EWI"
-                    title="When EWI is applied, the area used to calculate of the cost of the measure is the area of the wall increased by 1.15"
-                >
-                    <b>EWI</b>
-                    <i class="icon-question-sign"></i>
-                </span>
-            </span>
-        </td>
-
-        <td rowspan="2" style="width: 0">
-            <button data-action class="apply-measure d-b mb-7 btn btn--icon text-nowrap">
-                Apply Measure
-            </button>
-
-            <button data-action class="edit-item d-b mb-7 btn btn--icon">
-                <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-edit" /></svg>
-                Edit
-            </button>
-
-            <button data-action class="revert-to-original d-b mb-7 btn btn--icon text-nowrap">
-                <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-undo" /></svg>
-                Revert
-            </button>
-
-            <button data-action class="delete-element d-b mb-7 btn btn--icon text-nowrap">
-                <svg viewBox="0 0 1792 1792"><use xlink:href="#iconset-trash" /></svg>
-                Delete
-            </button>
-        </td>
-    </tr>
-    <tr class="tr-no-top-border">
-        <td colspan="1"></td>
-        <td>
-            <input type="text" data-key="location">
-        </td>
-        <td>
-            <input
-                data-key="l" dp="2"
-                type="number" min="0" step="0.01"
-                style="width:50px">
-        </td>
-        <td>
-            <input
-                data-key="h" dp="2"
-                type="number" min="0" step="0.01"
-                style="width:50px">
-        </td>
-        <td>
-            <input
-                data-key="area" dp="2"
-                type="number" min="0" step="0.01"
-                style="width:50px">
-        </td>
-        <td class="text-right">
-            <span data-key="windowarea" dp="2">0.00</span>m²
-        </td>
-        <td class="text-right">
-            <span data-key="netarea" dp="2">0.00</span>m²
-        </td>
-        <td class="text-right text-nowrap">
-            <span data-key="wk" dp="2">0.00</span> W/K
-        </td>
-    </tr>
-</template>
-
-<section class="line-top mb-45">
-    <h3 class="ma-0 mb-7">Walls</h3>
-    <p class="mb-15 text-italic">
-        Note: If the element length and height is given it will automatically
-        calculate and override the area calculation. Leave length and height blank
-        and enter area for ceilings and floors and other elements where its easier
-        to enter the area directly.
-    </p>
-
-    <div data-fabric-table="walls"
-         data-area-key="data.fabric.total_wall_area"
-         data-loss-key="data.fabric.total_wall_WK"></div>
-
-    <button class="new-add-wall-button btn">
-        <i class="icon-plus"></i>
-        Add wall from library
-    </button>
-
-    <button
-        class="if-not-master apply-bulk-measure btn btn-secondary"
-        tags="Wall"
-        item='{"type":"Wall","name":"--","lib":"--","l":0,"h":0,"area":0,"uvalue":0,"id":0,"location":"","description":"","kvalue":"","orientation":0,"overshading":0,"g":"0","gL":"0","ff":"0","performance":"","benefits":"","cost":"","who_by":"","disruption":"","associated_work":"","notes":"","maintenance":"","netarea":0,"wk":0,"gain":0}'
-        tag="--"
-        item_id="0"
-        row="13"
-    >
-        <i class="icon-wrench"></i>
-        Apply bulk measure
-    </button>
-</section>
-
-<section class="line-top mb-45">
-    <h3 class="ma-0 mb-15">Party walls</h3>
-
-    <div data-fabric-table="party_walls"
-         data-area-key="data.fabric.total_party_wall_area"
-         data-loss-key=""></div>
-
-    <button class="btn add-from-lib" tags="Party_wall">
-        <i class="icon-plus"></i>
-        Add party wall from library
-    </button>
-</section>
-
-<section class="line-top mb-45">
-    <h3 class="ma-0 mb-7">Roofs and lofts</h3>
-    <p class="mb-15 text-italic">
-        Note: When creating a roof or loft element only add that area which forms
-        part of the thermal envelope of the building. Do not add a 'roof' where it
-        sits above a loft which is insulated at ceiling level. Do not add a 'loft'
-        where it sits below a roof which is insulated at rafter level
-    </p>
-
-    <div data-fabric-table="roofs"
-         data-area-key="data.fabric.total_roof_area"
-         data-loss-key="data.fabric.total_roof_WK"
-         data-second-dimension="Width"></div>
-
-    <button class="btn add-from-lib" tags="Roof,Loft">
-        <i class="icon-plus"></i>
-        Add roof or loft from library
-    </button>
-</section>
-
-</div>
 
 <section class="line-top mb-45">
     <h3 class="ma-0 mb-7">Floors</h3>
@@ -701,7 +504,6 @@
     </table>
     </div>
 </section>
-
 
 <div id="apply-measure-TB-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="true">
     <div class="modal-header">

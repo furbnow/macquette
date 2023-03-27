@@ -27,21 +27,6 @@ function get_last_external_opening() {
     }
 }
 
-function showWall() {
-    // Wait until the libraries are loaded
-    if (!window.libraries) {
-        setTimeout(() => showWall(), 50)
-        return;
-    }
-
-    const mountPoint = document.querySelector("#new-selector-mountpoint");
-    window.Macquette.selectWall(mountPoint, (wall) => {
-        console.log(wall);
-        addElement(wall.tag, wall.tags[0], wall);
-    }, null);
-}
-$('#openbem').on('click', '.new-add-wall-button', showWall);
-
 // button defined in: libraryHelper:elements_library_to_html
 $('#openbem').on('click', '.add-element', function () {
     var tag = $(this).attr('lib');
@@ -504,13 +489,8 @@ function add_window(z) {
 }
 
 function elements_initUI() {
-    if (window.features.includes("new-fabric-page")) {
-        const element = document.querySelector('#react-container');
-        window.Macquette.uiModules.fabric.init(element, '');
-    } else {
-        // Set up TMP value workaround
-        initTMPChoices();
-    }
+    const element = document.querySelector('#react-container');
+    window.Macquette.uiModules.fabric.init(element, '');
 
     library_helper.type = 'elements';
     // Normally this is done in model-rX.js. The model is intended for calculations so i prefer to initialize data.fabric.measures here
@@ -557,16 +537,6 @@ function elements_initUI() {
 
     for (z in data.fabric.elements) {
         var type = data.fabric.elements[z].type;
-
-        if (!window.features.includes('new-fabric-page')) {
-            if (type == 'Wall' || type == 'wall') {
-                add_element('#walls', z);
-            } else if (isRoofOrLoft(type)) {
-                add_element('#roofs', z);
-            } else if (isPartyWall(type)) {
-                add_element('#party_walls', z);
-            }
-        }
 
         if (type == 'Floor' || type == 'floor') {
             add_floor(z);
@@ -793,37 +763,4 @@ function add_quantity_and_cost_to_bulk_fabric_measure(measure_id) {
 
 function scenario_can_revert() {
     return (data.created_from && project[data.created_from]) ? true : false;
-}
-
-function initTMPChoices() {
-    const values = [
-        { val: 'NONE', output: null },
-        { val: 'LOW',  output: 100 },
-        { val: 'MED',  output: 250 },
-        { val: 'HIGH', output: 450 },
-    ];
-
-    if (!data.fabric.global_TMP) {
-        $('input[name=tmp_override][value=NONE]').click();
-    } else {
-        const found = values.find(
-            ({ output }) => data.fabric.global_TMP_value == output
-        );
-
-        if (found) {
-            $(`input[name=tmp_override][value=${found.val}]`).click();
-        } else {
-            $('input[name=tmp_override][value=NONE]').click();
-        }
-    }
-
-    $('input[name=tmp_override]').on('change', () => {
-        const input = $('[name=tmp_override]:checked').val();
-        const item = values.find(({ val }) => input === val);
-
-        data.fabric.global_TMP = (item.output !== null);
-        data.fabric.global_TMP_value = item.output;
-
-        update();
-    });
 }

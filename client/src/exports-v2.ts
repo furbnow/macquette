@@ -5,7 +5,6 @@ import { emulateJsonRoundTrip } from './v2/helpers/emulate-json-round-trip';
 import { datasets } from './v2/model/datasets/legacy';
 import { calcRun as calcRunAny } from './v2/model/model';
 import { generateReportGraphs, getHeatingLoad } from './v2/reports/graphs';
-import { selectWall } from './v2/ui/input-components/libraries';
 import { modules } from './v2/ui/modules';
 import { PageManager } from './v2/ui/page-manager';
 
@@ -25,7 +24,6 @@ window.Macquette = {
     getHeatingLoad,
     HTTPClient,
     StaticFileResolver,
-    selectWall,
     emulateJsonRoundTrip,
     PageManager,
     SaveManager,

@@ -1,7 +1,6 @@
 import { mapValues, pickBy } from 'lodash';
 import type { ReactElement } from 'react';
 import React, { ReactNode, useEffect, useReducer, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 
 import { Library } from '../../data-schemas/libraries';
 import type {
@@ -631,36 +630,6 @@ export function SelectWallLikeMeasure({
             ]}
         />
     );
-}
-
-// DELETE: When the new wall-like fabric section is turned on permanently,
-// this function will no longer be required.
-// The type shadowing is there to make the new style output conform to the shape
-// required by the legacy code.
-export function selectWall(
-    mountPoint: HTMLDivElement,
-    callback: (item: Shadow<CompleteWallLike, { type: 'Wall'; tags: ['Wall'] }>) => void,
-    currentItemTag: string | null,
-) {
-    const root = createRoot(mountPoint);
-    const element = (
-        <SelectWallLike
-            type="external wall"
-            onSelect={(item) => {
-                callback({
-                    ...item,
-                    type: 'Wall',
-                    tags: ['Wall'],
-                });
-                root.unmount();
-            }}
-            onClose={() => {
-                root.unmount();
-            }}
-            currentItemTag={currentItemTag}
-        />
-    );
-    root.render(element);
 }
 
 type SelectFloorInsulationMaterialParams = {
