@@ -5,7 +5,6 @@ import { HTTPClient } from '../../api/http';
 import type { Project } from '../../data-schemas/project';
 import type { Scenario } from '../../data-schemas/scenario';
 import { emulateJsonRoundTrip } from '../../helpers/emulate-json-round-trip';
-import { featureFlags } from '../../helpers/feature-flags';
 import { Result } from '../../helpers/result';
 import { CombinedModules } from '../../model/combined-modules';
 import { DownCaret, EditIcon, LockedLock, RightCaret } from '../icons';
@@ -450,9 +449,7 @@ function EditorSidebar({
                 <div className="side-section--header">Assessment</div>
 
                 <ul className="list-unstyled">
-                    {featureFlags.has('address-search-page') && (
-                        <StandalonePageLink pageName="address-search" />
-                    )}
+                    <StandalonePageLink pageName="address-search" />
                     <StandalonePageLink pageName="householdquestionnaire" />
                     <StandalonePageLink pageName="commentary" />
                     <StandalonePageLink pageName="currentenergy" />

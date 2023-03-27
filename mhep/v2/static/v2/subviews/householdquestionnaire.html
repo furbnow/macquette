@@ -65,29 +65,6 @@
                     <input type="text" key="data.household.householder_name" id="householder_name" style="width:250px">
                 </div>
             </div>
-
-            <div data-hide-if-flag="address-search-page">
-                <div class="form-row mb-7">
-                    <label class='form-row-label' for="address_1">Address:</label>
-                    <div class="form-row-control">
-                        <input type="text" key="data.household.address_1" class="mb-7" style="width:250px" id="address_1"><br>
-                        <input type="text" key="data.household.address_2" class="mb-7" style="width:250px"><br>
-                        <input type="text" key="data.household.address_3" class="mb-0" style="width:250px">
-                    </div>
-                </div>
-                <div class="form-row mb-7">
-                    <label class='form-row-label' for="address_town">Town/city:</label>
-                    <div class="form-row-control">
-                        <input type="text" key="data.household.address_town" id="address_town" style="width:130px">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <label class='form-row-label' for="address_postcode">Postcode:</label>
-                    <div class="form-row-control">
-                        <input type="text" key="data.household.address_postcode" id="address_postcode" style="width:130px">
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="ml-15 w-50">
             <div class="bg-assessor pa-15 mb-30">
@@ -100,26 +77,6 @@
                 <button class="btn" id="process_csv">Import answers</button>
 
                 <p class="mb-0" id="csv-result"></p>
-            </div>
-
-            <div class="bg-assessor pa-15" data-hide-if-flag="address-search-page">
-                <p class="text-italic mb-15">Assessor: check and fill these if required.</p>
-
-                <div class="form-row">
-                    <label class='form-row-label' for="address_la">Local authority:</label>
-                    <div class="form-row-control">
-                        <input type="text" key="data.household.address_la" id="address_la" style="width:200px">
-                    </div>
-                </div>
-
-                <div class="form-row bg-assessor mb-0">
-                    <label class='form-row-label' for="address_lsoa">
-                        <abbr title="Lower Super Output Area">LSOA</abbr>:
-                    </label>
-                    <div class="form-row-control">
-                        <input type="text" key="data.household.address_lsoa" id="address_lsoa" style="width:200px">
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -1123,25 +1080,6 @@
     <p>How do you dry your laundry?</p>
     <textarea class="ma-0 textarea" key="data.household.laundry"></textarea>
 
-
-    <div data-hide-if-flag="address-search-page">
-        <h4>2.2.4 Radon</h4>
-        <div class="pa-15 bg-assessor">
-            <label for="radon_risk">The chance of a high level of radon is:</label>
-            <select key="data.household.radon_risk" id="radon_risk" style="width:180px">
-                    <option value="">Select...</option>
-                    <option value="LOW">less than 1%</option>
-                    <option value="1-3">1-3%</option>
-                    <option value="3-5">3-5%</option>
-                    <option value="5-10">5-10%</option>
-                    <option value="10-30">10-30%</option>
-                    <option value="30">greater than 30%</option>
-                </select><br>
-            <i>Please look this up using the <a href="https://www.ukradon.org/information/ukmaps" rel="noreferrer"target="_blank" style="text-decoration: underline;">UK Radon map</a>.</i>
-        </div>
-    </div>
-
-
     <h4>2.3 Your experience</h4>
 
     <h4>2.3.1 Thermal comfort</h4>
@@ -1449,50 +1387,6 @@
             <label style="margin-top: -7px" for="flooding_note">Assessor notes:</label>
             <textarea key="data.household.flooding_note" id="flooding_note" class="textarea--100 mb-7 mt-7"></textarea>
             <p class="text-italic mb-0">Note known frequency / extent of last flooding, plus any other relevant info</p>
-        </div>
-    </div>
-
-    <div class="bg-assessor pa-15 mb-15 w-50" data-hide-if-flag="address-search-page">
-        <p>
-            <b>Risk of flooding from...</b><br>
-            Please look this up using the <a href="https://flood-warning-information.service.gov.uk/long-term-flood-risk/map" rel="noreferrer"target="_blank" style="text-decoration: underline;">uk.gov flood risk map</a>.
-        </p>
-
-        <div class="form-row">
-            <label class="form-row-label" for="flooding_rivers_sea">Rivers and sea</label>
-            <div class="form-row-control">
-                <select class="mb-0" key="data.household.flooding_rivers_sea" id="flooding_rivers_sea">
-                    <option value="">Select...</option>
-                    <option value="HIGH">High</option>
-                    <option value="MED">Medium</option>
-                    <option value="LOW">Low</option>
-                    <option value="VLOW">Very low</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <label class="form-row-label" for="flooding_surface_water">Surface water</label>
-            <div class="form-row-control">
-                <select class="mb-0" key="data.household.flooding_surface_water" id="flooding_surface_water">
-                    <option value="">Select...</option>
-                    <option value="HIGH">High</option>
-                    <option value="MED">Medium</option>
-                    <option value="LOW">Low</option>
-                    <option value="VLOW">Very low</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-row mb-0">
-            <label class="form-row-label" for="flooding_reservoirs">Reservoirs</label>
-            <div class="form-row-control">
-                <select class="mb-0" key="data.household.flooding_reservoirs" id="flooding_reservoirs">
-                    <option value="">Select...</option>
-                    <option value="WITHIN">within potential extent of flooding from reservoir</option>
-                    <option value="OUTWITH">not within potential extent of flooding from reservoir</option>
-                </select>
-            </div>
         </div>
     </div>
 

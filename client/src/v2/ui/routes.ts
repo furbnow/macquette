@@ -4,7 +4,7 @@ import { isScenarioPage, isStandalonePage } from './pages';
 
 export const DEFAULT_ROUTE: StandaloneRoute = {
     type: 'standalone',
-    page: 'householdquestionnaire',
+    page: 'address-search',
 };
 
 type StandaloneRoute = { type: 'standalone'; page: StandalonePageName };

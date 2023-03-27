@@ -54,42 +54,6 @@
         <tr><td>Total dwelling volume:</td><td><span key="data.volume" dp=1>0</span> m3</td></tr>
     </table>
 
-<div data-hide-if-flag="address-search-page">
-    <h4>Location</h4>
-    <p>Long term flood risk assessment for locations in England can be found <a href="https://flood-warning-information.service.gov.uk/long-term-flood-risk" target="blank">here</a></p>
-    <table class="table">
-    <tr><td width="60%">Dwelling UK region:</td><td>
-        <i id="find-post-code" class="icon-list-alt" title="Find region by postcode" style="margin-right:5px; cursor:pointer"></i>
-        <select key="data.region">
-            <option value=0>UK average</option>
-            <option value=1>Thames</option>
-            <option value=2>South East England</option>
-            <option value=3>Southern England</option>
-            <option value=4>South West England</option>
-            <option value=5>Severn Wales / Severn England</option>
-            <option value=6>Midlands</option>
-            <option value=7>West Pennines Wales / West Pennines England</option>
-            <option value=8>North West England / South West Scotland</option>
-            <option value=9>Borders Scotland / Borders England</option>
-            <option value=10>North East England</option>
-            <option value=11>East Pennines</option>
-            <option value=12>East Anglia</option>
-            <option value=13>Wales</option>
-            <option value=14>West Scotland</option>
-            <option value=15>East Scotland</option>
-            <option value=16>North East Scotland</option>
-            <option value=17>Highland</option>
-            <option value=18>Western Isles</option>
-            <option value=19>Orkney</option>
-            <option value=20>Shetland</option>
-            <option value=21>Northern Ireland</option>
-
-        </select>
-    </td></tr>
-    <tr><td>Dwelling altitude:<br/><span style="font-size:12px"><a href="https://www.freemaptools.com/elevation-finder.htm" target="_blank">Find it here</a></span></td><td><input type="text" key="data.altitude" style="width:60px" /> m</td></tr>
-    </table>
-</div>
-
     <h4>Occupancy</h4>
 
     <table class="table">
@@ -98,21 +62,4 @@
         <tr><td>Custom occupancy</td><td><input type="text" key="data.custom_occupancy" style="width:60px" /></td></tr>
     </table>
 
-</div>
-
-<div id="region-postcodes-modal" style="position: fixed" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Regions by post</h3>
-        <p style="margin-top:10px">The regions shown below applie to all postcodes in the postcode area except those for which specific postcode districts are given.</p><p> Please type the first letter of your postcode.</p>
-    </div>
-    <div class="modal-body">
-        <p>Postcode <input id="postcode" type="text" /></p>
-        <div id="regions-by-postcode"></div>
-    </div>
-    <div class="modal-footer">
-        <p id="region-postcodes-message" style="font-weight: bold"></p>
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button id="region-postcodes-ok" class="btn btn-primary">Ok</button>
-       </div>
 </div>
