@@ -54,9 +54,13 @@ export function extractFloorModelElement(
 }
 
 export function extractRawFloorElement(
-    { project, scenarioId }: Pick<Externals, 'project' | 'scenarioId'>,
+    { project }: Pick<Externals, 'project'>,
+    { scenarioId }: { scenarioId: string | null },
     elementId: string,
 ) {
+    if (scenarioId === null) {
+        throw new Error('null scenario');
+    }
     /* eslint-disable
        @typescript-eslint/consistent-type-assertions,
        @typescript-eslint/no-explicit-any,
@@ -64,7 +68,7 @@ export function extractRawFloorElement(
        @typescript-eslint/no-unsafe-member-access,
     */
     const element = (project as z.input<typeof projectSchema>).data[
-        scenarioId as string
+        scenarioId
     ]?.fabric?.elements?.find((elem) => elem.id.toString(10) === elementId);
     if (element === undefined) {
         throw new Error(

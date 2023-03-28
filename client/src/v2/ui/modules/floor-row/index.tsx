@@ -172,14 +172,14 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
             };
             return Result.ok(action);
         },
-        mutateLegacyData: (externals, state, instanceKey) => {
+        mutateLegacyData: (externals, context, state, instanceKey) => {
             if (!state.loaded) return;
             const elementId = instanceKey;
             if (elementId === null) {
                 console.warn('Null elementId');
                 return;
             }
-            const element = extractRawFloorElement(externals, elementId);
+            const element = extractRawFloorElement(externals, context, elementId);
             element.location = state.location;
             element.area = state.area;
             element.perimeter = state.exposedPerimeter;

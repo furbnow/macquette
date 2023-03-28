@@ -284,6 +284,9 @@ export function extractUpdateAction({
     currentScenario,
     scenarioId,
 }: AppContext): Result<Action, never> {
+    if (scenarioId === null) {
+        throw new Error('scenarioId was null');
+    }
     const { fabric } = currentScenario ?? {};
 
     const bulkMeasuresByScenario = Object.fromEntries(
@@ -294,7 +297,7 @@ export function extractUpdateAction({
     );
     const bulkMeasures = bulkMeasuresByScenario[scenarioId];
     if (bulkMeasures === undefined) {
-        throw new Error('unreachable');
+        throw new Error('scenarioId was not in bulkMeasuresByScenario');
     }
 
     function getOriginalElement(id: number) {

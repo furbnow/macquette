@@ -877,7 +877,7 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
                 modelOutput: currentModel.mapErr(() => null).coalesce(),
             });
         },
-        mutateLegacyData: ({ project, scenarioId }, state) => {
+        mutateLegacyData: ({ project }, { scenarioId }, state) => {
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             const data = (project as z.input<typeof projectSchema>).data[
                 // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

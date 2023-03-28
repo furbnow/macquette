@@ -10,7 +10,7 @@ import { Route } from '../routes';
 export type AppContext = {
     route: Route;
     project: Project;
-    scenarioId: string;
+    scenarioId: string | null;
     currentScenario: Scenario;
     currentModel: Result<CombinedModules, ZodError<unknown> | ModelError>;
 };
@@ -42,7 +42,8 @@ export type UiModule<State, Action, Effect> = ReducerComponent<State, Action, Ef
             instanceKey: string | null,
         ) => Result<Action, Error>;
         mutateLegacyData: (
-            externals: Pick<Externals, 'project' | 'scenarioId'>,
+            externals: Pick<Externals, 'project'>,
+            context: Pick<AppContext, 'scenarioId'>,
             state: State,
             instanceKey: string | null,
         ) => void;

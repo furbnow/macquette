@@ -75,7 +75,8 @@ function wallLikeToLegacy(
 }
 
 export function mutateLegacyData(
-    { project, scenarioId }: { project: unknown; scenarioId: unknown },
+    { project }: { project: unknown },
+    { scenarioId }: { scenarioId: string | null },
     state: State,
 ) {
     /* eslint-disable

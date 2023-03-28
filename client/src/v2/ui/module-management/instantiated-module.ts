@@ -13,7 +13,7 @@ export class InstantiatedUiModule<State, Action, Effect> {
         private instanceKey: string | null,
         domElement: Element,
         private handleDataMutator?: (
-            mutator: (legacyData: Pick<Externals, 'project' | 'scenarioId'>) => void,
+            mutator: (toMutate: Pick<Externals, 'project'>, context: AppContext) => void,
         ) => void,
     ) {
         this.root = createRoot(domElement);
@@ -69,9 +69,10 @@ export class InstantiatedUiModule<State, Action, Effect> {
         }
         this.render();
         if (internal && this.handleDataMutator !== undefined) {
-            this.handleDataMutator((legacyData) =>
+            this.handleDataMutator((toMutate, appContext) =>
                 this.module_.shims.mutateLegacyData(
-                    legacyData,
+                    toMutate,
+                    appContext,
                     this.state,
                     this.instanceKey,
                 ),

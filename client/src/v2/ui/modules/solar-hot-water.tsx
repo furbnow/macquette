@@ -150,7 +150,7 @@ export const solarHotWaterModule: UiModule<State, Action, never> = {
                 pumpType,
             });
         },
-        mutateLegacyData: ({ project, scenarioId }, state) => {
+        mutateLegacyData: ({ project }, { scenarioId }, state) => {
             if (state === 'loading') return;
             const { moduleEnabled, pumpType, modelInput } = state;
             const newSHW: SolarHotWaterV1 = {

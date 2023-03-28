@@ -25,7 +25,6 @@ export function externals() {
     }
     return {
         project,
-        scenarioId: (window as any).scenario as unknown,
         update,
 
         // SAFETY: window.libraries is set in the legacy library helper from
@@ -54,9 +53,10 @@ export function getCurrentRoute(): Route {
 /** Inspect various pieces of global state and return them bundled up */
 export function getAppContext(): AppContext {
     const route = getCurrentRoute();
+    const scenarioId = route.type === 'with scenario' ? route.scenarioId : null;
     const project = projectSchema.parse(externals().project);
-    const scenarioId = z.string().parse(externals().scenarioId);
-    const currentScenario = project.data[scenarioId];
+    const currentScenario =
+        scenarioId === null ? project.data['master'] : project.data[scenarioId];
     if (currentScenario === undefined) {
         throw new Error('Current scenario not found in project');
     }
@@ -79,10 +79,10 @@ export function getAppContext(): AppContext {
 }
 
 export function applyDataMutator(
-    mutator: (toMutate: Pick<Externals, 'project' | 'scenarioId'>) => void,
+    mutator: (toMutate: Pick<Externals, 'project'>, context: AppContext) => void,
 ) {
     const origProject = cloneDeep(externals().project);
-    mutator(externals());
+    mutator(externals(), getAppContext());
     if (!isEqual(origProject, externals().project)) {
         externals().update();
     }

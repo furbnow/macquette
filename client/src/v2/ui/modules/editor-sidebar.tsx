@@ -640,7 +640,7 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
                 },
             });
         },
-        mutateLegacyData: ({ project }, state) => {
+        mutateLegacyData: ({ project }, _context, state) => {
             /* eslint-disable
                @typescript-eslint/consistent-type-assertions,
                @typescript-eslint/no-explicit-any,

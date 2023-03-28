@@ -274,7 +274,8 @@ describe('fabric page extractor & mutator round trip should roundtrip the data a
             [state] = fabricModule.reducer(state, updateAction.unwrap());
 
             fabricModule.shims.mutateLegacyData(
-                { project: modifiedProject, scenarioId: currentScenarioId },
+                { project: modifiedProject },
+                { scenarioId: currentScenarioId },
                 state,
                 '',
             );

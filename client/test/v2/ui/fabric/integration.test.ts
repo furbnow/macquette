@@ -46,7 +46,8 @@ function runReducerActions(
         [state] = fabricModule.reducer(state, action);
 
         fabricModule.shims.mutateLegacyData(
-            { project, scenarioId: currentScenarioId },
+            { project },
+            { scenarioId: currentScenarioId },
             state,
             '',
         );

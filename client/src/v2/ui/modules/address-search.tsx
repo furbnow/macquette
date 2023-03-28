@@ -1327,7 +1327,11 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
             return Result.ok(action);
         },
 
-        mutateLegacyData: ({ project }: { project: unknown }, state: State) => {
+        mutateLegacyData: (
+            { project }: { project: unknown },
+            _context: unknown,
+            state: State,
+        ) => {
             const manual = {
                 local_planning_authority: state.localPlanningAuthority,
                 location_density: state.locationDensity ?? undefined,
