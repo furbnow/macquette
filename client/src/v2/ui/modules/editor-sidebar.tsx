@@ -134,12 +134,16 @@ function ScenarioPageLink(props: {
 
 function ScenarioBlock({
     scenario,
+    route,
     dispatch,
 }: {
     scenario: State['scenarios'][0];
+    route: ResolvedRoute | null;
     dispatch: Dispatcher<Action>;
 }) {
     const { id, title, isBaseline, locked } = scenario;
+    const isCurrent =
+        route !== null && route.type === 'with scenario' && route.scenarioId === id;
 
     function toggleExpanded() {
         dispatch({
@@ -149,7 +153,9 @@ function ScenarioBlock({
     }
 
     return (
-        <div>
+        <div
+            className={`sidebar-scenario ${isCurrent ? 'sidebar-scenario--current' : ''}`}
+        >
             <div
                 className="d-flex sidebar-link"
                 style={{ padding: '5px 0' }}
@@ -476,6 +482,7 @@ function EditorSidebar({
                     <ScenarioBlock
                         dispatch={dispatch}
                         key={scenario.id}
+                        route={state.route}
                         scenario={scenario}
                     />
                 ))}
