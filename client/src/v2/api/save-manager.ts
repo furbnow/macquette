@@ -1,5 +1,5 @@
-import Bottleneck from 'bottleneck';
-
+import type { AsyncWorker, QueueObject } from 'async';
+import { queue } from 'async';
 import { jsEnvironment } from '../helpers/js-environment';
 
 function beforeUnloadHandler(event: BeforeUnloadEvent) {
@@ -20,26 +20,29 @@ function beforeUnloadHandler(event: BeforeUnloadEvent) {
  * for when the user tries to leave (if there is unsaved data).
  */
 export class SaveManager {
-    private limiter: Bottleneck;
+    private queue: QueueObject<unknown>;
     private errorFlag = false;
 
     constructor(
-        private saveFunction: (data: object) => Promise<void>,
+        private saveFunction: (data: unknown) => Promise<void>,
         private onChange: (status: 'unsaved' | 'saving' | 'failed' | 'saved') => void,
-        private onError?: (error: unknown) => void,
+        onError: (error: unknown) => void,
     ) {
-        this.limiter = new Bottleneck({
-            maxConcurrent: 1,
-            highWater: 1,
-            strategy: Bottleneck.strategy.LEAK,
-            minTime: 2000, // 2 second wait between saves
-        });
-
-        this.limiter.on('executing', () => {
+        const worker: AsyncWorker<unknown, unknown> = (task, cb) => {
             this.onChange('saving');
-        });
+            this.saveFunction(task)
+                .then(() => {
+                    this.errorFlag = false;
+                    cb();
+                })
+                .catch((err) => {
+                    cb(err);
+                });
+        };
 
-        this.limiter.on('idle', () => {
+        this.queue = queue(worker, 1);
+
+        this.queue.drain(() => {
             if (this.errorFlag) {
                 this.onChange('failed');
                 return;
@@ -50,13 +53,14 @@ export class SaveManager {
                 }
             }
         });
+
+        this.queue.error((error) => {
+            this.errorFlag = true;
+            onError(error);
+        });
     }
 
-    save(data: unknown) {
-        if (typeof data !== 'object' || data === null) {
-            throw new Error('data not an object');
-        }
-
+    async save(data: unknown) {
         this.onChange('unsaved');
 
         // We add every save event, as MDN says it's best practice to do this
@@ -68,27 +72,6 @@ export class SaveManager {
             addEventListener('beforeunload', beforeUnloadHandler);
         }
 
-        this.limiter
-            .schedule(async () => {
-                try {
-                    await this.saveFunction(data);
-                    this.errorFlag = false;
-                } catch (err) {
-                    this.errorFlag = true;
-                }
-            })
-            .catch((error) => {
-                // This is expected if the bottleneck drops a task due to the
-                // maximium queue length being reached
-                if (error instanceof Bottleneck.BottleneckError) {
-                    return;
-                }
-
-                if (this.onError !== undefined) {
-                    this.onError(error);
-                } else {
-                    throw error;
-                }
-            });
+        await this.queue.push(data);
     }
 }
