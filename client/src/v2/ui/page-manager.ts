@@ -158,7 +158,7 @@ export class PageManager {
             this.currentModule = new InstantiatedUiModule(
                 // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
                 pageData.module as UiModule<any, any, any>,
-                '',
+                null,
                 element,
                 applyDataMutator,
             );

@@ -10,7 +10,7 @@ export class InstantiatedUiModule<State, Action, Effect> {
 
     constructor(
         private module_: UiModule<State, Action, Effect>,
-        private instanceKey: string,
+        private instanceKey: string | null,
         domElement: Element,
         private handleDataMutator?: (
             mutator: (legacyData: Pick<Externals, 'project' | 'scenarioId'>) => void,

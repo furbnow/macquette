@@ -27,7 +27,7 @@ import * as fuvcState from './u-value-calculator/state';
 
 type LoadedState = {
     // Read-only
-    elementId: string;
+    elementId: string | null;
 
     // Self-managed
     loaded: true;
@@ -43,7 +43,7 @@ type LoadedState = {
 
 type LoadingState = {
     loaded: false;
-    elementId: string;
+    elementId: string | null;
 };
 
 type Action =
@@ -130,6 +130,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
             instanceKey,
         ) => {
             const elementId = instanceKey;
+            if (elementId === null) return Result.err(new Error('Null elementId'));
             const dataElementR = extractFloorDataElement(currentScenario, elementId);
             if (dataElementR.isErr()) {
                 return dataElementR;
@@ -174,6 +175,10 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
         mutateLegacyData: (externals, state, instanceKey) => {
             if (!state.loaded) return;
             const elementId = instanceKey;
+            if (elementId === null) {
+                console.warn('Null elementId');
+                return;
+            }
             const element = extractRawFloorElement(externals, elementId);
             element.location = state.location;
             element.area = state.area;
@@ -211,15 +216,18 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                 </>
             );
         const calculatorRowElement = useMemo(() => {
+            if (state.elementId === null) {
+                return null;
+            }
             const element = document.querySelector(
                 `.react-fuvc-row[data-element-id="${state.elementId}"`,
             );
-            if (element === null) {
-                throw new Error(`Could not find FUVC row for element ${state.elementId}`);
-            }
             return element;
         }, [state.elementId]);
-        const portal = createPortal(calculatorRowContent, calculatorRowElement);
+        const portal =
+            calculatorRowElement === null
+                ? null
+                : createPortal(calculatorRowContent, calculatorRowElement);
         if (!state.loaded) {
             return <>Loading...</>;
         }

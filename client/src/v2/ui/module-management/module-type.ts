@@ -29,7 +29,7 @@ export type ReducerComponent<
     Props extends BasicProps<State, Action> = BasicProps<State, Action>,
 > = {
     name: string;
-    initialState: (instanceKey: string) => State;
+    initialState: (instanceKey: string | null) => State;
     reducer: (state: State, action: Action) => [State, Array<Effect>?];
     component: React.FC<Props>;
     effector: (effect: Effect, dispatch: Dispatcher<Action>) => Promise<void>;
@@ -39,12 +39,12 @@ export type UiModule<State, Action, Effect> = ReducerComponent<State, Action, Ef
     shims: {
         extractUpdateAction: (
             context: AppContext,
-            instanceKey: string,
+            instanceKey: string | null,
         ) => Result<Action, Error>;
         mutateLegacyData: (
             externals: Pick<Externals, 'project' | 'scenarioId'>,
             state: State,
-            instanceKey: string,
+            instanceKey: string | null,
         ) => void;
     };
 };
