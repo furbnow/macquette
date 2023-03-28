@@ -372,11 +372,10 @@ function update(undo_redo = false) {
             historical_index = 0;
             refresh_undo_redo_buttons();
         }
+        draw_openbem_graphics('#topgraphic', data);
     }
 
     pageManager.externalDataUpdate();
-
-    draw_openbem_graphics('#topgraphic', data);
 
     if (!window.features.includes('new-sidebar')) {
         redraw_emissions();
