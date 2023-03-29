@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 
 import { fcPartialRecord } from '../../../helpers/arbitraries';
-import { legacyBoolean, stringyNumber, stringySensibleInteger } from './values';
+import { legacyBoolean, stringyNumber, stringySensibleInteger } from '../legacy-values';
 
 export function arbLAC_calculation_type() {
     return fc.constantFrom(...(['SAP', 'carboncoop_SAPlighting'] as const));

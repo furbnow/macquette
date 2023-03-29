@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 
 import { Fuels } from '../../../../src/v2/model/modules/fuels';
-import { sensibleFloat, stringySensibleFloat } from './values';
+import { sensibleFloat, stringySensibleFloat } from '../legacy-values';
 
 export function arbFuels() {
     return fc.dictionary(

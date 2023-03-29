@@ -7,8 +7,8 @@ import { z } from 'zod';
 import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { emulateJsonRoundTrip } from '../../../src/v2/helpers/emulate-json-round-trip';
 import { calcRun } from '../../../src/v2/model/model';
+import { arbScenarioInputs } from '../arbitraries/scenario-inputs';
 import { scenarios, shouldSkipScenario } from '../fixtures';
-import { arbScenarioInputs } from '../model/arbitraries/scenario';
 import { checkInputBugs } from '../model/scenario-predicates';
 
 function runModel(data: unknown): unknown {

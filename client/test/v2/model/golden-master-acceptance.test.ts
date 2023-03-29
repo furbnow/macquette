@@ -13,13 +13,13 @@ import { calcRun } from '../../../src/v2/model/model';
 import { setDefaultLegacyInputs } from '../../../src/v2/model/modules/legacy-initialisation';
 import { FcInfer } from '../../helpers/arbitraries';
 import { stricterParseFloat } from '../../helpers/stricter-parse-float';
-import { scenarios, shouldSkipScenario } from '../fixtures';
-import { arbScenarioInputs } from './arbitraries/scenario';
+import { arbScenarioInputs } from '../arbitraries/scenario-inputs';
 import {
     shwInputIsComplete,
     shwInputs,
     shwLegacyInputKeys,
-} from './arbitraries/solar-hot-water';
+} from '../arbitraries/scenario/solar-hot-water';
+import { scenarios, shouldSkipScenario } from '../fixtures';
 import { calcRun as referenceCalcRun } from './reference-model';
 import { checkInputBugs, checkOutputBugs, hasNewBehaviour } from './scenario-predicates';
 

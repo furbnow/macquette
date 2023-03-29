@@ -34,6 +34,18 @@ export function arbFloat(options: fc.FloatNextConstraints = {}) {
     return fc.float({ ...options, next: true });
 }
 
+export function arbDateOrRFC3339(): fc.Arbitrary<string | Date> {
+    return fc
+        .tuple(
+            fc.boolean(),
+            fc.date({
+                min: new Date('0000-01-01T00:00:00Z'),
+                max: new Date('9999-12-31T23:59:59.999Z'),
+            }),
+        )
+        .map(([stringify, date]) => (stringify ? date.toISOString() : date));
+}
+
 export function fcOptional<T>(arb: fc.Arbitrary<T>) {
     return fc.option(arb, { nil: undefined });
 }

@@ -9,7 +9,7 @@ import { fcNonEmptyArray } from '../../../helpers/arbitraries';
 import {
     arbFloorLayerSpec,
     arbSuspendedFloorSpec,
-} from '../../model/arbitraries/floor-u-value-calculator/scenario-spec';
+} from '../../arbitraries/scenario/floor-u-value-calculator/scenario-spec';
 
 const arbState: fc.Arbitrary<State> = arbSuspendedFloorSpec;
 

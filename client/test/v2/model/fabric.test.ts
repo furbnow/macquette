@@ -23,8 +23,8 @@ import {
     arbitraryOvershading,
     arbitraryRegion,
 } from '../../helpers/arbitrary-enums';
-import { arbFloorSpec } from './arbitraries/floor-u-value-calculator/scenario-spec';
-import { sensibleFloat } from './arbitraries/values';
+import { sensibleFloat } from '../arbitraries/legacy-values';
+import { arbFloorSpec } from '../arbitraries/scenario/floor-u-value-calculator/scenario-spec';
 
 function arbitraryCommonSpec(): fc.Arbitrary<CommonSpec> {
     return fc.record({

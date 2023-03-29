@@ -2,7 +2,7 @@ import fc from 'fast-check';
 import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 
 import { fcPartialRecord, merge } from '../../../helpers/arbitraries';
-import { legacyBoolean, sensibleFloat, stringySensibleFloat } from './values';
+import { legacyBoolean, sensibleFloat, stringySensibleFloat } from '../legacy-values';
 
 export const waterHeatingInputs = merge(
     fcPartialRecord({

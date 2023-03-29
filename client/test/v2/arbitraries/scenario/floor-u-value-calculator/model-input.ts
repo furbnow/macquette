@@ -14,13 +14,13 @@ import {
     SuspendedFloorInput,
 } from '../../../../../src/v2/model/modules/fabric/floor-u-value-calculator/input-types';
 import { fcNonEmptyArray, merge } from '../../../../helpers/arbitraries';
+import { sensibleFloat } from '../../legacy-values';
 import {
     arbFloorInsulationConductivityMaterialItem,
     arbFloorInsulationMaterialItem,
     arbFloorInsulationResistanceMaterialItem,
 } from '../libraries/floor-insulation-material';
 import { arbProportion } from '../proportion';
-import { sensibleFloat } from '../values';
 
 export function arbCustomFloorInput(): fc.Arbitrary<CustomFloorInput> {
     return fc.record({

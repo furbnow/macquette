@@ -2,7 +2,7 @@ import fc from 'fast-check';
 
 import { constructFloorUValueModel } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator';
 import { FloorUValueModelInput } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator/input-types';
-import { arbFloorUValueModelInput } from '../arbitraries/floor-u-value-calculator/model-input';
+import { arbFloorUValueModelInput } from '../../arbitraries/scenario/floor-u-value-calculator/model-input';
 
 describe('floor u-value model property tests', () => {
     it('does not throw any errors', () => {

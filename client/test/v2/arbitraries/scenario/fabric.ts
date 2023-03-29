@@ -6,7 +6,7 @@ import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
 import { Orientation } from '../../../../src/v2/model/enums/orientation';
 import { Overshading } from '../../../../src/v2/model/enums/overshading';
 import { fcOptional, merge } from '../../../helpers/arbitraries';
-import { sensibleFloat, stringyNumber, stringySensibleFloat } from './values';
+import { sensibleFloat, stringyNumber, stringySensibleFloat } from '../legacy-values';
 
 const uppercaseLetter = fc.constantFrom(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''));
 const digit = fc.constantFrom(...'1234567890'.split(''));

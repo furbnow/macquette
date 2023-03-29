@@ -13,7 +13,7 @@ import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
 import { isTruthy } from '../../../src/v2/helpers/is-truthy';
 import { FcInfer } from '../../helpers/arbitraries';
 import { stricterParseFloat } from '../../helpers/stricter-parse-float';
-import { arbScenarioInputs } from './arbitraries/scenario';
+import { arbScenarioInputs } from '../arbitraries/scenario-inputs';
 
 function isValidStringyFloat(value: unknown) {
     return (

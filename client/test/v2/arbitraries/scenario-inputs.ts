@@ -1,24 +1,23 @@
 import fc from 'fast-check';
 import { z } from 'zod';
-
-import { scenarioSchema } from '../../../../src/v2/data-schemas/scenario';
-import { isTruthy } from '../../../../src/v2/helpers/is-truthy';
-import { Orientation } from '../../../../src/v2/model/enums/orientation';
-import { Region } from '../../../../src/v2/model/enums/region';
-import { fcPartialRecord, merge } from '../../../helpers/arbitraries';
-import { arbFabric } from './fabric';
-import { arbFuels } from './fuels';
-import { heatingSystemInputs } from './heating-systems';
-import { arbLAC, arbLAC_calculation_type } from './LAC';
-import { shwInputIsComplete, shwInputs } from './solar-hot-water';
+import { scenarioSchema } from '../../../src/v2/data-schemas/scenario';
+import { isTruthy } from '../../../src/v2/helpers/is-truthy';
+import { Orientation } from '../../../src/v2/model/enums/orientation';
+import { Region } from '../../../src/v2/model/enums/region';
+import { fcPartialRecord, merge } from '../../helpers/arbitraries';
 import {
     legacyBoolean,
     sensibleFloat,
     stringyNumber,
     stringySensibleFloat,
-} from './values';
-import { arbVentilation } from './ventilation';
-import { waterHeatingInputs } from './water-heating';
+} from './legacy-values';
+import { arbFabric } from './scenario/fabric';
+import { arbFuels } from './scenario/fuels';
+import { heatingSystemInputs } from './scenario/heating-systems';
+import { arbLAC, arbLAC_calculation_type } from './scenario/LAC';
+import { shwInputIsComplete, shwInputs } from './scenario/solar-hot-water';
+import { arbVentilation } from './scenario/ventilation';
+import { waterHeatingInputs } from './scenario/water-heating';
 
 function arbFloors() {
     return fc.array(
@@ -30,7 +29,8 @@ function arbFloors() {
     );
 }
 
-export function arbScenarioInputs(): fc.Arbitrary<z.input<typeof scenarioSchema>> {
+export type ScenarioInput = z.input<typeof scenarioSchema>;
+export function arbScenarioInputs(): fc.Arbitrary<ScenarioInput> {
     return arbFuels().chain((fuels) =>
         merge(
             fc.record({ fuels: fc.constant(fuels) }),

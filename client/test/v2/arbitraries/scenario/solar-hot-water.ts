@@ -21,7 +21,7 @@ import {
     arbitraryOvershading,
 } from '../../../helpers/arbitrary-enums';
 import { flatten } from '../../../helpers/object-flattening';
-import { sensibleFloat, stringySensibleFloat } from './values';
+import { sensibleFloat, stringySensibleFloat } from '../legacy-values';
 
 const arbPump = fc.constantFrom(...(['PV', 'electric'] as const));
 const legacyInputs = fcPartialRecord({

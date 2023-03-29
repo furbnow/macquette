@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { heatingSystems } from '../../../../src/v2/data-schemas/scenario/heating-systems';
 import { fcPartialRecord, merge } from '../../../helpers/arbitraries';
 
-import { legacyBoolean, stringySensibleFloat } from './values';
+import { legacyBoolean, stringySensibleFloat } from '../legacy-values';
 
 export function heatingSystemInputs(
     fuelNames: string[],

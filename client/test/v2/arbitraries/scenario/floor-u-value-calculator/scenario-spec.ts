@@ -9,8 +9,8 @@ import {
 import { Proportion } from '../../../../../src/v2/helpers/proportion';
 import { FloorSpec } from '../../../../../src/v2/model/modules/fabric/element-types';
 import { fcNonEmptyArray, merge } from '../../../../helpers/arbitraries';
+import { sensibleFloat } from '../../legacy-values';
 import { arbFloorInsulationMaterialItem } from '../libraries/floor-insulation-material';
-import { sensibleFloat } from '../values';
 
 export const arbFloorLayerSpec: fc.Arbitrary<FloorLayerSpec> = fc.record({
     thickness: fc.option(sensibleFloat),

@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 
 import { fcPartialRecord } from '../../../helpers/arbitraries';
-import { legacyBoolean, stringySensibleFloat } from './values';
+import { legacyBoolean, stringySensibleFloat } from '../legacy-values';
 
 export function arbVentilation() {
     return fcPartialRecord({

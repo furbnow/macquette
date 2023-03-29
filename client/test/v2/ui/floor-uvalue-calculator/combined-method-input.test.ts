@@ -5,7 +5,7 @@ import {
     exportsForTest,
 } from '../../../../src/v2/ui/modules/floor-row/u-value-calculator/shared-components/combined-method';
 import { fcNonEmptyArray } from '../../../helpers/arbitraries';
-import { arbFloorLayerSpec } from '../../model/arbitraries/floor-u-value-calculator/scenario-spec';
+import { arbFloorLayerSpec } from '../../arbitraries/scenario/floor-u-value-calculator/scenario-spec';
 
 type Layers = ExportsForTest['layers'];
 const { reducer } = exportsForTest;

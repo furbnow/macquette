@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 
-import { sensibleFloat } from '../values';
+import { sensibleFloat } from '../../legacy-values';
 
 export function arbFloorInsulationConductivityMaterialItem() {
     return sensibleFloat.map((conductivity) => ({

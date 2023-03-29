@@ -3,8 +3,8 @@ import fc from 'fast-check';
 import { Floor } from '../../../../src/v2/model/modules/fabric/element-types';
 import { constructFloorUValueModel } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator';
 import { warningDisplay } from '../../../../src/v2/ui/modules/floor-row/u-value-calculator/warnings';
-import { arbFloorUValueModelInput } from '../../model/arbitraries/floor-u-value-calculator/model-input';
-import { arbFloorSpec } from '../../model/arbitraries/floor-u-value-calculator/scenario-spec';
+import { arbFloorUValueModelInput } from '../../arbitraries/scenario/floor-u-value-calculator/model-input';
+import { arbFloorSpec } from '../../arbitraries/scenario/floor-u-value-calculator/scenario-spec';
 
 describe('warning display', () => {
     it('handles a Floor model warning', () => {

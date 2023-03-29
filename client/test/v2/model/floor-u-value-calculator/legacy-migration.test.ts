@@ -9,11 +9,11 @@ import {
     extractFabricInputFromLegacy,
     Fabric,
 } from '../../../../src/v2/model/modules/fabric';
+import { sensibleFloat } from '../../arbitraries/legacy-values';
 import {
     arbFloorType,
     arbPerFloorTypeSpec,
-} from '../arbitraries/floor-u-value-calculator/scenario-spec';
-import { sensibleFloat } from '../arbitraries/values';
+} from '../../arbitraries/scenario/floor-u-value-calculator/scenario-spec';
 
 const arbCompleteFloorElement = fc
     .record({

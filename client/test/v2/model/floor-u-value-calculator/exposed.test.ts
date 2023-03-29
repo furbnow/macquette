@@ -9,8 +9,8 @@ import {
     FloorUValueModelInput,
 } from '../../../../src/v2/model/modules/fabric/floor-u-value-calculator/input-types';
 import { fcNonEmptyArray } from '../../../helpers/arbitraries';
-import { arbFloorLayerInput } from '../../model/arbitraries/floor-u-value-calculator/model-input';
-import { sensibleFloat } from '../arbitraries/values';
+import { sensibleFloat } from '../../arbitraries/legacy-values';
+import { arbFloorLayerInput } from '../../arbitraries/scenario/floor-u-value-calculator/model-input';
 
 const arbInput: fc.Arbitrary<ExposedFloorInput> = fc.record({
     floorType: fc.constant('exposed'),
