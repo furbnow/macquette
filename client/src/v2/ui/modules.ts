@@ -19,4 +19,4 @@ export const modules = {
     addressSearch: new UiModuleShim(addressSearchModule),
 };
 
-export type Module = typeof modules[keyof typeof modules];
+export type Module = (typeof modules)[keyof typeof modules];

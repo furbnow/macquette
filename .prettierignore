@@ -18,3 +18,4 @@ client/test/v2/fixtures/private/
 docs/_build/
 
 venv/
+.mypy_cache/

@@ -25,8 +25,8 @@ const scenarioPageNames = [
     'worksheets',
 ] as const;
 
-export type StandalonePageName = typeof standalonePageNames[number];
-export type ScenarioPageName = typeof scenarioPageNames[number];
+export type StandalonePageName = (typeof standalonePageNames)[number];
+export type ScenarioPageName = (typeof scenarioPageNames)[number];
 
 export function isStandalonePage(x: string): x is StandalonePageName {
     const names: readonly string[] = standalonePageNames;

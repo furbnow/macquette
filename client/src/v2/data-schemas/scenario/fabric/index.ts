@@ -109,8 +109,8 @@ const legacyWallTypes = ['Wall', 'Party_wall', 'Loft', 'Roof'] as const;
 const modernWallTypes = ['external wall', 'party wall', 'loft', 'roof'] as const;
 const wallTypes = [...legacyWallTypes, ...modernWallTypes] as const;
 
-type LegacyWallType = typeof legacyWallTypes[number];
-type WallType = typeof modernWallTypes[number];
+type LegacyWallType = (typeof legacyWallTypes)[number];
+type WallType = (typeof modernWallTypes)[number];
 
 function migrateFromLegacyWallType(val: LegacyWallType | WallType): WallType {
     switch (val) {
