@@ -490,7 +490,7 @@ function add_window(z) {
 
 function elements_initUI() {
     const element = document.querySelector('#react-container');
-    window.Macquette.uiModules.fabric.init(element, '');
+    window.Macquette.uiModuleShims.fabric.init(element, '');
 
     library_helper.type = 'elements';
     // Normally this is done in model-rX.js. The model is intended for calculations so i prefer to initialize data.fabric.measures here
