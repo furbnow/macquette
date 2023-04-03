@@ -40,4 +40,7 @@ export const householdSchema = z.object({
     radon_risk: z
         .union([z.enum(['LOW', '1-3', '3-5', '5-10', '10-30', '30']), z.literal(30)])
         .transform((val) => (val === 30 ? ('30' as const) : val)),
+    commentary_brief: legacyString,
+    commentary_context: legacyString,
+    commentary_decisions: legacyString,
 });

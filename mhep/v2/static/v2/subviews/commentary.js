@@ -1,6 +1,7 @@
-console.log('debug commentary.js');
-
 function commentary_initUI() {
+    const element = document.querySelector('#react-container');
+    window.Macquette.uiModuleShims.commentary.init(element, '');
+
     let scenarios = [];
     for (let scenario_name in project) {
         if (scenario_name == 'master') {
@@ -9,10 +10,6 @@ function commentary_initUI() {
         scenarios.push(scenario_name);
     }
     scenarios.sort();
-
-    if (!('household' in data)) {
-        data.household = {};
-    }
 
     for (const s of scenarios) {
         let scenario = project[s];
@@ -23,40 +20,14 @@ function commentary_initUI() {
         })
     }
 
-    for (let scenario_name of scenarios) {
-        const scenario = project[scenario_name];
-        const root = document.importNode(document.getElementById('scenario-template').content, true);
-
-        for (let control of root.querySelectorAll('[key]')) {
-            let key = control.getAttribute('key').replace('XXX', scenario_name);
-            control.setAttribute('key', key);
-        }
-
-        let scenario_num = scenario_name.charAt(8);
-        for (let text of root.querySelectorAll('.scenario_num')) {
-            text.textContent = scenario_num;
-        }
-
-        // We have to set up the initial values because we're not using a key starting
-        // with "data.".  We're using "project.XXX" instead, because data is an alias to
-        // the current scenario and we want to edit multiple scenarios on the same page.
-        // The current "key" attribute setup doesn't allow for this. Luckily, the logic
-        // that sets the model value on change works, so we just have to set the initial
-        // value manually.
-        $(root).find('.scenario_name').val(scenario.scenario_name);
-        $(root).find('.scenario_description').val(scenario.scenario_description);
-
-        $(root).insertBefore('#scenario-template');
-    }
-
     // commentary belongs to master
     data = project['master'];
 }
 
+function commentary_UpdateUI() {
+    window.Macquette.uiModuleShims.commentary.update();
+}
+
 function commentary_UnloadUI() {
-    // https://gitlab.com/carboncoop/mhep/-/issues/522 was a dataloss bug - if
-    // you navigated away from the page using the sidebar before bluring the
-    // textarea, its content would be lost.
-    // This is a bit of a hack around that.
-    $('#openbem textarea').trigger('change');
+    window.Macquette.uiModuleShims.commentary.unmount();
 }

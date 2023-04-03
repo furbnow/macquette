@@ -6,6 +6,7 @@ import { datasets } from './v2/model/datasets/legacy';
 import { calcRun as calcRunAny } from './v2/model/model';
 import { generateReportGraphs, getHeatingLoad } from './v2/reports/graphs';
 import { MultipleModuleShim, SingleModuleShim } from './v2/ui/module-management/shim';
+import { commentaryModule } from './v2/ui/modules/commentary';
 import { fabricModule } from './v2/ui/modules/fabric';
 import { floorRowModule } from './v2/ui/modules/floor-row';
 import { PageManager } from './v2/ui/page-manager';
@@ -24,6 +25,7 @@ window.Macquette = {
     uiModuleShims: {
         floorRow: new MultipleModuleShim(floorRowModule),
         fabric: new SingleModuleShim(fabricModule),
+        commentary: new SingleModuleShim(commentaryModule),
     },
     generateReportGraphs,
     getHeatingLoad,

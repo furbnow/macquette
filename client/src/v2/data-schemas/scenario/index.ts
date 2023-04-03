@@ -56,6 +56,7 @@ export const scenarioSchema = z
         modelBehaviourVersion: modelBehaviourVersionSchema,
         created_from: legacyString.optional(),
         scenario_name: legacyString,
+        scenario_description: legacyString,
         creation_hash: z.number().optional(),
         sidebarExpanded: z.boolean().optional(),
         floors,
