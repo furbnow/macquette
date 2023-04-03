@@ -18,9 +18,10 @@ var project;
 var pageManager;
 var saveManager;
 
-async function initMacquette(api, assessmentId, featureFlags) {
+async function initMacquette(api, assessmentId, appName, featureFlags) {
     mhep_helper = api;
     window.features = featureFlags;
+    window.appName = appName
 
     projectid = assessmentId;
 

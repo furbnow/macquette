@@ -14,6 +14,7 @@ import * as editorSidebar from './modules/editor-sidebar';
 import { imageGalleryModule } from './modules/image-gallery';
 import { sandboxModule } from './modules/sandbox';
 import { solarHotWaterModule } from './modules/solar-hot-water';
+import * as titleModule from './modules/title';
 import type { ScenarioPageName, StandalonePageName } from './pages';
 import { Route } from './routes';
 
@@ -67,6 +68,7 @@ export class PageManager {
         | 'legacy'
         | null = null;
     private sidebarManager: SidebarManager;
+    private titleManager: TitleManager;
 
     constructor(
         private legacySharedInit: () => void,
@@ -76,6 +78,7 @@ export class PageManager {
         private legacyModuleUnload: () => void,
     ) {
         this.sidebarManager = new SidebarManager();
+        this.titleManager = new TitleManager();
         this.handleNavigation().catch((err) => console.error(err));
         window.addEventListener('hashchange', () => {
             this.handleNavigation().catch((err) => console.error(err));
@@ -100,6 +103,7 @@ export class PageManager {
         }
 
         this.sidebarManager.update();
+        this.titleManager.update();
 
         if (this.currentModule === 'legacy') {
             this.legacyModuleUpdate();
@@ -167,6 +171,7 @@ export class PageManager {
 
         // Run updaters
         this.sidebarManager.update();
+        this.titleManager.update();
         this.externalDataUpdate();
 
         // Run legacy post-update init
@@ -192,7 +197,7 @@ class SidebarManager {
 
             this.sidebarModule = new InstantiatedUiModule(
                 editorSidebar.editorSidebarModule,
-                '',
+                null,
                 sidebarElement,
                 applyDataMutator,
             );
@@ -203,5 +208,29 @@ class SidebarManager {
         if (featureFlags.has('new-sidebar')) {
             this.sidebarModule?.update(getAppContext());
         }
+    }
+}
+
+class TitleManager {
+    private titleModule: InstantiatedUiModule<
+        titleModule.State,
+        titleModule.Action,
+        never
+    >;
+    constructor() {
+        const titleElement = document.querySelector('#title-component-container');
+        if (titleElement === null) {
+            throw new Error('title element not available');
+        }
+        this.titleModule = new InstantiatedUiModule(
+            titleModule.titleModule,
+            null,
+            titleElement,
+            applyDataMutator,
+        );
+    }
+
+    update() {
+        this.titleModule.update(getAppContext());
     }
 }

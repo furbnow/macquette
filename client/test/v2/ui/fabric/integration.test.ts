@@ -38,6 +38,7 @@ function runReducerActions(
                     scenarioId: currentScenarioId,
                     page: 'elements',
                 },
+                appName: 'some app name',
             },
             '',
         );

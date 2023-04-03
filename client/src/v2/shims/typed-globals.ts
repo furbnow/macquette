@@ -11,25 +11,28 @@ import { DEFAULT_ROUTE, parseRoute, Route } from '../ui/routes';
 
 /* eslint-disable
     @typescript-eslint/consistent-type-assertions,
-    @typescript-eslint/no-explicit-any,
-    @typescript-eslint/no-unsafe-member-access,
 */
 export function externals() {
-    const update: unknown = (window as any).update;
+    if (!isIndexable(window)) {
+        throw new Error('not running in browser');
+    }
+    const update: unknown = window['update'];
     if (typeof update !== 'function') {
         throw new Error('window.update was not a function');
     }
-    const project: unknown = (window as any).p;
+    const project: unknown = window['p'];
     if (!isIndexable(project)) {
         throw new Error('window.p is not a Record');
     }
+    const appName: unknown = window['appName'];
     return {
         project,
         update,
+        appName,
 
         // SAFETY: window.libraries is set in the legacy library helper from
         // this API function.
-        libraries: (window as any).libraries as
+        libraries: window['libraries'] as
             | (ReturnType<HTTPClient['listLibraries']> extends Promise<infer T>
                   ? T
                   : unknown)
@@ -69,12 +72,14 @@ export function getAppContext(): AppContext {
         z.union([z.instanceof(ModelError), z.instanceof(ZodError)]),
     ).parse(currentScenario.model);
 
+    const appName = z.string().parse(externals().appName);
     return {
         route,
         project,
         scenarioId,
         currentScenario,
         currentModel,
+        appName,
     };
 }
 

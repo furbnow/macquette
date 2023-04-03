@@ -36,6 +36,7 @@ describe('solar hot water update action extractor', () => {
                 currentScenario: scenario.data as any,
                 currentModel: model,
                 scenarioId,
+                appName: 'some app name',
             };
             const result = extractUpdateAction(fakeContext, '');
             expect(() => result.unwrap()).not.toThrow();

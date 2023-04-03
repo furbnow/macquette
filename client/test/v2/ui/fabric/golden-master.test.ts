@@ -268,6 +268,7 @@ describe('fabric page extractor & mutator round trip should roundtrip the data a
                         scenarioId: currentScenarioId,
                         page: 'elements',
                     },
+                    appName: 'some app name',
                 },
                 '',
             );

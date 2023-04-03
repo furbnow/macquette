@@ -44,6 +44,7 @@
 
 {% block content %}
     <div id="macquette-container"></div>
+    <div id="title-component-container"></div>
     <script>
         const staticFileResolver = new window.Macquette.StaticFileResolver(`{{ static_urls | safe }}`);
 
@@ -54,7 +55,7 @@
 
             const apiClient = new window.Macquette.HTTPClient();
             initOpenFUVCHelper(apiClient);
-            initMacquette(apiClient, {{ assessment.id }}, featureFlags);
+            initMacquette(apiClient, {{ assessment.id }}, "{{appname}}", featureFlags);
         }
 
         if (document.readyState === 'loading') {
