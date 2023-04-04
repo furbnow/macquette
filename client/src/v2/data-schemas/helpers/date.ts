@@ -1,11 +1,11 @@
-import v from 'validator';
+import isRFC3339 from 'validator/lib/isRFC3339';
 import { z } from 'zod';
 
 export const dateSchema = z.union([
     z.date(),
     z
         .string()
-        .refine(v.isRFC3339, {
+        .refine(isRFC3339, {
             // Although the date-time string format that ECMA 262 specifies for
             // the Date constructor does not quite match RFC 3339, V8's Date
             // implementation accepts almost all RFC 3339-valid date-time
