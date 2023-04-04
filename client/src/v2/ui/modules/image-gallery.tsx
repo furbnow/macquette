@@ -1,4 +1,5 @@
-import Bottleneck from 'bottleneck';
+import type { ErrorCallback, QueueObject } from 'async';
+import { queue } from 'async';
 import React, { ReactElement, useEffect, useId, useState } from 'react';
 
 import { HTTPClient } from '../../api/http';
@@ -791,24 +792,27 @@ export const imageGalleryModule: UiModule<State, Action, Effect> = {
                 break;
             }
             case 'upload images': {
-                const bottleneck = new Bottleneck({ maxConcurrent: 3 });
+                type Task = { id: number; file: File };
 
-                await Promise.all(
-                    effect.files.map(({ file, id }) =>
-                        bottleneck.schedule(async () => {
-                            try {
-                                dispatch({ type: 'image started uploading', id });
-                                const img = await apiClient.uploadImage(
-                                    effect.assessmentId,
-                                    file,
-                                );
+                const taskQueue: QueueObject<Task> = queue(
+                    ({ id, file }: Task, cb: ErrorCallback<unknown>) => {
+                        dispatch({ type: 'image started uploading', id });
+                        apiClient
+                            .uploadImage(effect.assessmentId, file)
+                            .then((img) => {
                                 dispatch({ type: 'image uploaded', id, image: img });
-                            } catch (err) {
+                                cb();
+                            })
+                            .catch((err) => {
                                 dispatch({ type: 'upload failed', id });
-                            }
-                        }),
-                    ),
+                                cb(err);
+                            });
+                    },
+                    3,
                 );
+
+                await taskQueue.push(effect.files);
+
                 break;
             }
         }
