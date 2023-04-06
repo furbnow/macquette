@@ -75,13 +75,7 @@ export class Fabric {
                 case 'roof':
                 case 'party wall':
                 case 'external wall': {
-                    const deductions = elementSpec.deductions.map((deductibleSpec) =>
-                        constructDeductible(deductibleSpec, region),
-                    );
-                    return new WallLike({
-                        ...elementSpec,
-                        deductions,
-                    });
+                    return new WallLike(elementSpec, { region });
                 }
             }
         });
@@ -236,7 +230,7 @@ export class Fabric {
 function flatten(elements: FabricElement[]): FabricElement[] {
     return elements.flatMap((element): FabricElement[] => {
         if (element instanceof WallLike) {
-            return [element, ...element.spec.deductions];
+            return [element, ...element.deductions];
         } else {
             return [element];
         }

@@ -16,7 +16,7 @@ import {
 type AnnotatedDeductibleSpec = DeductibleSpec & {
     subtractFrom: MainElementSpec['id'] | null;
 };
-type FlatElementSpec = WallLikeSpec<never> | FloorSpec | AnnotatedDeductibleSpec;
+type FlatElementSpec = WallLikeSpec | FloorSpec | AnnotatedDeductibleSpec;
 
 function isDeductibleSpec(element: FlatElementSpec): element is AnnotatedDeductibleSpec {
     return ['door', 'hatch', 'roof light', 'window'].includes(element.type);

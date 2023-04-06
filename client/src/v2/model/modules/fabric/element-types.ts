@@ -27,23 +27,27 @@ export type CommonSpec = {
     uValue: number;
 };
 
-export type WallLikeSpec<DeductibleT> = CommonSpec & {
+export type WallLikeSpec = CommonSpec & {
     type: 'external wall' | 'roof' | 'party wall' | 'loft';
-    deductions: DeductibleT[];
+    deductions: Array<WindowLikeSpec | HatchSpec>;
     grossArea: number;
 };
 
 export class WallLike {
-    constructor(public spec: WallLikeSpec<WindowLike | Hatch>) {}
+    constructor(public spec: WallLikeSpec, private dependencies: { region: Region }) {}
+
+    get deductions(): Array<WindowLike | Hatch> {
+        return this.spec.deductions.map((spec) =>
+            constructDeductible(spec, this.dependencies.region),
+        );
+    }
 
     get type(): WallLike['spec']['type'] {
         return this.spec.type;
     }
 
     get deductibleArea(): number {
-        const deductibleAreas = this.spec.deductions.map(
-            (deductible) => deductible.spec.area,
-        );
+        const deductibleAreas = this.deductions.map((deductible) => deductible.spec.area);
         return sum(deductibleAreas);
     }
 
@@ -230,7 +234,7 @@ export class WindowLike {
     }
 }
 
-export type MainElementSpec = WallLikeSpec<DeductibleSpec> | FloorSpec;
+export type MainElementSpec = WallLikeSpec | FloorSpec;
 export type DeductibleSpec = WindowLikeSpec | HatchSpec;
 export type ElementType = MainElementSpec['type'] | DeductibleSpec['type'];
 

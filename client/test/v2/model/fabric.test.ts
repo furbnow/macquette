@@ -34,9 +34,7 @@ function arbitraryCommonSpec(): fc.Arbitrary<CommonSpec> {
     });
 }
 
-function arbitraryWallLikeSpec<T>(
-    deductibleSpec: fc.Arbitrary<T>,
-): fc.Arbitrary<WallLikeSpec<T>> {
+function arbitraryWallLikeSpec(): fc.Arbitrary<WallLikeSpec> {
     return merge(
         arbitraryCommonSpec(),
         fc.record({
@@ -47,7 +45,9 @@ function arbitraryWallLikeSpec<T>(
                 fc.constant('loft' as const),
             ),
             grossArea: sensibleFloat,
-            deductions: fc.array(deductibleSpec),
+            deductions: fc.array(
+                fc.oneof(arbitraryWindowLikeSpec(), arbitraryHatchSpec()),
+            ),
         }),
     );
 }
@@ -86,7 +86,7 @@ function arbitraryDeductibleSpec(): fc.Arbitrary<DeductibleSpec> {
 }
 
 function arbitraryMainElementSpec(): fc.Arbitrary<MainElementSpec> {
-    return fc.oneof(arbFloorSpec, arbitraryWallLikeSpec(arbitraryDeductibleSpec()));
+    return fc.oneof(arbFloorSpec, arbitraryWallLikeSpec());
 }
 
 function arbitraryFabricInput(): fc.Arbitrary<FabricInput> {
