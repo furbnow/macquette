@@ -1,9 +1,9 @@
 {
-    "name": "macquette.dev",
+    "name": "macquette",
     "version": "1.0.0",
     "description": "",
     "main": "",
-    "author": "Carbon Co-op",
+    "author": "People Powered Retrofit & others",
     "license": "AGPL-3.0-or-later",
     "dependencies": {
         "async": "^3.2.4",

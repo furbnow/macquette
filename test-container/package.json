@@ -2,8 +2,7 @@
     "name": "macquette.smoketests",
     "version": "1.0.0",
     "description": "Macquette smoketests",
-    "author": "Carbon Co-op",
-    "license": "AGPL-3.0-or-later",
+    "author": "People Powered Retrofit & others",
     "dependencies": {
         "axios": "^0.24.0",
         "jest": "^27.3.1"
