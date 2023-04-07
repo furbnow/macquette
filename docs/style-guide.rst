@@ -1,6 +1,14 @@
 Style guide
 ===========
 
+SAFETY comments
+---------------
+
+SAFETY comments should be reserved for comments that justify why the code is really type safe even if the checker thinks it's not. If a block of code isn't type safe, don't use a SAFETY comment.
+
+This convention is copied from Rust, where SAFETY is used when you humanly justify that an `unsafe { }` block does actually end up with everything in a memory-safe state.
+
+
 Unit conventions
 ----------------
 
