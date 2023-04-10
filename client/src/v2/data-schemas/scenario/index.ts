@@ -59,6 +59,7 @@ export const scenarioSchema = z
         scenario_description: legacyString,
         creation_hash: z.number().optional(),
         sidebarExpanded: z.boolean().optional(),
+        justCreated: z.boolean().optional(),
         floors,
         use_custom_occupancy: legacyBoolean,
         custom_occupancy: z.union([z.number(), z.literal('')]),

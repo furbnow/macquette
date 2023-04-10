@@ -1,8 +1,9 @@
 import type { RefObject } from 'react';
-import React, { ReactElement, useContext, useRef } from 'react';
+import React, { ReactElement, useContext, useEffect, useRef } from 'react';
+import z from 'zod';
 
 import { HTTPClient } from '../../api/http';
-import type { Project } from '../../data-schemas/project';
+import type { Project, projectSchema } from '../../data-schemas/project';
 import type { Scenario } from '../../data-schemas/scenario';
 import { emulateJsonRoundTrip } from '../../helpers/emulate-json-round-trip';
 import { Result } from '../../helpers/result';
@@ -51,6 +52,7 @@ export type State = {
         createdFromName: string | null;
         spaceHeatingDemand: number | null;
         expanded: boolean;
+        justCreated: boolean;
     }[];
     mutateAction: DuplicateScenarioAction | SetLockAction | DeleteScenarioAction | null;
     modal: MetadataEditorModalState | { type: 'none' };
@@ -140,6 +142,8 @@ function ScenarioBlock({
     route: Route | null;
     dispatch: Dispatcher<Action>;
 }) {
+    const scenarioRef = useRef<HTMLDivElement>(null);
+
     const { id, title, isBaseline, locked } = scenario;
     const isCurrent =
         route !== null && route.type === 'with scenario' && route.scenarioId === id;
@@ -151,9 +155,29 @@ function ScenarioBlock({
         });
     }
 
+    useEffect(() => {
+        if (scenario.justCreated === true && scenarioRef.current !== null) {
+            scenarioRef.current.scrollIntoView({ behavior: 'smooth' });
+
+            // This is the place where all the right state is available to perform the
+            // post-scenario-creation navigation, but it's not a good place (there is
+            // no good place at the time of writing). I think this ugliness will fall
+            // out of the system when we aren't mutating & extracting data all the time,
+            // so it's left as a hack in the meantime.
+            if (route !== null && route.type === 'with scenario') {
+                window.location.hash = `${scenario.id}/${route.page}`;
+            }
+        }
+        // We only want this to trigger when justCreated changed, not when route or
+        // scenario change - because we would otherwise end up re-navigating every
+        // re-render.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [scenario.justCreated]);
+
     return (
         <div
             className={`sidebar-scenario ${isCurrent ? 'sidebar-scenario--current' : ''}`}
+            ref={scenarioRef}
         >
             <div
                 className="d-flex sidebar-link"
@@ -515,6 +539,10 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
         };
     },
     reducer: (state, action) => {
+        for (const scenario of state.scenarios) {
+            scenario.justCreated = false;
+        }
+
         switch (action.type) {
             case 'merge data': {
                 return [{ ...state, ...action.state }];
@@ -633,55 +661,62 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
                             createdFromName: scenarioData?.created_from ?? null,
                             spaceHeatingDemand:
                                 scenarioData?.space_heating_demand_m2 ?? null,
-                            expanded: scenarioData?.sidebarExpanded ?? false,
+                            expanded:
+                                scenarioData?.sidebarExpanded ??
+                                (route.type === 'with scenario' &&
+                                route.scenarioId === scenarioId
+                                    ? true
+                                    : false),
+                            justCreated: scenarioData?.justCreated ?? false,
                         }),
                     ),
                     mutateAction: null,
                 },
             });
         },
-        mutateLegacyData: ({ project }, _context, state) => {
-            /* eslint-disable
-               @typescript-eslint/consistent-type-assertions,
-               @typescript-eslint/no-explicit-any,
-               @typescript-eslint/no-unsafe-assignment,
-               @typescript-eslint/no-unsafe-member-access,
-            */
-            const projectAny = project as any;
-            projectAny.name = state.projectName;
-            projectAny.description = state.projectDescription;
-
-            const dataAny: Record<string, any> = projectAny.data;
+        mutateLegacyData: ({ project: projectRaw }, _context, state) => {
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            const project = projectRaw as z.input<typeof projectSchema>;
+            project.name = state.projectName;
+            project.description = state.projectDescription;
+            let newId: string | null = null;
 
             if (state.mutateAction !== null) {
                 const action = state.mutateAction;
                 switch (action.type) {
                     case 'duplicate scenario': {
-                        duplicateScenario(
-                            dataAny,
+                        newId = duplicateScenario(
+                            project.data,
                             action.scenarioToDuplicate,
                             action.title,
                         );
                         break;
                     }
                     case 'set scenario lock': {
-                        dataAny[action.scenarioId].locked = action.locked;
+                        const scenario = project.data[action.scenarioId];
+                        if (scenario !== undefined) {
+                            scenario.locked = action.locked;
+                        }
                         break;
                     }
                     case 'delete scenario': {
-                        delete dataAny[action.scenarioId];
+                        delete project.data[action.scenarioId];
                         break;
                     }
                 }
             }
 
-            for (const [scenarioId, scenarioData] of Object.entries(dataAny)) {
-                scenarioData.sidebarExpanded =
+            for (const [scenarioId, scenarioData] of Object.entries(project.data)) {
+                if (scenarioData === undefined) {
+                    continue;
+                }
+                const expandedFlag =
                     state.scenarios.find((row) => row.id === scenarioId)?.expanded ??
                     false;
+                const isNew = scenarioId === newId;
+                scenarioData.sidebarExpanded = expandedFlag || isNew;
+                scenarioData.justCreated = isNew;
             }
-
-            /* eslint-enable */
         },
     },
 };
@@ -730,29 +765,19 @@ function generateHash(str: string): number {
     return hash;
 }
 
-/* eslint-disable
-   @typescript-eslint/no-explicit-any,
-   @typescript-eslint/no-unsafe-member-access,
-   @typescript-eslint/no-unsafe-assignment
-*/
+/**
+ * Duplicate scenario `scenarioId`, return the new scenario's ID.
+ */
 function duplicateScenario(
-    scenarioData: Record<string, any>,
+    scenarioData: Record<string, unknown>,
     scenarioId: string,
     title: string,
-) {
-    let n = 0;
-    for (const scenarioId of Object.keys(scenarioData)) {
-        const scenarioNumber = scenarioId.slice(8);
-        if (scenarioId !== 'master' && n.toString() !== scenarioNumber) {
-            // if for a reason a scenario was deleted, when we create a new one it
-            // takes its position. Example: we have master, scenario1 and scenario2.
-            // We delete scenario1. We create a new one that becomes scenario1.
-            break;
-        }
-        n++;
-    }
-    const newId = 'scenario' + n.toString();
-
+): string {
+    /* eslint-disable
+       @typescript-eslint/no-explicit-any,
+       @typescript-eslint/no-unsafe-member-access,
+       @typescript-eslint/no-unsafe-assignment
+    */
     const newScenario: any = emulateJsonRoundTrip(scenarioData[scenarioId]);
     newScenario.locked = false;
     delete newScenario.model;
@@ -766,14 +791,27 @@ function duplicateScenario(
             delete element.cost_total;
         }
     }
-
     newScenario.model = CombinedModules.fromLegacy(newScenario);
+    /* eslint-enable */
 
+    let n = 0;
+    for (const scenarioId of Object.keys(scenarioData)) {
+        const scenarioNumber = scenarioId.slice(8);
+        if (scenarioId !== 'master' && n.toString() !== scenarioNumber) {
+            // If a scenario is deleted, when we create a new one it, that will take the
+            // deleted one's position. E.g. we have master, scenario1 and scenario2.
+            // We delete scenario1. We create a new one, which becomes scenario1.
+            break;
+        }
+        n++;
+    }
+    const newId = 'scenario' + n.toString();
     scenarioData[newId] = newScenario;
     scenarioData = Object.fromEntries(
         Object.keys(scenarioData)
             .sort()
             .map((key) => [key, scenarioData[key]]),
     );
+
+    return newId;
 }
-/* eslint-enable */
