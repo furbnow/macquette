@@ -9,6 +9,12 @@
 <div id="annual-chart"></div>
 <div id="assessments-completed-chart"></div>
 <div id="assessments-started-chart"></div>
+<div id="user-chart"></div>
+<p>
+    Logins in last 90 days: {{ user_recent_count }}<br />
+    Total users: {{ user_total_count }}</span>
+</p>
+
 <div id="duration-chart"></div>
 
 <script src='https://cdn.plot.ly/plotly-2.16.1.min.js'></script>
@@ -129,6 +135,36 @@ Plotly.newPlot(
     ],
     {
         title: 'Started assessments by month',
+        barmode: 'group',
+        xaxis: {
+            title: 'Month',
+        },
+        yaxis: {
+            title: 'Count',
+        }
+    }
+);
+
+const userMonths = [
+    {% for row in user_counts_by_login_month %}
+        {% if row.month %}
+            '{{ row.month|date:"M Y" }}',
+        {% endif %}
+    {% endfor %}
+];
+const userCount = [
+    {% for row in user_counts_by_login_month %}
+        {{ row.count }},
+    {% endfor %}
+];
+
+Plotly.newPlot(
+    'user-chart',
+    [
+        { name: `in the last year`, type: 'bar', x: userMonths, y: userCount },
+    ],
+    {
+        title: 'User last login by month',
         barmode: 'group',
         xaxis: {
             title: 'Month',

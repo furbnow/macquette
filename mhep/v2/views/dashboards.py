@@ -5,6 +5,7 @@ from django.db.models import Count, F
 from django.db.models.functions import ExtractDay, TruncMonth, TruncYear
 from django.views.generic.base import TemplateView
 
+from mhep.users.models import User
 from mhep.v2.models.assessment import Assessment
 
 from .. import VERSION
@@ -70,6 +71,19 @@ class Dashboard(UserPassesTestMixin, TemplateView):
             .annotate(count=Count("id"))
             .values("duration", "count")
             .order_by("duration")
+        )
+
+        context["user_total_count"] = User.objects.count()
+        context["user_recent_count"] = User.objects.exclude(
+            last_login__lt=datetime.now() - timedelta(days=90)
+        ).count()
+
+        context["user_counts_by_login_month"] = (
+            User.objects.annotate(month=TruncMonth("last_login"))
+            .values("month")
+            .annotate(count=Count("id"))
+            .values("month", "count")
+            .order_by("month")
         )
 
         return context
