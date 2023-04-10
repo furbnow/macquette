@@ -7,7 +7,8 @@
 
 
 <div id="annual-chart"></div>
-<div id="assessments-chart"></div>
+<div id="assessments-completed-chart"></div>
+<div id="assessments-started-chart"></div>
 <div id="duration-chart"></div>
 
 <script src='https://cdn.plot.ly/plotly-2.16.1.min.js'></script>
@@ -78,7 +79,7 @@ Plotly.newPlot(
 
 const completedMonths = [
     {% for row in completed_assessments_by_updated_month %}
-        '{{ row.month|date:"M Y" }}',
+        '{{ row.month|date:"M" }}',
     {% endfor %}
 ];
 const completedCount = [
@@ -87,9 +88,29 @@ const completedCount = [
     {% endfor %}
 ];
 
+Plotly.newPlot(
+    'assessments-completed-chart',
+    [
+        { name: `in the last year`, type: 'bar',
+          x: completedMonths.slice(-12), y: completedCount.slice(-12) },
+        { name: `in the year before that`, type: 'bar',
+          x: completedMonths.slice(-24, -12), y: completedCount.slice(-24, -12) },
+    ],
+    {
+        title: 'Completed assessments by month',
+        barmode: 'group',
+        xaxis: {
+            title: 'Month',
+        },
+        yaxis: {
+            title: 'Count',
+        }
+    }
+);
+
 const startedMonths = [
     {% for row in assessments_by_month %}
-        '{{ row.month|date:"M Y" }}',
+        '{{ row.month|date:"M" }}',
     {% endfor %}
 ];
 const startedCount = [
@@ -99,16 +120,15 @@ const startedCount = [
 ];
 
 Plotly.newPlot(
-    'assessments-chart',
+    'assessments-started-chart',
     [
-        { name: 'completed assessments by updated month', type: 'bar',
-          x: completedMonths.slice(-12), y: completedCount.slice(-12) },
-        { name: 'started assessments', type: 'bar',
+        { name: `in the last year`, type: 'bar',
           x: startedMonths.slice(-12), y: startedCount.slice(-12) },
-
+        { name: `in the year before that`, type: 'bar',
+          x: startedMonths.slice(-24, -12), y: startedCount.slice(-24, -12) },
     ],
     {
-        title: 'Started and completed assessments by month',
+        title: 'Started assessments by month',
         barmode: 'group',
         xaxis: {
             title: 'Month',
