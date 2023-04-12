@@ -117,7 +117,7 @@ $('#openbem').on('click', '.delete-element', function () {
     var item_id = 1.0 * $(this).attr('item_id');
     $(this).closest('tr').remove();
     if (window.features.includes('new-fuvc') && this.dataset.type === "floor") {
-        window.Macquette.uiModuleShims.floorRow.unmount(item_id);
+        window.Macquette.uiModuleShims.floorRow.unmount(item_id.toString());
     }
     data.fabric.elements.splice(row, 1);
     elements_initUI();
@@ -430,7 +430,7 @@ function add_floor(z) {
         reactFuvcRow.setAttribute('data-element-id', element.id);
         const legacyRow = root.querySelector('.legacy-row')
         root.removeChild(legacyRow)
-        window.Macquette.uiModuleShims.floorRow.init(reactFloorDataRow, element.id);
+        window.Macquette.uiModuleShims.floorRow.init(reactFloorDataRow, element.id.toString());
     } else {
         root.removeChild(reactFloorDataRow)
         const summaryCell = root.querySelector('.floors-table__floor-summary-cell')

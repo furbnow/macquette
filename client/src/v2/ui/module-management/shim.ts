@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { Result } from '../../helpers/result';
 import { applyDataMutator, getAppContext } from '../../shims/typed-globals';
 import { InstantiatedUiModule } from './instantiated-module';
@@ -20,21 +21,27 @@ export class MultipleModuleShim<State, Action, Effect> {
 
     constructor(private module_: UiModule<State, Action, Effect>) {}
 
-    init(domElement: Element, instanceKey: string) {
-        const instance = new InstantiatedUiModule(
-            this.module_,
-            instanceKey,
-            domElement,
-            applyDataMutator,
-        );
-        this.keyedInstances[instanceKey] = instance;
-    }
+    init = z
+        .function()
+        .args(z.instanceof(Element), z.string())
+        .implement((domElement, instanceKey) => {
+            const instance = new InstantiatedUiModule(
+                this.module_,
+                instanceKey,
+                domElement,
+                applyDataMutator,
+            );
+            this.keyedInstances[instanceKey] = instance;
+        });
 
-    unmount(instanceKey: string) {
-        const instance = this.getInstance(instanceKey).unwrap();
-        instance.unmount();
-        delete this.keyedInstances[instanceKey];
-    }
+    unmount = z
+        .function()
+        .args(z.string())
+        .implement((instanceKey) => {
+            const instance = this.getInstance(instanceKey).unwrap();
+            instance.unmount();
+            delete this.keyedInstances[instanceKey];
+        });
 
     unmountAll() {
         for (const instanceKey of Object.keys(this.keyedInstances)) {
@@ -55,14 +62,17 @@ export class SingleModuleShim<State, Action, Effect> {
     private instance: InstantiatedUiModule<State, Action, Effect> | null = null;
     constructor(private module_: UiModule<State, Action, Effect>) {}
 
-    init(domElement: Element) {
-        this.instance = new InstantiatedUiModule(
-            this.module_,
-            '',
-            domElement,
-            applyDataMutator,
-        );
-    }
+    init = z
+        .function()
+        .args(z.instanceof(Element))
+        .implement((domElement) => {
+            this.instance = new InstantiatedUiModule(
+                this.module_,
+                null,
+                domElement,
+                applyDataMutator,
+            );
+        });
 
     unmount() {
         if (this.instance === null) {
