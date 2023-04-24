@@ -877,14 +877,15 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
                 modelOutput: currentModel.mapErr(() => null).coalesce(),
             });
         },
-        mutateLegacyData: ({ project }, { scenarioId }, state) => {
+        mutateLegacyData: ({ project: projectRaw }, _, state) => {
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            const data = (project as z.input<typeof projectSchema>).data[
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-                scenarioId as string
-            ];
+            const project = projectRaw as z.input<typeof projectSchema>;
+
+            const data = project.data['master'];
             if (data === undefined) {
-                console.error('Could not mutate legacy data as data was undefined');
+                console.error(
+                    'Could not mutate legacy data as master scenario not found',
+                );
                 return;
             }
             data.currentenergy = data.currentenergy ?? {};
