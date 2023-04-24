@@ -1,6 +1,6 @@
 ## Summary
 
-This patchset changes
+This merge request changes
 **foo**
 to
 **bar**
