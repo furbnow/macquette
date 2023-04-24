@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+import { createElement, StrictMode } from 'react';
 import { createRoot, Root as ReactDOMRoot } from 'react-dom/client';
 import { Externals } from '../../shims/typed-globals';
 
@@ -48,12 +48,15 @@ export class InstantiatedUiModule<State, Action, Effect> {
             console.warn('Cannot render on an unmounted root');
             return;
         }
-        this.root.render(
+        const element = createElement(
+            StrictMode,
+            null,
             createElement(this.module_.component, {
                 state: this.state,
                 dispatch: (action) => this.dispatch(action, true),
             }),
         );
+        this.root.render(element);
     }
 
     private dispatch(action: Action, internal: boolean): void {
