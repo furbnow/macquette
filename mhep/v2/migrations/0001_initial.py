@@ -11,7 +11,6 @@ import mhep.v2.validators
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

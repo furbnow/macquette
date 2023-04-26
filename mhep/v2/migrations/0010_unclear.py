@@ -9,7 +9,6 @@ import mhep.v2.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("v2", "0009_remove_old_report_template"),

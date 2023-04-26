@@ -31,7 +31,6 @@ ignore = [
     "PGH004",
     "TID252",
     "N805", "N806",
-    "RUF004",
     "A001", "A003", "A002",
     "PLW0120",
     "ARG001", "ARG002", "ARG004", "ARG005",
@@ -49,6 +48,7 @@ ignore = [
     "PLR2004",
     "RUF005",
     "SIM108",
+    "PLC1901",
 ]
 line-length = 120
 target-version = "py310"

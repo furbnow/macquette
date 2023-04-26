@@ -10,7 +10,6 @@ def _image_path(self, filename):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("dev", "0007_add_image_model_and_featured_image")]
 
     operations = [

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisations", "0001_initial"),
         ("dev", "0016_native_jsonfield"),

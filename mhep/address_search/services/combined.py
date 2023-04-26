@@ -13,7 +13,7 @@ def get_combined_address_data(id: str):
     if not settings.FAKE_EXPENSIVE_DATA:
         main_data_r = resolve_address(id)
     else:
-        is_error = random.choice([True, False, False, False, False])
+        is_error = random.choice([True, False, False, False, False])  # noqa: S311
         if is_error:
             main_data_r = Failure("Random error")
         else:
@@ -27,8 +27,8 @@ def get_combined_address_data(id: str):
                     postcode="M1 6DD",
                     district="Scarfolk Town Council",
                     # A box within the bounds of the UK
-                    longitude=random.uniform(-2.801514, -0.725098),
-                    latitude=random.uniform(52.869130, 53.920516),
+                    longitude=random.uniform(-2.801514, -0.725098),  # noqa: S311
+                    latitude=random.uniform(52.869130, 53.920516),  # noqa: S311
                     country="England",
                     uprn="9999999",
                 )

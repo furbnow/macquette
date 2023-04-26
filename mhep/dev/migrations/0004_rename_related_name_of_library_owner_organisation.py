@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("dev", "0003_owner_cant_be_both_user_and_organisation")]
 
     operations = [

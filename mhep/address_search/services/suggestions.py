@@ -65,7 +65,7 @@ def fake_suggestions() -> Result[list[AddressSuggestion], str]:
 
     fake = Faker("en_GB")
 
-    is_error = random.choice([True, False, False, False, False])
+    is_error = random.choice([True, False, False, False, False])  # noqa: S311
     if is_error:
         return Failure("Random error")
     else:

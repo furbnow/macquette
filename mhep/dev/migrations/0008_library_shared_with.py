@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("dev", "0007_add_image_model_and_featured_image")]
 
     operations = [

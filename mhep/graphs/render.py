@@ -35,7 +35,7 @@ def _make_key(figure: types.BarChart, colours: list[str]) -> list[tuple[str, str
     return key
 
 
-def _render_bar_chart(figure: types.BarChart):
+def _render_bar_chart(figure: types.BarChart):  # noqa: PLR0912
     colours = figure.category_colours or DEFAULT_COLOURS
 
     fig, ax = plt.subplots()
@@ -204,6 +204,8 @@ def render(data: types.BarChart | types.LineGraph):
         return _render_bar_chart(data)
     elif isinstance(data, types.LineGraph):
         return _render_line_graph(data)
+    else:
+        raise Exception("unreachable")
 
 
 def to_url(fig) -> str:

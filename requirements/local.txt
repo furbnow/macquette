@@ -10,8 +10,6 @@ alabaster==0.7.12
     # via sphinx
 anyio==3.6.2
     # via watchfiles
-appnope==0.1.3
-    # via ipython
 argon2-cffi==21.3.0
     # via -r requirements/./production.txt
 argon2-cffi-bindings==21.2.0
@@ -32,6 +30,8 @@ babel==2.11.0
     # via sphinx
 backcall==0.2.0
     # via ipython
+black==23.3.0
+    # via -r requirements/local.in
 boto3==1.26.43
     # via
     #   -r requirements/./production.txt
@@ -60,14 +60,14 @@ cffi==1.15.1
     #   argon2-cffi-bindings
     #   cryptography
     #   weasyprint
-cfgv==3.3.1
-    # via pre-commit
 charset-normalizer==2.1.1
     # via
     #   -r requirements/./production.txt
     #   requests
 click==8.1.3
-    # via pip-tools
+    # via
+    #   black
+    #   pip-tools
 collectfast==2.2.0
     # via -r requirements/./production.txt
 contourpy==1.0.6
@@ -106,8 +106,6 @@ defusedxml==0.7.1
     #   -r requirements/./production.txt
     #   python3-openid
     #   social-auth-core
-distlib==0.3.6
-    # via virtualenv
 django==4.1.5
     # via
     #   -r requirements/./production.txt
@@ -170,8 +168,6 @@ factory-boy==3.2.1
     # via -r requirements/local.in
 faker==15.3.4
     # via factory-boy
-filelock==3.9.0
-    # via virtualenv
 fonttools[woff]==4.38.0
     # via
     #   -r requirements/./production.txt
@@ -185,8 +181,6 @@ html5lib==1.1
     # via
     #   -r requirements/./production.txt
     #   weasyprint
-identify==2.5.12
-    # via pre-commit
 idna==3.4
     # via
     #   -r requirements/./production.txt
@@ -238,9 +232,9 @@ mypy==1.1.1
     #   django-stubs
     #   djangorestframework-stubs
 mypy-extensions==1.0.0
-    # via mypy
-nodeenv==1.7.0
-    # via pre-commit
+    # via
+    #   black
+    #   mypy
 numpy==1.24.1
     # via
     #   -r requirements/./production.txt
@@ -255,6 +249,7 @@ oauthlib==3.2.2
 packaging==22.0
     # via
     #   -r requirements/./production.txt
+    #   black
     #   build
     #   matplotlib
     #   pytest
@@ -262,6 +257,8 @@ packaging==22.0
     #   sphinx
 parso==0.8.3
     # via jedi
+pathspec==0.11.1
+    # via black
 pep517==0.13.0
     # via build
 pexpect==4.8.0
@@ -276,11 +273,11 @@ pillow==9.4.0
     #   weasyprint
 pip-tools==6.12.1
     # via -r requirements/local.in
-platformdirs==2.6.2
-    # via virtualenv
+platformdirs==3.3.0
+    # via black
 pluggy==1.0.0
     # via pytest
-pre-commit==2.21.0
+pre-commit-hooks==4.4.0
     # via -r requirements/local.in
 prompt-toolkit==3.0.36
     # via ipython
@@ -352,8 +349,6 @@ pytz==2022.7
     #   -r requirements/./production.txt
     #   babel
     #   djangorestframework
-pyyaml==6.0
-    # via pre-commit
 requests==2.28.1
     # via
     #   -r requirements/./production.txt
@@ -374,6 +369,12 @@ rsa==4.9
     # via
     #   -r requirements/./production.txt
     #   python-jose
+ruamel-yaml==0.17.21
+    # via pre-commit-hooks
+ruamel-yaml-clib==0.2.7
+    # via ruamel-yaml
+ruff==0.0.263
+    # via -r requirements/local.in
 s3transfer==0.6.0
     # via
     #   -r requirements/./production.txt
@@ -430,12 +431,14 @@ tinycss2==1.2.1
     #   weasyprint
 tomli==2.0.1
     # via
+    #   black
     #   build
     #   coverage
     #   django-stubs
     #   ipdb
     #   mypy
     #   pep517
+    #   pre-commit-hooks
     #   pytest
 traitlets==5.8.0
     # via
@@ -475,8 +478,6 @@ urllib3==1.26.13
     #   botocore
     #   requests
     #   sentry-sdk
-virtualenv==20.17.1
-    # via pre-commit
 watchfiles==0.18.1
     # via django-watchfiles
 wcwidth==0.2.5

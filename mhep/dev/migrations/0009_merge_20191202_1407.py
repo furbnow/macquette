@@ -3,7 +3,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("dev", "0008_library_shared_with"),
         ("dev", "0008_remove_image_auto_width_height"),

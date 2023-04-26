@@ -5,7 +5,6 @@ import mhep.dev.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("dev", "0015_unique_names_for_constraints"),
     ]

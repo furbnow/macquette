@@ -43,7 +43,6 @@ First run
    pip install pip-tools             # Install pip-tools to manage dependencies
    make sync                         # Install our Python and NPM dependencies
    cp .example.env .env              # Set up env vars for local dev
-   pre-commit install                # Set up pre-commit code linters
    make docker-local-up              # Start postgres docker container
    python manage.py migrate          # Migrate the database
    python manage.py createsuperuser  # Create a user account
@@ -61,9 +60,6 @@ What is happening here?
 -  In local development, Macquette looks for settings in a ``.env`` file
    in the project root. Without one of these, it doesn't know where to
    find the database.
--  We use `pre-commit <https://pre-commit.com/>`__ to run various
-   linters and code quality checks on commit. We also run it as part of
-   our CI.
 -  For the first run, we must run the migrations on the database before
    bringing up the development Django server, so we run ``make
    docker-local-up`` first; this is usually a dependency of running

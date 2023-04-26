@@ -5,7 +5,6 @@ from . import views
 
 # User management
 if settings.USE_AUTH_SERVICE:
-
     urlpatterns = [
         path("", include("social_django.urls")),
         path("logout/", views.logout, name="logout"),

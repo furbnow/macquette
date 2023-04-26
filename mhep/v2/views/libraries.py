@@ -37,7 +37,6 @@ class MyLibrariesMixin:
 
 
 class ListCreateLibraries(MyLibrariesMixin, generics.ListCreateAPIView):
-
     serializer_class = LibrarySerializer
     permission_classes = [IsAuthenticated]
 

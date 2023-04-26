@@ -12,7 +12,10 @@ def create_user(name: str, email: str) -> User:
     """Create a user using whatever Auth system is in action."""
 
     # Generate a random password that will be immediately changed
-    password = "".join(random.choice(string.ascii_letters) for x in range(64))
+    # FIXME: https://gitlab.com/retrofitcoop/macquette/-/issues/948
+    password = "".join(
+        random.choice(string.ascii_letters) for x in range(64)  # noqa: S311
+    )
 
     user = _create_django_user(name, email, password)
 
@@ -40,7 +43,7 @@ def _create_django_user(name: str, email: str, password: str):
     else:
         username = email.split("@")[0]
         while User.objects.filter(username=username).exists():
-            username = username + "".join(random.choice(string.digits))
+            username = username + "".join(random.choice(string.digits))  # noqa: S311
 
     return User.objects.create_user(
         username=username,

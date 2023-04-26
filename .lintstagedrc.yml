@@ -1,0 +1,15 @@
+'!(*.{gif,png,jpg}|*.min.*)':
+    - 'prettier --ignore-unknown --write'
+    - 'check-merge-conflict'
+    - 'fix-byte-order-marker'
+    - 'forbid-new-submodules'
+    - 'mixed-line-ending --fix=lf'
+    - 'trailing-whitespace-fixer'
+    - 'end-of-file-fixer'
+'client/*.{js,jsx,ts,tsx}': 'eslint --fix'
+'*.py':
+    - 'black'
+    - 'ruff check --fix'
+    - 'debug-statement-hook'
+    - 'check-docstring-first'
+'*.json,!tsconfig.json': 'check-json'

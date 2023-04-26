@@ -17,7 +17,6 @@ def _thumbnail_path(self, filename):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("dev", "0006_organisation_admins")]
 
     operations = [

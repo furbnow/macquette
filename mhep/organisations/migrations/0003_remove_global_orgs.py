@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisations", "0002_copy_v2_org_data"),
         ("v2", "0011_remove_external_organisation_link"),

@@ -18,11 +18,13 @@ coverage                # https://github.com/nedbat/coveragepy
 
 # Code quality
 # ------------------------------------------------------------------------------
-pre-commit              # https://github.com/pre-commit/pre-commit
 mypy
 django-stubs[compatible-mypy]
 djangorestframework-stubs[compatible-mypy]
 types-python-jose
+ruff
+black
+pre-commit-hooks
 
 # Django
 # ------------------------------------------------------------------------------

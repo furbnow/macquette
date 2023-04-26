@@ -235,7 +235,6 @@ class TestCreateLibraries(APITestCase):
         cls.me = UserFactory.create()
 
     def test_create_library(self):
-
         with self.subTest("a valid library"):
             new_library = {
                 "name": "test library 1",

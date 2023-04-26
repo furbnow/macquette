@@ -18,7 +18,6 @@ class TestCreateOrganisationLibraries(APITestCase):
         cls.org.librarians.add(cls.me)
 
     def test_create_returns_correct_format(self):
-
         with self.subTest("a valid library"):
             new_library = {
                 "name": "test library 1",

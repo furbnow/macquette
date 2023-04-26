@@ -8,7 +8,7 @@ RUN apk add make
 
 WORKDIR /app/client/
 COPY ./client/package.json ./client/package-lock.json /app/client/
-RUN npm clean-install --omit dev
+RUN npm clean-install --omit dev --ignore-scripts
 
 COPY ./client/ /app/client/
 COPY ./Makefile /app/

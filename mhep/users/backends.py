@@ -61,7 +61,7 @@ class Auth0(auth0.Auth0OAuth2):
     def get_user_details(self, response):
         # Obtain JWT and the keys to validate the signature
         id_token = response.get("id_token")
-        jwks = request.urlopen(
+        jwks = request.urlopen(  # noqa: S310
             "https://" + self.setting("DOMAIN") + "/.well-known/jwks.json"
         )
         issuer = "https://" + self.setting("DOMAIN") + "/"

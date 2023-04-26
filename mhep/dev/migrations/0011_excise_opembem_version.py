@@ -3,7 +3,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("dev", "0010_add_organisation_report")]
 
     operations = [

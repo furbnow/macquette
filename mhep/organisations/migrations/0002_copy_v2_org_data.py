@@ -27,7 +27,6 @@ def copy_data_backward(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("organisations", "0001_initial"),
         ("v2", "0006_fk_to_global_org"),

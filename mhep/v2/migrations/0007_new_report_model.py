@@ -7,7 +7,6 @@ import mhep.v2.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("organisations", "0002_copy_v2_org_data"),

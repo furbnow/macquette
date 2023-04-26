@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("dev", "0002_owner_user_and_owner_organisation")]
 
     operations = [
