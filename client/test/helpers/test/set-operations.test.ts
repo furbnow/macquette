@@ -38,8 +38,8 @@ describe('set operations', () => {
 
         test('symmetry', () => {
             const arb = fc.record({
-                lhs: fc.set(fc.anything()),
-                rhs: fc.set(fc.anything()),
+                lhs: fc.uniqueArray(fc.anything()),
+                rhs: fc.uniqueArray(fc.anything()),
             });
             fc.assert(
                 fc.property(arb, ({ lhs, rhs }) => {
@@ -57,8 +57,8 @@ describe('set operations', () => {
 
         test('onlyLHS, intersection and onlyRHS are all disjoint', () => {
             const arb = fc.record({
-                lhs: fc.set(fc.anything()),
-                rhs: fc.set(fc.anything()),
+                lhs: fc.uniqueArray(fc.anything()),
+                rhs: fc.uniqueArray(fc.anything()),
             });
             fc.assert(
                 fc.property(arb, ({ lhs, rhs }) => {

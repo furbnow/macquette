@@ -11,7 +11,7 @@ function arbOccupancyInput() {
 
 function arbOccupancyFloorDependency() {
     return fc.record({
-        totalFloorArea: fc.float({ min: 0, next: true }),
+        totalFloorArea: fc.float({ min: 0 }),
     });
 }
 

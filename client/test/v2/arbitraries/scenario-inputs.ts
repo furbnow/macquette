@@ -11,10 +11,10 @@ import {
     stringyNumber,
     stringySensibleFloat,
 } from './legacy-values';
+import { arbLAC, arbLAC_calculation_type } from './scenario/LAC';
 import { arbFabric } from './scenario/fabric';
 import { arbFuels } from './scenario/fuels';
 import { heatingSystemInputs } from './scenario/heating-systems';
-import { arbLAC, arbLAC_calculation_type } from './scenario/LAC';
 import { shwInputIsComplete, shwInputs } from './scenario/solar-hot-water';
 import { arbVentilation } from './scenario/ventilation';
 import { waterHeatingInputs } from './scenario/water-heating';

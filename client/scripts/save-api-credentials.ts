@@ -1,4 +1,4 @@
-import { prompt } from 'inquirer';
+import inquirer from 'inquirer';
 
 import { ApiCredentials, writeSessionIdForBaseUrl } from './lib/config';
 
@@ -7,7 +7,7 @@ type Params = ApiCredentials & {
 };
 
 async function getParams(): Promise<Params> {
-    return await prompt<Params>([
+    return await inquirer.prompt<Params>([
         {
             type: 'input',
             name: 'baseUrl',

@@ -1,4 +1,4 @@
-import { prompt } from 'inquirer';
+import inquirer from 'inquirer';
 import { resolve } from 'path';
 
 type CommonParams = {
@@ -11,7 +11,7 @@ export type ExportParams = CommonParams & {
 };
 
 export async function getExportParams(): Promise<ExportParams> {
-    return await prompt<ExportParams>([
+    return await inquirer.prompt<ExportParams>([
         {
             type: 'input',
             name: 'baseUrl',
@@ -36,7 +36,7 @@ export async function getExportParams(): Promise<ExportParams> {
 export type ImportParams = CommonParams & { dryRun: boolean };
 
 export async function getImportParams(): Promise<ImportParams> {
-    return await prompt<ImportParams>([
+    return await inquirer.prompt<ImportParams>([
         {
             type: 'confirm',
             name: 'dryRun',

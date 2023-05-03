@@ -10,8 +10,8 @@ import {
 } from '../../../../src/v2/ui/modules/solar-hot-water';
 import { FcInfer } from '../../../helpers/arbitraries';
 import {
-    arbitraryProjectInputsWithoutScenarios,
     ProjectInput,
+    arbitraryProjectInputsWithoutScenarios,
 } from '../../arbitraries/project-inputs';
 import { arbScenarioInputs } from '../../arbitraries/scenario-inputs';
 import { arbitraryState } from './arbitrary';

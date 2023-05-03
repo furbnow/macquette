@@ -12,7 +12,7 @@ import {
 } from '../../../../data-schemas/scenario/fabric/floor-u-value';
 import { assertNever } from '../../../../helpers/assert-never';
 import { withPathPrefix } from '../../../../helpers/error-warning-path';
-import { assertNonEmpty, NonEmptyArray } from '../../../../helpers/non-empty-array';
+import { NonEmptyArray, assertNonEmpty } from '../../../../helpers/non-empty-array';
 import { Result } from '../../../../helpers/result';
 import { WarningCollector, WithWarnings } from '../../../../helpers/with-warnings';
 import { FloorLayerInput } from './floor-layer-input';

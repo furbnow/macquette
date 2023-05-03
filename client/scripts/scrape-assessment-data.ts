@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import Bottleneck from 'bottleneck';
 import { open, opendir, stat } from 'fs/promises';
-import { prompt } from 'inquirer';
+import inquirer from 'inquirer';
 import { join, resolve } from 'path';
 
 const MAX_CONCURRENT_REQUESTS = 4;
@@ -20,7 +20,7 @@ async function getParams(): Promise<Params> {
         sessionid: string;
         dataDirectory: string;
     };
-    const { baseUrl, sessionid, dataDirectory } = await prompt<PromptResult>([
+    const { baseUrl, sessionid, dataDirectory } = await inquirer.prompt<PromptResult>([
         {
             type: 'input',
             name: 'baseUrl',

@@ -1,5 +1,5 @@
 import { cloneDeep, isEqual } from 'lodash';
-import { z, ZodError } from 'zod';
+import { ZodError, z } from 'zod';
 import { HTTPClient } from '../api/http';
 import { resultSchema } from '../data-schemas/helpers/result';
 import { projectSchema } from '../data-schemas/project';
@@ -7,7 +7,7 @@ import { isIndexable } from '../helpers/is-indexable';
 import { CombinedModules } from '../model/combined-modules';
 import { ModelError } from '../model/error';
 import { AppContext } from '../ui/module-management/module-type';
-import { DEFAULT_ROUTE, parseRoute, Route } from '../ui/routes';
+import { DEFAULT_ROUTE, Route, parseRoute } from '../ui/routes';
 
 /* eslint-disable
     @typescript-eslint/consistent-type-assertions,

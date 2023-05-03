@@ -4,7 +4,7 @@ import { camelise, cameliseStr } from '../../../src/v2/api/http';
 
 const inputNameArb = fc.stringOf(fc.constantFrom('a', 'b', 'c', 'A', 'B', 'C', '_'));
 const { tree: recursiveObjectArb } = fc.letrec((tie) => ({
-    tree: fc.oneof({ depthFactor: 0.5, withCrossShrink: true }, tie('array'), tie('obj')),
+    tree: fc.oneof({ depthSize: 2, withCrossShrink: true }, tie('array'), tie('obj')),
     array: fc.array(tie('obj')),
     obj: fc.object({ key: inputNameArb }),
 }));

@@ -5,6 +5,7 @@ import { parse as csvParse } from 'csv-parse/sync';
 import { stringify as csvStringify } from 'csv-stringify/sync';
 import { omit } from 'lodash';
 import { z } from 'zod';
+import { safeIsArray } from '../../src/v2/helpers/safe-is-array';
 
 import { Library } from '../../src/v2/data-schemas/libraries';
 import { ItemOf, LibraryItem } from './types';
@@ -33,7 +34,7 @@ function prepareForCsv<L extends Library>(
             collectedItemFields.add(key);
         }
         let tagsMixin: { tags?: string };
-        if ('tags' in item && item.tags !== undefined) {
+        if ('tags' in item && safeIsArray(item.tags)) {
             tagsMixin = {
                 tags: item.tags.join(','),
             };

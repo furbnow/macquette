@@ -14,11 +14,11 @@ import type {
     WallMeasure,
 } from '../../data-schemas/libraries/elements';
 import {
-    discriminateTags,
     FabricElement,
     FabricElementsLibrary,
     FabricMeasure,
     FabricMeasuresLibrary,
+    discriminateTags,
     isFabricElementsLibrary,
     isFabricMeasuresLibrary,
 } from '../../data-schemas/libraries/elements';
@@ -26,7 +26,7 @@ import {
     FloorInsulationMaterial,
     isFloorInsulationMaterialLibrary,
 } from '../../data-schemas/libraries/floor-insulation';
-import { isNonEmpty, NonEmptyArray } from '../../helpers/non-empty-array';
+import { NonEmptyArray, isNonEmpty } from '../../helpers/non-empty-array';
 import { isNotNull } from '../../helpers/null-checking';
 import { Shadow } from '../../helpers/shadow-object-type';
 import { externals } from '../../shims/typed-globals';

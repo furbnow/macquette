@@ -14,9 +14,9 @@ import { Overshading } from '../../enums/overshading';
 import { Region } from '../../enums/region';
 import { calculateSolarRadiationMonthly } from '../../solar-flux';
 import {
-    constructFloorUValueModel,
     CustomFloor,
     FloorUValueModel,
+    constructFloorUValueModel,
 } from './floor-u-value-calculator';
 import { validate } from './floor-u-value-calculator/validate-input';
 import { FloorUValueWarning } from './floor-u-value-calculator/warnings';

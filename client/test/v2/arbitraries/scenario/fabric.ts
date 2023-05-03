@@ -136,7 +136,7 @@ const arbIds = fc
     })
     .chain(({ numWallLikes, numFloors, numDeductible }) =>
         fc
-            .set(fc.nat(), {
+            .uniqueArray(fc.nat(), {
                 minLength: numWallLikes + numFloors + numDeductible,
                 maxLength: numWallLikes + numFloors + numDeductible,
             })

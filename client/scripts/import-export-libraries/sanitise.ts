@@ -1,12 +1,13 @@
 import assert from 'assert';
 import { cloneDeep, mapValues } from 'lodash';
+import { safeIsArray } from '../../src/v2/helpers/safe-is-array';
 
 import { Library } from '../../src/v2/data-schemas/libraries';
 import type { ItemOf, LibraryItem } from './types';
 
 function sanitiseItem<Item extends LibraryItem>(item: Item, name: string): Item {
     const out = cloneDeep(item);
-    if ('description' in out && out.description !== null) {
+    if ('description' in out && typeof out.description === 'string') {
         out.description = out.description.replace(/"+$/, '').trim();
         if (out.description === 'undefined') {
             out.description = '';
@@ -24,8 +25,8 @@ function sanitiseItem<Item extends LibraryItem>(item: Item, name: string): Item 
         out.tag = name;
     }
     if ('tags' in out) {
-        assert(out.tags !== undefined);
-        const newTags = out.tags.flatMap((t) => (t === null ? [] : [t]));
+        assert(safeIsArray(out.tags));
+        const newTags = out.tags.flatMap((t) => (typeof t !== 'string' ? [] : [t]));
         newTags.forEach((tag) => assert(tag.indexOf(',') === -1));
         out.tags = newTags;
     }

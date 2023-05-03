@@ -93,7 +93,9 @@ describe('tabular function', () => {
 
     describe('findClosestLeftIndex helper', () => {
         const arbRange = fc
-            .set(arbFloat({ noDefaultInfinity: true, noNaN: true }), { minLength: 1 })
+            .uniqueArray(arbFloat({ noDefaultInfinity: true, noNaN: true }), {
+                minLength: 1,
+            })
             .map((s) => [...s].sort(numericCompare));
 
         test('returns err when given an empty array', () => {

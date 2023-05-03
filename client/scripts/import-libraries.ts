@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { readFileSync } from 'fs';
-import { prompt } from 'inquirer';
+import inquirer from 'inquirer';
 import { join } from 'path';
 
 import { HTTPClient } from '../src/v2/api/http';
@@ -9,8 +9,8 @@ import { finalErrorHandler } from './import-export-libraries/error-handling';
 import { readCsv, readJson } from './import-export-libraries/export';
 import {
     Manifest,
-    manifestSchema,
     RehydratedManifest,
+    manifestSchema,
     rehydrateManifest,
 } from './import-export-libraries/manifest';
 import { getImportParams } from './import-export-libraries/params';
@@ -119,7 +119,7 @@ async function confirmProceed(
             console.log('(No action - dry run)');
             return { type: 'skip' };
         } else {
-            const { confirm } = await prompt<{ confirm: boolean }>([
+            const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
                 { type: 'confirm', name: 'confirm', default: false, message: 'Proceed?' },
             ]);
             if (!confirm) {

@@ -1,4 +1,5 @@
 import { isIndexable } from './is-indexable';
+import { safeIsArray } from './safe-is-array';
 
 /** Deep-clone an object, emulating a JSON round-trip
  *
@@ -43,10 +44,6 @@ export function emulateJsonRoundTrip(data: unknown): unknown {
     } else {
         return data;
     }
-}
-
-function safeIsArray(val: unknown): val is Array<unknown> {
-    return Array.isArray(val);
 }
 
 function safeIsFunction(val: unknown): val is (...args: unknown[]) => unknown {

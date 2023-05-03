@@ -12,10 +12,10 @@ import {
     DeductibleSpec,
     HatchSpec,
     MainElementSpec,
-    netArea,
     WallLikeSpec,
     WindowLike,
     WindowLikeSpec,
+    netArea,
 } from '../../../src/v2/model/modules/fabric/element-types';
 import { FcInfer, merge } from '../../helpers/arbitraries';
 import {
@@ -195,8 +195,12 @@ describe('fabric model module', () => {
                     fabric.elementsByCategory,
                 ).flatMap(identity);
                 // Arrays contain each other => they are equal up to ordering
-                expect(combinedCategories).toEqual(arrayContaining(fabric.flatElements));
-                expect(fabric.flatElements).toEqual(arrayContaining(combinedCategories));
+                expect(combinedCategories).toEqual(
+                    expect.arrayContaining(fabric.flatElements),
+                );
+                expect(fabric.flatElements).toEqual(
+                    expect.arrayContaining(combinedCategories),
+                );
             }),
             { examples },
         );
@@ -206,4 +210,3 @@ describe('fabric model module', () => {
 function identity<T>(val: T) {
     return val;
 }
-const arrayContaining = expect.arrayContaining.bind(expect);

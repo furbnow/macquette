@@ -30,8 +30,9 @@ export function merge<Ts extends Record<string, unknown>[]>(
     });
 }
 
-export function arbFloat(options: fc.FloatNextConstraints = {}) {
-    return fc.float({ ...options, next: true });
+/** @deprecated use fc.float instead */
+export function arbFloat(options: fc.FloatConstraints = {}) {
+    return fc.float(options);
 }
 
 export function arbDateOrRFC3339(): fc.Arbitrary<string | Date> {
@@ -60,7 +61,11 @@ export function fcPartialRecord<T>(record: { [K in keyof T]: fc.Arbitrary<T[K]> 
 export function recordWith<T extends Record<string | symbol, fc.Arbitrary<unknown>>, W>(
     extra: fc.Arbitrary<W>,
     source: T,
-): { [K in keyof T]: fc.Arbitrary<FcInfer<T[K]> | W> } {
+): {
+    [K in keyof T]: fc.Arbitrary<
+        (T[K] extends fc.MaybeWeightedArbitrary<infer U> ? U : never) | W
+    >;
+} {
     return mapValues(source, (val) => fc.oneof(val, extra));
 }
 

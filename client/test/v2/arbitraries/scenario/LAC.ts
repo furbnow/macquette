@@ -14,7 +14,6 @@ function arbLACFuels(fuelNames: string[]) {
                 fc.record({
                     fuel: fc.constant(fuelName),
                     fraction: fc.double({
-                        next: true,
                         noNaN: true,
                         min: 1e-7,
                         max: 1,

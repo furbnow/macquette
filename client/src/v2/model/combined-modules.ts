@@ -13,9 +13,9 @@ import {
 } from './modules/appliances';
 import { constructModelBehaviourFlags } from './modules/behaviour-version';
 import {
-    constructCooking,
     Cooking,
     CookingInput,
+    constructCooking,
     extractCookingInputFromLegacy,
 } from './modules/cooking';
 import {
@@ -23,64 +23,64 @@ import {
     CurrentEnergyInput,
     extractCurrentEnergyInputFromLegacy,
 } from './modules/current-energy';
-import { extractFabricInputFromLegacy, Fabric, FabricInput } from './modules/fabric';
-import { extractFloorsInputFromLegacy, Floors, FloorsInput } from './modules/floors';
-import { extractFuelsInputFromLegacy, Fuels, FuelsDict } from './modules/fuels';
+import { Fabric, FabricInput, extractFabricInputFromLegacy } from './modules/fabric';
+import { Floors, FloorsInput, extractFloorsInputFromLegacy } from './modules/floors';
+import { Fuels, FuelsDict, extractFuelsInputFromLegacy } from './modules/fuels';
 import {
-    extractGenerationInputFromLegacy,
     Generation,
     GenerationInput,
+    extractGenerationInputFromLegacy,
 } from './modules/generation';
 import { HeatLoss } from './modules/heat-loss';
 import {
-    extractHeatingSystemsInputFromLegacy,
     HeatingSystemInput,
     HeatingSystems,
+    extractHeatingSystemsInputFromLegacy,
 } from './modules/heating-systems';
 import { FansAndPumpsGains } from './modules/internal-gains/fans-and-pumps';
 import { InternalLosses } from './modules/internal-gains/losses';
 import { MetabolicGains } from './modules/internal-gains/metabolic';
 import {
-    extractLightingSAPInputFromLegacy,
     LightingSAP,
     LightingSAPInput,
+    extractLightingSAPInputFromLegacy,
 } from './modules/lighting-appliances-cooking/lighting-sap';
 import {
-    extractOccupancyInputFromLegacy,
     Occupancy,
     OccupancyInput,
+    extractOccupancyInputFromLegacy,
 } from './modules/occupancy';
 import { extractRegionFromLegacy } from './modules/region';
 import {
-    constructSolarHotWater,
-    extractSolarHotWaterInputFromLegacy,
     SolarHotWater,
     SolarHotWaterInput,
+    constructSolarHotWater,
+    extractSolarHotWaterInputFromLegacy,
 } from './modules/solar-hot-water';
 import {
-    extractVentilationInfiltrationCommonInputFromLegacy,
     VentilationInfiltrationCommon,
     VentilationInfiltrationCommonInput,
+    extractVentilationInfiltrationCommonInputFromLegacy,
 } from './modules/ventilation-infiltration/common-input';
 import {
-    extractInfiltrationInputFromLegacy,
     Infiltration,
     InfiltrationInput,
+    extractInfiltrationInputFromLegacy,
 } from './modules/ventilation-infiltration/infiltration';
 import {
-    extractVentilationInputFromLegacy,
     Ventilation,
     VentilationInput,
+    extractVentilationInputFromLegacy,
 } from './modules/ventilation-infiltration/ventilation';
 import {
-    extractWaterCommonInputFromLegacy,
     WaterCommon,
     WaterCommonInput,
+    extractWaterCommonInputFromLegacy,
 } from './modules/water-common';
 import {
-    extractWaterHeatingInputFromLegacy,
     WaterHeating,
     WaterHeatingInput,
+    extractWaterHeatingInputFromLegacy,
 } from './modules/water-heating';
 
 export type Input = {

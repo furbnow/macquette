@@ -6,7 +6,6 @@ function positiveRationalFloat() {
     return fc
         .float({
             min: 0,
-            next: true,
             noNaN: true,
             noDefaultInfinity: true,
         })

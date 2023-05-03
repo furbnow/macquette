@@ -20,15 +20,15 @@ import { Month } from '../../enums/month';
 import { Region } from '../../enums/region';
 import {
     CommonSpec,
-    constructDeductible,
     Deductible,
     DeductibleSpec,
     FabricElement,
     Floor,
     MainElementSpec,
-    netArea,
     WallLike,
     WindowLike,
+    constructDeductible,
+    netArea,
 } from './element-types';
 import { mutateLegacyData } from './mutate-legacy-data';
 

@@ -24,7 +24,6 @@ export const arbFloorLayerSpec: fc.Arbitrary<FloorLayerSpec> = fc.record({
                     max: 1,
                     noNaN: true,
                     noDefaultInfinity: true,
-                    next: true,
                 })
                 .map((ratio) => Proportion.fromRatio(ratio).unwrap()),
         ),
@@ -120,6 +119,6 @@ export const arbFloorSpec: fc.Arbitrary<FloorSpec> = fc.record({
     area: sensibleFloat,
     exposedPerimeter: sensibleFloat,
     uValueLegacyField: sensibleFloat,
-    selectedFloorType: fc.option(arbFloorType),
+    selectedFloorType: fc.option(arbFloorType, { nil: null }),
     perFloorTypeSpec: fc.option(arbPerFloorTypeSpec),
 });

@@ -3,8 +3,8 @@ import { sum } from '../../../helpers/array-reducers';
 import { cache } from '../../../helpers/cache-decorators';
 import { isTruthy } from '../../../helpers/is-truthy';
 import { Month } from '../../enums/month';
-import { Fuel as FuelsModuleFuel, Fuels } from '../fuels';
-import { Fuel as LACModuleFuel, FuelInput } from './fuel-sap';
+import { Fuels, Fuel as FuelsModuleFuel } from '../fuels';
+import { FuelInput, Fuel as LACModuleFuel } from './fuel-sap';
 
 export type CookingSAPInput = {
     energyEfficient: boolean;
