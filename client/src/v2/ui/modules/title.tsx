@@ -29,9 +29,9 @@ export const titleModule: UiModule<State, Action, never> = {
                 state.route.type === 'with scenario' &&
                 state.currentScenarioName !== null
             ) {
-                title = `${pageDisplayName} - ${state.currentScenarioName} - ${state.assessmentName} | ${state.appName}`;
+                title = `${state.assessmentName} - ${pageDisplayName} - ${state.currentScenarioName} | ${state.appName}`;
             } else {
-                title = `${pageDisplayName} - ${state.assessmentName} | ${state.appName}`;
+                title = `${state.assessmentName} - ${pageDisplayName} | ${state.appName}`;
             }
         }
         useEffect(() => {
