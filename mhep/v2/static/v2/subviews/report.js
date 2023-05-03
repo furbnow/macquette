@@ -314,7 +314,6 @@ function get_context_data(scenarios) {
             survey_date: hh['assessment_date'],
             report_date: hh['report_date'],
             report_version: hh['report_version'],
-            mhep_version: VERSION,
             assessor_name: hh['assessor_name'],
             signoff_name: hh['report_signoff'],
         },
@@ -473,7 +472,7 @@ function get_context_data(scenarios) {
                 measures: getScenarioMeasures(project[scenario.id]),
                 measures_cost: Math.round(measures_costs(scenario.id) / 10) * 10,
                 measures_additive_cost: Math.round(get_additive_cost(scenario.id) / 10) * 10,
-                heating_load: get_heating_load(project[scenario.id]),
+                heating_load: window.Macquette.getHeatingLoad(project[scenario.id]),
                 target_temp: project[scenario.id].temperature.target,
                 co2: {
                     total: project[scenario.id].annualco2,
