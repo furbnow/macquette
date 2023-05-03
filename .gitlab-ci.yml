@@ -62,7 +62,7 @@ js-test:
     before_script:
         - (cd client && npm clean-install)
     script:
-        - make format-prettier check-types-js lint-js test-js
+        - make check-types-js lint-js test-js
 
 pre-commit:
     stage: test
