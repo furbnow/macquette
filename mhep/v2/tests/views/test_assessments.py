@@ -212,6 +212,14 @@ class TestGetAssessment(APITestCase):
                 "email": self.me.email,
             },
             "organisation": None,
+            "access": [
+                {
+                    "roles": ["owner"],
+                    "id": f"{self.me.id}",
+                    "name": self.me.name,
+                    "email": self.me.email,
+                }
+            ],
             "images": [
                 {
                     "id": i.id,
@@ -228,6 +236,116 @@ class TestGetAssessment(APITestCase):
             "data": {"foo": "bar"},
         }
         assert expected == response.data
+
+    def test_access_field_includes_owner(self):
+        other1 = UserFactory.create()
+        other2 = UserFactory.create()
+        a = AssessmentFactory.create(owner=self.me, shared_with=[other1, other2])
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/assessments/{a.pk}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["access"] == [
+            {
+                "roles": ["owner"],
+                "id": f"{self.me.id}",
+                "name": self.me.name,
+                "email": self.me.email,
+            },
+            {
+                "roles": ["sharee"],
+                "id": f"{other1.id}",
+                "name": other1.name,
+                "email": other1.email,
+            },
+            {
+                "roles": ["sharee"],
+                "id": f"{other2.id}",
+                "name": other2.name,
+                "email": other2.email,
+            },
+        ]
+
+    def test_access_field_includes_org_admins(self):
+        admin_user = UserFactory.create()
+        organisation = OrganisationFactory.create()
+        organisation.members.add(admin_user)
+        organisation.admins.add(admin_user)
+        assessment = AssessmentFactory.create(owner=self.me, organisation=organisation)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/assessments/{assessment.pk}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["access"] == [
+            {
+                "roles": ["owner"],
+                "id": f"{self.me.id}",
+                "name": self.me.name,
+                "email": self.me.email,
+            },
+            {
+                "roles": ["org_admin"],
+                "id": f"{admin_user.id}",
+                "name": admin_user.name,
+                "email": admin_user.email,
+            },
+        ]
+
+    def test_access_field_includes_shared_with(self):
+        a = AssessmentFactory.create(owner=self.me)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/assessments/{a.pk}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["access"] == [
+            {
+                "roles": ["owner"],
+                "id": f"{self.me.id}",
+                "name": self.me.name,
+                "email": self.me.email,
+            }
+        ]
+
+    def test_multiple_roles_for_one_user(self):
+        organisation = OrganisationFactory.create()
+        organisation.members.add(self.me)
+        organisation.admins.add(self.me)
+        assessment = AssessmentFactory.create(owner=self.me, organisation=organisation)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/assessments/{assessment.pk}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["access"] == [
+            {
+                "roles": ["owner", "org_admin"],
+                "id": f"{self.me.id}",
+                "name": self.me.name,
+                "email": self.me.email,
+            }
+        ]
+
+    def test_can_share_permissions_shows_false_when_not_owner(self):
+        other = UserFactory.create()
+        a = AssessmentFactory.create(owner=other, shared_with=[self.me])
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/assessments/{a.pk}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["permissions"]["can_share"] is False
+
+    def test_can_share_permissions_shows_false_when_private(self):
+        a = AssessmentFactory.create(owner=self.me)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/assessments/{a.pk}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["permissions"]["can_share"] is False
 
     def test_assessment_without_data_returns_sensible_default(self):
         with freeze_time("2019-06-01T16:35:34Z"):
@@ -252,6 +370,14 @@ class TestGetAssessment(APITestCase):
                 "name": self.me.name,
                 "email": self.me.email,
             },
+            "access": [
+                {
+                    "roles": ["owner"],
+                    "id": f"{self.me.id}",
+                    "name": self.me.name,
+                    "email": self.me.email,
+                }
+            ],
             "status": "In progress",
             "images": [],
             "data": {},

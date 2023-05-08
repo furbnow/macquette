@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import serializers
@@ -132,12 +134,45 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     owner = UserSerializer(read_only=True)
     organisation = OrganisationMetadataSerializer(read_only=True)
+    access = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
 
     def update(self, instance, validated_data):
         if "data" in validated_data:
             instance.updated_at = timezone.now()
         return super().update(instance, validated_data)
+
+    def get_access(self, assessment):
+        def _fields(user, role):
+            return {
+                "role": role,
+                "id": f"{user.id}",
+                "name": user.name,
+                "email": user.email,
+            }
+
+        owner = _fields(assessment.owner, "owner")
+
+        admins = (
+            [
+                _fields(admin, "org_admin")
+                for admin in assessment.organisation.admins.all()
+            ]
+            if assessment.organisation
+            else []
+        )
+
+        shared_with = [_fields(user, "sharee") for user in assessment.shared_with.all()]
+
+        result = defaultdict(list)
+        for user in [owner, *admins, *shared_with]:
+            result[user["id"]].append(user)
+
+        new_result = []
+        for v in result.values():
+            new_result.append({**v[0], "role": [user["role"] for user in v]})
+
+        return new_result
 
     class Meta:
         model = Assessment
@@ -150,6 +185,7 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
             "updated_at",
             "owner",
             "organisation",
+            "access",
             "images",
             "data",
         ]

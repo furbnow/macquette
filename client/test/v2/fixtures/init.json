@@ -8,6 +8,7 @@
     "owner": { "id": "1", "name": "", "email": "" },
     "organisation": null,
     "images": [],
+    "access": [],
     "data": {
         "master": {
             "scenario_name": "Baseline",
