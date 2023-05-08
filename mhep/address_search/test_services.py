@@ -5,7 +5,7 @@ from returns.result import Failure, Success
 from . import services
 
 
-@override_settings(API_KEY={"IDEAL_POSTCODES": None})
+@override_settings(API_KEY={"IDEAL_POSTCODES": None}, FAKE_EXPENSIVE_DATA=False)
 def test_suggestions_no_api_key():
     """Having no API key should result in an error"""
     result = services.get_suggestions("Downing Street")
