@@ -335,12 +335,13 @@ class TestUpdateAssessment(APITestCase):
 
     def test_updates_and_returns_as_expected(self):
         with freeze_time("2019-07-13T12:10:12Z"):
-            updateFields = {"data": {"new": "data"}, "status": "Complete"}
-
             self.client.force_authenticate(self.me)
             response = self.client.patch(
                 f"/{VERSION}/api/assessments/{self.assessment.pk}/",
-                updateFields,
+                {
+                    "data": {"new": "data"},
+                    "status": "Complete",
+                },
                 format="json",
             )
 
@@ -351,8 +352,25 @@ class TestUpdateAssessment(APITestCase):
 
         assert {"new": "data"} == updated_assessment.data
         assert updated_assessment.status == "Complete"
-
         assert updated_assessment.updated_at.isoformat() == "2019-07-13T12:10:12+00:00"
+
+    def test_updated_at_not_changed(self):
+        with freeze_time("2019-07-13T12:10:12Z"):
+            self.client.force_authenticate(self.me)
+            response = self.client.patch(
+                f"/{VERSION}/api/assessments/{self.assessment.pk}/",
+                {
+                    "status": "Complete",
+                },
+                format="json",
+            )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.content == b""
+
+        updated_assessment = Assessment.objects.get(pk=self.assessment.pk)
+
+        assert updated_assessment.updated_at.isoformat() == "2019-06-01T16:35:34+00:00"
 
     def test_fails_if_data_field_is_a_string(self):
         with freeze_time("2019-07-13T12:10:12Z"):

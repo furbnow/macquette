@@ -52,7 +52,7 @@ class Assessment(models.Model):
     data = models.JSONField(default=dict, validators=[validate_dict], blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"#{self.id}: {self.name}"

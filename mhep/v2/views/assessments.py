@@ -3,6 +3,7 @@ import os
 
 import PIL
 from django.core.files.base import ContentFile
+from django.utils import timezone
 from rest_framework import exceptions, generics, parsers, serializers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -107,7 +108,8 @@ class SetFeaturedImage(AssessmentQuerySetMixin, generics.GenericAPIView):
             )
 
         assessment.featured_image = image
-        assessment.save()
+        assessment.updated_at = timezone.now()
+        assessment.save(update_fields=["updated_at", "featured_image"])
 
         return Response(None, status.HTTP_204_NO_CONTENT)
 
@@ -169,5 +171,8 @@ class UploadAssessmentImage(AssessmentQuerySetMixin, generics.GenericAPIView):
         self._set_note(record)
         record.save()
         response = ImageSerializer(record).data
+
+        assessment.updated_at = timezone.now()
+        assessment.save(update_fields=["updated_at"])
 
         return Response(response, status.HTTP_200_OK)
