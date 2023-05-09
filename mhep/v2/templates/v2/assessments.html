@@ -453,8 +453,13 @@
 
     function fetchOrganisations() {
         return apiClient.listOrganisations().then(result => {
-            organisations = result;
-            return organisations;
+            if (result.isOk()) {
+                organisations = result.unwrap()
+                return organisations;
+            } else {
+                alert("Failed to get organisation list");
+                throw new Error(result.unwrapErr());
+            }
         })
     }
 
@@ -552,19 +557,19 @@
             row.find('.member-user').text(member.name);
             row.find('.member-email').text(member.email);
             row.find('.member-last-active').html(
-                new Date(member.last_login).toLocaleString()
+                new Date(member.lastLogin).toLocaleString()
             );
 
-            if (member.is_admin) row.find('.member-is-admin').show();
-            if (member.is_librarian) row.find('.member-is-librarian').show();
+            if (member.isAdmin) row.find('.member-is-admin').show();
+            if (member.isLibrarian) row.find('.member-is-librarian').show();
 
-            if (permissions.can_promote_demote_librarians) {
+            if (permissions.canPromoteDemoteLibrarians) {
                 var demoteLibrarianButton = row.find('.demote-librarian')
                 demoteLibrarianButton.show();
                 demoteLibrarianButton.click(handleClickDemoteLibrarian);
             }
 
-            if (permissions.can_add_remove_members && member.name != current_user) {
+            if (permissions.canAddRemoveMembers && member.name != current_user) {
                 var removeMemberButton = row.find('.remove-user')
                 removeMemberButton.show();
                 removeMemberButton.click(handleClickRemoveUser);
@@ -578,9 +583,9 @@
         $("#promote-librarian-form-container").html("");
         $("#add-member-form-container").html("");
 
-        if (permissions.can_promote_demote_librarians || permissions.can_add_remove_members) {
+        if (permissions.canPromoteDemoteLibrarians || permissions.canAddRemoveMembers) {
             fetchAllUsers().then(() => {
-                if (permissions.can_promote_demote_librarians) {
+                if (permissions.canPromoteDemoteLibrarians) {
                     var promoteLibrarianFormTemplate = $("#promote-librarian-form-template");
                     var promoteLibrarianForm = promoteLibrarianFormTemplate.clone();
                     promoteLibrarianForm.removeAttr('id');
@@ -599,7 +604,7 @@
                     $("#promote-librarian-form-container").html(promoteLibrarianForm);
                 }
 
-                if (permissions.can_add_remove_members) {
+                if (permissions.canAddRemoveMembers) {
                     var addMemberFormTemplate = $("#add-member-form-template");
                     var addMemberForm = addMemberFormTemplate.clone();
                     addMemberForm.removeAttr('id');
@@ -674,7 +679,7 @@
         var members = organisation.members;
         var select = promoteLibrarianForm.find("select");
         for (let member of members) {
-            if (!member.is_librarian) {
+            if (!member.isLibrarian) {
                 var option = document.createElement("option");
                 option.text = `${member.name} <${member.email}>`;
                 option.value = member.id;
@@ -687,7 +692,7 @@
         var select = addMemberForm.find("select");
 
         for (let user of users) {
-            if (!user.is_librarian) {
+            if (!user.isLibrarian) {
                 var option = document.createElement("option");
                 option.text = `${user.name} <${user.email}>`;
                 option.value = user.id;

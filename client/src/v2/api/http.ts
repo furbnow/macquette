@@ -24,6 +24,7 @@ import {
 } from '../data-schemas/api-metadata';
 import { Image, imageSchema } from '../data-schemas/image';
 import { Library, librarySchema } from '../data-schemas/libraries';
+import { Organisation, listOrganisationResponse } from '../data-schemas/organisations';
 import { UserAccess, userAccessSchema } from '../data-schemas/project';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
 import { isIndexable } from '../helpers/is-indexable';
@@ -418,14 +419,23 @@ export class HTTPClient {
         });
     }
 
-    async listOrganisations(): Promise<unknown> {
-        const response = await this.throwingRequest({
-            intent: 'listing organisations',
-            url: urls.organisations(),
-            method: 'GET',
-            responseType: 'json',
+    async listOrganisations(): Promise<Result<Organisation[], HttpClientError>> {
+        return (
+            await this.request({
+                intent: 'listing organisations',
+                url: urls.organisations(),
+                method: 'GET',
+                responseType: 'json',
+            })
+        ).chain((response) => {
+            const parsed = listOrganisationResponse.safeParse(camelise(response.data));
+            if (parsed.success === false) {
+                return Result.err(
+                    new HttpClientError('listing organisations', parsed.error),
+                );
+            }
+            return Result.ok(parsed.data);
         });
-        return response.data;
     }
 
     async listUsers(): Promise<unknown> {
