@@ -167,8 +167,8 @@ function spaceHeatingDemand(project: ProjectData, scenarioIds: string[]): BarCha
             ],
         })),
         categoryLabels: [
-            'With standardised heating pattern',
-            'With your current heating pattern',
+            'With standardised heating pattern and temperature',
+            'With your current heating pattern and temperature',
         ],
         categoryColours: ['#9cbdfc', '#4286f4'],
         lines: [{ value: 120, label: 'UK average' }],
