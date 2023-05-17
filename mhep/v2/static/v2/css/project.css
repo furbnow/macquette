@@ -800,12 +800,8 @@ label input[type='radio'] {
 /**** NAVIGATION ****/
 
 .nav-container {
-    position: sticky;
-    top: 0;
-
     width: 100%;
     box-sizing: border-box;
-    z-index: 1000;
 }
 
 .nav-main {

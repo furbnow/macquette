@@ -1,5 +1,5 @@
 {% extends VERSION|add:"/mhep_base.html" %}
-{% load static i18n %}
+{% load static %}
 
 {% block extra_head %}
     <script src="{% static VERSION|add:'/js/macquette.js' %}"></script>
@@ -25,31 +25,35 @@
     <link rel="stylesheet" href="{% static VERSION|add:'/css/openfuvc.css' %}">
 {% endblock %}
 
-{% block leftnav %}
-    <div id="editor__nav"></div>
-{% endblock %}
-
-{% block rightnav %}
-    <div class="d-flex align-items-center pl-15" style="background-color: var(--grey-900);">
-        <span id="saving_status" class="mr-7"></span>
-        <a id="undo">
-            <svg style="width: 1rem; height: 1rem">
-                <use xlink:href="#iconset-undo" />
-            </svg>
-        </a>
-        <a id="redo">
-            <svg style="width: 1rem; height: 1rem; transform: scaleX(-1);">
-                <use xlink:href="#iconset-undo" />
-            </svg>
-        </a>
-        <a href="{% url VERSION|add:':index' %}">Assessments</a>
-        <a href="{% url 'logout' %}">Log out</a>
-    </div>
-{% endblock %}
-
 {% block content %}
-    <div id="macquette-container"></div>
+    <div class="nav-container">
+        <nav class="nav-main container_if_u_want_it">
+            <div id="editor__nav"></div>
+
+            <div class="d-flex align-items-center pl-15" style="background-color: var(--grey-900);">
+                <span id="saving_status" class="mr-7"></span>
+                <a id="undo">
+                    <svg style="width: 1rem; height: 1rem">
+                        <use xlink:href="#iconset-undo" />
+                    </svg>
+                </a>
+                <a id="redo">
+                    <svg style="width: 1rem; height: 1rem; transform: scaleX(-1);">
+                        <use xlink:href="#iconset-undo" />
+                    </svg>
+                </a>
+                <a href="{% url VERSION|add:':index' %}">Assessments</a>
+                <a href="{% url 'logout' %}">Log out</a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container_if_u_want_it">
+        <div id="macquette-container"></div>
+    </div>
+
     <div id="title-component-container"></div>
+
     <script>
         const staticFileResolver = new window.Macquette.StaticFileResolver(`{{ static_urls | safe }}`);
 

@@ -30,26 +30,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <div class="nav-container">
-        <nav class="nav-main container_if_u_want_it">
-            {% block leftnav %}
-                <h1 class="nav-main-heading">
-                    {{ appname }}
-                </h1>
-            {% endblock %}
-            {% block rightnav %}
-                <div class="d-flex align-items-center pl-15">
-                    <a href="{% url VERSION|add:':index' %}">Assessments</a>
-                    <a href="{% url 'logout' %}">Log out</a>
-                </div>
-            {% endblock %}
-        </nav>
-    </div>
-
-    <div class="container_if_u_want_it">
-        {% block content %}{% endblock content %}
-    </div>
-
+    {% block content %}{% endblock content %}
     {% include VERSION|add:"/svg/iconset.svg" %}
 </body>
 </html>
