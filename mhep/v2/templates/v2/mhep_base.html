@@ -37,11 +37,12 @@
                     {{ appname }}
                 </h1>
             {% endblock %}
-            <div class="d-flex align-items-center pl-15" style="background-color: var(--grey-900);">
-                {% block rightnav %}{% endblock %}
-                <a href="{% url VERSION|add:':index' %}">Assessments</a>
-                <a href="{% url 'logout' %}">Log out</a>
-            </div>
+            {% block rightnav %}
+                <div class="d-flex align-items-center pl-15">
+                    <a href="{% url VERSION|add:':index' %}">Assessments</a>
+                    <a href="{% url 'logout' %}">Log out</a>
+                </div>
+            {% endblock %}
         </nav>
     </div>
 
