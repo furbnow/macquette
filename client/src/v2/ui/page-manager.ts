@@ -271,7 +271,7 @@ class NavManager {
         never
     >;
     constructor() {
-        const navElement = document.querySelector('#editor__nav');
+        const navElement = document.querySelector('#editor__title');
         if (navElement === null) {
             throw new Error('title element not available');
         }
