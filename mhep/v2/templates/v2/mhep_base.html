@@ -43,15 +43,6 @@
         </nav>
     </div>
 
-    {% for message in messages %}
-    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-        {{ message }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endfor %}
-
     <div class="container_if_u_want_it">
         {% block content %}{% endblock content %}
     </div>

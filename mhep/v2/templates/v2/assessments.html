@@ -56,6 +56,16 @@
 
 <section class="px-0">
     <h1 class="ma-0" id="organisation-name">Welcome</h1>
+
+    {% for message in messages %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+
     <div id="org-buttons" class="mt-15" style="display: none">
         <button id="close-organisation" class="btn">
             <i class="icon-arrow-left"></i>
