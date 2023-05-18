@@ -8,7 +8,7 @@ export function arbFuels() {
         fc.oneof(
             fc.constant(Fuels.STANDARD_TARIFF),
             fc.constant(Fuels.GENERATION),
-            fc.string(),
+            fc.string().filter((val) => val !== '__proto__'),
         ),
         fc.record({
             category: fc.constantFrom(
