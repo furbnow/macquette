@@ -701,45 +701,6 @@ button.demote-role {
     background-color: var(--beige-500);
 }
 
-/* DELETE: all .legacy-sidebar styles after new-sidebar fully enabled */
-.legacy-sidebar .block-header {
-    background-color: #dbd6ce;
-    color: #897a67;
-    padding: 10px 10px 10px 20px;
-    font-weight: bold;
-}
-.legacy-sidebar .block-header--clickable {
-    cursor: pointer;
-}
-.legacy-sidebar .block-header--clickable:hover {
-    background-color: #e2ded7;
-}
-.legacy-sidebar .side-block {
-    border-bottom: 1px solid #edeae6;
-}
-.legacy-sidebar .scenario-nav {
-    padding: 5px 5px 5px 0px;
-    font-size: 16px;
-}
-.legacy-sidebar .menu-content {
-    display: none;
-}
-.legacy-sidebar .menu-content.active {
-    display: block;
-}
-.legacy-sidebar .side-section ul,
-.legacy-sidebar .side-section li {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-.legacy-sidebar .side-section li button {
-    margin: 7px 15px;
-}
-.legacy-sidebar .side-section li a:hover {
-    background-color: #dbd6ceee;
-}
-
 .addressoptions {
 }
 

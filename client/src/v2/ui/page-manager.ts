@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { featureFlags } from '../helpers/feature-flags';
 import { isIndexable } from '../helpers/is-indexable';
 import {
     applyDataMutator,
@@ -215,25 +214,21 @@ class SidebarManager {
     > | null = null;
 
     constructor() {
-        if (featureFlags.has('new-sidebar')) {
-            const sidebarElement = document.querySelector('#editor__sidebar');
-            if (sidebarElement === null) {
-                throw new Error('sidebar area not available for view initialisation');
-            }
-
-            this.sidebarModule = new InstantiatedUiModule(
-                editorSidebar.editorSidebarModule,
-                null,
-                sidebarElement,
-                applyDataMutator,
-            );
+        const sidebarElement = document.querySelector('#editor__sidebar');
+        if (sidebarElement === null) {
+            throw new Error('sidebar area not available for view initialisation');
         }
+
+        this.sidebarModule = new InstantiatedUiModule(
+            editorSidebar.editorSidebarModule,
+            null,
+            sidebarElement,
+            applyDataMutator,
+        );
     }
 
     update() {
-        if (featureFlags.has('new-sidebar')) {
-            this.sidebarModule?.update(getAppContext());
-        }
+        this.sidebarModule?.update(getAppContext());
     }
 }
 
