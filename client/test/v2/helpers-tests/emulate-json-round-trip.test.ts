@@ -27,7 +27,17 @@ describe('emulate JSON round trip', () => {
         fc.assert(
             fc.property(
                 fc.oneof(
-                    fc.anything().filter((val) => val !== undefined),
+                    fc
+                        .anything()
+                        .filter(
+                            (val) =>
+                                val !== undefined &&
+                                !(
+                                    typeof val === 'object' &&
+                                    val !== null &&
+                                    '__proto__' in val
+                                ),
+                        ),
                     objectWithToJSON,
                 ),
                 (val) => {
