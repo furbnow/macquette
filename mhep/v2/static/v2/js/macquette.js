@@ -253,7 +253,12 @@ function legacySharedInit() {
         page == 'scopeofworks' ||
         page == 'currentenergy' ||
         page == 'imagegallery' ||
-        page == 'address-search'
+        page == 'address-search' ||
+        page == 'compare' ||
+        page == 'scopeofworks' ||
+        page == 'export' ||
+        page == 'librariesmanager' ||
+        page == 'fuelsmanager'
     ) {
         hide_house_graphic();
     } else {
@@ -273,6 +278,16 @@ function legacySharedInit() {
         $('.scenario-name').html('Current Energy');
     } else if (page == 'imagegallery') {
         $('.scenario-name').html('Image Gallery');
+    } else if (page == 'compare') {
+        $('.scenario-name').html('Compare Scenarios');
+    } else if (page == 'scopeofworks') {
+        $('.scenario-name').html('Scope of Works');
+    } else if (page == 'fuelsmanager') {
+        $('.scenario-name').html('Fuels Manager');
+    } else if (page == 'librariesmanager') {
+        $('.scenario-name').html('Libraries Manager');
+    } else if (page == 'export') {
+        $('.scenario-name').html('Import/Export');
     } else {
         $('.scenario-name').html(scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name);
     }
