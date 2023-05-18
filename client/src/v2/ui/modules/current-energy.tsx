@@ -305,7 +305,7 @@ function ConsumptionTable({
 
     return (
         <table className="table mb-15">
-            <thead style={{ backgroundColor: 'var(--brown-4)' }}>
+            <thead style={{ backgroundColor: 'var(--grey-800)' }}>
                 <tr>
                     <th style={{ width: 100 }}></th>
                     <th>Annual use</th>
@@ -447,7 +447,7 @@ function ConversionFactors() {
             <summary>Show conversion factors</summary>
 
             <table className="table mb-15" style={{ width: 'auto' }}>
-                <thead style={{ backgroundColor: 'var(--brown-4)' }}>
+                <thead style={{ backgroundColor: 'var(--grey-800)' }}>
                     <tr>
                         <th>Name</th>
                         <th>Unit</th>
@@ -532,7 +532,7 @@ function GenerationTable({
 
     return (
         <table className="table mb-15">
-            <thead style={{ backgroundColor: 'var(--brown-4)' }}>
+            <thead style={{ backgroundColor: 'var(--grey-800)' }}>
                 <tr>
                     <th>CO₂ factor</th>
                     <th>CO₂ emissions saved</th>

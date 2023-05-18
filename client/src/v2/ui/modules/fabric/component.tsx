@@ -352,9 +352,9 @@ type WallProps = SubProps & {
 function WallRow({ state, dispatch, wall, secondDimension }: WallProps) {
     const status = wallStatus(wall);
     const colourForStatus: Record<WallStatus, string> = {
-        'new measure': '--green-5',
-        'previous measure': '--blue-5',
-        none: '--gray',
+        'new measure': '--pale-green',
+        'previous measure': '--blue-400',
+        none: '--grey-600',
     };
 
     const isDeleted =

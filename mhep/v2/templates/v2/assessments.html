@@ -30,6 +30,8 @@
 
     section {
         padding: 30px;
+        padding: 25px 30px;
+        border-radius: 4px;
     }
 
     section h2 {
@@ -42,11 +44,11 @@
         margin-bottom: 0;
     }
 
-    html, body { background-color: var(--brown-3); }
+    html, body { background-color: var(--grey-700); }
     .table td { vertical-align: middle; }
     a.underline, a:hover.underline { text-decoration: underline; }
     thead {
-        background-color: var(--brown-2);
+        background-color: var(--grey-800);
     }
 </style>
 
@@ -407,8 +409,8 @@
                     <td>
                         ${assessment.description}
                     </td>
-                    <td style='color:#888'>${owner}</td>
-                    <td style='color:#888'>${getDate(assessment.updatedAt)}</td>
+                    <td style='color:var(--grey-300)'>${owner}</td>
+                    <td style='color:var(--grey-300)'>${getDate(assessment.updatedAt)}</td>
                     <td>
                         <select class='assessment-status ${statusColour}'
                                 data-assessment-id="${assessment.id}">

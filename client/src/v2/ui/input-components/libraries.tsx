@@ -172,7 +172,7 @@ function LibraryItem<T extends MinimalLibraryItem>({
                         <table
                             cellPadding={7}
                             style={{
-                                border: '4px solid var(--brown-2)',
+                                border: '4px solid var(--grey-700)',
                             }}
                         >
                             <tbody>

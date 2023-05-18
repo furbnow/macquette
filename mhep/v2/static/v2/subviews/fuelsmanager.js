@@ -32,7 +32,7 @@ function fuelsmanager_initUI() {
     var html = '';
     for (var category_index in categories_sorted) {
         var category = categories_sorted[category_index];
-        html += "<tr style='background-color:#eee'><th class='header' colspan=6>" + category + '</th>';
+        html += "<tr style='background-color:var(--grey-800)'><th class='header' colspan=6>" + category + '</th>';
         html += '<tr>' + $('#fuelsmanager-table-header-template').html() + '</tr>';
         fuels_by_category[category].forEach(function (fuel) {
             html += '<tr>';

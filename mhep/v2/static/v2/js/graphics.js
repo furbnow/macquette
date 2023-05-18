@@ -44,72 +44,72 @@ function houseSVG(data) {
                 </g>
 
                 <g id="house-house">
-                    <path fill="rgba(99,86,71,.8)" d="M220 100h10v110h-10zM10 140h10v30H10z" />
-                    <path fill="rgba(99,86,71,0.8)" d="M120 235h100v-25h10v35H10v-35h10v25zM20 90v10H10V90H0v-5L120 0l120 85v5h-10v10h-10V90L120 20z" />
-                    <path fill="rgba(99,86,71,.3)" d="M11 100h8v40h-8zM11 170h8v40h-8z" />
+                    <path style="fill: var(--grey-300)" d="M220 100h10v110h-10zM10 140h10v30H10z" />
+                    <path style="fill: var(--grey-300)" d="M120 235h100v-25h10v35H10v-35h10v25zM20 90v10H10V90H0v-5L120 0l120 85v5h-10v10h-10V90L120 20z" />
+                    <path style="fill: var(--grey-600)" d="M11 100h8v40h-8zM11 170h8v40h-8z" />
                 </g>
             </defs>
 
             <use xlink:href="#house-house" x="128" y="55" transform="scale(2)" />
-            <text x="500" y="400" class="text-bold house--dark" text-anchor="middle">TOTAL</text>
-            <text class="house--dark" x="500" y="435" text-anchor="middle">
+            <text x="500" y="400" class="text-bold" text-anchor="middle">TOTAL</text>
+            <text x="500" y="435" text-anchor="middle">
                 ${Math.round(totalwk)} W/K
             </text>
 
             <use transform="translate(460,615) rotate(90) scale(${scaled_floor}) translate(0,-50)"
                  xlink:href="#house-arrow"
                  class="house--darker" />
-            <text x="540" y="650" class="text-bold house--darker">Floor</text>
-            <text class="house--dark" x="540" y="685">
+            <text x="540" y="650" class="house--dark-text text-bold">Floor</text>
+            <text x="540" y="685" class="house--dark-text">
                 ${Math.round(floorwk)} W/K
             </text>
 
             <use transform="translate(645,200) rotate(-55) scale(${scaled_roof}) translate(0,-50)"
                  xlink:href="#house-arrow"
-                 class="house--darker" />
-            <text x="530" y="50" class="text-bold house--darker">Roof</text>
-            <text class="house--dark" x="530" y="85">
+                 class="house--light" />
+            <text x="530" y="50" class="house--light-text text-bold">Roof</text>
+            <text x="530" y="85" class="house--light-text">
                 ${Math.round(roofwk)} W/K
             </text>
 
             <use transform="translate(730,535) rotate(0) scale(${scaled_walls}) translate(0,-50)"
                  xlink:href="#house-arrow"
                  class="house--light" />
-            <text x="730" y="650" class="text-bold house--dark">Walls</text>
-            <text class="house--dark" x="730" y="685">
+            <text x="730" y="650" class="house--light-text text-bold">Walls</text>
+            <text x="730" y="685" class="house--light-text">
                 ${Math.round(wallswk)} W/K
             </text>
 
             <use transform="translate(260,535) rotate(180) scale(${scaled_ventilation}) translate(0,-50)"
                  xlink:href="#house-arrow"
                  class="house--light" />
-            <text x="260" y="650" class="text-bold house--dark" text-anchor="end">Ventilation</text>
-            <text class="house--dark" x="260" y="685" text-anchor="end">
+            <text x="260" y="650" class="house--light-text text-bold" text-anchor="end">Ventilation</text>
+            <text x="260" y="685" class="house--light-text" text-anchor="end">
                 ${Math.round(ventilationwk)} W/K
-            </text>
-
-            <use transform="translate(260,350) rotate(180) scale(${scaled_windows}) translate(0,-50)"
-                 xlink:href="#house-arrow"
-                 class="house--light" />
-            <text x="260" y="215" class="text-bold house--dark" text-anchor="end">Windows</text>
-            <text class="house--dark" x="260" y="250" text-anchor="end">
-                ${Math.round(windowswk)} W/K
-            </text>
-
-            <use transform="translate(730,350) rotate(0) scale(${scaled_thermalbridge}) translate(0,-50)"
-                 xlink:href="#house-arrow"
-                 class="house--light" />
-            <text x="730" y="210" class="text-bold house--dark">Thermal bridging</text>
-            <text class="house--dark" x="730" y="245">
-                ${Math.round(thermalbridgewk)} W/K
             </text>
 
             <use transform="translate(340,205) rotate(235) scale(${scaled_infiltration}) translate(0,-50)"
                  xlink:href="#house-arrow"
                  class="house--darker" />
-            <text x="315" y="50" class="text-bold house--darker">Infiltration</text>
-            <text class="house--dark" x="315" y="85">
+            <text x="315" y="50" class="house--dark-text text-bold">Infiltration</text>
+            <text x="315" y="85" class="house--dark-text">
                 ${Math.round(infiltrationwk)} W/K
+            </text>
+
+            <use transform="translate(260,350) rotate(180) scale(${scaled_windows}) translate(0,-50)"
+                 xlink:href="#house-arrow"
+                 class="house--light" />
+            <text x="260" y="215" class="house--light-text text-bold" text-anchor="end">Windows</text>
+            <text x="260" y="250" class="house--light-text" text-anchor="end">
+                ${Math.round(windowswk)} W/K
+            </text>
+
+            <use transform="translate(730,350) rotate(0) scale(${scaled_thermalbridge}) translate(0,-50)"
+                 xlink:href="#house-arrow"
+                 class="house--darker" />
+            <text x="730" y="210" class="house--dark-text text-bold">Thermal bridging</text>
+            <text x="730" y="245" class="house--dark-text">
+                ${Math.round(thermalbridgewk)} W/K
             </text>
         </svg>`;
 }

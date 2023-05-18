@@ -648,17 +648,20 @@ function UploadProgress({
     dispatch: Dispatcher<Action>;
 }) {
     return (
-        <div style={{ border: '1px solid #ccc', width: 'max-content' }} className="mb-15">
+        <div
+            style={{ border: '1px solid var(--grey-600)', width: 'max-content' }}
+            className="mb-15"
+        >
             <div
                 className="d-flex justify-content-between align-items-center px-15 py-7"
-                style={{ backgroundColor: 'var(--beige-900)' }}
+                style={{ backgroundColor: 'var(--grey-800)' }}
             >
                 To upload:
             </div>
 
             {imagesToUpload.map(({ name, status }, idx) => (
                 <div
-                    style={{ borderTop: '1px solid #ccc' }}
+                    style={{ borderTop: '1px solid var(--grey-600)' }}
                     className="d-flex justify-content-between align-items-center px-15 py-7"
                     key={idx}
                 >

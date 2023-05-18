@@ -35,7 +35,7 @@
             <h1 class="nav-main-heading">
                 {{ appname }}
             </h1>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center pl-15" style="background-color: var(--grey-900);">
                 {% block extra_nav %}{% endblock %}
                 <a href="{% url VERSION|add:':index' %}">Assessments</a>
                 <a href="{% url 'logout' %}">Log out</a>

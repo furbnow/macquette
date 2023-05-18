@@ -3,8 +3,16 @@ import React, { ReactElement, useId } from 'react';
 import { zip } from '../../helpers/zip';
 import type { Target } from '../../model/datasets/targets';
 
-const COLOURS = ['fill-beige-700', 'fill-beige-400'];
+const COLOURS = ['datavis-1', 'datavis-2'];
 const AXIS_COLOUR = 'black';
+
+function getColour(index: number): string {
+    const colour = COLOURS[index % COLOURS.length];
+    if (colour === undefined) {
+        throw new Error('unreachable');
+    }
+    return colour;
+}
 
 /**
  * Calculate x pos + width of target bounding boxes
@@ -160,7 +168,7 @@ export function TargetBar({
                                 y={1.5 + barHeight * idx}
                                 width={Math.round(val) * xscale - 2}
                                 height={barHeight}
-                                className={COLOURS[idx]}
+                                style={{ fill: `var(--${getColour(idx)})` }}
                             />
                             {status.hasData === true && (
                                 <text
@@ -224,14 +232,15 @@ export function TargetBar({
                                 <text
                                     x={x + 5}
                                     y={y + height - 22}
-                                    className="fill-beige-200"
+                                    style={{ fill: 'var(--grey-300)' }}
                                 >
                                     {target.value} {units}
                                 </text>
                                 <text
                                     x={x + 5}
                                     y={y + height - 8}
-                                    className="fill-beige-200 text-bold"
+                                    className="text-bold"
+                                    style={{ fill: 'var(--grey-300)' }}
                                 >
                                     {target.label}
                                 </text>

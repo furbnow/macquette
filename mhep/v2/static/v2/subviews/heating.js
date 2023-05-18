@@ -478,7 +478,7 @@ function add_heating_systems() {
         const providesSH = item.provides === 'heating' || item.provides === 'heating_and_water';
 
         out = `
-            <tr style="background-color: var(--beige-800)">
+            <tr style="background-color: var(--grey-800)">
                 <td colspan="10">
                     <b>${item.tag}: ${item.name}</b>
 

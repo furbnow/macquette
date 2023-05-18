@@ -460,7 +460,7 @@ function add_window(z) {
     let text, classes;
     if (isDoor(element.type)) {
         text = 'Door';
-        classes = [ 'bg-pale-blue' ];
+        classes = [ 'bg-blue-700' ];
     } else if (isRoofLight(element.type)) {
         text = 'Roof light';
         classes = [ 'bg-pale-green' ];
