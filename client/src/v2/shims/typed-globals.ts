@@ -1,4 +1,4 @@
-import { cloneDeep, isEqual } from 'lodash';
+import { cloneDeep, isEqual, omit } from 'lodash';
 import { ZodError, z } from 'zod';
 import { HTTPClient } from '../api/http';
 import { resultSchema } from '../data-schemas/helpers/result';
@@ -89,7 +89,13 @@ export function applyDataMutator(
 ) {
     const origProject = cloneDeep(externals().project);
     mutator(externals(), getAppContext());
-    if (!isEqual(origProject, externals().project)) {
-        externals().update(false, { source });
+
+    const origMetadata = omit(origProject, 'data');
+    const newMetadata = omit(externals().project, 'data');
+
+    if (!isEqual(origProject['data'], externals().project['data'])) {
+        externals().update({ dataChanged: true, source });
+    } else if (!isEqual(origMetadata, newMetadata)) {
+        externals().update({ dataChanged: false, source });
     }
 }

@@ -324,7 +324,7 @@ function setupEventHandlers() {
         if (historical_index < historical.length - 1) {
             historical_index++;
             p.data = project = JSON.parse(historical[historical_index]);
-            update(true);
+            update({ undoRedo: true });
         }
 
         refresh_undo_redo_buttons();
@@ -333,7 +333,7 @@ function setupEventHandlers() {
         if (historical_index > 0) {
             historical_index--;
             p.data = project = JSON.parse(historical[historical_index]);
-            update(true);
+            update({ undoRedo: true });
         }
 
         refresh_undo_redo_buttons();
@@ -351,7 +351,7 @@ function setupEventHandlers() {
     );
 }
 
-function update(undo_redo = false, opts) {
+function update({ undoRedo = false, dataChanged = true, source }) {
     // We need to calculate the periods of heating off here because if we try to do it in household.js it happens after the update
     if (project.master.household != undefined) {
         for (var s in project) {
@@ -364,25 +364,29 @@ function update(undo_redo = false, opts) {
         }
     }
 
-    if (project[scenario] !== undefined) {
-        project[scenario] = calc.run(project[scenario]);
-        data = project[scenario];
-        if (undo_redo === false) {
-            historical.splice(0, historical_index); // reset the historical removing all the elements that were still there because of undoing
-            historical.unshift(JSON.stringify(project));
-            historical_index = 0;
-            refresh_undo_redo_buttons();
+    if (dataChanged) {
+        if (project[scenario] !== undefined) {
+            project[scenario] = calc.run(project[scenario]);
+            data = project[scenario];
+            if (undoRedo === false) {
+                historical.splice(0, historical_index); // reset the historical removing all the elements that were still there because of undoing
+                historical.unshift(JSON.stringify(project));
+                historical_index = 0;
+                refresh_undo_redo_buttons();
+            }
+            draw_openbem_graphics('#topgraphic', data);
         }
-        draw_openbem_graphics('#topgraphic', data);
     }
 
-    pageManager.externalDataUpdate(opts);
+    pageManager.externalDataUpdate({ source });
 
     if (!window.features.includes('new-sidebar')) {
         redraw_emissions();
     }
 
-    saveManager.save({ data: extract_assessment_inputs(project) });
+    if (dataChanged) {
+        saveManager.save({ data: extract_assessment_inputs(project) });
+    }
 }
 
 function hide_house_graphic() {
