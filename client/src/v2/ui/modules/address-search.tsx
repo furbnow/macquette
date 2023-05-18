@@ -150,11 +150,9 @@ function withDatabaseData<T, U>(data: WithOrigin<T, U>, value: T): WithOrigin<T,
 
 function NewSearchSection({ dispatch }: { dispatch: Dispatcher }) {
     return (
-        <section className="mb-30">
-            <button className="btn" onClick={() => dispatch({ type: 'new search' })}>
-                Search for new address
-            </button>
-        </section>
+        <button className="btn mb-15" onClick={() => dispatch({ type: 'new search' })}>
+            Search for new address
+        </button>
     );
 }
 
@@ -166,8 +164,8 @@ function SearchTextSection({
     dispatch: Dispatcher;
 }) {
     return (
-        <div className="mb-15">
-            <h3>Automatic search</h3>
+        <>
+            <h3 className="mt-0">Automatic search</h3>
 
             <label htmlFor="address_search">
                 Find address by postcode or first line of address
@@ -207,7 +205,7 @@ function SearchTextSection({
             {state.suggestionFetchStatus === 'error' && (
                 <span className="ml-7">Error fetching suggestions; please try again</span>
             )}
-        </div>
+        </>
     );
 }
 
@@ -284,17 +282,17 @@ function SuggestionsSection({
 }
 
 function LookupSection({ state, dispatch }: { state: State; dispatch: Dispatcher }) {
-    if (state.lookup.stage === 'address resolved') {
-        return <NewSearchSection dispatch={dispatch} />;
-    } else {
+    if (state.lookup.stage !== 'address resolved') {
         return (
-            <section className="mb-15">
+            <section className="line-top mb-30">
                 <SearchTextSection state={state.lookup} dispatch={dispatch} />
                 {state.lookup.stage === 'choosing suggestion' && (
                     <SuggestionsSection state={state.lookup} dispatch={dispatch} />
                 )}
             </section>
         );
+    } else {
+        return null;
     }
 }
 
@@ -379,7 +377,12 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
         <section>
             <LookupSection state={state} dispatch={dispatch} />
 
-            <h3>Address data</h3>
+            <h3 className="line-top mt-0">Address data</h3>
+
+            {state.lookup.stage === 'address resolved' && (
+                <NewSearchSection dispatch={dispatch} />
+            )}
+
             <FormGrid>
                 <WithOriginInput
                     data={state.address}

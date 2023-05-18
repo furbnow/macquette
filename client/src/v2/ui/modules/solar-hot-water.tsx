@@ -346,6 +346,7 @@ function SolarHotWater({
             value={{ locked: scenarioLocked, enabled: input !== null && !input.isNull }}
         >
             <LockedWarning locked={scenarioLocked} />
+            <hr />
             <h3>Solar Hot Water system</h3>
 
             <FormGrid>
