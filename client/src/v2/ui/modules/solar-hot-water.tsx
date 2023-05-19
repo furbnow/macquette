@@ -1,13 +1,26 @@
-import { pick } from 'lodash';
-import React from 'react';
-
-import { SolarHotWaterV1 } from '../../data-schemas/scenario/solar-hot-water';
+import React, { useState } from 'react';
+import { z } from 'zod';
+import { projectSchema } from '../../data-schemas/project';
+import { SolarHotWaterSchema } from '../../data-schemas/scenario/solar-hot-water';
+import {
+    SolarHotWaterDataModel,
+    solarHotWaterDataModel,
+} from '../../data-schemas/scenario/solar-hot-water/v2';
+import {
+    FormStateOf,
+    makeFormStateTransforms,
+} from '../../data-schemas/visitable-types/form-state';
 import { assertNever } from '../../helpers/assert-never';
 import { Result } from '../../helpers/result';
 import { DeepPartial, safeMerge } from '../../helpers/safe-merge';
 import { CombinedModules } from '../../model/combined-modules';
 import { Orientation } from '../../model/enums/orientation';
 import { Overshading } from '../../model/enums/overshading';
+import {
+    SolarHotWaterEnabled,
+    SolarHotWater as SolarHotWaterModel,
+} from '../../model/modules/solar-hot-water';
+import { WaterCommon } from '../../model/modules/water-common';
 import { CheckboxInput } from '../input-components/checkbox';
 import { FormGrid, InfoTooltip } from '../input-components/forms';
 import { NumberInput, NumberInputProps } from '../input-components/number';
@@ -17,65 +30,28 @@ import { UiModule } from '../module-management/module-type';
 import { LockedWarning } from '../output-components/locked-warning';
 import { NumberOutput } from '../output-components/numeric';
 
-type ModelOutputs = {
-    aStar: number;
-    collectorPerformanceRatio: number;
-    annualSolarRadiation: number; // kWh/m^2
-    availableSolarEnergy: number;
-    utilisation: {
-        load: number; // kWh
-        solarToLoadRatio: number;
-        utilisationFactor: number;
-        collectorPerformanceFactor: number;
-        effectiveSolarVolume: number; // litres
-        dailyHotWaterDemand: number; // litres
-        volumeRatio: number;
-        solarStorageVolumeFactor: number;
-        annualSolarInput: number; // kWh (the main output of the model -- total annual energy contribution of solar to hot water)
-    };
-};
+type InputState = FormStateOf<typeof solarHotWaterDataModel>;
+const { fromFormState, toFormState } = makeFormStateTransforms(solarHotWaterDataModel);
 
 export type LoadedState = {
     scenarioLocked: boolean;
-    moduleEnabled: boolean;
-    showAllCalcs: boolean;
-    modelOutput: null | ModelOutputs;
-    modelInput: SolarHotWaterV1['input'];
-    pumpType: 'PV' | 'electric' | null;
+    combinedModules: null | {
+        solarHotWater: SolarHotWaterModel;
+        waterCommon: WaterCommon;
+    };
+    input: InputState;
 };
 
 type State = LoadedState | 'loading';
 
-const emptyModelInput: SolarHotWaterV1['input'] = {
-    collector: {
-        parameterSource: null,
-        apertureArea: null,
-        testCertificate: {
-            zeroLossEfficiency: null,
-            linearHeatLossCoefficient: null,
-            secondOrderHeatLossCoefficient: null,
-        },
-        estimate: {
-            collectorType: null,
-            apertureAreaType: null,
-        },
-        orientation: null,
-        inclination: null,
-        overshading: null,
-    },
-    dedicatedSolarStorageVolume: null,
-    combinedCylinderVolume: null,
-};
-
 type Action =
-    | ({ type: 'external data update'; model: CombinedModules | null } & Pick<
-          LoadedState,
-          'scenarioLocked' | 'moduleEnabled' | 'modelInput' | 'pumpType'
-      >)
     | {
-          type: 'merge state';
-          toMerge: DeepPartial<Exclude<LoadedState, 'scenarioLocked'>>;
-      };
+          type: 'external data update';
+          model: CombinedModules | null;
+          scenarioLocked: boolean;
+          input: SolarHotWaterDataModel;
+      }
+    | { type: 'merge inputs'; toMerge: DeepPartial<InputState> };
 
 export const solarHotWaterModule: UiModule<State, Action, never> = {
     name: 'solar hot water',
@@ -83,53 +59,28 @@ export const solarHotWaterModule: UiModule<State, Action, never> = {
         return 'loading';
     },
     reducer: (state: State, action: Action): [State] => {
+        if (action.type === 'external data update' && state === 'loading') {
+            // First load. Rehydrate input.
+            return [
+                {
+                    scenarioLocked: action.scenarioLocked,
+                    input: toFormState(action.input),
+                    combinedModules: action.model,
+                },
+            ];
+        }
+        if (state === 'loading') return [state];
+        if (action.type === 'external data update') {
+            // Keep our own input
+            return [{ ...state, combinedModules: action.model }];
+        }
         switch (action.type) {
-            case 'external data update': {
-                let modelOutput: LoadedState['modelOutput'];
-
-                if (action.model === null || action.model.solarHotWater.type === 'noop') {
-                    modelOutput = null;
-                } else {
-                    const { solarHotWater, waterCommon } = action.model;
-                    modelOutput = {
-                        aStar: solarHotWater.aStar,
-                        collectorPerformanceRatio:
-                            solarHotWater.collectorPerformanceRatio,
-                        annualSolarRadiation: solarHotWater.solarRadiationAnnual,
-                        availableSolarEnergy: solarHotWater.solarEnergyAvailable,
-                        utilisation: {
-                            load: waterCommon.hotWaterEnergyContentAnnual,
-                            solarToLoadRatio: solarHotWater.solarToLoadRatio,
-                            utilisationFactor: solarHotWater.utilisationFactor,
-                            collectorPerformanceFactor:
-                                solarHotWater.collectorPerformanceFactor,
-                            effectiveSolarVolume: solarHotWater.effectiveSolarVolume,
-                            dailyHotWaterDemand: waterCommon.dailyHotWaterUsageMeanAnnual,
-                            volumeRatio: solarHotWater.volumeRatio,
-                            solarStorageVolumeFactor:
-                                solarHotWater.solarStorageVolumeFactor,
-                            annualSolarInput: solarHotWater.solarInputAnnual,
-                        },
-                    };
-                }
-                return [
-                    {
-                        showAllCalcs: state !== 'loading' ? state.showAllCalcs : false,
-                        ...pick(action, [
-                            'scenarioLocked',
-                            'moduleEnabled',
-                            'modelInput',
-                            'pumpType',
-                        ]),
-                        modelOutput,
-                    },
-                ];
+            case 'merge inputs': {
+                const newState = safeMerge(state, { input: action.toMerge });
+                return [newState];
             }
-            case 'merge state': {
-                if (state === 'loading') {
-                    return [state];
-                }
-                return [safeMerge(state, action.toMerge)];
+            default: {
+                return assertNever(action);
             }
         }
     },
@@ -139,37 +90,37 @@ export const solarHotWaterModule: UiModule<State, Action, never> = {
             const { SHW, use_SHW } = currentScenario ?? {};
             const scenarioLocked = currentScenario?.locked ?? false;
             const moduleEnabled = use_SHW === true;
-            const modelInput: SolarHotWaterV1['input'] = SHW?.input ?? emptyModelInput;
-            const pumpType = SHW?.pump ?? null;
             return Result.ok({
                 type: 'external data update',
                 model: currentModel.isErr() ? null : currentModel.unwrap(),
                 scenarioLocked,
                 moduleEnabled,
-                modelInput,
-                pumpType,
+                input: SHW?.input ?? null,
             });
         },
         mutateLegacyData: ({ project }, { scenarioId }, state) => {
             if (state === 'loading') return;
-            const { moduleEnabled, pumpType, modelInput } = state;
-            const newSHW: SolarHotWaterV1 = {
-                version: 1,
-                input: modelInput,
-                pump: pumpType ?? undefined,
+            const { input } = state;
+            const moduleEnabled = input !== null && input.isNull !== true;
+            const newSHW: SolarHotWaterSchema = {
+                version: 2,
+                input: fromFormState(input),
             };
-            /* eslint-disable
-               @typescript-eslint/consistent-type-assertions,
-               @typescript-eslint/no-explicit-any,
-               @typescript-eslint/no-unsafe-assignment,
-               @typescript-eslint/no-unsafe-member-access,
-            */
-            const dataAny = (project as any).data[scenarioId as any];
-            dataAny.SHW = newSHW;
-            dataAny.use_SHW = moduleEnabled;
-            dataAny.water_heating = dataAny.water_heating ?? {};
-            dataAny.water_heating.solar_water_heating = moduleEnabled;
-            /* eslint-enable */
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            const project_ = project as z.input<typeof projectSchema>;
+            if (scenarioId === null) {
+                console.error('scenarioId was null');
+                return;
+            }
+            const scenario = project_.data[scenarioId];
+            if (scenario === undefined) {
+                console.error('scenario was undefined');
+                return;
+            }
+            scenario.SHW = newSHW;
+            scenario.use_SHW = moduleEnabled;
+            scenario.water_heating = scenario.water_heating ?? {};
+            scenario.water_heating.solar_water_heating = moduleEnabled;
         },
     },
     component: SolarHotWater,
@@ -207,13 +158,36 @@ function MyNumberInput(props: Omit<NumberInputProps, 'readOnly' | 'style'>) {
 
 function TestCertificateParameters({
     collectorState,
-    dispatchMerge,
+    dispatch,
 }: {
-    collectorState: LoadedState['modelInput']['collector'];
-    dispatchMerge: (partialNewState: DeepPartial<LoadedState>) => void;
+    collectorState: NonNullable<NonNullable<InputState>['value']>['collector'];
+    dispatch: (action: Action) => void;
 }) {
-    if (collectorState.parameterSource !== 'test certificate') {
+    if (
+        collectorState === null ||
+        collectorState.parameters?.selected !== 'test certificate'
+    ) {
         return <></>;
+    }
+    const testCertificateState = collectorState.parameters.variants['test certificate'];
+
+    function mergeTestCertificateInputs(
+        toMerge: DeepPartial<typeof testCertificateState>,
+    ) {
+        dispatch({
+            type: 'merge inputs',
+            toMerge: {
+                value: {
+                    collector: {
+                        parameters: {
+                            variants: {
+                                'test certificate': toMerge,
+                            },
+                        },
+                    },
+                },
+            },
+        });
     }
 
     return (
@@ -224,70 +198,37 @@ function TestCertificateParameters({
                 value={collectorState.apertureArea}
                 unit="m²"
                 onChange={(value) =>
-                    dispatchMerge({
-                        modelInput: {
-                            collector: {
-                                apertureArea: value,
-                            },
-                        },
+                    dispatch({
+                        type: 'merge inputs',
+                        toMerge: { value: { collector: { apertureArea: value } } },
                     })
                 }
             />
 
-            <label htmlFor="efficiency">
-                Zero-loss collector efficiency, η<sub>0</sub>
-            </label>
+            <label htmlFor="efficiency">Zero-loss collector efficiency, η₀</label>
             <MyNumberInput
                 id="efficiency"
-                value={collectorState.testCertificate.zeroLossEfficiency}
+                value={testCertificateState?.zeroLossEfficiency ?? null}
                 onChange={(value) =>
-                    dispatchMerge({
-                        modelInput: {
-                            collector: {
-                                testCertificate: {
-                                    zeroLossEfficiency: value,
-                                },
-                            },
-                        },
-                    })
+                    mergeTestCertificateInputs({ zeroLossEfficiency: value })
                 }
             />
 
-            <label htmlFor="linear-hlc">
-                Collector linear heat loss coefficient, a<sub>1</sub>
-            </label>
+            <label htmlFor="linear-hlc">Collector linear heat loss coefficient, a₁</label>
             <MyNumberInput
                 id="linear-hlc"
-                value={collectorState.testCertificate.linearHeatLossCoefficient}
+                value={testCertificateState?.linearHeatLossCoefficient ?? null}
                 onChange={(value) =>
-                    dispatchMerge({
-                        modelInput: {
-                            collector: {
-                                testCertificate: {
-                                    linearHeatLossCoefficient: value,
-                                },
-                            },
-                        },
-                    })
+                    mergeTestCertificateInputs({ linearHeatLossCoefficient: value })
                 }
             />
 
-            <label htmlFor="2nd-hlc">
-                Collector 2nd order heat loss coefficient, a<sub>2</sub>
-            </label>
+            <label htmlFor="2nd-hlc">Collector 2nd order heat loss coefficient, a₂</label>
             <MyNumberInput
                 id="2nd-hlc"
-                value={collectorState.testCertificate.secondOrderHeatLossCoefficient}
+                value={testCertificateState?.secondOrderHeatLossCoefficient ?? null}
                 onChange={(value) =>
-                    dispatchMerge({
-                        modelInput: {
-                            collector: {
-                                testCertificate: {
-                                    secondOrderHeatLossCoefficient: value,
-                                },
-                            },
-                        },
-                    })
+                    mergeTestCertificateInputs({ secondOrderHeatLossCoefficient: value })
                 }
             />
         </>
@@ -296,13 +237,30 @@ function TestCertificateParameters({
 
 function EstimatedParameters({
     collectorState,
-    dispatchMerge,
+    dispatch,
 }: {
-    collectorState: LoadedState['modelInput']['collector'];
-    dispatchMerge: (partialNewState: DeepPartial<LoadedState>) => void;
+    collectorState: NonNullable<NonNullable<InputState>['value']>['collector'];
+    dispatch: (action: Action) => void;
 }) {
-    if (collectorState.parameterSource !== 'estimate') {
+    if (collectorState === null || collectorState.parameters?.selected !== 'estimate') {
         return <></>;
+    }
+    const estimateState = collectorState.parameters.variants['estimate'];
+    function mergeEstimateInputs(toMerge: DeepPartial<typeof estimateState>) {
+        dispatch({
+            type: 'merge inputs',
+            toMerge: {
+                value: {
+                    collector: {
+                        parameters: {
+                            variants: {
+                                estimate: toMerge,
+                            },
+                        },
+                    },
+                },
+            },
+        });
     }
 
     return (
@@ -318,16 +276,8 @@ function EstimatedParameters({
                     },
                     { value: 'unglazed', display: 'Unglazed' },
                 ]}
-                value={collectorState.estimate.collectorType}
-                onChange={(value) =>
-                    dispatchMerge({
-                        modelInput: {
-                            collector: {
-                                estimate: { collectorType: value },
-                            },
-                        },
-                    })
-                }
+                value={estimateState?.collectorType ?? null}
+                onChange={(value) => mergeEstimateInputs({ collectorType: value })}
             />
 
             <label htmlFor="aperture">Aperture area of solar collector</label>
@@ -337,12 +287,10 @@ function EstimatedParameters({
                     value={collectorState.apertureArea}
                     unit="m²"
                     onChange={(value) =>
-                        dispatchMerge({
-                            modelInput: {
-                                collector: {
-                                    apertureArea: value,
-                                },
-                            },
+                        value !== null &&
+                        dispatch({
+                            type: 'merge inputs',
+                            toMerge: { value: { collector: { apertureArea: value } } },
                         })
                     }
                 />{' '}
@@ -351,16 +299,8 @@ function EstimatedParameters({
                         { value: 'exact', display: 'exact' },
                         { value: 'gross', display: 'gross' },
                     ]}
-                    value={collectorState.estimate.apertureAreaType}
-                    onChange={(value) =>
-                        dispatchMerge({
-                            modelInput: {
-                                collector: {
-                                    estimate: { apertureAreaType: value },
-                                },
-                            },
-                        })
-                    }
+                    value={estimateState?.apertureAreaType ?? null}
+                    onChange={(value) => mergeEstimateInputs({ apertureAreaType: value })}
                 />
             </span>
         </>
@@ -374,18 +314,32 @@ function SolarHotWater({
     state: State;
     dispatch: Dispatcher<Action>;
 }) {
+    const [showAllCalcs, setShowAllCalcs] = useState<boolean>(false);
     if (state === 'loading') {
         return <>Loading...</>;
     }
 
-    function dispatchMerge(partialNewState: DeepPartial<LoadedState>) {
-        return dispatch({ type: 'merge state', toMerge: partialNewState });
+    function mergeInputs(
+        toMerge: DeepPartial<NonNullable<NonNullable<InputState>['value']>>,
+    ) {
+        dispatch({
+            type: 'merge inputs',
+            toMerge: {
+                value: toMerge,
+            },
+        });
     }
 
-    const { showAllCalcs, moduleEnabled, scenarioLocked, modelOutput } = state;
+    const { scenarioLocked, input, combinedModules } = state;
+    let modelModule: null | SolarHotWaterEnabled = null;
+    if (combinedModules?.solarHotWater instanceof SolarHotWaterEnabled) {
+        modelModule = combinedModules?.solarHotWater;
+    }
 
     return (
-        <PageContext.Provider value={{ locked: scenarioLocked, enabled: moduleEnabled }}>
+        <PageContext.Provider
+            value={{ locked: scenarioLocked, enabled: input !== null && !input.isNull }}
+        >
             <LockedWarning locked={scenarioLocked} />
             <h3>Solar Hot Water system</h3>
 
@@ -394,8 +348,13 @@ function SolarHotWater({
                 <span>
                     <CheckboxInput
                         id="use-shw"
-                        value={moduleEnabled}
-                        onChange={(checked) => dispatchMerge({ moduleEnabled: checked })}
+                        value={!(input?.isNull ?? false)}
+                        onChange={(checked) =>
+                            dispatch({
+                                type: 'merge inputs',
+                                toMerge: { isNull: !checked },
+                            })
+                        }
                         readOnly={scenarioLocked}
                     />
                 </span>
@@ -404,7 +363,7 @@ function SolarHotWater({
                 <span>
                     <button
                         className="btn mb-15"
-                        onClick={() => dispatchMerge({ showAllCalcs: !showAllCalcs })}
+                        onClick={() => setShowAllCalcs(!showAllCalcs)}
                     >
                         {showAllCalcs
                             ? 'Hide full calculations'
@@ -419,8 +378,8 @@ function SolarHotWater({
                         { value: 'PV', display: 'PV powered' },
                         { value: 'electric', display: 'Electrically powered' },
                     ]}
-                    value={state.pumpType}
-                    onChange={(value) => dispatchMerge({ pumpType: value })}
+                    value={input?.value?.pump ?? null}
+                    onChange={(value) => mergeInputs({ pump: value })}
                 />
 
                 <label htmlFor="parameter-source">Parameter source</label>
@@ -433,23 +392,21 @@ function SolarHotWater({
                         },
                         { value: 'estimate', display: 'Estimated' },
                     ]}
-                    value={state.modelInput.collector.parameterSource}
+                    value={input?.value?.collector?.parameters?.selected ?? null}
                     onChange={(value) =>
-                        dispatchMerge({
-                            modelInput: {
-                                collector: { parameterSource: value },
-                            },
+                        mergeInputs({
+                            collector: { parameters: { selected: value } },
                         })
                     }
                 />
 
                 <TestCertificateParameters
-                    collectorState={state.modelInput.collector}
-                    dispatchMerge={dispatchMerge}
+                    collectorState={state.input?.value?.collector ?? null}
+                    dispatch={dispatch}
                 />
                 <EstimatedParameters
-                    collectorState={state.modelInput.collector}
-                    dispatchMerge={dispatchMerge}
+                    collectorState={state.input?.value?.collector ?? null}
+                    dispatch={dispatch}
                 />
 
                 {showAllCalcs && (
@@ -460,7 +417,7 @@ function SolarHotWater({
                                 = 0.892 × (a<sub>1</sub> + 45a<sub>2</sub>)
                             </InfoTooltip>
                         </span>
-                        <NumberOutput value={modelOutput?.aStar} />
+                        <NumberOutput value={modelModule?.aStar} />
 
                         <span>
                             Collector performance ratio
@@ -468,7 +425,7 @@ function SolarHotWater({
                                 = a*/η<sub>0</sub>
                             </InfoTooltip>
                         </span>
-                        <NumberOutput value={modelOutput?.collectorPerformanceRatio} />
+                        <NumberOutput value={modelModule?.collectorPerformanceRatio} />
 
                         <span>
                             Annual solar radiation per m²
@@ -478,7 +435,7 @@ function SolarHotWater({
                             </InfoTooltip>
                         </span>
                         <NumberOutput
-                            value={modelOutput?.annualSolarRadiation}
+                            value={modelModule?.solarRadiationAnnual}
                             unit={'kWh'}
                         />
                     </>
@@ -491,11 +448,11 @@ function SolarHotWater({
                         value: orientationName,
                         display: orientationName,
                     }))}
-                    value={state.modelInput.collector.orientation}
+                    value={state.input?.value?.collector?.orientation ?? null}
                     onChange={(value) =>
-                        dispatchMerge({
-                            modelInput: {
-                                collector: { orientation: value },
+                        mergeInputs({
+                            collector: {
+                                orientation: value,
                             },
                         })
                     }
@@ -504,29 +461,27 @@ function SolarHotWater({
                 <label htmlFor="inclination">Collector inclination</label>
                 <MyNumberInput
                     id="inclination"
-                    value={state.modelInput.collector.inclination}
+                    value={state.input?.value?.collector?.inclination ?? null}
                     unit={'degrees'}
                     onChange={(value) =>
-                        dispatchMerge({
-                            modelInput: {
-                                collector: { inclination: value },
-                            },
+                        mergeInputs({
+                            collector: { inclination: value },
                         })
                     }
                 />
 
-                <label htmlFor="overshadowing">Overshading factor</label>
+                <label htmlFor="overshading">Overshading factor</label>
                 <MySelect
-                    id="overshadowing"
+                    id="overshading"
                     options={Overshading.all.map(({ name, display }) => ({
                         value: name,
                         display,
                     }))}
-                    value={state.modelInput.collector.overshading}
+                    value={state.input?.value?.collector?.overshading ?? null}
                     onChange={(value) =>
-                        dispatchMerge({
-                            modelInput: {
-                                collector: { overshading: value },
+                        mergeInputs({
+                            collector: {
+                                overshading: value,
                             },
                         })
                     }
@@ -536,22 +491,18 @@ function SolarHotWater({
                     <>
                         <span>Solar energy available</span>
                         <NumberOutput
-                            value={modelOutput?.availableSolarEnergy}
+                            value={modelModule?.solarEnergyAvailable}
                             unit={'kWh'}
                         />
 
                         <span>Solar-to-load ratio</span>
-                        <NumberOutput value={modelOutput?.utilisation.solarToLoadRatio} />
+                        <NumberOutput value={modelModule?.solarToLoadRatio} />
 
                         <span>Utilisation factor</span>
-                        <NumberOutput
-                            value={modelOutput?.utilisation.utilisationFactor}
-                        />
+                        <NumberOutput value={modelModule?.utilisationFactor} />
 
                         <span>Collector performance factor</span>
-                        <NumberOutput
-                            value={modelOutput?.utilisation.collectorPerformanceFactor}
-                        />
+                        <NumberOutput value={modelModule?.collectorPerformanceFactor} />
                     </>
                 )}
 
@@ -560,14 +511,10 @@ function SolarHotWater({
                 </label>
                 <MyNumberInput
                     id="dedicated-volume"
-                    value={state.modelInput.dedicatedSolarStorageVolume}
+                    value={state.input?.value?.dedicatedSolarStorageVolume ?? null}
                     unit="litres"
                     onChange={(value) =>
-                        dispatchMerge({
-                            modelInput: {
-                                dedicatedSolarStorageVolume: value,
-                            },
-                        })
+                        mergeInputs({ dedicatedSolarStorageVolume: value })
                     }
                 />
 
@@ -576,11 +523,11 @@ function SolarHotWater({
                 </label>
                 <MyNumberInput
                     id="combined-cylinder"
-                    value={state.modelInput.combinedCylinderVolume}
+                    value={state.input?.value?.combinedCylinderVolume ?? null}
                     unit="litres"
                     onChange={(value) =>
-                        dispatchMerge({
-                            modelInput: { combinedCylinderVolume: value },
+                        mergeInputs({
+                            combinedCylinderVolume: value,
                         })
                     }
                 />
@@ -591,7 +538,7 @@ function SolarHotWater({
                             Effective solar volume, V<sub>eff</sub>
                         </span>
                         <NumberOutput
-                            value={modelOutput?.utilisation.effectiveSolarVolume}
+                            value={modelModule?.effectiveSolarVolume}
                             unit={'litres'}
                         />
 
@@ -600,14 +547,16 @@ function SolarHotWater({
                             page]
                         </span>
                         <NumberOutput
-                            value={modelOutput?.utilisation.dailyHotWaterDemand}
+                            value={
+                                combinedModules?.waterCommon?.dailyHotWaterUsageMeanAnnual
+                            }
                             unit={'litres'}
                         />
 
                         <span>
                             Volume ratio V<sub>eff</sub>/V<sub>d,average</sub>
                         </span>
-                        <NumberOutput value={modelOutput?.utilisation.volumeRatio} />
+                        <NumberOutput value={modelModule?.volumeRatio} />
 
                         <span>
                             Solar storage volume factor
@@ -615,19 +564,14 @@ function SolarHotWater({
                                 f<sub>2</sub> = 1 + 0.2 × ln(Volume Ratio)
                             </InfoTooltip>
                         </span>
-                        <NumberOutput
-                            value={modelOutput?.utilisation.solarStorageVolumeFactor}
-                        />
+                        <NumberOutput value={modelModule?.solarStorageVolumeFactor} />
                     </>
                 )}
 
                 <span>
                     Annual solar input Q<sub>s</sub>
                 </span>
-                <NumberOutput
-                    value={modelOutput?.utilisation.annualSolarInput}
-                    unit={'kWh'}
-                />
+                <NumberOutput value={modelModule?.solarInputAnnual} unit={'kWh'} />
             </FormGrid>
         </PageContext.Provider>
     );

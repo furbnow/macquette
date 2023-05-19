@@ -1,130 +1,16 @@
-import { Scenario } from '../../data-schemas/scenario';
+import { SolarHotWaterDataModel } from '../../data-schemas/scenario/solar-hot-water/v2';
 import { sum } from '../../helpers/array-reducers';
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
 import { solarHotWaterOvershadingFactor } from '../datasets';
 import { Month } from '../enums/month';
 import { Orientation } from '../enums/orientation';
-import { Overshading } from '../enums/overshading';
 import { Region } from '../enums/region';
 import {
     calculateSolarRadiationAnnual,
     calculateSolarRadiationMonthly,
 } from '../solar-flux';
 
-type CollectorParameters =
-    | {
-          source: 'test certificate';
-          zeroLossEfficiency: number;
-          linearHeatLossCoefficient: number;
-          secondOrderHeatLossCoefficient: number;
-      }
-    | {
-          source: 'estimate';
-          collectorType: 'evacuated tube' | 'flat plate, glazed' | 'unglazed';
-          apertureAreaType: 'exact' | 'gross';
-      };
-
-export type SolarHotWaterInput =
-    | 'incomplete input'
-    | {
-          collector: {
-              apertureArea: number;
-              parameters: CollectorParameters;
-              orientation: Orientation;
-              inclination: number;
-              overshading: Overshading;
-          };
-          dedicatedSolarStorageVolume: number;
-          combinedCylinderVolume: number | null;
-      };
-
-export function extractSolarHotWaterInputFromLegacy(data: Scenario): SolarHotWaterInput {
-    if (data?.SHW === undefined) {
-        return 'incomplete input';
-    }
-    const { collector, combinedCylinderVolume, dedicatedSolarStorageVolume } =
-        data.SHW.input;
-    const {
-        apertureArea,
-        parameterSource,
-        testCertificate,
-        estimate,
-        orientation: orientationName,
-        inclination,
-        overshading: overshadingName,
-    } = collector;
-    let overshading: Overshading;
-    if (overshadingName === null) {
-        return 'incomplete input';
-    } else {
-        overshading = new Overshading(overshadingName);
-    }
-    let orientation: Orientation;
-    if (orientationName === null) {
-        return 'incomplete input';
-    } else {
-        orientation = new Orientation(orientationName);
-    }
-    if (
-        apertureArea === null ||
-        parameterSource === null ||
-        inclination === null ||
-        dedicatedSolarStorageVolume === null
-    ) {
-        return 'incomplete input';
-    }
-
-    let collectorParameters: CollectorParameters;
-    switch (parameterSource) {
-        case 'test certificate': {
-            const {
-                zeroLossEfficiency,
-                linearHeatLossCoefficient,
-                secondOrderHeatLossCoefficient,
-            } = testCertificate;
-            if (
-                zeroLossEfficiency === null ||
-                linearHeatLossCoefficient === null ||
-                secondOrderHeatLossCoefficient === null
-            ) {
-                return 'incomplete input';
-            }
-            collectorParameters = {
-                source: 'test certificate',
-                zeroLossEfficiency,
-                linearHeatLossCoefficient,
-                secondOrderHeatLossCoefficient,
-            };
-            break;
-        }
-        case 'estimate': {
-            const { collectorType, apertureAreaType } = estimate;
-            if (collectorType === null || apertureAreaType === null) {
-                return 'incomplete input';
-            }
-            collectorParameters = {
-                source: 'estimate',
-                collectorType,
-                apertureAreaType,
-            };
-            break;
-        }
-        case undefined: {
-            return 'incomplete input';
-        }
-    }
-    return {
-        collector: {
-            apertureArea,
-            parameters: collectorParameters,
-            inclination,
-            orientation,
-            overshading,
-        },
-        combinedCylinderVolume,
-        dedicatedSolarStorageVolume,
-    };
-}
+type SolarHotWaterEnabledInput = Exclude<SolarHotWaterDataModel, null>;
 
 export type SolarHotWaterDependencies = {
     region: Region;
@@ -138,13 +24,9 @@ export type SolarHotWaterDependencies = {
 
 export type SolarHotWater = SolarHotWaterEnabled | SolarHotWaterNoop;
 
-class SolarHotWaterEnabled {
-    type = 'enabled' as const;
+export class SolarHotWaterEnabled {
     constructor(
-        private input: Exclude<
-            SolarHotWaterInput,
-            'module disabled' | 'incomplete input'
-        >,
+        private input: SolarHotWaterEnabledInput,
         private dependencies: SolarHotWaterDependencies,
     ) {}
 
@@ -218,7 +100,7 @@ class SolarHotWaterEnabled {
         }
         return calculateSolarRadiationAnnual(
             this.dependencies.region,
-            orientation,
+            new Orientation(orientation),
             inclination,
         );
     }
@@ -268,7 +150,7 @@ class SolarHotWaterEnabled {
 
     get effectiveSolarVolume(): number {
         const { combinedCylinderVolume, dedicatedSolarStorageVolume } = this.input;
-        if (combinedCylinderVolume === null || combinedCylinderVolume <= 0) {
+        if (combinedCylinderVolume <= 0) {
             return dedicatedSolarStorageVolume;
         } else {
             return (
@@ -321,7 +203,12 @@ class SolarHotWaterEnabled {
         return (
             sum(
                 Month.all.map((m) =>
-                    calculateSolarRadiationMonthly(region, orientation, inclination, m),
+                    calculateSolarRadiationMonthly(
+                        region,
+                        new Orientation(orientation),
+                        inclination,
+                        m,
+                    ),
                 ),
             ) / 12
         );
@@ -335,8 +222,12 @@ class SolarHotWaterEnabled {
             return 0;
         }
         const monthSolarRadiationWeight =
-            calculateSolarRadiationMonthly(region, orientation, inclination, month) /
-            this.averageSolarRadiationAnnual;
+            calculateSolarRadiationMonthly(
+                region,
+                new Orientation(orientation),
+                inclination,
+                month,
+            ) / this.averageSolarRadiationAnnual;
         return -this.solarInputAnnual * monthSolarRadiationWeight * (month.days / 365);
     }
 
@@ -349,6 +240,7 @@ class SolarHotWaterEnabled {
     mutateLegacyData(data: any) {
         data.SHW = data.SHW ?? {};
         const { SHW } = data;
+        SHW.pump = this.input.pump;
         SHW.a = this.aStar;
         SHW.collector_performance_ratio = this.collectorPerformanceRatio;
         SHW.annual_solar = this.solarRadiationAnnual;
@@ -365,8 +257,7 @@ class SolarHotWaterEnabled {
     /* eslint-enable */
 }
 
-class SolarHotWaterNoop {
-    type = 'noop' as const;
+export class SolarHotWaterNoop {
     solarInputAnnual = 0;
 
     solarInputMonthly(): number {
@@ -380,15 +271,16 @@ class SolarHotWaterNoop {
     */
     mutateLegacyData(data: any) {
         data.SHW = data.SHW ?? {};
+        data.SHW.pump = undefined;
     }
     /* eslint-enable */
 }
 
 export function constructSolarHotWater(
-    input: SolarHotWaterInput,
+    input: SolarHotWaterDataModel,
     dependencies: SolarHotWaterDependencies,
 ): SolarHotWaterEnabled | SolarHotWaterNoop {
-    if (!dependencies.waterCommon.solarHotWater || input === 'incomplete input') {
+    if (!dependencies.waterCommon.solarHotWater || input === null) {
         return new SolarHotWaterNoop();
     } else {
         return new SolarHotWaterEnabled(input, dependencies);

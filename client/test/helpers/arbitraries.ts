@@ -35,6 +35,12 @@ export function arbFloat(options: fc.FloatConstraints = {}) {
     return fc.float(options);
 }
 
+export function jsonFloat(options: fc.FloatConstraints = {}) {
+    return fc
+        .float({ ...options, noNaN: true, noDefaultInfinity: true })
+        .filter((num) => !Object.is(num, -0));
+}
+
 export function arbDateOrRFC3339(): fc.Arbitrary<string | Date> {
     return fc
         .tuple(

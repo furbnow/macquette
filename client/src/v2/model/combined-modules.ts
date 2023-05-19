@@ -1,6 +1,7 @@
 import { ZodError } from 'zod';
 
 import { ModelBehaviourVersion, scenarioSchema } from '../data-schemas/scenario';
+import { SolarHotWaterDataModel } from '../data-schemas/scenario/solar-hot-water/v2';
 import { Result } from '../helpers/result';
 import { Region } from './enums/region';
 import { ModelError } from './error';
@@ -51,12 +52,7 @@ import {
     extractOccupancyInputFromLegacy,
 } from './modules/occupancy';
 import { extractRegionFromLegacy } from './modules/region';
-import {
-    SolarHotWater,
-    SolarHotWaterInput,
-    constructSolarHotWater,
-    extractSolarHotWaterInputFromLegacy,
-} from './modules/solar-hot-water';
+import { SolarHotWater, constructSolarHotWater } from './modules/solar-hot-water';
 import {
     VentilationInfiltrationCommon,
     VentilationInfiltrationCommonInput,
@@ -94,7 +90,7 @@ export type Input = {
     ventilation: VentilationInput;
     infiltration: InfiltrationInput;
     waterCommon: WaterCommonInput;
-    solarHotWater: SolarHotWaterInput;
+    solarHotWater: SolarHotWaterDataModel;
     lighting: LightingSAPInput;
     appliances: AppliancesInput;
     cooking: CookingInput;
@@ -125,7 +121,7 @@ export function extractInputFromLegacy(
             ventilation: extractVentilationInputFromLegacy(scenario),
             infiltration: extractInfiltrationInputFromLegacy(scenario),
             waterCommon: extractWaterCommonInputFromLegacy(scenario),
-            solarHotWater: extractSolarHotWaterInputFromLegacy(scenario),
+            solarHotWater: scenario?.SHW?.input ?? null,
             lighting: extractLightingSAPInputFromLegacy(scenario),
             appliances: extractAppliancesInputFromLegacy(scenario),
             cooking: extractCookingInputFromLegacy(scenario),
@@ -245,7 +241,9 @@ export class CombinedModules {
         });
     }
 
-    static fromLegacy(datain: unknown): Result<CombinedModules, ZodError | ModelError> {
+    static fromLegacy(
+        datain: unknown,
+    ): Result<CombinedModules, ZodError<unknown> | ModelError> {
         const inputsR = extractInputFromLegacy(datain);
         if (inputsR.isErr()) {
             return inputsR;

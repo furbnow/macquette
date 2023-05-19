@@ -1,47 +1,13 @@
 import { z } from 'zod';
+import { solarHotWaterOvershadingFactorReverse } from '../../../model/datasets';
+import { Orientation } from '../../../model/enums/orientation';
+import { Overshading } from '../../../model/enums/overshading';
+import { zodNullableObject } from '../../helpers/nullable-object';
+import { coalesceEmptyString } from '../../scenario/value-schemas';
+import { SolarHotWaterLegacy } from './legacy';
 
-import { isIndexable } from '../../helpers/is-indexable';
-import { solarHotWaterOvershadingFactorReverse } from '../../model/datasets';
-import { Orientation } from '../../model/enums/orientation';
-import { Overshading } from '../../model/enums/overshading';
-import { zodNullableObject } from '../helpers/nullable-object';
-import { zodPredicateUnion } from '../helpers/zod-predicate-union';
-import { coalesceEmptyString, numberWithNaN, stringyFloatSchema } from './value-schemas';
-
-const outputsLegacy = z
-    .object({
-        a: numberWithNaN,
-        collector_performance_ratio: numberWithNaN,
-        annual_solar: numberWithNaN,
-        solar_energy_available: numberWithNaN,
-        solar_load_ratio: numberWithNaN,
-        utilisation_factor: z.number(),
-        collector_performance_factor: numberWithNaN,
-        Veff: numberWithNaN,
-        volume_ratio: numberWithNaN,
-        f2: numberWithNaN,
-        Qs: z.number().nullable(),
-    })
-    .partial();
-
-const shwLegacy = outputsLegacy.merge(
-    z
-        .object({
-            pump: z.enum(['PV', 'electric']),
-            A: z.number(),
-            n0: z.number(), // η != n 😠
-            a1: stringyFloatSchema,
-            a2: stringyFloatSchema,
-            orientation: z.number().int().gte(0).lt(Orientation.names.length),
-            inclination: z.number(),
-            overshading: z.number(),
-            Vs: z.number(),
-            combined_cylinder_volume: z.number(),
-        })
-        .partial(),
-);
-
-const v1Inputs = z.object({
+export const shwV1 = z.object({
+    version: z.literal(1),
     // `pump` should go under the input object, but legacy parts of the model require it to be at the top level
     pump: z.enum(['PV', 'electric']).optional(),
     input: zodNullableObject({
@@ -70,10 +36,9 @@ const v1Inputs = z.object({
     }),
 });
 
-const shwV1 = outputsLegacy.merge(v1Inputs).extend({ version: z.literal(1) });
 export type SolarHotWaterV1 = z.infer<typeof shwV1>;
 
-function migrateLegacyToV1(legacy: z.infer<typeof shwLegacy>): z.infer<typeof shwV1> {
+export function migrateLegacyToV1(legacy: SolarHotWaterLegacy): SolarHotWaterV1 {
     const {
         pump,
         a1,
@@ -132,16 +97,3 @@ function migrateLegacyToV1(legacy: z.infer<typeof shwLegacy>): z.infer<typeof sh
         },
     };
 }
-
-export const solarHotWaterSchema = zodPredicateUnion([
-    {
-        name: 'v1',
-        predicate: (val) => isIndexable(val) && val['version'] === 1,
-        schema: shwV1,
-    },
-    {
-        name: 'legacy',
-        predicate: (val) => isIndexable(val) && !('version' in val),
-        schema: shwLegacy.transform(migrateLegacyToV1),
-    },
-]);

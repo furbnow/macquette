@@ -20,7 +20,14 @@ describe('solar hot water update action extractor', () => {
     test.each(scenarios)(
         'extractUpdateAction does not return an error ($displayName)',
         (scenario) => {
-            const model = CombinedModules.fromLegacy(scenario.data);
+            const oldConsoleWarn = console.warn;
+            let currentModel: AppContext['currentModel'];
+            try {
+                console.warn = () => undefined;
+                currentModel = CombinedModules.fromLegacy(scenario.data);
+            } finally {
+                console.warn = oldConsoleWarn;
+            }
             const { extractUpdateAction } = solarHotWaterModule.shims;
             const scenarioId = 'some scenario name';
             const fakeContext: AppContext = {
@@ -34,7 +41,7 @@ describe('solar hot water update action extractor', () => {
                     data: { [scenarioId]: scenarioSchema.parse(scenario.data) },
                 },
                 currentScenario: scenario.data as any,
-                currentModel: model,
+                currentModel,
                 scenarioId,
                 appName: 'some app name',
             };

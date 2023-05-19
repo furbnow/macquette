@@ -15,7 +15,7 @@ import { arbLAC, arbLAC_calculation_type } from './scenario/LAC';
 import { arbFabric } from './scenario/fabric';
 import { arbFuels } from './scenario/fuels';
 import { heatingSystemInputs } from './scenario/heating-systems';
-import { shwInputIsComplete, shwInputs } from './scenario/solar-hot-water';
+import { arbSolarHotWaterV2, shwInputIsComplete } from './scenario/solar-hot-water';
 import { arbVentilation } from './scenario/ventilation';
 import { waterHeatingInputs } from './scenario/water-heating';
 
@@ -51,7 +51,7 @@ export function arbScenarioInputs(): fc.Arbitrary<ScenarioInput> {
             fcPartialRecord({
                 use_SHW: fc.oneof(fc.boolean(), fc.constant(1 as const)),
                 water_heating: waterHeatingInputs,
-                SHW: shwInputs,
+                SHW: arbSolarHotWaterV2,
             }).filter((waterFields) => {
                 // If SHW is enabled make sure input is complete
                 if (waterFields.SHW !== undefined) {

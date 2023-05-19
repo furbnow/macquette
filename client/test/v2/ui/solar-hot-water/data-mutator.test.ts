@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { projectSchema } from '../../../../src/v2/data-schemas/project';
 
 import { scenarioSchema } from '../../../../src/v2/data-schemas/scenario';
+import { solarHotWaterDataModel } from '../../../../src/v2/data-schemas/scenario/solar-hot-water/v2';
+import { makeFormStateTransforms } from '../../../../src/v2/data-schemas/visitable-types/form-state';
 import {
     LoadedState,
     solarHotWaterModule,
@@ -49,7 +51,7 @@ describe('solar hot water data mutator', () => {
         );
     });
 
-    test('the resulting scenario object has version: 1 under SHW', () => {
+    test('the resulting scenario object has version: 2 under SHW', () => {
         const arb = fc.record({
             state: arbitraryState().filter((s) => s !== 'loading'),
             scenarioId: fc.string(),
@@ -74,14 +76,14 @@ describe('solar hot water data mutator', () => {
                         moduleKey,
                     );
                     expect((toMutate.project as any).data[scenarioId].SHW.version).toBe(
-                        1,
+                        2,
                     );
                 },
             ),
         );
     });
 
-    it('copies the state input into the scenario SHW input, with special handling for pumpType and moduleEnabled', () => {
+    it('copies the transformed form state into the scenario SHW input, with special handling for pumpType and moduleEnabled', () => {
         const arb = fc.record({
             state: arbitraryState()
                 .filter((s) => s !== 'loading')
@@ -91,11 +93,12 @@ describe('solar hot water data mutator', () => {
             moduleKey: fc.string(),
             restOfProject: arbitraryProjectInputsWithoutScenarios(),
         });
+        const { fromFormState } = makeFormStateTransforms(solarHotWaterDataModel);
         fc.assert(
             fc.property(
                 arb,
                 ({ state, scenarioId, scenarioInput, moduleKey, restOfProject }) => {
-                    const { pumpType, moduleEnabled, modelInput } = state;
+                    const moduleEnabled = !state.input.isNull;
                     const toMutate = {
                         project: {
                             ...restOfProject,
@@ -111,8 +114,9 @@ describe('solar hot water data mutator', () => {
                     const mutatedScenario = (
                         toMutate.project as z.input<typeof projectSchema>
                     ).data[scenarioId]!;
-                    expect((mutatedScenario.SHW as any).input).toEqual(modelInput);
-                    expect(mutatedScenario.SHW!.pump).toBe(pumpType);
+                    expect((mutatedScenario.SHW as any).input).toEqual(
+                        fromFormState(state.input),
+                    );
                     expect(mutatedScenario.use_SHW).toBe(moduleEnabled);
                     expect(mutatedScenario.water_heating!.solar_water_heating).toBe(
                         moduleEnabled,

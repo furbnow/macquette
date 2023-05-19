@@ -823,7 +823,12 @@ function _extract_scenario_inputs(data) {
     };
     inputdata.fans_and_pumps = data.fans_and_pumps;
     inputdata.use_SHW = data.use_SHW;
-    if (data.SHW.version === 1) {
+    if (data.SHW.version === 2) {
+        inputdata.SHW = {
+            version: data.SHW.version,
+            input: data.SHW.input
+        };
+    } else if (data.SHW.version === 1) {
         inputdata.SHW = {
             version: data.SHW.version,
             pump: data.SHW.pump,

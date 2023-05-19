@@ -1,59 +1,18 @@
 import assert from 'assert';
 import fc from 'fast-check';
+import { solarHotWaterSchema } from '../../../src/v2/data-schemas/scenario/solar-hot-water';
 
 import {
     constructSolarHotWater,
     SolarHotWaterDependencies,
-    SolarHotWaterInput,
 } from '../../../src/v2/model/modules/solar-hot-water';
-import { arbFloat, fcEnum } from '../../helpers/arbitraries';
-import {
-    arbitraryOrientation,
-    arbitraryOvershading,
-    arbitraryRegion,
-} from '../../helpers/arbitrary-enums';
+import { arbFloat } from '../../helpers/arbitraries';
+import { arbitraryRegion } from '../../helpers/arbitrary-enums';
+import { arbSolarHotWaterV2 } from '../arbitraries/scenario/solar-hot-water';
 
-function arbitraryInput() {
-    type CompleteEnabledInput = Exclude<
-        SolarHotWaterInput,
-        'module disabled' | 'incomplete input'
-    >;
-    const collectorParameters: fc.Arbitrary<
-        CompleteEnabledInput['collector']['parameters']
-    > = fc.oneof(
-        fc.record({
-            source: fc.constant('test certificate' as const),
-            zeroLossEfficiency: arbFloat(),
-            linearHeatLossCoefficient: arbFloat(),
-            secondOrderHeatLossCoefficient: arbFloat(),
-        }),
-        fc.record({
-            source: fc.constant('estimate' as const),
-            apertureAreaType: fcEnum('exact' as const, 'gross' as const),
-            collectorType: fc.oneof(
-                ...(['evacuated tube', 'flat plate, glazed', 'unglazed'] as const).map(
-                    (v) => fc.constant(v),
-                ),
-            ),
-        }),
-    );
-    const completeEnabledInput: fc.Arbitrary<CompleteEnabledInput> = fc.record({
-        collector: fc.record({
-            apertureArea: arbFloat(),
-            parameters: collectorParameters,
-            orientation: arbitraryOrientation,
-            inclination: arbFloat(),
-            overshading: arbitraryOvershading,
-        }),
-        dedicatedSolarStorageVolume: arbFloat(),
-        combinedCylinderVolume: arbFloat(),
-    });
-    return fc.oneof(
-        fc.constant('module disabled' as const),
-        fc.constant('incomplete input' as const),
-        completeEnabledInput,
-    );
-}
+const arbitraryInput = arbSolarHotWaterV2.map(
+    (input) => solarHotWaterSchema.parse(input).input,
+);
 
 function arbitraryDependencies(): fc.Arbitrary<SolarHotWaterDependencies> {
     return fc.record({
@@ -71,15 +30,15 @@ describe('solar hot water module', () => {
     test('the result of an estimate is equal to the result of the same input but with the values from the table', () => {
         fc.assert(
             fc.property(
-                arbitraryInput().filter(
+                arbitraryInput.filter(
                     (input) =>
-                        typeof input === 'object' &&
+                        input !== null &&
                         input.collector.parameters.source === 'estimate' &&
                         input.collector.parameters.apertureAreaType === 'gross',
                 ),
                 arbitraryDependencies(),
                 (input, dependencies) => {
-                    assert(typeof input === 'object');
+                    assert(input !== null);
                     assert(input.collector.parameters.source === 'estimate');
                     const { apertureArea } = input.collector;
                     let desiredAStar: number;

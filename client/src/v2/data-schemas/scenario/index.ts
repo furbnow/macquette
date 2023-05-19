@@ -1,11 +1,11 @@
 import { z } from 'zod';
+import { solarHotWaterSchema } from './solar-hot-water';
 
 import { withOriginSchema } from '../helpers/with-origin';
 import { applianceCarbonCoop } from './appliance-carbon-coop';
 import { fabric } from './fabric';
 import { heatingSystems } from './heating-systems';
 import { householdSchema } from './household';
-import { solarHotWaterSchema } from './solar-hot-water';
 import {
     legacyBoolean,
     legacyString,

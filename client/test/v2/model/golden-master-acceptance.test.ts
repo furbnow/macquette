@@ -1,8 +1,6 @@
 import fc from 'fast-check';
 import { cloneDeep, defaults, pick } from 'lodash';
 
-import { SolarHotWaterV1 } from '../../../src/v2/data-schemas/scenario/solar-hot-water';
-import { assertNever } from '../../../src/v2/helpers/assert-never';
 import {
     CompareFloatParams,
     compareFloats,
@@ -15,7 +13,6 @@ import { stricterParseFloat } from '../../helpers/stricter-parse-float';
 import { arbScenarioInputs } from '../arbitraries/scenario-inputs';
 import {
     shwInputIsComplete,
-    shwInputs,
     shwLegacyInputKeys,
 } from '../arbitraries/scenario/solar-hot-water';
 import { scenarios, shouldSkipScenarioForGoldenMasterTest } from '../fixtures';
@@ -243,9 +240,8 @@ function modelValueComparer(compareFloatParams?: CompareFloatParams) {
 
 // Mutate the scenario rather than deep-cloning it, for performance
 function normaliseScenario(scenario: any) {
-    type SHWOutputs = Omit<SolarHotWaterV1, 'input' | 'pump' | 'version'>;
     const castScenario = scenario as {
-        SHW: FcInfer<typeof shwInputs> & SHWOutputs;
+        SHW: any;
         LAC_calculation_type: string;
         LAC: any;
         appliancelist?: unknown;
@@ -337,18 +333,21 @@ function normaliseScenario(scenario: any) {
                 castScenario.SHW = pick(castScenario.SHW, ...shwLegacyInputKeys);
             } else {
                 switch (castScenario.SHW.version) {
+                    case 2: {
+                        castScenario.SHW = pick(castScenario.SHW, ['version', 'input']);
+                        break;
+                    }
                     case 1: {
-                        castScenario.SHW = pick(castScenario.SHW, [
-                            'version',
-                            'pump',
-                            'input',
-                        ]);
+                        castScenario.SHW = pick(castScenario.SHW, ['version', 'input']);
                         break;
                     }
                     default: {
-                        assertNever(castScenario.SHW.version);
+                        throw new Error('unreachable');
                     }
                 }
+            }
+            if (!('pump' in castScenario.SHW)) {
+                castScenario.SHW.pump = undefined;
             }
         }
     }

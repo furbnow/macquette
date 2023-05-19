@@ -1,95 +1,19 @@
 import fc from 'fast-check';
 import { pick } from 'lodash';
 import { z } from 'zod';
+import { solarHotWaterSchema } from '../../../../src/v2/data-schemas/scenario/solar-hot-water';
 
-import {
-    solarHotWaterSchema,
-    SolarHotWaterV1,
-} from '../../../../src/v2/data-schemas/scenario/solar-hot-water';
-import { solarHotWaterOvershadingFactor } from '../../../../src/v2/model/datasets';
-import { Orientation } from '../../../../src/v2/model/enums/orientation';
-import {
-    arbFloat,
-    fcEnum,
-    FcInfer,
-    fcPartialRecord,
-    merge,
-    recordWith,
-} from '../../../helpers/arbitraries';
-import {
-    arbitraryOrientation,
-    arbitraryOvershading,
-} from '../../../helpers/arbitrary-enums';
+import { solarHotWaterDataModel } from '../../../../src/v2/data-schemas/scenario/solar-hot-water/v2';
+import { makeArbitrary } from '../../../helpers/make-arbitrary';
 import { flatten } from '../../../helpers/object-flattening';
-import { sensibleFloat, stringySensibleFloat } from '../legacy-values';
 
-const arbPump = fc.constantFrom(...(['PV', 'electric'] as const));
-const legacyInputs = fcPartialRecord({
-    pump: arbPump,
-    A: sensibleFloat,
-    n0: sensibleFloat,
-    a1: stringySensibleFloat(),
-    a2: stringySensibleFloat(),
-    orientation: fc.integer({
-        min: 0,
-        max: Orientation.names.length - 1,
-    }),
-    inclination: sensibleFloat,
-    overshading: arbitraryOvershading.map(solarHotWaterOvershadingFactor),
-    Vs: sensibleFloat,
-    combined_cylinder_volume: sensibleFloat,
-});
-
-const v1Inputs: fc.Arbitrary<SolarHotWaterV1> = merge(
-    fcPartialRecord({
-        pump: arbPump,
-    }),
+export const arbSolarHotWaterV2: fc.Arbitrary<z.input<typeof solarHotWaterSchema>> =
     fc.record({
-        version: fc.constant(1 as const),
-        input: fc.record({
-            ...recordWith(fc.constant(null), {
-                dedicatedSolarStorageVolume: arbFloat({ noNaN: true }),
-                combinedCylinderVolume: arbFloat({ noNaN: true }),
-            }),
-            collector: fc.record({
-                ...recordWith(fc.constant(null), {
-                    parameterSource: fcEnum(
-                        'test certificate' as const,
-                        'estimate' as const,
-                    ),
-                    apertureArea: arbFloat({ noNaN: true }),
-                    orientation: arbitraryOrientation.map((or) => or.name),
-                    inclination: arbFloat({ noNaN: true }),
-                    overshading: arbitraryOvershading.map((ov) => ov.name),
-                }),
-                testCertificate: fc.record(
-                    recordWith(fc.constant(null), {
-                        zeroLossEfficiency: arbFloat({ noNaN: true }),
-                        linearHeatLossCoefficient: arbFloat({ noNaN: true }),
-                        secondOrderHeatLossCoefficient: arbFloat({ noNaN: true }),
-                    }),
-                ),
-                estimate: fc.record(
-                    recordWith(fc.constant(null), {
-                        collectorType: fcEnum(
-                            'evacuated tube' as const,
-                            'flat plate, glazed' as const,
-                            'unglazed' as const,
-                        ),
-                        apertureAreaType: fcEnum('gross' as const, 'exact' as const),
-                    }),
-                ),
-            }),
-        }),
-    }),
-);
+        version: fc.constant(2 as const),
+        input: makeArbitrary(solarHotWaterDataModel),
+    });
 
-export const shwInputs: fc.Arbitrary<z.input<typeof solarHotWaterSchema>> = fc.oneof(
-    v1Inputs,
-    legacyInputs,
-);
-
-export function shwInputIsComplete(SHW: FcInfer<typeof shwInputs>): boolean {
+export function shwInputIsComplete(SHW: z.input<typeof solarHotWaterSchema>): boolean {
     if (!('version' in SHW)) {
         const inputs = pick(SHW, ...shwLegacyInputKeys);
         const isComplete = shwLegacyInputKeys.reduce(
@@ -106,6 +30,9 @@ export function shwInputIsComplete(SHW: FcInfer<typeof shwInputs>): boolean {
                     (value) => value === null,
                 );
                 return !isIncomplete;
+            }
+            case 2: {
+                return SHW.input !== null;
             }
         }
     }
