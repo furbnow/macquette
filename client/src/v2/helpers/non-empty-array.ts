@@ -1,4 +1,5 @@
 export type NonEmptyArray<T> = [T, ...T[]];
+export type ReadonlyNonEmptyArray<T> = readonly [T, ...T[]];
 
 export function isNonEmpty<T>(value: T[]): value is NonEmptyArray<T> {
     return value.length > 0;
