@@ -19,6 +19,10 @@ export const urls = {
         return `/v2/api/assessments/${assessmentId}/duplicate/`;
     },
 
+    shareAssessment(assessmentId: string, userId: string): string {
+        return `/v2/api/assessments/${assessmentId}/shares/${userId}/`;
+    },
+
     uploadImage(assessmentId: string): string {
         return `/v2/api/assessments/${assessmentId}/images/`;
     },

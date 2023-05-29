@@ -9,6 +9,7 @@
     "organisation": null,
     "images": [],
     "access": [],
+    "permissions": { "can_share": false },
     "data": {
         "master": {}
     }

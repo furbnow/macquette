@@ -9,21 +9,22 @@ import axios from 'axios';
 import { z } from 'zod';
 
 import {
-    addressSuggestionResponse,
     AddressSuggestionResponse,
     ResolvedAddress,
-    resolvedAddressResponse,
     ResolvedAddressResponse,
+    addressSuggestionResponse,
+    resolvedAddressResponse,
 } from '../data-schemas/address';
 import {
     AssessmentMetadata,
-    createAssessmentSchema,
     LibraryMetadata,
+    createAssessmentSchema,
     libraryMetadataSchema,
     listAssessmentSchema,
 } from '../data-schemas/api-metadata';
 import { Image, imageSchema } from '../data-schemas/image';
 import { Library, librarySchema } from '../data-schemas/libraries';
+import { UserAccess, userAccessSchema } from '../data-schemas/project';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
 import { isIndexable } from '../helpers/is-indexable';
 import { jsEnvironment } from '../helpers/js-environment';
@@ -387,6 +388,26 @@ export class HTTPClient {
             responseType: 'json',
         });
         return createAssessmentSchema.parse(camelise(response.data));
+    }
+
+    async shareAssessment(assessmentId: string, userId: string): Promise<UserAccess> {
+        const response = await this.throwingRequest({
+            intent: 'sharing project',
+            url: urls.shareAssessment(assessmentId, userId),
+            method: 'PUT',
+            responseType: 'json',
+        });
+        return userAccessSchema.parse(camelise(response.data));
+    }
+
+    async unshareAssessment(assessmentId: string, userId: string): Promise<UserAccess> {
+        const response = await this.throwingRequest({
+            intent: 'unsharing project',
+            url: urls.shareAssessment(assessmentId, userId),
+            method: 'DELETE',
+            responseType: 'json',
+        });
+        return userAccessSchema.parse(camelise(response.data));
     }
 
     async deleteAssessment(id: string): Promise<void> {

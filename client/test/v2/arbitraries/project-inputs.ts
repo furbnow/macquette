@@ -18,12 +18,23 @@ export function arbitraryProjectInputsWithoutScenarios(): fc.Arbitrary<
         owner: fc.record({
             id: fc.string(),
             name: fc.string(),
-            email: fc.option(fc.string(), { nil: undefined }),
+            email: fc.string(),
         }),
         organisation: fc.option(
             fc.record({
                 id: fc.string(),
                 name: fc.string(),
+            }),
+        ),
+        permissions: fc.record({
+            can_share: fc.boolean(),
+        }),
+        access: fc.array(
+            fc.record({
+                id: fc.string(),
+                name: fc.string(),
+                email: fc.string(),
+                roles: fc.array(fc.constantFrom('owner', 'org_admin', 'editor')),
             }),
         ),
         images: fc.array(

@@ -13,6 +13,8 @@ const FAKE_PROJECT_DATA = {
     updated_at: new Date(),
     owner: { id: '1', name: 'Fred' },
     organisation: null,
+    permissions: { can_share: false },
+    access: [],
     images: [],
 };
 
