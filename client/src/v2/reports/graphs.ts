@@ -371,7 +371,10 @@ function energyUseIntensity(project: ProjectData, scenarioIds: string[]): BarCha
             'Bills data',
             'Assumed consumption',
         ],
-        areas: [{ interval: [0, 35], label: 'Target' }],
+        areas: [
+            { interval: [0, 35], label: 'New build' },
+            { interval: [35, 60], label: 'Retrofit' },
+        ],
     };
 }
 
