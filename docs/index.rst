@@ -14,7 +14,9 @@ Macquette developer documentation
    versions
    reports
    terms
-   api-dev
+   api
+   notes-towards-a-manual
+   weird-things-in-sap
    carbon-co-op-internal
    playbooks/index.rst
 

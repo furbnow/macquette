@@ -1,13 +1,8 @@
-dev API endpoints
-=================
+API endpoints
+=============
 
-.. warning::
-    This documentation is out of date and needs rewriting to reflect the
-    decision to abandon "dev" and move to a rolling release model based
-    on "v2".
-
-All endpoints start with ``/dev/api`` e.g.
-``http://localhost:9090/dev/api/assessments/``.
+All endpoints start with ``/v2/api`` e.g.
+``http://localhost:9090/v2/api/assessments/``.
 
 List assessments
 ----------------
@@ -129,6 +124,18 @@ Returns:
            "name": "Local Admin",
            "email": "example@domain.net"
        },
+       "organisation": null,
+       "access": [
+           {
+                "roles": ["owner"],
+                "id": "1",
+                "name": "Local Admin",
+                "email": "example@domain.net"
+           },
+       ],
+       "permissions": {
+           "can_share": false,
+       }
        "images": [
            {
                "id": 7,
@@ -350,7 +357,7 @@ Example
 
    curl -v \
        -F 'file=@image.png' \
-       http://localhost:9090/dev/api/assessments/1/images/
+       http://localhost:9090/v2/api/assessments/1/images/
 
 Returns:
 
@@ -370,6 +377,71 @@ Returns:
        "is_featured": false
    }
 
+
+Edit sharing permissions
+------------------------
+
+::
+
+   PUT /assessments/:id/shares/:userid/
+   DELETE /assessments/:id/shares/:userid/
+
+Example: sharing with an editor
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   curl -v \
+       -X PUT \
+       http://localhost:9090/v2/api/assessments/1/shares/4/
+
+Returns:
+
+::
+
+   HTTP/1.1 200 OK
+   Content-Type: application/json
+   [
+       {
+            "roles": ["owner"],
+            "id": "1",
+            "name": "Local Admin",
+            "email": "example@domain.net"
+       },
+       {
+            "roles": ["editor"],
+            "id": "4",
+            "name": "Other Name",
+            "email": "whatever@invalid.null"
+       }
+   ]
+
+
+Example: unsharing with an editor
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   curl -v \
+       -X DELETE \
+       http://localhost:9090/v2/api/assessments/1/shares/4/
+
+Returns:
+
+::
+
+   HTTP/1.1 200 OK
+   Content-Type: application/json
+   [
+       {
+            "roles": ["owner"],
+            "id": "1",
+            "name": "Local Admin",
+            "email": "example@domain.net"
+       },
+   ]
+
+
 Changing the featured image
 ---------------------------
 
@@ -387,7 +459,7 @@ Example
    > curl -v \
        -X POST \
        -H "Content-Type: application/json" \
-       http://localhost:9090/dev/api/assessments/1/images/featured/ \
+       http://localhost:9090/v2/api/assessments/1/images/featured/ \
        --data @- << EOF
    {
        "id": 6
@@ -417,7 +489,7 @@ Example
    > curl -v \
        -X PATCH \
        -H "Content-Type: application/json" \
-       http://localhost:9090/dev/api/images/10/ \
+       http://localhost:9090/v2/api/images/10/ \
        --data @- << EOF
    {
        "note": "Corbyn's greenhouse"
@@ -452,7 +524,7 @@ Example
 
    curl -v \
        -X DELETE \
-       http://localhost:9090/dev/api/images/6/
+       http://localhost:9090/v2/api/images/6/
 
 Returns:
 
@@ -618,7 +690,7 @@ Example
 
 ::
 
-   > curl -X POST http://localhost:9090/dev/api/organisations/1/members/3/
+   > curl -X POST http://localhost:9090/v2/api/organisations/1/members/3/
 
 Returns:
 
@@ -640,7 +712,7 @@ Example
 
 ::
 
-   > curl -X DELETE http://localhost:9090/dev/api/organisations/1/members/3/
+   > curl -X DELETE http://localhost:9090/v2/api/organisations/1/members/3/
 
 Returns:
 
@@ -662,7 +734,7 @@ Example
 
 ::
 
-   > curl -X POST http://localhost:9090/dev/api/organisation/1/librarians/5/
+   > curl -X POST http://localhost:9090/v2/api/organisation/1/librarians/5/
 
 Returns:
 
@@ -684,7 +756,7 @@ Example
 
 ::
 
-   > curl -X DELETE http://localhost:9090/dev/api/organisation/1/librarians/5/
+   > curl -X DELETE http://localhost:9090/v2/api/organisation/1/librarians/5/
 
 Returns:
 
@@ -933,7 +1005,7 @@ Example
 
 ::
 
-   > curl -v -X POST http://localhost:9090/dev/api/organisation/1/libraries/5/shares/2/ \
+   > curl -v -X POST http://localhost:9090/v2/api/organisation/1/libraries/5/shares/2/ \
 
 Unshare an organisation library with another organisation
 ---------------------------------------------------------
@@ -955,7 +1027,7 @@ Example
 
 ::
 
-   > curl -v -X DELETE http://localhost:9090/dev/api/organisation/1/libraries/5/shares/2/ \
+   > curl -v -X DELETE http://localhost:9090/v2/api/organisation/1/libraries/5/shares/2/ \
 
 List organisations a library is shared with
 -------------------------------------------
@@ -974,7 +1046,7 @@ Example
 
 ::
 
-   > curl http://localhost:9090/dev/api/organisation/1/libraries/5/shares/ \
+   > curl http://localhost:9090/v2/api/organisation/1/libraries/5/shares/ \
 
 Returns:
 
