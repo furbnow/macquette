@@ -220,6 +220,9 @@ class TestGetAssessment(APITestCase):
                     "email": self.me.email,
                 }
             ],
+            "permissions": {
+                "can_share": False,
+            },
             "images": [
                 {
                     "id": i.id,
@@ -254,13 +257,13 @@ class TestGetAssessment(APITestCase):
                 "email": self.me.email,
             },
             {
-                "roles": ["sharee"],
+                "roles": ["editor"],
                 "id": f"{other1.id}",
                 "name": other1.name,
                 "email": other1.email,
             },
             {
-                "roles": ["sharee"],
+                "roles": ["editor"],
                 "id": f"{other2.id}",
                 "name": other2.name,
                 "email": other2.email,
@@ -347,6 +350,16 @@ class TestGetAssessment(APITestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.data["permissions"]["can_share"] is False
 
+    def test_can_share_permissions_shows_false_correctly(self):
+        other = UserFactory.create()
+        a = AssessmentFactory.create(owner=other, shared_with=[self.me])
+
+        self.client.force_authenticate(self.me)
+        response = self.client.get(f"/{VERSION}/api/assessments/{a.pk}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["permissions"]["can_share"] is False
+
     def test_assessment_without_data_returns_sensible_default(self):
         with freeze_time("2019-06-01T16:35:34Z"):
             a = AssessmentFactory.create(
@@ -363,12 +376,8 @@ class TestGetAssessment(APITestCase):
             "updated_at": "2019-06-01T16:35:34Z",
             "name": "test name",
             "organisation": None,
-            # defaults:
-            "description": "",
-            "owner": {
-                "id": f"{self.me.id}",
-                "name": self.me.name,
-                "email": self.me.email,
+            "permissions": {
+                "can_share": False,
             },
             "access": [
                 {
@@ -378,6 +387,13 @@ class TestGetAssessment(APITestCase):
                     "email": self.me.email,
                 }
             ],
+            "owner": {
+                "id": f"{self.me.id}",
+                "name": self.me.name,
+                "email": self.me.email,
+            },
+            # defaults:
+            "description": "",
             "status": "In progress",
             "images": [],
             "data": {},
@@ -586,6 +602,62 @@ class TestDestroyAssessment(APITestCase):
         assert response.content == b""
 
         assert (assessment_count - 1) == Assessment.objects.count()
+
+
+class TestShareAssessment(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.me = UserFactory.create()
+        cls.other = UserFactory.create()
+
+    def test_correctly_disallows_sharing(self):
+        assessment = AssessmentFactory.create(owner=self.other)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.put(
+            f"/{VERSION}/api/assessments/{assessment.pk}/shares/{self.me}/"
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert list(assessment.shared_with.all()) == []
+
+    def test_doesnt_allow_sharing_when_not_in_org(self):
+        assessment = AssessmentFactory.create(owner=self.me)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.put(
+            f"/{VERSION}/api/assessments/{assessment.pk}/shares/{self.other.pk}/"
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert list(assessment.shared_with.all()) == []
+
+    def test_allows_sharing_with_other_org_member(self):
+        organisation = OrganisationFactory.create()
+        organisation.members.add(self.me)
+        organisation.members.add(self.other)
+        assessment = AssessmentFactory.create(owner=self.me, organisation=organisation)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.put(
+            f"/{VERSION}/api/assessments/{assessment.pk}/shares/{self.other.pk}/"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert list(assessment.shared_with.all()) == [self.other]
+
+    def test_doesnt_allow_sharing_with_non_org_member(self):
+        organisation = OrganisationFactory.create()
+        organisation.members.add(self.me)
+        assessment = AssessmentFactory.create(owner=self.me, organisation=organisation)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.put(
+            f"/{VERSION}/api/assessments/{assessment.pk}/shares/{self.other.pk}/"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert list(assessment.shared_with.all()) == []
 
 
 class TestDuplicateAssessment(APITestCase):

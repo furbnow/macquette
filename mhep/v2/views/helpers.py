@@ -130,6 +130,30 @@ def check_library_share_permissions(library, original_request):
     return True
 
 
+def check_assessment_share_permissions(assessment, original_request):
+    """
+    manually check the permissions for the ShareUnshareOrganisationLibraries view to
+    work out if the current user (based on original_request) is allowed to share /
+    unshare this library.
+    """
+
+    from ..views.assessments import ShareUnshareAssessment
+
+    view = ShareUnshareAssessment(
+        kwargs={
+            "pk": assessment.id,
+            # "userid" not set as it's shouldn't be relevant: we're only checking permission
+        }
+    )
+
+    # check object-level permissions
+    for permission in view.get_permissions():
+        if not permission.has_object_permission(original_request, view, assessment):
+            return False
+
+    return True
+
+
 def get_assessments_for_user(user: user_models.User):
     """Return a list of all assessments a user can access."""
 

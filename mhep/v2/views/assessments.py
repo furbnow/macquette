@@ -9,11 +9,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Assessment, Image
+from ..permissions import (
+    IsAdminOfConnectedOrganissation,
+    IsAssessmentOwner,
+    IsInOrganisation,
+)
 from ..serializers import (
     AssessmentFullSerializer,
     AssessmentMetadataSerializer,
     FeaturedImageSerializer,
     ImageSerializer,
+    get_access,
 )
 from .mixins import AssessmentQuerySetMixin
 
@@ -66,6 +72,40 @@ class RetrieveUpdateDestroyAssessment(
             return Response(None, status.HTTP_204_NO_CONTENT)
         else:
             return response
+
+
+class ShareUnshareAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):
+    permission_classes = [
+        IsAuthenticated,
+        IsInOrganisation,
+        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
+    ]
+
+    def put(self, request, pk, userid):
+        assessment = self.get_object()
+
+        if not assessment.organisation.members.filter(id=userid).exists():
+            return Response(
+                {"detail": "can't share to users outside organisation"},
+                status.HTTP_400_BAD_REQUEST,
+            )
+
+        assessment.shared_with.add(userid)
+
+        return Response(get_access(assessment), status.HTTP_200_OK)
+
+    def delete(self, request, pk, userid):
+        assessment = self.get_object()
+
+        if not assessment.organisation:
+            return Response(
+                {"detail": "can't unshare private assessment"},
+                status.HTTP_400_BAD_REQUEST,
+            )
+
+        assessment.shared_with.remove(userid)
+
+        return Response(get_access(assessment), status.HTTP_200_OK)
 
 
 class DuplicateAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):

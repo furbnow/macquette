@@ -8,6 +8,7 @@ from .views.assessments import (
     ListCreateAssessments,
     RetrieveUpdateDestroyAssessment,
     SetFeaturedImage,
+    ShareUnshareAssessment,
     UploadAssessmentImage,
 )
 from .views.html import AssessmentHTMLView, ListAssessmentsHTMLView
@@ -54,6 +55,11 @@ urlpatterns = [
         "api/assessments/<int:pk>/duplicate/",
         view=DuplicateAssessment.as_view(),
         name="duplicate-assessment",
+    ),
+    path(
+        "api/assessments/<int:pk>/shares/<int:userid>/",
+        view=ShareUnshareAssessment.as_view(),
+        name="share-unshare-assessment",
     ),
     path(
         "api/assessments/<int:pk>/images/featured/",

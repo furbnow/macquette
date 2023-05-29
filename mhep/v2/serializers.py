@@ -1,4 +1,4 @@
-from collections import defaultdict
+from itertools import zip_longest
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -125,6 +125,30 @@ class AssessmentMetadataSerializer(serializers.Serializer):
     organisation = OrganisationMetadataSerializer()
 
 
+def get_access(assessment):
+    owner = (assessment.owner, ["owner"])
+    admins = (
+        zip_longest(assessment.organisation.admins.all(), [], fillvalue=["org_admin"])
+        if assessment.organisation
+        else []
+    )
+    shared_with = zip_longest(assessment.shared_with.all(), [], fillvalue=["editor"])
+
+    users_by_id = {}
+    for user, roles in [owner, *admins, *shared_with]:
+        if user.id not in users_by_id:
+            users_by_id[user.id] = {
+                "roles": roles,
+                "id": f"{user.id}",
+                "name": user.name,
+                "email": user.email,
+            }
+        else:
+            users_by_id[user.id]["roles"] += roles
+
+    return list(users_by_id.values())
+
+
 class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
     """
     Identical to AssessmentMetadataSerializer except that it includes the `data` and
@@ -135,6 +159,7 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     organisation = OrganisationMetadataSerializer(read_only=True)
     access = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
 
     def update(self, instance, validated_data):
@@ -142,37 +167,17 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
             instance.updated_at = timezone.now()
         return super().update(instance, validated_data)
 
+    def get_permissions(self, library):
+        from .views.helpers import check_assessment_share_permissions
+
+        return {
+            "can_share": check_assessment_share_permissions(
+                library, self.context["request"]
+            ),
+        }
+
     def get_access(self, assessment):
-        def _fields(user, role):
-            return {
-                "role": role,
-                "id": f"{user.id}",
-                "name": user.name,
-                "email": user.email,
-            }
-
-        owner = _fields(assessment.owner, "owner")
-
-        admins = (
-            [
-                _fields(admin, "org_admin")
-                for admin in assessment.organisation.admins.all()
-            ]
-            if assessment.organisation
-            else []
-        )
-
-        shared_with = [_fields(user, "sharee") for user in assessment.shared_with.all()]
-
-        result = defaultdict(list)
-        for user in [owner, *admins, *shared_with]:
-            result[user["id"]].append(user)
-
-        new_result = []
-        for v in result.values():
-            new_result.append({**v[0], "role": [user["role"] for user in v]})
-
-        return new_result
+        return get_access(assessment)
 
     class Meta:
         model = Assessment
@@ -186,6 +191,7 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
             "owner",
             "organisation",
             "access",
+            "permissions",
             "images",
             "data",
         ]

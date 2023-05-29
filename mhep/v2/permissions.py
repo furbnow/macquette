@@ -3,9 +3,17 @@ from rest_framework import exceptions, permissions
 from . import VERSION
 from .models import Organisation
 
+# https://www.django-rest-framework.org/api-guide/permissions/#custom-permissions
+
+
+class IsInOrganisation(permissions.BasePermission):
+    message = "Assessment is not in an organisation."
+
+    def has_object_permission(self, request, view, assessment):
+        return assessment.organisation is not None
+
 
 class IsAssessmentOwner(permissions.BasePermission):
-    # https://www.django-rest-framework.org/api-guide/permissions/#custom-permissions
     message = "You are not the owner of the Assessment."
 
     def has_object_permission(self, request, view, assessment):
