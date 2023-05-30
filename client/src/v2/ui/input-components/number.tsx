@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { PropsOf } from '../../helpers/props-of';
 import { Shadow } from '../../helpers/shadow-object-type';
+import { useStateTracker } from './use-state-tracker';
 
 type BasicNumberInputProps = {
     value: number | null;
@@ -12,22 +13,25 @@ type BasicNumberInputProps = {
 export type NumberInputProps = Shadow<PropsOf<'input'>, BasicNumberInputProps>;
 
 export function NumberInput({
-    value: outerValue,
+    value,
     onChange,
     style: styleProp,
     unit,
     ...passthroughProps
 }: NumberInputProps) {
-    const [modifiedValue, setModifiedValue] = useState<string | null>(null);
+    const [innerState, setInnerState] = useStateTracker<string>(
+        value?.toString(10) ?? '',
+    );
+
     const parseable =
-        modifiedValue !== null && /^-?([1-9]\d*|0)(\.\d*[1-9])?$/.test(modifiedValue);
-    const valid = modifiedValue === null || modifiedValue === '' || parseable;
+        innerState !== null && /^-?([1-9]\d*|0)(\.\d*[1-9])?$/.test(innerState);
+    const valid = innerState === null || innerState === '' || parseable;
     function handleBlur() {
-        if (modifiedValue !== null) {
-            if (modifiedValue === '') {
+        if (innerState !== value?.toString(10)) {
+            if (innerState === '') {
                 onChange(null);
             } else if (parseable) {
-                onChange(parseFloat(modifiedValue));
+                onChange(parseFloat(innerState));
             }
         }
     }
@@ -45,8 +49,8 @@ export function NumberInput({
             <input
                 type="text"
                 className="input--number"
-                value={modifiedValue ?? outerValue?.toString(10) ?? ''}
-                onChange={(evt) => setModifiedValue(evt.target.value)}
+                value={innerState}
+                onChange={(evt) => setInnerState(evt.target.value)}
                 onBlur={handleBlur}
                 style={style}
                 {...rest}
