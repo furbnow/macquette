@@ -39,6 +39,7 @@ type FrostAttackRisk =
     | 'not at high risk';
 type FloodRiskReservoirs = 'WITHIN' | 'OUTWITH';
 type FloodRisk = 'HIGH' | 'MED' | 'LOW' | 'VLOW';
+type FloodRiskGroundwater = 'UNLIKELY' | 'POSSIBLE';
 type RadonRisk = 'LOW' | '1-3' | '3-5' | '5-10' | '10-30' | '30';
 
 type FetchStatus = 'at rest' | 'in progress' | 'error';
@@ -81,6 +82,7 @@ type State = {
     floodingRiversAndSea: FloodRisk | null;
     floodingSurfaceWater: FloodRisk | null;
     floodingReservoirs: FloodRiskReservoirs | null;
+    floodingGroundwater: FloodRiskGroundwater | null;
     radon: RadonRisk | null;
 };
 
@@ -846,11 +848,30 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                             },
                             {
                                 value: 'OUTWITH',
-                                display: 'no risk of flooding from reservoirs',
+                                display: 'unlikely in this area',
                             },
                         ]}
                         value={state.floodingReservoirs}
                         onChange={(val) => dispatchMerge({ floodingReservoirs: val })}
+                    />
+                </span>
+
+                <label htmlFor="groundwater">Groundwater:</label>
+                <span>
+                    <Select<FloodRiskGroundwater>
+                        id="groundwater"
+                        options={[
+                            {
+                                value: 'UNLIKELY',
+                                display: 'unlikely in this area',
+                            },
+                            {
+                                value: 'POSSIBLE',
+                                display: 'possible',
+                            },
+                        ]}
+                        value={state.floodingGroundwater}
+                        onChange={(val) => dispatchMerge({ floodingGroundwater: val })}
                     />
                 </span>
             </FormGrid>
@@ -1263,6 +1284,9 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                         null,
                     floodingReservoirs:
                         coalesceEmptyString(household?.flooding_reservoirs, null) ?? null,
+                    floodingGroundwater:
+                        coalesceEmptyString(household?.flooding_groundwater, null) ??
+                        null,
                     radon: household?.radon_risk ?? null,
                 },
             };
@@ -1340,6 +1364,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                 flooding_rivers_sea: state.floodingRiversAndSea ?? undefined,
                 flooding_surface_water: state.floodingSurfaceWater ?? undefined,
                 flooding_reservoirs: state.floodingReservoirs ?? undefined,
+                flooding_groundwater: state.floodingGroundwater ?? undefined,
                 radon_risk: state.radon ?? undefined,
                 uniquePropertyReferenceNumber: state.uniquePropertyReferenceNumber,
             };
