@@ -717,16 +717,16 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                         className="input--auto-width"
                         id="density"
                         options={[
-                            { value: 'rural', display: 'Rural' },
+                            { value: 'rural', display: 'rural' },
                             {
                                 value: 'suburban',
                                 display:
-                                    'Low rise urban / suburban (town or village situations with other buildings well spaced)',
+                                    'low rise urban / suburban (town or village situations with other buildings well spaced)',
                             },
                             {
                                 value: 'urban',
                                 display:
-                                    'Dense urban (mostly closely spaced buildings of >3 storeys)',
+                                    'dense urban (mostly closely spaced buildings of >3 storeys)',
                             },
                         ]}
                         value={state.locationDensity}
@@ -800,21 +800,6 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
             </div>
 
             <FormGrid>
-                <span>Rivers and sea:</span>
-                <div>
-                    <Select<FloodRisk>
-                        id="rivers_and_sea"
-                        options={[
-                            { value: 'HIGH', display: 'high risk' },
-                            { value: 'MED', display: 'medium risk' },
-                            { value: 'LOW', display: 'low risk' },
-                            { value: 'VLOW', display: 'very low risk' },
-                        ]}
-                        value={state.floodingRiversAndSea}
-                        onChange={(val) => dispatchMerge({ floodingRiversAndSea: val })}
-                    />
-                </div>
-
                 <span>Surface water:</span>
                 <div>
                     <Select<FloodRisk>
@@ -834,26 +819,38 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
                     />
                 </div>
 
+                <span>Rivers and sea:</span>
+                <div>
+                    <Select<FloodRisk>
+                        id="rivers_and_sea"
+                        options={[
+                            { value: 'HIGH', display: 'high risk' },
+                            { value: 'MED', display: 'medium risk' },
+                            { value: 'LOW', display: 'low risk' },
+                            { value: 'VLOW', display: 'very low risk' },
+                        ]}
+                        value={state.floodingRiversAndSea}
+                        onChange={(val) => dispatchMerge({ floodingRiversAndSea: val })}
+                    />
+                </div>
+
                 <span>Reservoirs:</span>
                 <span>
                     <Select<FloodRiskReservoirs>
                         id="reservoirs"
+                        className="input--auto-width"
                         options={[
                             {
                                 value: 'WITHIN',
-                                display: 'within potential extent of flooding',
+                                display: 'there is a risk of flooding from reservoirs',
                             },
                             {
                                 value: 'OUTWITH',
-                                display: 'not within potential extent of flooding',
+                                display: 'no risk of flooding from reservoirs',
                             },
                         ]}
                         value={state.floodingReservoirs}
-                        onChange={(val) =>
-                            dispatchMerge({
-                                floodingReservoirs: val,
-                            })
-                        }
+                        onChange={(val) => dispatchMerge({ floodingReservoirs: val })}
                     />
                 </span>
             </FormGrid>
