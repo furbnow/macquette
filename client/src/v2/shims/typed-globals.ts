@@ -85,10 +85,11 @@ export function getAppContext(): AppContext {
 
 export function applyDataMutator(
     mutator: (toMutate: Pick<Externals, 'project'>, context: AppContext) => void,
+    source: { moduleName: string; instanceKey: string | null },
 ) {
     const origProject = cloneDeep(externals().project);
     mutator(externals(), getAppContext());
     if (!isEqual(origProject, externals().project)) {
-        externals().update();
+        externals().update(false, { source });
     }
 }

@@ -9,11 +9,12 @@ export class InstantiatedUiModule<State, Action, Effect> {
     private root: ReactDOMRoot | null;
 
     constructor(
-        private module_: UiModule<State, Action, Effect>,
-        private instanceKey: string | null,
+        public module_: UiModule<State, Action, Effect>,
+        public instanceKey: string | null,
         domElement: Element,
         private handleDataMutator?: (
             mutator: (toMutate: Pick<Externals, 'project'>, context: AppContext) => void,
+            source: { moduleName: string; instanceKey: string | null },
         ) => void,
     ) {
         this.root = createRoot(domElement);
@@ -30,14 +31,20 @@ export class InstantiatedUiModule<State, Action, Effect> {
         }
     }
 
-    update(context: AppContext) {
-        const actionR = this.module_.shims.extractUpdateAction(context, this.instanceKey);
-        if (!actionR.isOk()) {
-            console.error(actionR.coalesce());
+    update(context: AppContext, changed?: { inputs: boolean; outputs: boolean }) {
+        const actionsR = this.module_.shims.extractUpdateAction(
+            context,
+            this.instanceKey,
+            changed ?? { inputs: true, outputs: true },
+        );
+        if (!actionsR.isOk()) {
+            console.error(actionsR.coalesce());
             return;
         }
-        const action = actionR.coalesce();
-        this.dispatch(action, false);
+        const actions = actionsR.coalesce();
+        for (const action of actions) {
+            this.dispatch(action, false);
+        }
         this.render();
     }
 
@@ -72,13 +79,15 @@ export class InstantiatedUiModule<State, Action, Effect> {
         }
         this.render();
         if (internal && this.handleDataMutator !== undefined) {
-            this.handleDataMutator((toMutate, appContext) =>
-                this.module_.shims.mutateLegacyData(
-                    toMutate,
-                    appContext,
-                    this.state,
-                    this.instanceKey,
-                ),
+            this.handleDataMutator(
+                (toMutate, appContext) =>
+                    this.module_.shims.mutateLegacyData(
+                        toMutate,
+                        appContext,
+                        this.state,
+                        this.instanceKey,
+                    ),
+                { moduleName: this.module_.name, instanceKey: this.instanceKey },
             );
         }
     }

@@ -45,12 +45,8 @@ export type LoadedState = {
 type State = LoadedState | 'loading';
 
 type Action =
-    | {
-          type: 'external data update';
-          model: CombinedModules | null;
-          scenarioLocked: boolean;
-          input: SolarHotWaterDataModel;
-      }
+    | { type: 'set outputs'; model: CombinedModules }
+    | { type: 'reset inputs'; scenarioLocked: boolean; input: SolarHotWaterDataModel }
     | { type: 'merge inputs'; toMerge: DeepPartial<InputState> };
 
 export const solarHotWaterModule: UiModule<State, Action, never> = {
@@ -59,19 +55,17 @@ export const solarHotWaterModule: UiModule<State, Action, never> = {
         return 'loading';
     },
     reducer: (state: State, action: Action): [State] => {
-        if (action.type === 'external data update' && state === 'loading') {
-            // First load. Rehydrate input.
+        if (action.type === 'reset inputs') {
             return [
                 {
                     scenarioLocked: action.scenarioLocked,
                     input: toFormState(action.input),
-                    combinedModules: action.model,
+                    combinedModules: null,
                 },
             ];
         }
         if (state === 'loading') return [state];
-        if (action.type === 'external data update') {
-            // Keep our own input
+        if (action.type === 'set outputs') {
             return [{ ...state, combinedModules: action.model }];
         }
         switch (action.type) {
@@ -86,17 +80,28 @@ export const solarHotWaterModule: UiModule<State, Action, never> = {
     },
     effector: assertNever,
     shims: {
-        extractUpdateAction: ({ currentScenario, currentModel }) => {
-            const { SHW, use_SHW } = currentScenario ?? {};
+        extractUpdateAction: (
+            { currentScenario, currentModel },
+            _instanceKey,
+            { inputs, outputs },
+        ) => {
+            const { SHW } = currentScenario ?? {};
             const scenarioLocked = currentScenario?.locked ?? false;
-            const moduleEnabled = use_SHW === true;
-            return Result.ok({
-                type: 'external data update',
-                model: currentModel.isErr() ? null : currentModel.unwrap(),
-                scenarioLocked,
-                moduleEnabled,
-                input: SHW?.input ?? null,
-            });
+            const actions: Action[] = [];
+            if (inputs) {
+                actions.push({
+                    type: 'reset inputs',
+                    scenarioLocked,
+                    input: SHW?.input ?? null,
+                });
+            }
+            if (outputs && currentModel.isOk()) {
+                actions.push({
+                    type: 'set outputs',
+                    model: currentModel.coalesce(),
+                });
+            }
+            return Result.ok(actions);
         },
         mutateLegacyData: ({ project }, { scenarioId }, state) => {
             if (state === 'loading') return;

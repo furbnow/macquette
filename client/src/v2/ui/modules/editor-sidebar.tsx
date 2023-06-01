@@ -642,37 +642,42 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
     },
     shims: {
         extractUpdateAction: ({ route, project }) => {
-            return Result.ok({
-                type: 'merge data',
-                state: {
-                    assessmentId: project.id,
-                    projectName: project.name,
-                    projectDescription: project.description,
-                    hasReports: project.organisation !== null,
-                    route,
-                    scenarios: Object.entries(project.data).map(
-                        ([scenarioId, scenarioData]) => ({
-                            id: scenarioId,
-                            title: scenarioData?.scenario_name ?? '',
-                            isBaseline: scenarioId === 'master',
-                            locked: scenarioData?.locked ?? false,
-                            num: 1,
-                            createdFromChanges: getCreatedChanges(project, scenarioData),
-                            createdFromName: scenarioData?.created_from ?? null,
-                            spaceHeatingDemand:
-                                scenarioData?.space_heating_demand_m2 ?? null,
-                            expanded:
-                                scenarioData?.sidebarExpanded ??
-                                (route.type === 'with scenario' &&
-                                route.scenarioId === scenarioId
-                                    ? true
-                                    : false),
-                            justCreated: scenarioData?.justCreated ?? false,
-                        }),
-                    ),
-                    mutateAction: null,
+            return Result.ok([
+                {
+                    type: 'merge data',
+                    state: {
+                        assessmentId: project.id,
+                        projectName: project.name,
+                        projectDescription: project.description,
+                        hasReports: project.organisation !== null,
+                        route,
+                        scenarios: Object.entries(project.data).map(
+                            ([scenarioId, scenarioData]) => ({
+                                id: scenarioId,
+                                title: scenarioData?.scenario_name ?? '',
+                                isBaseline: scenarioId === 'master',
+                                locked: scenarioData?.locked ?? false,
+                                num: 1,
+                                createdFromChanges: getCreatedChanges(
+                                    project,
+                                    scenarioData,
+                                ),
+                                createdFromName: scenarioData?.created_from ?? null,
+                                spaceHeatingDemand:
+                                    scenarioData?.space_heating_demand_m2 ?? null,
+                                expanded:
+                                    scenarioData?.sidebarExpanded ??
+                                    (route.type === 'with scenario' &&
+                                    route.scenarioId === scenarioId
+                                        ? true
+                                        : false),
+                                justCreated: scenarioData?.justCreated ?? false,
+                            }),
+                        ),
+                        mutateAction: null,
+                    },
                 },
-            });
+            ]);
         },
         mutateLegacyData: ({ project: projectRaw }, _context, state) => {
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

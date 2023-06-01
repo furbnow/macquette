@@ -819,13 +819,15 @@ export const imageGalleryModule: UiModule<State, Action, Effect> = {
     },
     shims: {
         extractUpdateAction: ({ project }) => {
-            return Result.ok({
-                type: 'external data update',
-                state: {
-                    images: project.images.map(serverImageToModuleImage),
-                    assessmentId: project.id,
+            return Result.ok([
+                {
+                    type: 'external data update',
+                    state: {
+                        images: project.images.map(serverImageToModuleImage),
+                        assessmentId: project.id,
+                    },
                 },
-            });
+            ]);
         },
         mutateLegacyData: ({ project }, _context, state) => {
             /* eslint-disable

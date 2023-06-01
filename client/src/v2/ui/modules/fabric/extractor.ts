@@ -283,7 +283,7 @@ export function extractUpdateAction({
     project,
     currentScenario,
     scenarioId,
-}: AppContext): Result<Action, never> {
+}: AppContext): Result<Action[], never> {
     if (scenarioId === null) {
         throw new Error('scenarioId was null');
     }
@@ -328,16 +328,18 @@ export function extractUpdateAction({
             return wall;
         }) ?? [];
 
-    return Result.ok({
-        type: 'external data update',
-        state: {
-            maxId: maxId(currentScenario),
-            currentScenarioIsBaseline: scenarioId === 'master',
-            thermalMassParameter: thermalMassParameter(currentScenario),
-            walls,
-            deletedElement: null,
-            bulkMeasures,
-            locked: currentScenario?.locked ?? false,
+    return Result.ok([
+        {
+            type: 'external data update',
+            state: {
+                maxId: maxId(currentScenario),
+                currentScenarioIsBaseline: scenarioId === 'master',
+                thermalMassParameter: thermalMassParameter(currentScenario),
+                walls,
+                deletedElement: null,
+                bulkMeasures,
+                locked: currentScenario?.locked ?? false,
+            },
         },
-    });
+    ]);
 }

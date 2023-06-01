@@ -871,11 +871,13 @@ export const currentEnergyModule: UiModule<State, Action, never> = {
     },
     shims: {
         extractUpdateAction: ({ currentScenario, currentModel }) => {
-            return Result.ok({
-                type: 'external data update',
-                state: extractStateFromLegacy(currentScenario),
-                modelOutput: currentModel.mapErr(() => null).coalesce(),
-            });
+            return Result.ok([
+                {
+                    type: 'external data update',
+                    state: extractStateFromLegacy(currentScenario),
+                    modelOutput: currentModel.mapErr(() => null).coalesce(),
+                },
+            ]);
         },
         mutateLegacyData: ({ project: projectRaw }, _, state) => {
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

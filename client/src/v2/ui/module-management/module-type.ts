@@ -41,7 +41,8 @@ export type UiModule<State, Action, Effect> = ReducerComponent<State, Action, Ef
         extractUpdateAction: (
             context: AppContext,
             instanceKey: string | null,
-        ) => Result<Action, Error>;
+            changed: { inputs: boolean; outputs: boolean },
+        ) => Result<Action[], Error>;
         mutateLegacyData: (
             externals: Pick<Externals, 'project'>,
             context: Pick<AppContext, 'scenarioId'>,

@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { featureFlags } from '../helpers/feature-flags';
 import { isIndexable } from '../helpers/is-indexable';
 import {
@@ -85,32 +86,57 @@ export class PageManager {
         });
     }
 
-    externalDataUpdate() {
-        if (this.currentModule === null) {
-            return;
-        }
-
-        // Check if the scenario we're on still exists
-        const route = getCurrentRoute();
-        if (route.type === 'with scenario') {
-            const { project } = externals();
-            const { scenarioId } = route;
-
-            if (isIndexable(project['data']) && !(scenarioId in project['data'])) {
-                window.location.hash = '';
+    externalDataUpdate = z
+        .function()
+        .args(
+            z
+                .object({
+                    source: z.object({
+                        moduleName: z.string(),
+                        instanceKey: z.string().nullable(),
+                    }),
+                })
+                .partial()
+                .optional(),
+        )
+        .implement((opts) => {
+            if (this.currentModule === null) {
                 return;
             }
-        }
 
-        this.sidebarManager.update();
-        this.titleManager.update();
+            // Check if the scenario we're on still exists
+            const route = getCurrentRoute();
+            if (route.type === 'with scenario') {
+                const { project } = externals();
+                const { scenarioId } = route;
 
-        if (this.currentModule === 'legacy') {
-            this.legacyModuleUpdate();
-        } else {
-            this.currentModule.update(getAppContext());
-        }
-    }
+                if (isIndexable(project['data']) && !(scenarioId in project['data'])) {
+                    window.location.hash = '';
+                    return;
+                }
+            }
+
+            this.sidebarManager.update();
+            this.titleManager.update();
+
+            if (this.currentModule === 'legacy') {
+                this.legacyModuleUpdate();
+            } else {
+                let updateInputs: boolean;
+                if (
+                    opts?.source?.moduleName === this.currentModule.module_.name &&
+                    opts?.source?.instanceKey === this.currentModule.instanceKey
+                ) {
+                    updateInputs = false;
+                } else {
+                    updateInputs = true;
+                }
+                this.currentModule.update(getAppContext(), {
+                    inputs: updateInputs,
+                    outputs: true,
+                });
+            }
+        });
 
     async handleNavigation() {
         const route = getCurrentRoute();
@@ -172,7 +198,7 @@ export class PageManager {
         // Run updaters
         this.sidebarManager.update();
         this.titleManager.update();
-        this.externalDataUpdate();
+        this.externalDataUpdate({});
 
         // Run legacy post-update init
         if (this.currentModule === 'legacy') {

@@ -170,7 +170,7 @@ export const floorRowModule: UiModule<LoadingState | LoadedState, Action, never>
                 modelElement: modelElement,
                 scenarioIsBaseline: scenarioId === 'master',
             };
-            return Result.ok(action);
+            return Result.ok([action]);
         },
         mutateLegacyData: (externals, context, state, instanceKey) => {
             if (!state.loaded) return;

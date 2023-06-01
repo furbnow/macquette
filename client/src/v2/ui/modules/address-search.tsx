@@ -1324,7 +1324,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                 action.state.lookup = { stage: 'address resolved' };
             }
 
-            return Result.ok(action);
+            return Result.ok([action]);
         },
 
         mutateLegacyData: (

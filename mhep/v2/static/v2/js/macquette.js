@@ -351,7 +351,7 @@ function setupEventHandlers() {
     );
 }
 
-function update(undo_redo = false) {
+function update(undo_redo = false, opts) {
     // We need to calculate the periods of heating off here because if we try to do it in household.js it happens after the update
     if (project.master.household != undefined) {
         for (var s in project) {
@@ -376,7 +376,7 @@ function update(undo_redo = false) {
         draw_openbem_graphics('#topgraphic', data);
     }
 
-    pageManager.externalDataUpdate();
+    pageManager.externalDataUpdate(opts);
 
     if (!window.features.includes('new-sidebar')) {
         redraw_emissions();

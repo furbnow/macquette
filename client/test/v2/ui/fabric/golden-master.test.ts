@@ -257,22 +257,26 @@ describe('fabric page extractor & mutator round trip should roundtrip the data a
         for (const [currentScenarioId, currentScenario] of Object.entries(scenarios)) {
             let state = fabricModule.initialState('');
 
-            const updateAction = fabricModule.shims.extractUpdateAction(
-                {
-                    project: project.parsedData,
-                    currentScenario,
-                    scenarioId: currentScenarioId,
-                    currentModel: null as any,
-                    route: {
-                        type: 'with scenario',
+            const updateActions = fabricModule.shims
+                .extractUpdateAction(
+                    {
+                        project: project.parsedData,
+                        currentScenario,
                         scenarioId: currentScenarioId,
-                        page: 'elements',
+                        currentModel: null as any,
+                        route: {
+                            type: 'with scenario',
+                            scenarioId: currentScenarioId,
+                            page: 'elements',
+                        },
+                        appName: 'some app name',
                     },
-                    appName: 'some app name',
-                },
-                '',
-            );
-            [state] = fabricModule.reducer(state, updateAction.unwrap());
+                    '',
+                    { inputs: true, outputs: true },
+                )
+                .unwrap();
+            expect(updateActions).toHaveLength(1);
+            [state] = fabricModule.reducer(state, updateActions[0]!);
 
             fabricModule.shims.mutateLegacyData(
                 { project: modifiedProject },

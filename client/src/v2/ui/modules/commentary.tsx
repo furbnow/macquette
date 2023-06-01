@@ -162,16 +162,19 @@ export const commentaryModule: UiModule<State, Action, never> = {
                     ]),
             );
 
-            return Result.ok({
-                type: 'external data update',
-                state: {
-                    brief: project.data['master']?.household?.commentary_brief ?? '',
-                    context: project.data['master']?.household?.commentary_context ?? '',
-                    decisions:
-                        project.data['master']?.household?.commentary_decisions ?? '',
-                    scenarios: scenarios,
+            return Result.ok([
+                {
+                    type: 'external data update',
+                    state: {
+                        brief: project.data['master']?.household?.commentary_brief ?? '',
+                        context:
+                            project.data['master']?.household?.commentary_context ?? '',
+                        decisions:
+                            project.data['master']?.household?.commentary_decisions ?? '',
+                        scenarios: scenarios,
+                    },
                 },
-            });
+            ]);
         },
         mutateLegacyData: ({ project }, _context, state) => {
             /* eslint-disable-next-line

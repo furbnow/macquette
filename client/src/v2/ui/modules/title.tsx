@@ -56,15 +56,17 @@ export const titleModule: UiModule<State, Action, never> = {
             const { route, appName, currentScenario, project } = context;
             const assessmentName = project.name;
             const currentScenarioName = currentScenario?.scenario_name ?? null;
-            return Result.ok({
-                type: 'external data update',
-                newState: {
-                    route,
-                    appName,
-                    currentScenarioName,
-                    assessmentName,
+            return Result.ok([
+                {
+                    type: 'external data update',
+                    newState: {
+                        route,
+                        appName,
+                        currentScenarioName,
+                        assessmentName,
+                    },
                 },
-            });
+            ]);
         },
         mutateLegacyData: () => undefined,
     },

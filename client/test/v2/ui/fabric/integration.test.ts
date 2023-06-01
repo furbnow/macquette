@@ -27,22 +27,26 @@ function runReducerActions(
         }
 
         const parsedCurrentScenario = (parseResult.data as any).data[currentScenarioId];
-        const updateAction = fabricModule.shims.extractUpdateAction(
-            {
-                project: parseResult.data,
-                currentScenario: parsedCurrentScenario,
-                scenarioId: currentScenarioId,
-                currentModel: null as any,
-                route: {
-                    type: 'with scenario',
+        const updateActions = fabricModule.shims
+            .extractUpdateAction(
+                {
+                    project: parseResult.data,
+                    currentScenario: parsedCurrentScenario,
                     scenarioId: currentScenarioId,
-                    page: 'elements',
+                    currentModel: null as any,
+                    route: {
+                        type: 'with scenario',
+                        scenarioId: currentScenarioId,
+                        page: 'elements',
+                    },
+                    appName: 'some app name',
                 },
-                appName: 'some app name',
-            },
-            '',
-        );
-        [state] = fabricModule.reducer(state, updateAction.unwrap());
+                '',
+                { inputs: true, outputs: true },
+            )
+            .unwrap();
+        expect(updateActions).toHaveLength(1);
+        [state] = fabricModule.reducer(state, updateActions[0]!);
 
         [state] = fabricModule.reducer(state, action);
 
