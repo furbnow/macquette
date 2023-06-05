@@ -18,7 +18,7 @@ import { Fuel, SelectFuel } from '../input-components/libraries';
 import { NumberInput } from '../input-components/number';
 import type { UiModule } from '../module-management/module-type';
 import { NumberOutput } from '../output-components/numeric';
-import { TargetBar } from '../output-components/target-bar';
+import { TargetBar, getBarColour } from '../output-components/target-bar';
 
 type OnsiteGenerationInput = {
     annualEnergy: number | null;
@@ -201,9 +201,17 @@ function TargetBars({
         <div>
             <h4>Comparison charts</h4>
             <p>
-                Top/lighter = from data provided on this page
+                <div
+                    className="square"
+                    style={{ backgroundColor: `var(--${getBarColour(0)})` }}
+                ></div>{' '}
+                Data provided on this page
                 <br />
-                Bottom/darker = from the modelled baseline
+                <div
+                    className="square"
+                    style={{ backgroundColor: `var(--${getBarColour(1)})` }}
+                ></div>{' '}
+                From modelled baseline
             </p>
 
             <TargetBar

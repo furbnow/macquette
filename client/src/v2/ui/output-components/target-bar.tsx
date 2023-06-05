@@ -3,11 +3,11 @@ import React, { ReactElement, useId } from 'react';
 import { zip } from '../../helpers/zip';
 import type { Target } from '../../model/datasets/targets';
 
-const COLOURS = ['datavis-1', 'datavis-2'];
-const AXIS_COLOUR = 'black';
+const barColours = ['datavis-1', 'datavis-2'];
+const axisColour = 'black';
 
-function getColour(index: number): string {
-    const colour = COLOURS[index % COLOURS.length];
+export function getBarColour(index: number): string {
+    const colour = barColours[index % barColours.length];
     if (colour === undefined) {
         throw new Error('unreachable');
     }
@@ -168,7 +168,7 @@ export function TargetBar({
                                 y={1.5 + barHeight * idx}
                                 width={Math.round(val) * xscale - 2}
                                 height={barHeight}
-                                style={{ fill: `var(--${getColour(idx)})` }}
+                                style={{ fill: `var(--${getBarColour(idx)})` }}
                             />
                             {status.hasData === true && (
                                 <text
@@ -189,7 +189,7 @@ export function TargetBar({
                     y1={1.5}
                     x2={1.5}
                     y2={barsHeight + 0.5}
-                    stroke={AXIS_COLOUR}
+                    stroke={axisColour}
                 />
 
                 {/* Horizontal axis line */}
@@ -198,7 +198,7 @@ export function TargetBar({
                     y1={barsHeight + 1}
                     x2={width}
                     y2={barsHeight + 1}
-                    stroke={AXIS_COLOUR}
+                    stroke={axisColour}
                 />
 
                 {targetBoxes !== undefined &&
@@ -227,7 +227,7 @@ export function TargetBar({
                                     y1={y}
                                     x2={x + 0.5}
                                     y2={y + height / 3}
-                                    stroke={AXIS_COLOUR}
+                                    stroke={axisColour}
                                 />
                                 <text
                                     x={x + 5}

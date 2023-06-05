@@ -574,11 +574,18 @@ body .modal {
 .targetbar svg {
     font-size: 12px;
 }
+
 .targetbar-head {
     display: flex;
     justify-content: space-between;
     padding-bottom: 0.25rem;
     color: var(--grey-200);
+}
+
+.square {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
 }
 
 .member-last-active {
