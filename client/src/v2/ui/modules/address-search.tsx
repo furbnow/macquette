@@ -5,6 +5,7 @@ import { HTTPClient } from '../../api/http';
 import type { AddressSuggestion, ResolvedAddress } from '../../data-schemas/address';
 import { coalesceEmptyString } from '../../data-schemas/scenario/value-schemas';
 import { Result } from '../../helpers/result';
+import { hasHighOverheatingRisk } from '../../model/datasets/overheating';
 import type { RegionName } from '../../model/enums/region';
 import { Region } from '../../model/enums/region';
 import { FormGrid } from '../input-components/forms';
@@ -31,6 +32,7 @@ type Address = {
     country: string;
 };
 
+type OverheatingRisk = 'outside England' | 'high risk' | 'moderate risk';
 type LocationDensity = 'urban' | 'suburban' | 'rural';
 type Exposure = 'very severe' | 'severe' | 'moderate' | 'sheltered';
 type FrostAttackRisk =
@@ -73,6 +75,7 @@ type State = {
     region: WithOrigin<Region, null>;
     elevation: WithOrigin<number, null>;
     lowerLayerSuperOutputArea: WithOrigin<string>;
+    overheatingRisk: null | OverheatingRisk;
 
     // Manual input
     localPlanningAuthority: string;
@@ -691,6 +694,14 @@ function AddressSearch({ state, dispatch }: { state: State; dispatch: Dispatcher
             </div>
 
             <FormGrid>
+                {state.overheatingRisk !== null &&
+                    state.overheatingRisk !== 'outside England' && (
+                        <>
+                            <span>Overheating risk</span>
+                            <span>{state.overheatingRisk}</span>
+                        </>
+                    )}
+
                 <WithOriginInput
                     data={state.elevation}
                     labelText="Elevation"
@@ -971,12 +982,14 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
             lookup: initialLookupSearchText,
             address: { type: 'no data' },
             localPlanningAuthority: '',
+            overheatingRisk: null,
             locationDensity: null,
             exposure: null,
             frostAttackRisk: null,
             floodingRiversAndSea: null,
             floodingSurfaceWater: null,
             floodingReservoirs: null,
+            floodingGroundwater: null,
             radon: null,
             region: { type: 'no data' },
             uniquePropertyReferenceNumber: { type: 'no data' },
@@ -1132,6 +1145,12 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                                 : state.region,
                             Region.fromPostcode(address.postcode).unwrap(),
                         ),
+                        overheatingRisk:
+                            address.country === 'England'
+                                ? hasHighOverheatingRisk(address.postcode)
+                                    ? 'high risk'
+                                    : 'moderate risk'
+                                : 'outside England',
                     },
                 ];
             }
@@ -1274,6 +1293,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                         household?.address_lsoa_full ?? null,
                     ),
                     localPlanningAuthority: household?.local_planning_authority ?? '',
+                    overheatingRisk: household?.overheatingRisk ?? null,
                     locationDensity: household?.location_density ?? null,
                     exposure: household?.exposure ?? null,
                     frostAttackRisk: household?.frostAttackRisk ?? null,
@@ -1361,6 +1381,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                 location_density: state.locationDensity ?? undefined,
                 exposure: state.exposure ?? undefined,
                 frostAttackRisk: state.frostAttackRisk ?? undefined,
+                overheatingRisk: state.overheatingRisk ?? undefined,
                 flooding_rivers_sea: state.floodingRiversAndSea ?? undefined,
                 flooding_surface_water: state.floodingSurfaceWater ?? undefined,
                 flooding_reservoirs: state.floodingReservoirs ?? undefined,

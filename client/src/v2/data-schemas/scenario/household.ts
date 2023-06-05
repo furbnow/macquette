@@ -27,6 +27,7 @@ export const householdSchema = z.object({
     address_lsoa: legacyString,
     address_lsoa_full: withOriginSchema(z.string(), z.never()),
     local_planning_authority: z.string(),
+    overheatingRisk: z.enum(['outside England', 'high risk', 'moderate risk']),
     location_density: z.enum(['urban', 'suburban', 'rural']),
     exposure: z.enum(['very severe', 'severe', 'moderate', 'sheltered']),
     frostAttackRisk: z.enum([
