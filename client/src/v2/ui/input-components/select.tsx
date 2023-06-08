@@ -7,6 +7,7 @@ type BasicSelectProps<T> = {
     options: {
         value: T;
         display: string;
+        disabled?: boolean;
     }[];
     value: T | null;
     onChange: (value: T) => void;
@@ -43,8 +44,8 @@ export function Select<T extends string>({
             {...passthrough}
         >
             {unselected}
-            {options.map(({ value, display }) => (
-                <option key={value} value={value}>
+            {options.map(({ value, display, disabled = false }) => (
+                <option key={value} value={value} disabled={disabled}>
                     {display}
                 </option>
             ))}

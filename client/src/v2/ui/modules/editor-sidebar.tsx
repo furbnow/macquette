@@ -1,20 +1,15 @@
-import type { RefObject } from 'react';
 import React, { ReactElement, useContext, useEffect, useRef } from 'react';
 import z from 'zod';
 
-import { HTTPClient } from '../../api/http';
 import type { Project, projectSchema } from '../../data-schemas/project';
 import type { Scenario } from '../../data-schemas/scenario';
+import { assertNever } from '../../helpers/assert-never';
 import { emulateJsonRoundTrip } from '../../helpers/emulate-json-round-trip';
 import { Result } from '../../helpers/result';
 import { CombinedModules } from '../../model/combined-modules';
-import { DownCaret, EditIcon, LockedLock, RightCaret } from '../icons';
-import { FormGrid } from '../input-components/forms';
-import { TextInput } from '../input-components/text';
+import { DownCaret, LockedLock, RightCaret } from '../icons';
 import type { Dispatcher, UiModule } from '../module-management/module-type';
-import { Modal, ModalBody, ModalFooter, ModalHeader } from '../output-components/modal';
 import { NumberOutput } from '../output-components/numeric';
-import { Spinner } from '../output-components/spinner';
 import type { ScenarioPageName, StandalonePageName } from '../pages';
 import { pageTitles } from '../pages';
 import type { Route } from '../routes';
@@ -27,17 +22,7 @@ export const SidebarContext = React.createContext<SidebarContextType>({
     route: null,
 });
 
-type FetchStatus = 'at rest' | 'in flight' | 'successful' | 'failed';
-
-type MetadataEditorModalState = {
-    type: 'metadata editor';
-    name: string;
-    description: string;
-    requestStatus: FetchStatus;
-};
-
 export type State = {
-    assessmentId: string;
     projectName: string;
     projectDescription: string;
     route: Route | null;
@@ -55,7 +40,6 @@ export type State = {
         justCreated: boolean;
     }[];
     mutateAction: DuplicateScenarioAction | SetLockAction | DeleteScenarioAction | null;
-    modal: MetadataEditorModalState | { type: 'none' };
 };
 
 type MergeDataAction = { type: 'merge data'; state: Partial<State> };
@@ -67,31 +51,13 @@ type DuplicateScenarioAction = {
 };
 type SetLockAction = { type: 'set scenario lock'; scenarioId: string; locked: boolean };
 type DeleteScenarioAction = { type: 'delete scenario'; scenarioId: string };
-type SaveMetadataAction = {
-    type: 'save project metadata';
-    returnFocusTo: RefObject<HTMLElement>;
-};
-type MetadataSaveStatusAction = {
-    type: 'metadata save status';
-    status: FetchStatus;
-};
 
 export type Action =
     | MergeDataAction
     | ToggleExpansionAction
     | DuplicateScenarioAction
     | SetLockAction
-    | DeleteScenarioAction
-    | SaveMetadataAction
-    | MetadataSaveStatusAction;
-
-export type Effect = {
-    type: 'save project info';
-    assessmentId: string;
-    name: string;
-    description: string;
-    returnFocusTo: RefObject<HTMLElement>;
-};
+    | DeleteScenarioAction;
 
 function StandalonePageLink(props: { pageName: StandalonePageName }): ReactElement {
     const { route } = useContext(SidebarContext);
@@ -298,125 +264,6 @@ function ScenarioBlock({
     );
 }
 
-function MetadataEditorModal({
-    state,
-    dispatch,
-    returnFocusTo,
-}: {
-    state: MetadataEditorModalState;
-    dispatch: Dispatcher<Action>;
-    returnFocusTo: RefObject<HTMLElement>;
-}) {
-    function close() {
-        dispatch({
-            type: 'merge data',
-            state: { modal: { type: 'none' } },
-        });
-        if (returnFocusTo.current !== null) {
-            returnFocusTo.current.focus();
-        }
-    }
-
-    function save() {
-        dispatch({ type: 'save project metadata', returnFocusTo });
-    }
-
-    return (
-        <Modal headerId={'none'} onClose={close}>
-            <ModalHeader title="Edit project metadata" onClose={close} />
-            <ModalBody>
-                <FormGrid>
-                    <label htmlFor="project-name">Project name:</label>
-                    {/* We use input instead of TextInput because TextInput breaks
-                     * autoFocus due to its inner component shennaningans */}
-                    <input
-                        id="project-name"
-                        type="text"
-                        value={state.name}
-                        style={{ width: '25rem' }}
-                        onChange={(evt) =>
-                            dispatch({
-                                type: 'merge data',
-                                state: { modal: { ...state, name: evt.target.value } },
-                            })
-                        }
-                        onKeyDown={(
-                            evt: React.KeyboardEvent<HTMLInputElement> & {
-                                target: HTMLInputElement;
-                            },
-                        ) => {
-                            if (evt.key === 'Enter') {
-                                dispatch({
-                                    type: 'merge data',
-                                    state: {
-                                        modal: { ...state, name: evt.target.value },
-                                    },
-                                });
-                                save();
-                            }
-                        }}
-                        // WAI-ARIA-PRACTICES tells us to use autofocus here because
-                        // it's the first field in a modal dialog.
-                        // https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html
-                        // eslint-disable-next-line jsx-a11y/no-autofocus
-                        autoFocus={true}
-                    />
-
-                    <label htmlFor="project-description">Project description:</label>
-                    <TextInput
-                        id="project-description"
-                        value={state.description}
-                        style={{ width: '25rem' }}
-                        onChange={(val) =>
-                            dispatch({
-                                type: 'merge data',
-                                state: { modal: { ...state, description: val } },
-                            })
-                        }
-                        onKeyDown={(
-                            evt: React.KeyboardEvent<HTMLInputElement> & {
-                                target: HTMLInputElement;
-                            },
-                        ) => {
-                            if (evt.key === 'Enter') {
-                                dispatch({
-                                    type: 'merge data',
-                                    state: {
-                                        modal: {
-                                            ...state,
-                                            description: evt.target.value,
-                                        },
-                                    },
-                                });
-                                save();
-                            }
-                        }}
-                    />
-                </FormGrid>
-            </ModalBody>
-            <ModalFooter>
-                {state.requestStatus === 'in flight' && <Spinner className="mr-15" />}
-                {state.requestStatus === 'failed' && (
-                    <span className="mr-15">Save failed, please try again</span>
-                )}
-                <button className="btn" onClick={close}>
-                    Cancel
-                </button>
-                <button
-                    className="btn btn-primary"
-                    onClick={save}
-                    disabled={
-                        state.requestStatus !== 'at rest' &&
-                        state.requestStatus !== 'failed'
-                    }
-                >
-                    Save
-                </button>
-            </ModalFooter>
-        </Modal>
-    );
-}
-
 function EditorSidebar({
     state,
     dispatch,
@@ -424,55 +271,11 @@ function EditorSidebar({
     state: State;
     dispatch: Dispatcher<Action>;
 }) {
-    const metadataEditorButtonRef = useRef<HTMLButtonElement>(null);
-
     return (
         <SidebarContext.Provider value={{ route: state.route }}>
-            <div
-                className="side-section d-flex justify-content-between"
-                style={{ padding: '15px 10px 10px 20px' }}
-            >
-                <p className="mb-0">
-                    <b>{state.projectName}</b>
-                    <br />
-                    {state.projectDescription}
-                </p>
-
-                <div>
-                    <button
-                        className="btn d-flex py-7"
-                        ref={metadataEditorButtonRef}
-                        onClick={() =>
-                            dispatch({
-                                type: 'merge data',
-                                state: {
-                                    modal: {
-                                        type: 'metadata editor',
-                                        requestStatus: 'at rest',
-                                        name: state.projectName,
-                                        description: state.projectDescription,
-                                    },
-                                },
-                            })
-                        }
-                    >
-                        <EditIcon />
-                    </button>
-                </div>
-            </div>
-
-            {state.modal.type === 'metadata editor' && (
-                <MetadataEditorModal
-                    state={state.modal}
-                    dispatch={dispatch}
-                    returnFocusTo={metadataEditorButtonRef}
-                />
-            )}
-
             <div className="side-section">
-                <div className="side-section--header">Assessment</div>
-
                 <ul className="list-unstyled">
+                    <StandalonePageLink pageName="project" />
                     <StandalonePageLink pageName="address-search" />
                     <StandalonePageLink pageName="householdquestionnaire" />
                     <StandalonePageLink pageName="commentary" />
@@ -522,12 +325,11 @@ function EditorSidebar({
     );
 }
 
-export const editorSidebarModule: UiModule<State, Action, Effect> = {
+export const editorSidebarModule: UiModule<State, Action, never> = {
     name: 'editorSidebar',
     component: EditorSidebar,
     initialState: () => {
         return {
-            assessmentId: '',
             projectName: '',
             projectDescription: '',
             currentPageName: null,
@@ -567,86 +369,15 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
             case 'delete scenario': {
                 return [{ ...state, mutateAction: action }];
             }
-
-            case 'save project metadata': {
-                if (state.modal.type === 'metadata editor') {
-                    const { assessmentId } = state;
-                    const { name, description } = state.modal;
-                    const { returnFocusTo } = action;
-                    return [
-                        state,
-                        [
-                            {
-                                type: 'save project info',
-                                assessmentId,
-                                name,
-                                description,
-                                returnFocusTo,
-                            },
-                        ],
-                    ];
-                } else {
-                    return [state];
-                }
-            }
-
-            case 'metadata save status': {
-                if (state.modal.type === 'metadata editor') {
-                    const { status } = action;
-                    if (status === 'successful') {
-                        return [{ ...state, modal: { type: 'none' } }];
-                    } else {
-                        return [
-                            {
-                                ...state,
-                                modal: {
-                                    ...state.modal,
-                                    requestStatus: status,
-                                },
-                            },
-                        ];
-                    }
-                } else {
-                    return [state];
-                }
-            }
         }
     },
-    effector: async (effect, dispatch) => {
-        const apiClient = new HTTPClient();
-
-        switch (effect.type) {
-            case 'save project info': {
-                dispatch({ type: 'metadata save status', status: 'in flight' });
-                try {
-                    await apiClient.updateAssessment(effect.assessmentId, {
-                        name: effect.name,
-                        description: effect.description,
-                    });
-                    dispatch({ type: 'metadata save status', status: 'successful' });
-                    dispatch({
-                        type: 'merge data',
-                        state: {
-                            projectName: effect.name,
-                            projectDescription: effect.description,
-                        },
-                    });
-                    if (effect.returnFocusTo.current !== null) {
-                        effect.returnFocusTo.current.focus();
-                    }
-                } catch (err) {
-                    dispatch({ type: 'metadata save status', status: 'failed' });
-                }
-            }
-        }
-    },
+    effector: assertNever,
     shims: {
         extractUpdateAction: ({ route, project }) => {
             return Result.ok([
                 {
                     type: 'merge data',
                     state: {
-                        assessmentId: project.id,
                         projectName: project.name,
                         projectDescription: project.description,
                         hasReports: project.organisation !== null,
@@ -682,8 +413,7 @@ export const editorSidebarModule: UiModule<State, Action, Effect> = {
         mutateLegacyData: ({ project: projectRaw }, _context, state) => {
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             const project = projectRaw as z.input<typeof projectSchema>;
-            project.name = state.projectName;
-            project.description = state.projectDescription;
+
             let newId: string | null = null;
 
             if (state.mutateAction !== null) {

@@ -25,7 +25,11 @@
     <link rel="stylesheet" href="{% static VERSION|add:'/css/openfuvc.css' %}">
 {% endblock %}
 
-{% block extra_nav %}
+{% block leftnav %}
+    <div id="editor__nav"></div>
+{% endblock %}
+
+{% block rightnav %}
     <span id="saving_status" class="mr-7"></span>
     <a id="undo">
         <svg style="width: 1rem; height: 1rem">

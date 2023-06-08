@@ -32,11 +32,13 @@
 <body>
     <div class="nav-container">
         <nav class="nav-main container_if_u_want_it">
-            <h1 class="nav-main-heading">
-                {{ appname }}
-            </h1>
+            {% block leftnav %}
+                <h1 class="nav-main-heading">
+                    {{ appname }}
+                </h1>
+            {% endblock %}
             <div class="d-flex align-items-center pl-15" style="background-color: var(--grey-900);">
-                {% block extra_nav %}{% endblock %}
+                {% block rightnav %}{% endblock %}
                 <a href="{% url VERSION|add:':index' %}">Assessments</a>
                 <a href="{% url 'logout' %}">Log out</a>
             </div>

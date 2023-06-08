@@ -258,7 +258,8 @@ function legacySharedInit() {
         page == 'scopeofworks' ||
         page == 'export' ||
         page == 'librariesmanager' ||
-        page == 'fuelsmanager'
+        page == 'fuelsmanager' ||
+        page == 'project'
     ) {
         hide_house_graphic();
     } else {
@@ -288,6 +289,8 @@ function legacySharedInit() {
         $('.scenario-name').html('Libraries Manager');
     } else if (page == 'export') {
         $('.scenario-name').html('Import/Export');
+    } else if (page == 'project') {
+        $('.scenario-name').html('Project setup');
     } else {
         $('.scenario-name').html(scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name);
     }

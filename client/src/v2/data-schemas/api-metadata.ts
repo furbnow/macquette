@@ -9,11 +9,13 @@ export const userSchema = z.object({
     name: z.string(),
     email: z.string().optional(),
 });
+export type User = z.infer<typeof userSchema>;
 
 export const organisationMetaSchema = z.object({
     id: z.string(),
     name: z.string(),
 });
+export type Organisation = z.infer<typeof organisationMetaSchema>;
 
 export const assessmentMetadataSchema = z.object({
     id: z.string(),

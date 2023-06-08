@@ -11,6 +11,7 @@ const standalonePageNames = [
     'fuelsmanager',
     'sandbox',
     'address-search',
+    'project',
 ] as const;
 
 const scenarioPageNames = [
@@ -60,4 +61,5 @@ export const pageTitles: Record<StandalonePageName | ScenarioPageName, string> =
     generation: 'Generation',
     solarhotwater: 'Solar Hot Water Heating',
     worksheets: 'SAP worksheets',
+    project: 'Project',
 };

@@ -10,11 +10,14 @@ import { InstantiatedUiModule } from './module-management/instantiated-module';
 import { UiModule } from './module-management/module-type';
 import { addressSearchModule } from './modules/address-search';
 import { currentEnergyModule } from './modules/current-energy';
+import * as editorNavModule from './modules/editor-nav';
 import * as editorSidebar from './modules/editor-sidebar';
 import { imageGalleryModule } from './modules/image-gallery';
+import { projectModule } from './modules/project';
 import { sandboxModule } from './modules/sandbox';
 import { solarHotWaterModule } from './modules/solar-hot-water';
 import * as titleModule from './modules/title';
+
 import type { ScenarioPageName, StandalonePageName } from './pages';
 import { Route } from './routes';
 
@@ -31,6 +34,7 @@ export const standalonePages = {
     fuelsmanager: { style: 'legacy' },
     sandbox: { style: 'modern', module: sandboxModule },
     'address-search': { style: 'modern', module: addressSearchModule },
+    project: { style: 'modern', module: projectModule },
 } satisfies Record<
     StandalonePageName,
     { style: 'legacy' } | { style: 'modern'; module: unknown }
@@ -69,6 +73,7 @@ export class PageManager {
         | null = null;
     private sidebarManager: SidebarManager;
     private titleManager: TitleManager;
+    private navManager: NavManager;
 
     constructor(
         private legacySharedInit: () => void,
@@ -79,6 +84,7 @@ export class PageManager {
     ) {
         this.sidebarManager = new SidebarManager();
         this.titleManager = new TitleManager();
+        this.navManager = new NavManager();
         this.handleNavigation().catch((err) => console.error(err));
         window.addEventListener('hashchange', () => {
             this.handleNavigation().catch((err) => console.error(err));
@@ -115,6 +121,7 @@ export class PageManager {
                 }
             }
 
+            this.navManager.update();
             this.sidebarManager.update();
             this.titleManager.update();
 
@@ -195,6 +202,7 @@ export class PageManager {
         this.legacySharedInit();
 
         // Run updaters
+        this.navManager.update();
         this.sidebarManager.update();
         this.titleManager.update();
         this.externalDataUpdate({});
@@ -210,7 +218,7 @@ class SidebarManager {
     private sidebarModule: InstantiatedUiModule<
         editorSidebar.State,
         editorSidebar.Action,
-        editorSidebar.Effect
+        never
     > | null = null;
 
     constructor() {
@@ -253,5 +261,29 @@ class TitleManager {
 
     update() {
         this.titleModule.update(getAppContext());
+    }
+}
+
+class NavManager {
+    private navModule: InstantiatedUiModule<
+        editorNavModule.State,
+        editorNavModule.Action,
+        never
+    >;
+    constructor() {
+        const navElement = document.querySelector('#editor__nav');
+        if (navElement === null) {
+            throw new Error('title element not available');
+        }
+        this.navModule = new InstantiatedUiModule(
+            editorNavModule.navModule,
+            null,
+            navElement,
+            applyDataMutator,
+        );
+    }
+
+    update() {
+        this.navModule.update(getAppContext());
     }
 }
