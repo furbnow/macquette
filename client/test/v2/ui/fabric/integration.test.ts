@@ -70,12 +70,11 @@ function wrapScenarioData(scenarioData: z.input<typeof scenarioSchema>) {
             status: 'In progress',
             created_at: '2022-01-24T18:08:00.727951Z',
             updated_at: '2022-01-24T18:08:00.727951Z',
-            owner: { id: '1', name: '', email: '' },
+            access: [{ roles: ['owner'], id: '1', name: '', email: '' }],
             organisation: null,
             data: {
                 master: scenarioData,
             },
-            access: [],
             permissions: { can_share: false },
             images: [],
         },

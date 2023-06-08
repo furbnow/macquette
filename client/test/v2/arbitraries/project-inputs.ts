@@ -15,11 +15,6 @@ export function arbitraryProjectInputsWithoutScenarios(): fc.Arbitrary<
         status: fc.constantFrom('Complete', 'In progress', 'For review', 'Test'),
         created_at: arbDateOrRFC3339(),
         updated_at: arbDateOrRFC3339(),
-        owner: fc.record({
-            id: fc.string(),
-            name: fc.string(),
-            email: fc.string(),
-        }),
         organisation: fc.option(
             fc.record({
                 id: fc.string(),

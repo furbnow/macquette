@@ -156,7 +156,6 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
     """
 
     id = serializers.CharField(read_only=True)
-    owner = UserSerializer(read_only=True)
     organisation = OrganisationMetadataSerializer(read_only=True)
     access = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
@@ -188,7 +187,6 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
             "status",
             "created_at",
             "updated_at",
-            "owner",
             "organisation",
             "access",
             "permissions",

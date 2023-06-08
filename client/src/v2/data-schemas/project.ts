@@ -17,7 +17,7 @@ export type UserAccess = z.output<typeof userAccessSchema>;
 
 export const projectDataSchema = z.record(scenarioSchema);
 export const projectSchema = assessmentMetadataSchema
-    .omit({ updatedAt: true, createdAt: true })
+    .omit({ updatedAt: true, createdAt: true, owner: true })
     .extend({
         created_at: dateSchema,
         updated_at: dateSchema,

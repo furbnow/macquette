@@ -206,11 +206,6 @@ class TestGetAssessment(APITestCase):
             "status": "In progress",
             "name": "test name",
             "description": "test description",
-            "owner": {
-                "id": f"{self.me.id}",
-                "name": self.me.name,
-                "email": self.me.email,
-            },
             "organisation": None,
             "access": [
                 {
@@ -387,11 +382,6 @@ class TestGetAssessment(APITestCase):
                     "email": self.me.email,
                 }
             ],
-            "owner": {
-                "id": f"{self.me.id}",
-                "name": self.me.name,
-                "email": self.me.email,
-            },
             # defaults:
             "description": "",
             "status": "In progress",

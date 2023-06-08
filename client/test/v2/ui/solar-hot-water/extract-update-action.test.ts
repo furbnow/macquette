@@ -11,10 +11,9 @@ const FAKE_PROJECT_DATA = {
     status: 'In progress' as const,
     created_at: new Date(),
     updated_at: new Date(),
-    owner: { id: '1', name: 'Fred' },
     organisation: null,
     permissions: { can_share: false },
-    access: [],
+    access: [{ roles: ['owner' as const], id: '1', name: '', email: '' }],
     images: [],
 };
 
