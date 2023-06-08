@@ -1,5 +1,6 @@
 import type { LegacyHeatingSystem } from '.';
 import { Scenario } from '../../../data-schemas/scenario';
+import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
 import { solarHotWaterPrimaryCircuitLossFactor } from '../../datasets';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
@@ -195,6 +196,7 @@ export function extractWaterHeatingSystemInput(
     }
     if (
         legacySystem.fraction_water_heating === undefined ||
+        legacySystem.fraction_water_heating === '' ||
         legacySystem.fraction_water_heating <= 0
     ) {
         return null;
@@ -328,7 +330,8 @@ export function extractWaterHeatingSystemInput(
         }
     }
     return {
-        fractionWaterHeating: legacySystem.fraction_water_heating ?? 0,
+        fractionWaterHeating:
+            coalesceEmptyString(legacySystem.fraction_water_heating, 0) ?? 0,
         combiLoss,
         primaryCircuitLoss,
         distributionLoss: !isInstantaneous,

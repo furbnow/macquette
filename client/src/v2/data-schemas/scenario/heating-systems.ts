@@ -6,7 +6,7 @@ export const heatingSystems = z.array(
     z
         .object({
             provides: z.enum(['water', 'heating_and_water', 'heating']),
-            fraction_water_heating: z.number(),
+            fraction_water_heating: stringyFloatSchema,
             instantaneous_water_heating: legacyBoolean,
             primary_circuit_loss: z.enum(['Yes', 'No']),
             combi_loss: z.union([

@@ -53,7 +53,7 @@ export function migrateLegacyToV1(legacy: SolarHotWaterLegacy): SolarHotWaterV1 
         ...outputs
     } = legacy;
     const overshading =
-        overshadingInput === undefined
+        overshadingInput === undefined || overshadingInput === ''
             ? null
             : solarHotWaterOvershadingFactorReverse(overshadingInput)?.name ?? null;
     const orientation =
@@ -89,11 +89,12 @@ export function migrateLegacyToV1(legacy: SolarHotWaterLegacy): SolarHotWaterV1 
                     apertureAreaType: null,
                 },
                 orientation: orientation,
-                inclination: inclination ?? null,
+                inclination: coalesceEmptyString(inclination, null) ?? null,
                 overshading: overshading,
             },
-            combinedCylinderVolume: combined_cylinder_volume ?? null,
-            dedicatedSolarStorageVolume: Vs ?? null,
+            combinedCylinderVolume:
+                coalesceEmptyString(combined_cylinder_volume, null) ?? null,
+            dedicatedSolarStorageVolume: coalesceEmptyString(Vs, null) ?? null,
         },
     };
 }

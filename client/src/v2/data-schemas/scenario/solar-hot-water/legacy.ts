@@ -10,10 +10,10 @@ export const shwLegacy = z
         a1: stringyFloatSchema,
         a2: stringyFloatSchema,
         orientation: z.number().int().gte(0).lt(Orientation.names.length),
-        inclination: z.number(),
-        overshading: z.number(),
-        Vs: z.number(),
-        combined_cylinder_volume: z.number(),
+        inclination: stringyFloatSchema,
+        overshading: stringyFloatSchema,
+        Vs: stringyFloatSchema,
+        combined_cylinder_volume: stringyFloatSchema,
     })
     .partial();
 
