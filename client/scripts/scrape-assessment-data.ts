@@ -1,7 +1,7 @@
+import { input, password } from '@inquirer/prompts';
 import axios, { AxiosInstance } from 'axios';
 import Bottleneck from 'bottleneck';
 import { open, opendir, stat } from 'fs/promises';
-import inquirer from 'inquirer';
 import { join, resolve } from 'path';
 
 const MAX_CONCURRENT_REQUESTS = 4;
@@ -15,36 +15,20 @@ type Params = {
 };
 
 async function getParams(): Promise<Params> {
-    type PromptResult = {
-        baseUrl: string;
-        sessionid: string;
-        dataDirectory: string;
-    };
-    const { baseUrl, sessionid, dataDirectory } = await inquirer.prompt<PromptResult>([
-        {
-            type: 'input',
-            name: 'baseUrl',
+    return {
+        baseUrl: await input({
             message: 'Base URL to query',
             default: 'https://home.retrofitplanner.app',
-        },
-        {
-            type: 'input',
-            name: 'dataDirectory',
+        }),
+        dataDirectory: await input({
             message: 'Data directory',
             default: resolve(__dirname, '..', 'test', 'v2', 'fixtures', 'private'),
-        },
-        {
-            type: 'password',
-            name: 'sessionid',
-            message: 'Django sessionid cookie',
-        },
-    ]);
-    return {
-        baseUrl,
+        }),
         cookies: {
-            sessionid,
+            sessionid: await password({
+                message: 'Django sessionid cookie',
+            }),
         },
-        dataDirectory,
     };
 }
 

@@ -1,6 +1,6 @@
+import { confirm } from '@inquirer/prompts';
 import chalk from 'chalk';
 import { readFileSync } from 'fs';
-import inquirer from 'inquirer';
 import { join } from 'path';
 
 import { HTTPClient } from '../src/v2/api/http';
@@ -119,13 +119,10 @@ async function confirmProceed(
             console.log('(No action - dry run)');
             return { type: 'skip' };
         } else {
-            const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
-                { type: 'confirm', name: 'confirm', default: false, message: 'Proceed?' },
-            ]);
-            if (!confirm) {
-                return { type: 'skip' };
-            } else {
+            if (await confirm({ default: false, message: 'Proceed?' })) {
                 return action;
+            } else {
+                return { type: 'skip' };
             }
         }
     };

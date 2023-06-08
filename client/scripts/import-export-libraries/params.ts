@@ -1,4 +1,4 @@
-import inquirer from 'inquirer';
+import { confirm, input, select } from '@inquirer/prompts';
 import { resolve } from 'path';
 
 type CommonParams = {
@@ -11,49 +11,40 @@ export type ExportParams = CommonParams & {
 };
 
 export async function getExportParams(): Promise<ExportParams> {
-    return await inquirer.prompt<ExportParams>([
-        {
-            type: 'input',
-            name: 'baseUrl',
+    return {
+        baseUrl: await input({
             message: 'Base URL to query',
             default: 'https://home.retrofitplanner.app',
-        },
-        {
-            type: 'input',
-            name: 'dataDirectory',
+        }),
+        dataDirectory: await input({
             message: 'Data directory',
             default: resolve(process.env['HOME'] ?? '/tmp', 'macquette-libraries'),
-        },
-        {
-            type: 'list',
-            name: 'outputFormat',
-            choices: ['csv', 'json'],
+        }),
+        outputFormat: await select({
+            choices: [
+                { name: 'CSV', value: 'csv' as const },
+                { name: 'JSON', value: 'json' as const },
+            ],
             message: 'Output file format',
-        },
-    ]);
+        }),
+    };
 }
 
 export type ImportParams = CommonParams & { dryRun: boolean };
 
 export async function getImportParams(): Promise<ImportParams> {
-    return await inquirer.prompt<ImportParams>([
-        {
-            type: 'confirm',
-            name: 'dryRun',
+    return {
+        dryRun: await confirm({
             message: 'Dry run?',
             default: true,
-        },
-        {
-            type: 'input',
-            name: 'baseUrl',
+        }),
+        baseUrl: await input({
             message: 'Base URL to query',
             default: 'http://localhost:8000',
-        },
-        {
-            type: 'input',
-            name: 'dataDirectory',
+        }),
+        dataDirectory: await input({
             message: 'Data directory',
             default: resolve(process.env['HOME'] ?? '/tmp', 'macquette-libraries'),
-        },
-    ]);
+        }),
+    };
 }

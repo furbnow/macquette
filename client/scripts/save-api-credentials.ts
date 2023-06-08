@@ -1,4 +1,4 @@
-import inquirer from 'inquirer';
+import { input, password } from '@inquirer/prompts';
 
 import { ApiCredentials, writeSessionIdForBaseUrl } from './lib/config';
 
@@ -7,24 +7,14 @@ type Params = ApiCredentials & {
 };
 
 async function getParams(): Promise<Params> {
-    return await inquirer.prompt<Params>([
-        {
-            type: 'input',
-            name: 'baseUrl',
+    return {
+        baseUrl: await input({
             message: 'Base URL',
             default: 'https://home.retrofitplanner.app',
-        },
-        {
-            type: 'password',
-            name: 'sessionId',
-            message: 'Django sessionid cookie',
-        },
-        {
-            type: 'password',
-            name: 'csrfToken',
-            message: 'Django CSRF token',
-        },
-    ]);
+        }),
+        sessionId: await password({ message: 'Django sessionid cookie' }),
+        csrfToken: await password({ message: 'Django CSRF token' }),
+    };
 }
 
 async function main() {
