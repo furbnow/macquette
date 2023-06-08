@@ -11,14 +11,29 @@ import { FormGrid } from '../input-components/forms';
 import { Select } from '../input-components/select';
 import { TextInput } from '../input-components/text';
 import type { Dispatcher, UiModule } from '../module-management/module-type';
+import { Modal, ModalBody, ModalFooter, ModalHeader } from '../output-components/modal';
 import { Spinner } from '../output-components/spinner';
 
 type ProjectStatus = Project['status'];
 type ProjectAccess = Project['access'];
 
-type FetchStatus = 'at rest' | 'in flight' | 'successful' | 'failed';
+type Fetchable<T> =
+    | { status: 'at rest' | 'in flight' }
+    | { status: 'successful'; data: T }
+    | { status: 'failed'; error: unknown };
+type FetchStatus = Fetchable<unknown>['status'];
+
 type SaveableField = 'name' | 'status' | 'description';
 type Saveable<T> = { stored: T; user: T | null; status: FetchStatus };
+
+type OrgMember = { id: string; name: string; email: string };
+
+type ModalShareState = {
+    type: 'share';
+    user: string | null;
+    members: Fetchable<OrgMember[]>;
+    alreadyShared: string[];
+};
 
 export type State = {
     projectId: string;
@@ -28,25 +43,105 @@ export type State = {
     createdAt: Date;
     access: ProjectAccess;
     organisation: Organisation | null;
+    canShare: boolean;
+    modal: ModalShareState | null;
 };
 
 export type Action =
     | { type: 'extractor update'; project: Project }
+    | { type: 'close modal' }
     | { type: 'save name'; name: string }
     | { type: 'save description'; description: string }
     | { type: 'save status'; status: ProjectStatus }
+    | { type: 'open share modal' }
+    | { type: 'organisation member data fetched'; members: OrgMember[] }
+    | { type: 'select user'; userId: string }
+    | { type: 'initiate share' }
+    | { type: 'unshare with user'; userId: string }
+    | { type: 'use new access data'; access: ProjectAccess }
     | {
           type: 'request status updated';
           field: SaveableField;
           status: FetchStatus;
       };
 
-export type Effect = {
-    type: 'save';
-    projectId: string;
-    field: SaveableField;
-    data: Partial<{ name: string; description: string; status: ProjectStatus }>;
-};
+export type Effect =
+    | {
+          type: 'save';
+          projectId: string;
+          field: SaveableField;
+          data: Partial<{ name: string; description: string; status: ProjectStatus }>;
+      }
+    | { type: 'get members'; id: string }
+    | { type: 'share'; projectId: string; userId: string }
+    | { type: 'unshare'; projectId: string; userId: string };
+
+function ShareModal({
+    modalState,
+    dispatch,
+}: {
+    modalState: ModalShareState;
+    dispatch: Dispatcher<Action>;
+}) {
+    function closeModal() {
+        dispatch({ type: 'close modal' });
+    }
+    function selectUser(userId: string) {
+        dispatch({ type: 'select user', userId });
+    }
+    function share() {
+        dispatch({ type: 'initiate share' });
+    }
+
+    const options =
+        modalState.members.status === 'successful'
+            ? modalState.members.data.map((member) => {
+                  const alreadyShared = modalState.alreadyShared.includes(member.id);
+                  return {
+                      value: member.id,
+                      display: `${member.name} <${member.email}>${
+                          alreadyShared ? ' (already has access)' : ''
+                      }`,
+                      disabled: alreadyShared,
+                  };
+              })
+            : [];
+
+    return (
+        <Modal onClose={closeModal} headerId="modal-header">
+            <ModalHeader title="Share project" onClose={closeModal} />
+            <ModalBody>
+                {modalState.members.status === 'successful' && (
+                    <>
+                        <p>Share with:</p>
+                        <Select
+                            options={options}
+                            onChange={selectUser}
+                            value={modalState.user}
+                            className="input--auto-width"
+                        />
+                    </>
+                )}
+                {modalState.members.status === 'failed' && (
+                    <p>Loading member list failed</p>
+                )}
+                {(modalState.members.status === 'in flight' ||
+                    modalState.members.status === 'at rest') && (
+                    <p>Loading member list...</p>
+                )}
+            </ModalBody>
+            <ModalFooter>
+                <button
+                    className="btn btn-primary"
+                    onClick={share}
+                    disabled={modalState.user === null}
+                >
+                    Share
+                </button>
+            </ModalFooter>
+        </Modal>
+    );
+}
 
 function FetchStatus({ status }: { status: FetchStatus }) {
     return (
@@ -148,7 +243,7 @@ function displayRole(role: ProjectAccess[number]['roles'][number]) {
     }
 }
 
-function Access({ state }: { state: State }) {
+function Access({ state, dispatch }: { state: State; dispatch: Dispatcher<Action> }) {
     return (
         <section className="line-top">
             <h3 className="mt-0">Access</h3>
@@ -167,6 +262,7 @@ function Access({ state }: { state: State }) {
                                 <th className="text-left">User</th>
                                 <th className="text-left">Email</th>
                                 <th className="text-left">Role</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -179,8 +275,40 @@ function Access({ state }: { state: State }) {
                                             .map((role) => displayRole(role))
                                             .join(', ')}
                                     </td>
+                                    <td>
+                                        {state.canShare &&
+                                            user.roles.includes('editor') && (
+                                                <button
+                                                    className="btn btn-danger"
+                                                    onClick={() => {
+                                                        dispatch({
+                                                            type: 'unshare with user',
+                                                            userId: user.id,
+                                                        });
+                                                    }}
+                                                >
+                                                    Remove
+                                                </button>
+                                            )}
+                                    </td>
                                 </tr>
                             ))}
+                            {state.canShare && (
+                                <tr>
+                                    <td colSpan={4}>
+                                        <button
+                                            className="btn"
+                                            onClick={() => {
+                                                dispatch({
+                                                    type: 'open share modal',
+                                                });
+                                            }}
+                                        >
+                                            Share...
+                                        </button>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </span>
@@ -193,7 +321,11 @@ function Project({ state, dispatch }: { state: State; dispatch: Dispatcher<Actio
     return (
         <>
             <Meta state={state} dispatch={dispatch} />
-            <Access state={state} />
+            <Access state={state} dispatch={dispatch} />
+
+            {state.modal !== null && state.modal.type === 'share' && (
+                <ShareModal modalState={state.modal} dispatch={dispatch} />
+            )}
         </>
     );
 }
@@ -211,6 +343,8 @@ export const projectModule: UiModule<State, Action, Effect> = {
             organisation: null,
             organisationMembers: { status: 'at rest' },
             access: [],
+            canShare: false,
+            modal: null,
         };
     },
     reducer: (state: State, action: Action): [State, Effect[]?] => {
@@ -238,8 +372,13 @@ export const projectModule: UiModule<State, Action, Effect> = {
                     },
                     organisation: project.organisation,
                     access: project.access,
+                    canShare: project.permissions.can_share,
                 };
                 return [newState];
+            }
+
+            case 'close modal': {
+                return [{ ...state, modal: null }];
             }
 
             case 'save name': {
@@ -273,6 +412,106 @@ export const projectModule: UiModule<State, Action, Effect> = {
                 return [
                     safeMerge(state, { status: { user: status } }),
                     [{ type: 'save', projectId, field: 'status', data: { status } }],
+                ];
+            }
+
+            case 'open share modal': {
+                if (state.organisation === null) {
+                    console.error(
+                        'Open share modal can only be used with an organisation',
+                    );
+                    return [state];
+                }
+
+                return [
+                    {
+                        ...state,
+                        modal: {
+                            type: 'share',
+                            user: null,
+                            alreadyShared: state.access.map((user) => user.id),
+                            members: { status: 'at rest' },
+                        },
+                    },
+                    [{ type: 'get members', id: state.organisation.id }],
+                ];
+            }
+
+            case 'select user': {
+                if (state.modal !== null && state.modal.type === 'share') {
+                    return [
+                        {
+                            ...state,
+                            modal: {
+                                ...state.modal,
+                                user: action.userId,
+                            },
+                        },
+                    ];
+                }
+                return [state];
+            }
+
+            case 'initiate share': {
+                if (
+                    state.modal !== null &&
+                    state.modal.type === 'share' &&
+                    state.modal.user !== null
+                ) {
+                    return [
+                        state,
+                        [
+                            {
+                                type: 'share',
+                                projectId: state.projectId,
+                                userId: state.modal.user,
+                            },
+                        ],
+                    ];
+                } else {
+                    return [state];
+                }
+            }
+
+            case 'organisation member data fetched': {
+                if (state.modal !== null && state.modal.type === 'share') {
+                    const { members } = action;
+                    return [
+                        {
+                            ...state,
+                            modal: {
+                                ...state.modal,
+                                members: {
+                                    data: members,
+                                    status: 'successful',
+                                },
+                            },
+                        },
+                    ];
+                } else {
+                    return [state];
+                }
+            }
+
+            case 'unshare with user': {
+                return [
+                    state,
+                    [
+                        {
+                            type: 'unshare',
+                            projectId: state.projectId,
+                            userId: action.userId,
+                        },
+                    ],
+                ];
+            }
+
+            case 'use new access data': {
+                return [
+                    {
+                        ...state,
+                        access: action.access,
+                    },
                 ];
             }
 
@@ -314,6 +553,43 @@ export const projectModule: UiModule<State, Action, Effect> = {
                 }
                 break;
             }
+
+            case 'get members': {
+                const organisations = await apiClient.listOrganisations();
+                const ourOrg = organisations.unwrap().find((org) => org.id === effect.id);
+                if (ourOrg !== undefined) {
+                    dispatch({
+                        type: 'organisation member data fetched',
+                        members: ourOrg.members.map(({ id, name, email }) => ({
+                            id,
+                            name,
+                            email,
+                        })),
+                    });
+                }
+                break;
+            }
+
+            case 'share': {
+                const { projectId, userId } = effect;
+                const access = await apiClient.shareAssessment(projectId, userId);
+                dispatch({ type: 'close modal' });
+                dispatch({
+                    type: 'use new access data',
+                    access,
+                });
+                break;
+            }
+
+            case 'unshare': {
+                const { projectId, userId } = effect;
+                const access = await apiClient.unshareAssessment(projectId, userId);
+                dispatch({
+                    type: 'use new access data',
+                    access,
+                });
+                break;
+            }
         }
     },
     shims: {
@@ -327,6 +603,7 @@ export const projectModule: UiModule<State, Action, Effect> = {
             project.name = state.name.stored;
             project.description = state.description.stored;
             project.status = state.status.stored;
+            project.access = state.access;
         },
     },
 };
