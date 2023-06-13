@@ -1,13 +1,12 @@
 from itertools import zip_longest
 
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import serializers
 
+from mhep.users.models import User
+
 from .models import Assessment, Image, Library, Organisation
 from .models.assessment import STATUS_CHOICES
-
-User = get_user_model()
 
 
 class UserSerializer(serializers.Serializer):
@@ -156,6 +155,7 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
     """
 
     id = serializers.CharField(read_only=True)
+    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects, write_only=True)
     organisation = OrganisationMetadataSerializer(read_only=True)
     access = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
@@ -167,12 +167,20 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
     def get_permissions(self, library):
-        from .views.helpers import check_assessment_share_permissions
+        from .views.helpers import (
+            check_assessment_reassign_permissions,
+            check_assessment_share_permissions,
+        )
+
+        (can_reassign, _) = check_assessment_reassign_permissions(
+            library, self.context["request"], self.context["request"].user.pk
+        )
 
         return {
             "can_share": check_assessment_share_permissions(
                 library, self.context["request"]
             ),
+            "can_reassign": can_reassign,
         }
 
     def get_access(self, assessment):
@@ -188,6 +196,7 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "organisation",
+            "owner",
             "access",
             "permissions",
             "images",

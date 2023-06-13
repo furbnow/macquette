@@ -59,19 +59,30 @@ class RetrieveUpdateDestroyAssessment(
     permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if "data" in request.data and obj.status == "Complete":
+        partial = kwargs.pop("partial", False)
+        assessment = self.get_object()
+
+        serializer = self.get_serializer(assessment, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        if "data" in request.data and assessment.status == "Complete":
             return Response(
                 {"detail": "can't update data when status is 'complete'"},
                 status.HTTP_400_BAD_REQUEST,
             )
 
-        response = super().update(request, *args, **kwargs)
+        if "owner" in request.data:
+            from .helpers import check_assessment_reassign_permissions
 
-        if response.status_code == status.HTTP_200_OK:
-            return Response(None, status.HTTP_204_NO_CONTENT)
-        else:
-            return response
+            can_reassign, message = check_assessment_reassign_permissions(
+                assessment, request, request.data["owner"]
+            )
+            if not can_reassign:
+                return Response({"detail": message}, status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+
+        return Response(None, status.HTTP_204_NO_CONTENT)
 
 
 class ShareUnshareAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):

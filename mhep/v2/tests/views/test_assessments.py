@@ -217,6 +217,7 @@ class TestGetAssessment(APITestCase):
             ],
             "permissions": {
                 "can_share": False,
+                "can_reassign": False,
             },
             "images": [
                 {
@@ -373,6 +374,7 @@ class TestGetAssessment(APITestCase):
             "organisation": None,
             "permissions": {
                 "can_share": False,
+                "can_reassign": False,
             },
             "access": [
                 {
@@ -555,6 +557,89 @@ class TestUpdateAssessment(APITestCase):
                 updateFields,
                 format="json",
             )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+class ReassignAssessment(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.me = UserFactory.create()
+        cls.other = UserFactory.create()
+        cls.assessment = AssessmentFactory.create(
+            owner=cls.me,
+            name="test name",
+            description="test description",
+            data={"foo": "bar"},
+            status="In progress",
+        )
+        cls.organisation = OrganisationFactory.create()
+
+    def test_reassign_fails_on_non_org_assessment(self):
+        self.client.force_authenticate(self.me)
+        response = self.client.patch(
+            f"/{VERSION}/api/assessments/{self.assessment.pk}/",
+            {"owner": self.other.pk},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_reassign_fails_on_org_assessment_where_not_admin_or_owner(self):
+        self.organisation.members.add(self.me, self.other)
+        self.assessment.organisation = self.organisation
+        self.assessment.save()
+        self.assessment.shared_with.add(self.other)
+
+        self.client.force_authenticate(self.other)
+        response = self.client.patch(
+            f"/{VERSION}/api/assessments/{self.assessment.pk}/",
+            {"owner": self.me.pk},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_reassign_fails_on_org_assessment_where_new_user_not_in_org(self):
+        self.assessment.organisation = self.organisation
+        self.assessment.save()
+
+        self.client.force_authenticate(self.me)
+        response = self.client.patch(
+            f"/{VERSION}/api/assessments/{self.assessment.pk}/",
+            {"owner": self.other.pk},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_reassign_succeeds_on_org_assessment_when_admin(self):
+        self.organisation.members.add(self.me, self.other)
+        self.organisation.admins.add(self.other)
+        self.assessment.organisation = self.organisation
+        self.assessment.save()
+
+        self.client.force_authenticate(self.other)
+        response = self.client.patch(
+            f"/{VERSION}/api/assessments/{self.assessment.pk}/",
+            {"owner": self.me.pk},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_reassign_succeeds_on_org_assessment_when_current_owner(self):
+        self.organisation.members.add(self.me, self.other)
+        self.assessment.organisation = self.organisation
+        self.assessment.save()
+        self.assessment.shared_with.add(self.other)
+
+        self.client.force_authenticate(self.me)
+        response = self.client.patch(
+            f"/{VERSION}/api/assessments/{self.assessment.pk}/",
+            {"owner": self.other.pk},
+            format="json",
+        )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 

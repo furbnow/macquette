@@ -132,9 +132,8 @@ def check_library_share_permissions(library, original_request):
 
 def check_assessment_share_permissions(assessment, original_request):
     """
-    manually check the permissions for the ShareUnshareOrganisationLibraries view to
-    work out if the current user (based on original_request) is allowed to share /
-    unshare this library.
+    Work out if the current user (based on original_request) is allowed to share /
+    unshare this assessment.
     """
 
     from ..views.assessments import ShareUnshareAssessment
@@ -152,6 +151,24 @@ def check_assessment_share_permissions(assessment, original_request):
             return False
 
     return True
+
+
+def check_assessment_reassign_permissions(assessment, request, user_id):
+    """Decide if the current user is allowed to reassign this assessment."""
+
+    if assessment.organisation is None:
+        return (False, "can't reassign assessment not in an organisation")
+
+    if (
+        request.user.pk != assessment.owner.pk
+        and not assessment.organisation.admins.filter(id=request.user.pk).exists()
+    ):
+        return (False, "can't reassign assessment if not owner or admin")
+
+    if not assessment.organisation.members.filter(id=user_id).exists():
+        return (False, "can't reassign to users outside organisation")
+
+    return (True, None)
 
 
 def get_assessments_for_user(user: user_models.User):
