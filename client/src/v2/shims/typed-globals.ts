@@ -25,10 +25,18 @@ export function externals() {
         throw new Error('window.p is not a Record');
     }
     const appName: unknown = window['appName'];
+    if (typeof appName !== 'string') {
+        throw new Error('window.appName is not a string');
+    }
+    const userId: unknown = window['userId'];
+    if (typeof userId !== 'string') {
+        throw new Error('window.userId is not a string');
+    }
     return {
         project,
         update,
         appName,
+        userId,
 
         // SAFETY: window.libraries is set in the legacy library helper from
         // this API function.
@@ -72,7 +80,8 @@ export function getAppContext(): AppContext {
         z.union([z.instanceof(ModelError), z.instanceof(ZodError)]),
     ).parse(currentScenario.model);
 
-    const appName = z.string().parse(externals().appName);
+    const { appName, userId } = externals();
+
     return {
         route,
         project,
@@ -80,6 +89,7 @@ export function getAppContext(): AppContext {
         currentScenario,
         currentModel,
         appName,
+        userId,
     };
 }
 

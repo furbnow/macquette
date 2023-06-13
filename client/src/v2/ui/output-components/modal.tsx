@@ -63,7 +63,7 @@ export function Modal({ headerId, onClose, children }: ModalProps): ReactElement
 type ModalHeaderProps = {
     title: string;
     children?: ReactNode;
-    onClose: () => void;
+    onClose?: () => void;
 };
 
 export function ModalHeader({ title, children, onClose }: ModalHeaderProps) {
@@ -74,25 +74,27 @@ export function ModalHeader({ title, children, onClose }: ModalHeaderProps) {
                     {title}
                 </h4>
 
-                <div>
-                    <button
-                        type="button"
-                        aria-label="Close"
-                        onClick={onClose}
-                        className="dialog-x"
-                    >
-                        <svg
-                            width="22"
-                            height="22"
-                            viewBox="0 0 44 44"
-                            aria-hidden="true"
-                            focusable="false"
+                {onClose !== undefined && (
+                    <div>
+                        <button
+                            type="button"
+                            aria-label="Close"
+                            onClick={onClose}
+                            className="dialog-x"
                         >
-                            <path d="M0.549989 4.44999L4.44999 0.549988L43.45 39.55L39.55 43.45L0.549989 4.44999Z" />
-                            <path d="M39.55 0.549988L43.45 4.44999L4.44999 43.45L0.549988 39.55L39.55 0.549988Z" />
-                        </svg>
-                    </button>
-                </div>
+                            <svg
+                                width="22"
+                                height="22"
+                                viewBox="0 0 44 44"
+                                aria-hidden="true"
+                                focusable="false"
+                            >
+                                <path d="M0.549989 4.44999L4.44999 0.549988L43.45 39.55L39.55 43.45L0.549989 4.44999Z" />
+                                <path d="M39.55 0.549988L43.45 4.44999L4.44999 43.45L0.549988 39.55L39.55 0.549988Z" />
+                            </svg>
+                        </button>
+                    </div>
+                )}
             </div>
             {children}
         </div>

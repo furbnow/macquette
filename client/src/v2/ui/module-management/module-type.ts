@@ -14,6 +14,7 @@ export type AppContext = {
     currentScenario: Scenario;
     currentModel: Result<CombinedModules, ZodError<unknown> | ModelError>;
     appName: string;
+    userId: string;
 };
 
 export type Dispatcher<Action> = (action: Action) => void;

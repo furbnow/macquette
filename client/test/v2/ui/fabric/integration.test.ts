@@ -40,6 +40,7 @@ function runReducerActions(
                         page: 'elements',
                     },
                     appName: 'some app name',
+                    userId: '0',
                 },
                 '',
                 { inputs: true, outputs: true },

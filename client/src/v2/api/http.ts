@@ -25,7 +25,12 @@ import {
 import { Image, imageSchema } from '../data-schemas/image';
 import { Library, librarySchema } from '../data-schemas/libraries';
 import { Organisation, listOrganisationResponse } from '../data-schemas/organisations';
-import { UserAccess, userAccessSchema } from '../data-schemas/project';
+import {
+    UpdateAssessmentResponse,
+    UserAccess,
+    updateAssessmentSchema,
+    userAccessSchema,
+} from '../data-schemas/project';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
 import { isIndexable } from '../helpers/is-indexable';
 import { jsEnvironment } from '../helpers/js-environment';
@@ -352,14 +357,23 @@ export class HTTPClient {
         return response.data;
     }
 
-    async updateAssessment(id: string, updates: unknown): Promise<void> {
-        await this.throwingRequest({
+    async updateAssessment(
+        id: string,
+        updates: unknown,
+    ): Promise<null | UpdateAssessmentResponse> {
+        const response = await this.throwingRequest({
             intent: 'updating assessment',
             url: urls.assessment(id),
             method: 'PATCH',
             headers: jsonContentTypeHeader,
             data: updates,
+            responseType: 'json',
         });
+        if (response.status === 200) {
+            return updateAssessmentSchema.parse(response.data);
+        } else {
+            return null;
+        }
     }
 
     async createAssessment(

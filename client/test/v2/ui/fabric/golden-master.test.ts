@@ -270,6 +270,7 @@ describe('fabric page extractor & mutator round trip should roundtrip the data a
                             page: 'elements',
                         },
                         appName: 'some app name',
+                        userId: '0',
                     },
                     '',
                     { inputs: true, outputs: true },

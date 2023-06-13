@@ -32,5 +32,7 @@ export const projectSchema = assessmentMetadataSchema
                 .transform((val) => val ?? false),
         }),
     });
-
 export type Project = z.output<typeof projectSchema>;
+
+export const updateAssessmentSchema = projectSchema.omit({ data: true });
+export type UpdateAssessmentResponse = z.output<typeof updateAssessmentSchema>;

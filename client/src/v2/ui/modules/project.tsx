@@ -35,6 +35,14 @@ type ModalShareState = {
     alreadyShared: string[];
 };
 
+type ModalReassignState = {
+    type: 'reassign';
+    user: string | null;
+    members: Fetchable<OrgMember[]>;
+    access: ProjectAccess;
+    currentUserId: string;
+};
+
 export type State = {
     projectId: string;
     name: Saveable<string>;
@@ -42,13 +50,16 @@ export type State = {
     status: Saveable<ProjectStatus>;
     createdAt: Date;
     access: ProjectAccess;
+    currentUserId: string;
+    currentUserNoLongerHasAccess: boolean;
     organisation: Organisation | null;
     canShare: boolean;
-    modal: ModalShareState | null;
+    canReassign: boolean;
+    modal: ModalShareState | ModalReassignState | null;
 };
 
 export type Action =
-    | { type: 'extractor update'; project: Project }
+    | { type: 'extractor update'; project: Project; userId: string }
     | { type: 'close modal' }
     | { type: 'save name'; name: string }
     | { type: 'save description'; description: string }
@@ -63,7 +74,9 @@ export type Action =
           type: 'request status updated';
           field: SaveableField;
           status: FetchStatus;
-      };
+      }
+    | { type: 'open reassign modal' }
+    | { type: 'initiate reassignment' };
 
 export type Effect =
     | {
@@ -74,7 +87,8 @@ export type Effect =
       }
     | { type: 'get members'; id: string }
     | { type: 'share'; projectId: string; userId: string }
-    | { type: 'unshare'; projectId: string; userId: string };
+    | { type: 'unshare'; projectId: string; userId: string }
+    | { type: 'reassign'; projectId: string; userId: string };
 
 function ShareModal({
     modalState,
@@ -137,6 +151,90 @@ function ShareModal({
                     disabled={modalState.user === null}
                 >
                     Share
+                </button>
+            </ModalFooter>
+        </Modal>
+    );
+}
+
+function ReassignModal({
+    modalState,
+    dispatch,
+}: {
+    modalState: ModalReassignState;
+    dispatch: Dispatcher<Action>;
+}) {
+    function closeModal() {
+        dispatch({ type: 'close modal' });
+    }
+    function selectUser(userId: string) {
+        dispatch({ type: 'select user', userId });
+    }
+    function reassign() {
+        dispatch({ type: 'initiate reassignment' });
+    }
+
+    const currentOwnerId =
+        modalState.access.find((user) => user.roles.includes('owner'))?.id ?? null;
+    const currentUser =
+        modalState.access.find((user) => user.id === modalState.currentUserId) ?? null;
+    const willLoseAccess =
+        currentUser !== null &&
+        currentUser.id === currentOwnerId &&
+        !currentUser.roles.includes('org_admin') &&
+        !currentUser.roles.includes('editor');
+
+    const options =
+        modalState.members.status === 'successful'
+            ? modalState.members.data.map((member) => {
+                  const isOwner = currentOwnerId === member.id;
+                  return {
+                      value: member.id,
+                      display: `${member.name} <${member.email}>${
+                          isOwner ? ' (current owner)' : ''
+                      }`,
+                      disabled: isOwner,
+                  };
+              })
+            : [];
+
+    return (
+        <Modal onClose={closeModal} headerId="modal-header">
+            <ModalHeader title="Reassign project" onClose={closeModal} />
+            <ModalBody>
+                {modalState.members.status === 'successful' && (
+                    <>
+                        <p>Reassign to:</p>
+                        <Select
+                            options={options}
+                            onChange={selectUser}
+                            value={modalState.user}
+                            className="input--auto-width"
+                        />
+
+                        {willLoseAccess && (
+                            <p>
+                                After reassignment you will no longer have access to this
+                                project.
+                            </p>
+                        )}
+                    </>
+                )}
+                {modalState.members.status === 'failed' && (
+                    <p>Loading member list failed</p>
+                )}
+                {(modalState.members.status === 'in flight' ||
+                    modalState.members.status === 'at rest') && (
+                    <p>Loading member list...</p>
+                )}
+            </ModalBody>
+            <ModalFooter>
+                <button
+                    className="btn btn-primary"
+                    onClick={reassign}
+                    disabled={modalState.user === null}
+                >
+                    Reassign
                 </button>
             </ModalFooter>
         </Modal>
@@ -293,19 +391,36 @@ function Access({ state, dispatch }: { state: State; dispatch: Dispatcher<Action
                                     </td>
                                 </tr>
                             ))}
-                            {state.canShare && (
+                            {(state.canShare || state.canReassign) && (
                                 <tr>
                                     <td colSpan={4}>
-                                        <button
-                                            className="btn"
-                                            onClick={() => {
-                                                dispatch({
-                                                    type: 'open share modal',
-                                                });
-                                            }}
-                                        >
-                                            Share...
-                                        </button>
+                                        <div className="d-flex gap-7">
+                                            {state.canShare && (
+                                                <button
+                                                    className="btn"
+                                                    onClick={() => {
+                                                        dispatch({
+                                                            type: 'open share modal',
+                                                        });
+                                                    }}
+                                                >
+                                                    Share...
+                                                </button>
+                                            )}
+
+                                            {state.canReassign && (
+                                                <button
+                                                    className="btn"
+                                                    onClick={() => {
+                                                        dispatch({
+                                                            type: 'open reassign modal',
+                                                        });
+                                                    }}
+                                                >
+                                                    Reassign owner...
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             )}
@@ -326,6 +441,24 @@ function Project({ state, dispatch }: { state: State; dispatch: Dispatcher<Actio
             {state.modal !== null && state.modal.type === 'share' && (
                 <ShareModal modalState={state.modal} dispatch={dispatch} />
             )}
+            {state.modal !== null && state.modal.type === 'reassign' && (
+                <ReassignModal modalState={state.modal} dispatch={dispatch} />
+            )}
+            {state.currentUserNoLongerHasAccess && (
+                <div className="dialog-backdrop">
+                    <div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="modal-header"
+                        className="notbootstrap"
+                    >
+                        <ModalHeader title="Access revoked" />
+                        <ModalBody>
+                            <p>You no longer have access to this project.</p>
+                        </ModalBody>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
@@ -342,15 +475,18 @@ export const projectModule: UiModule<State, Action, Effect> = {
             status: { stored: 'In progress', user: null, status: 'at rest' },
             organisation: null,
             organisationMembers: { status: 'at rest' },
+            currentUserId: '',
+            currentUserNoLongerHasAccess: false,
             access: [],
             canShare: false,
+            canReassign: false,
             modal: null,
         };
     },
     reducer: (state: State, action: Action): [State, Effect[]?] => {
         switch (action.type) {
             case 'extractor update': {
-                const { project } = action;
+                const { project, userId } = action;
                 const newState = {
                     ...state,
                     projectId: project.id,
@@ -370,9 +506,11 @@ export const projectModule: UiModule<State, Action, Effect> = {
                         user: state.status.user ?? project.status,
                         status: state.status.status,
                     },
+                    currentUserId: userId,
                     organisation: project.organisation,
                     access: project.access,
                     canShare: project.permissions.can_share,
+                    canReassign: project.permissions.can_reassign,
                 };
                 return [newState];
             }
@@ -415,6 +553,29 @@ export const projectModule: UiModule<State, Action, Effect> = {
                 ];
             }
 
+            case 'open reassign modal': {
+                if (state.organisation === null) {
+                    console.error(
+                        'Ownership can only be reassigned within an organisation',
+                    );
+                    return [state];
+                }
+
+                return [
+                    {
+                        ...state,
+                        modal: {
+                            type: 'reassign',
+                            user: null,
+                            access: state.access,
+                            currentUserId: state.currentUserId,
+                            members: { status: 'at rest' },
+                        },
+                    },
+                    [{ type: 'get members', id: state.organisation.id }],
+                ];
+            }
+
             case 'open share modal': {
                 if (state.organisation === null) {
                     console.error(
@@ -438,7 +599,7 @@ export const projectModule: UiModule<State, Action, Effect> = {
             }
 
             case 'select user': {
-                if (state.modal !== null && state.modal.type === 'share') {
+                if (state.modal !== null) {
                     return [
                         {
                             ...state,
@@ -473,8 +634,29 @@ export const projectModule: UiModule<State, Action, Effect> = {
                 }
             }
 
+            case 'initiate reassignment': {
+                if (
+                    state.modal !== null &&
+                    state.modal.type === 'reassign' &&
+                    state.modal.user !== null
+                ) {
+                    return [
+                        state,
+                        [
+                            {
+                                type: 'reassign',
+                                projectId: state.projectId,
+                                userId: state.modal.user,
+                            },
+                        ],
+                    ];
+                } else {
+                    return [state];
+                }
+            }
+
             case 'organisation member data fetched': {
-                if (state.modal !== null && state.modal.type === 'share') {
+                if (state.modal !== null) {
                     const { members } = action;
                     return [
                         {
@@ -507,9 +689,15 @@ export const projectModule: UiModule<State, Action, Effect> = {
             }
 
             case 'use new access data': {
+                const currentUser = action.access.find(
+                    (user) => user.id === state.currentUserId,
+                );
+                const currentUserNoLongerHasAccess = currentUser === undefined;
+
                 return [
                     {
                         ...state,
+                        currentUserNoLongerHasAccess,
                         access: action.access,
                     },
                 ];
@@ -545,6 +733,7 @@ export const projectModule: UiModule<State, Action, Effect> = {
                         status: 'successful',
                     });
                 } catch (err) {
+                    console.log(err);
                     dispatch({
                         type: 'request status updated',
                         field: effect.field,
@@ -590,11 +779,29 @@ export const projectModule: UiModule<State, Action, Effect> = {
                 });
                 break;
             }
+
+            case 'reassign': {
+                const { projectId, userId } = effect;
+                const response = await apiClient.updateAssessment(projectId, {
+                    owner: userId,
+                });
+                dispatch({ type: 'close modal' });
+
+                if (response !== null) {
+                    const { access } = response;
+                    dispatch({
+                        type: 'use new access data',
+                        access,
+                    });
+                }
+
+                break;
+            }
         }
     },
     shims: {
-        extractUpdateAction: ({ project }) => {
-            return Result.ok([{ type: 'extractor update', project }]);
+        extractUpdateAction: ({ project, userId }) => {
+            return Result.ok([{ type: 'extractor update', project, userId }]);
         },
 
         mutateLegacyData: ({ project: projectRaw }, _context, state) => {
