@@ -204,6 +204,24 @@ class AssessmentFullSerializer(ImagesMixin, serializers.ModelSerializer):
         ]
 
 
+class AssessmentFullWithoutDataSerializer(AssessmentFullSerializer):
+    class Meta:
+        model = Assessment
+        fields = [
+            "id",
+            "name",
+            "description",
+            "status",
+            "created_at",
+            "updated_at",
+            "organisation",
+            "owner",
+            "access",
+            "permissions",
+            "images",
+        ]
+
+
 class LibrarySerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     permissions = serializers.SerializerMethodField()

@@ -16,6 +16,7 @@ from ..permissions import (
 )
 from ..serializers import (
     AssessmentFullSerializer,
+    AssessmentFullWithoutDataSerializer,
     AssessmentMetadataSerializer,
     FeaturedImageSerializer,
     ImageSerializer,
@@ -82,7 +83,16 @@ class RetrieveUpdateDestroyAssessment(
 
         serializer.save()
 
-        return Response(None, status.HTTP_204_NO_CONTENT)
+        non_data_fields = {*request.data.keys()} - {"data"}
+        if len(non_data_fields) > 0:
+            return Response(
+                AssessmentFullWithoutDataSerializer(
+                    assessment, context={"request": request}
+                ).data,
+                status.HTTP_200_OK,
+            )
+        else:
+            return Response(None, status.HTTP_204_NO_CONTENT)
 
 
 class ShareUnshareAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):

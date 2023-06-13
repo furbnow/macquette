@@ -479,12 +479,11 @@ class TestUpdateAssessment(APITestCase):
                 format="json",
             )
 
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert response.content == b""
+        assert response.status_code == status.HTTP_200_OK
 
         updated_assessment = Assessment.objects.get(pk=self.assessment.pk)
 
-        assert {"new": "data"} == updated_assessment.data
+        assert updated_assessment.data == {"new": "data"}
         assert updated_assessment.status == "Complete"
         assert updated_assessment.updated_at.isoformat() == "2019-07-13T12:10:12+00:00"
 
@@ -499,12 +498,9 @@ class TestUpdateAssessment(APITestCase):
                 format="json",
             )
 
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert response.content == b""
-
-        updated_assessment = Assessment.objects.get(pk=self.assessment.pk)
-
-        assert updated_assessment.updated_at.isoformat() == "2019-06-01T16:35:34+00:00"
+        assert response.status_code == status.HTTP_200_OK
+        response_body = response.json()
+        assert response_body["updated_at"] == "2019-06-01T16:35:34Z"
 
     def test_fails_if_data_field_is_a_string(self):
         with freeze_time("2019-07-13T12:10:12Z"):
@@ -558,7 +554,7 @@ class TestUpdateAssessment(APITestCase):
                 format="json",
             )
 
-        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.status_code == status.HTTP_200_OK
 
 
 class ReassignAssessment(APITestCase):
@@ -626,7 +622,7 @@ class ReassignAssessment(APITestCase):
             format="json",
         )
 
-        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.status_code == status.HTTP_200_OK
 
     def test_reassign_succeeds_on_org_assessment_when_current_owner(self):
         self.organisation.members.add(self.me, self.other)
@@ -641,7 +637,7 @@ class ReassignAssessment(APITestCase):
             format="json",
         )
 
-        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.status_code == status.HTTP_200_OK
 
 
 class TestDestroyAssessment(APITestCase):

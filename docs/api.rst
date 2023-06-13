@@ -253,6 +253,8 @@ Update a field on assessment
    PATCH /assessments/:id/
    Content-Type: application/json
 
+If successful, returns 204 No Content if the change is only to the data field; otherwise returns 200 with a response body that is the full assessment minus the `data` field.
+
 Example: update the model data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
