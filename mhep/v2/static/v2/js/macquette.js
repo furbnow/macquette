@@ -192,7 +192,7 @@ function setupEventHandlers() {
     );
 }
 
-function update({ undoRedo = false, dataChanged = true, source }) {
+function update({ undoRedo = false, dataChanged = true, source } = {}) {
     // We need to calculate the periods of heating off here because if we try to do it in household.js it happens after the update
     if (project.master.household != undefined) {
         for (var s in project) {
