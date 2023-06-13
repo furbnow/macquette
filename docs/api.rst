@@ -13,8 +13,6 @@ List assessments
 
 List all assessments the current user has access to.
 
-ℹ️ porting notes: replaces previous ``assessment/list`` route.
-
 Example
 ~~~~~~~
 
@@ -53,9 +51,6 @@ List assessments for organisation
 
 List all assessments that belong to an organisation.
 
-ℹ️ porting notes: replaces previous ``assessment/list`` with ``orgid``
-param.
-
 .. _example-1:
 
 Example
@@ -93,8 +88,6 @@ Get assessment
 ::
 
    GET /assessments/:id/
-
-ℹ️ porting notes: replaces previous route ``assessment/get``
 
 .. _example-2:
 
@@ -169,8 +162,6 @@ Create assessment
 
    POST /assessments/
 
-ℹ️ porting notes: replaces previous ``assessment/create`` route.
-
 .. _example-3:
 
 Example
@@ -215,9 +206,6 @@ Create assessment for organisation
 ::
 
    POST /organisations/:id/assessments/
-
-ℹ️ porting notes: replaces previous ``assessment/create`` with ``org``
-param.
 
 .. _example-4:
 
@@ -264,13 +252,6 @@ Update a field on assessment
 
    PATCH /assessments/:id/
    Content-Type: application/json
-
-ℹ️ porting notes: replaces previous routes:
-
--  ``assessment/setdata``
--  ``assessment/setnameanddescription``
--  ``assessment/setopenBEMversion``
--  ``assessment/setstatus``
 
 Example: update the model data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -321,8 +302,6 @@ Delete assessment
 ::
 
    DELETE /assessments/:id/
-
-ℹ️ porting notes: replaces previous ``assessment/delete`` route.
 
 .. _example-5:
 
@@ -582,9 +561,6 @@ List all organisations the current user is a member of. Each
 organisation also returns ``permissions``, which shows what the current
 user can and can not do.
 
-ℹ️ porting notes: replaces previous ``assessment/getorganisations``
-route.
-
 .. _example-11:
 
 Example
@@ -778,9 +754,6 @@ b) a library that belongs to me,
 c) a library belonging to an organisation I’m a member of
 d) a library that has been shared with an organisation I’m a member of
 
-ℹ️ porting notes: replaces previous route
-``assessment/loaduserlibraries``
-
 .. _example-16:
 
 Example
@@ -880,10 +853,6 @@ Create a library
 
    POST /libraries/
 
-ℹ️ porting notes: replaces previous ``assessment/newlibrary`` route. It
-can also add data in a single request, where the previous route required
-the subsequent use of ``savelibrary``
-
 ::
 
    > curl -v \
@@ -967,8 +936,6 @@ Update a library
 
    PATCH /libraries/:id/
    Content-Type: application/json
-
-ℹ️ porting notes: replaces previous ``assessment/savelibrary`` route.
 
 Example: update the ``data`` field
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1072,8 +1039,6 @@ Delete a library
 
    DELETE /librarys/:id/
 
-ℹ️ porting notes: replaces previous ``assessment/deletelibrary`` route.
-
 .. _example-21:
 
 Example
@@ -1097,9 +1062,6 @@ Create item in library
 ::
 
    POST /libraries/:id/items/
-
-ℹ️ porting notes: replaces previous ``assessment/additemtolibrary``
-route.
 
 .. _example-22:
 
@@ -1137,9 +1099,6 @@ Update item in library
 
    PUT /libraries/:id/items/:tag/
 
-ℹ️ porting notes: replaces previous ``assessment/edititeminlibrary``
-route.
-
 .. _example-23:
 
 Example
@@ -1173,9 +1132,6 @@ Delete item in library
 ::
 
    DELETE /libraries/:id/items/:tag/
-
-ℹ️ porting notes: replaces previous ``assessment/deletelibraryitem``
-route.
 
 .. _example-24:
 
