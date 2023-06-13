@@ -12,7 +12,7 @@ const FAKE_PROJECT_DATA = {
     created_at: new Date(),
     updated_at: new Date(),
     organisation: null,
-    permissions: { can_share: false },
+    permissions: { can_share: false, can_reassign: false },
     access: [{ roles: ['owner' as const], id: '1', name: '', email: '' }],
     images: [],
 };

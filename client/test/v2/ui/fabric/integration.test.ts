@@ -75,7 +75,7 @@ function wrapScenarioData(scenarioData: z.input<typeof scenarioSchema>) {
             data: {
                 master: scenarioData,
             },
-            permissions: { can_share: false },
+            permissions: { can_share: false, can_reassign: false },
             images: [],
         },
         scenarioId: 'master',

@@ -23,6 +23,7 @@ export function arbitraryProjectInputsWithoutScenarios(): fc.Arbitrary<
         ),
         permissions: fc.record({
             can_share: fc.boolean(),
+            can_reassign: fc.boolean(),
         }),
         access: fc.array(
             fc.record({

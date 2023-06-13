@@ -26,6 +26,10 @@ export const projectSchema = assessmentMetadataSchema
         access: userAccessSchema,
         permissions: z.object({
             can_share: z.boolean(),
+            can_reassign: z
+                .boolean()
+                .optional()
+                .transform((val) => val ?? false),
         }),
     });
 

@@ -8,7 +8,7 @@
     "organisation": null,
     "images": [],
     "access": [{ "roles": ["owner"], "id": "1", "name": "", "email": "" }],
-    "permissions": { "can_share": false },
+    "permissions": { "can_share": false, "can_reassign": false },
     "data": {
         "master": {}
     }
