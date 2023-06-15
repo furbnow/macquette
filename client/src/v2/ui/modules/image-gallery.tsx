@@ -1,42 +1,28 @@
 import type { ErrorCallback, QueueObject } from 'async';
 import { queue } from 'async';
 import React, { ReactElement, useEffect, useId, useState } from 'react';
+import { z } from 'zod';
 
 import { HTTPClient } from '../../api/http';
-import type { Image as ServerImage } from '../../data-schemas/image';
+import { projectSchema } from '../../data-schemas/project';
+import type { Image } from '../../data-schemas/project/image';
 import { Result } from '../../helpers/result';
 import { DeleteIcon, EditIcon, UploadIcon } from '../icons';
 import type { Dispatcher, UiModule } from '../module-management/module-type';
+import { Spinner } from '../output-components/spinner';
 
-type Image = {
-    // Server data
-    id: number;
-    url: string;
-    width: number;
-    height: number;
-    thumbnailURL: string;
-    thumbnailWidth: number;
-    thumbnailHeight: number;
-    note: string;
-    isFeatured: boolean;
-
-    // Our data
-    isSelected: boolean;
-    editInProgress: null | string;
-};
+type FetchStatus = 'at rest' | 'in flight' | 'successful' | 'failed';
+type Uploadable<T> = T & { status: FetchStatus };
 
 type ImageUploadData = {
-    id: number;
-    name: string;
-    status: 'not uploaded' | 'uploading' | 'uploaded' | 'error during upload';
+    id: symbol;
     file: File;
 };
 
 type State = {
     assessmentId: string;
     images: Image[];
-    imagesToUpload: ImageUploadData[];
-    imageUploadCounter: number;
+    imagesToUpload: Uploadable<ImageUploadData>[];
 };
 
 type Action =
@@ -44,15 +30,16 @@ type Action =
     | { type: 'add to upload list'; files: File[] }
     | { type: 'remove from upload list'; idx: number }
     | { type: 'upload images' }
-    | { type: 'image started uploading'; id: number }
-    | { type: 'image uploaded'; id: number; image: ServerImage }
-    | { type: 'upload failed'; id: number }
+    | { type: 'image started uploading'; id: symbol }
+    | { type: 'image uploaded'; id: symbol; image: Image }
+    | { type: 'upload failed'; id: symbol }
     | { type: 'delete image'; id: number }
     | { type: 'delete selected images' }
     | { type: 'image deleted'; id: number }
     | { type: 'start editing note'; id: number }
     | { type: 'note field change'; id: number; note: string }
     | { type: 'save note'; image: Image }
+    | { type: 'saving note'; id: number }
     | { type: 'note saved'; id: number }
     | { type: 'cancel note edit'; id: number }
     | { type: 'set featured image'; id: number }
@@ -67,40 +54,28 @@ type Effect =
     | {
           type: 'upload images';
           assessmentId: string;
-          files: { id: number; file: File }[];
+          files: ImageUploadData[];
       };
 
-function serverImageToModuleImage(image: ServerImage): Image {
-    return {
-        id: image.id,
-        url: image.url,
-        width: image.width,
-        height: image.height,
-        thumbnailURL: image.thumbnail_url,
-        thumbnailWidth: image.thumbnail_width,
-        thumbnailHeight: image.thumbnail_height,
-        note: image.note,
-        isFeatured: image.is_featured,
-        isSelected: false,
-        editInProgress: null,
-    };
+function withUpdated<T extends { id: Id }, Id>(
+    array: T[],
+    id: Id,
+    mapper: (row: T) => T,
+): T[] {
+    return array.map((row) => {
+        if (row.id === id) {
+            return mapper(row);
+        } else {
+            return row;
+        }
+    });
 }
 
 function reducer(state: State, msg: Action): [State, Array<Effect>?] {
     switch (msg.type) {
         case 'external data update': {
             const { assessmentId, images } = msg.state;
-            return [
-                {
-                    ...state,
-                    assessmentId,
-                    // Only accept external update when our internal store has no images,
-                    // because otherwise we lose our local state,
-                    // The normal update cycle has no role in this module because we talk
-                    // to the API directly.
-                    images: state.images.length === 0 ? images : state.images,
-                },
-            ];
+            return [{ ...state, assessmentId, images }];
         }
 
         case 'add to upload list': {
@@ -109,16 +84,14 @@ function reducer(state: State, msg: Action): [State, Array<Effect>?] {
                     ...state,
                     imagesToUpload: [
                         ...state.imagesToUpload.filter(
-                            ({ status }) => status !== 'uploaded',
+                            ({ status }) => status !== 'successful',
                         ),
-                        ...msg.files.map((file, idx) => ({
-                            id: state.imageUploadCounter + idx,
-                            name: file.name,
-                            status: 'not uploaded' as const,
+                        ...msg.files.map((file) => ({
+                            id: Symbol(),
+                            status: 'at rest' as const,
                             file,
                         })),
                     ],
-                    imageUploadCounter: state.imageUploadCounter + msg.files.length,
                 },
             ];
         }
@@ -136,7 +109,7 @@ function reducer(state: State, msg: Action): [State, Array<Effect>?] {
 
         case 'upload images': {
             const imagesToUpload = state.imagesToUpload.filter(
-                (file) => file.status === 'not uploaded',
+                (file) => file.status === 'at rest',
             );
             return [
                 {
@@ -157,13 +130,11 @@ function reducer(state: State, msg: Action): [State, Array<Effect>?] {
             return [
                 {
                     ...state,
-                    imagesToUpload: state.imagesToUpload.map((row) => {
-                        if (row.id === msg.id) {
-                            return { ...row, status: 'uploading' };
-                        } else {
-                            return row;
-                        }
-                    }),
+                    imagesToUpload: withUpdated(
+                        state.imagesToUpload,
+                        msg.id,
+                        (image) => ({ ...image, status: 'in flight' as const }),
+                    ),
                 },
             ];
         }
@@ -172,14 +143,12 @@ function reducer(state: State, msg: Action): [State, Array<Effect>?] {
             return [
                 {
                     ...state,
-                    images: [...state.images, serverImageToModuleImage(msg.image)],
-                    imagesToUpload: state.imagesToUpload.map((row) => {
-                        if (row.id === msg.id) {
-                            return { ...row, status: 'uploaded' };
-                        } else {
-                            return row;
-                        }
-                    }),
+                    images: [...state.images, msg.image],
+                    imagesToUpload: withUpdated(
+                        state.imagesToUpload,
+                        msg.id,
+                        (image) => ({ ...image, status: 'successful' as const }),
+                    ),
                 },
             ];
         }
@@ -188,13 +157,11 @@ function reducer(state: State, msg: Action): [State, Array<Effect>?] {
             return [
                 {
                     ...state,
-                    imagesToUpload: state.imagesToUpload.map((row) => {
-                        if (row.id === msg.id) {
-                            return { ...row, status: 'error during upload' };
-                        } else {
-                            return row;
-                        }
-                    }),
+                    imagesToUpload: withUpdated(
+                        state.imagesToUpload,
+                        msg.id,
+                        (image) => ({ ...image, status: 'failed' as const }),
+                    ),
                 },
             ];
         }
@@ -220,13 +187,14 @@ function reducer(state: State, msg: Action): [State, Array<Effect>?] {
             return [
                 {
                     ...state,
-                    images: state.images.map((image) => {
-                        if (image.id === msg.id) {
-                            return { ...image, editInProgress: '' };
-                        } else {
-                            return image;
-                        }
-                    }),
+                    images: withUpdated(state.images, msg.id, (image) => ({
+                        ...image,
+                        note: {
+                            status: 'edited' as const,
+                            stored: image.note.stored,
+                            user: image.note.stored,
+                        },
+                    })),
                 },
             ];
         }
@@ -235,37 +203,60 @@ function reducer(state: State, msg: Action): [State, Array<Effect>?] {
             return [
                 {
                     ...state,
-                    images: state.images.map((image) => {
-                        if (image.id === msg.id) {
-                            return { ...image, editInProgress: msg.note };
-                        } else {
-                            return image;
-                        }
-                    }),
+                    images: withUpdated(state.images, msg.id, (image) => ({
+                        ...image,
+                        note: {
+                            status: 'edited' as const,
+                            stored: image.note.stored,
+                            user: msg.note,
+                        },
+                    })),
                 },
             ];
         }
 
         case 'save note': {
             const { image } = msg;
-            return [state, [{ type: 'save note', id: image.id, text: image.note }]];
+            if (
+                image.note.status !== 'edited' &&
+                image.note.status !== 'failed to save'
+            ) {
+                return [state];
+            }
+            return [state, [{ type: 'save note', id: image.id, text: image.note.user }]];
+        }
+
+        case 'saving note': {
+            return [
+                {
+                    ...state,
+                    images: withUpdated(state.images, msg.id, (image) =>
+                        image.note.status === 'edited'
+                            ? {
+                                  ...image,
+                                  note: { ...image.note, status: 'saving' as const },
+                              }
+                            : image,
+                    ),
+                },
+            ];
         }
 
         case 'note saved': {
             return [
                 {
                     ...state,
-                    images: state.images.map((image) => {
-                        if (image.id === msg.id) {
-                            return {
-                                ...image,
-                                note: image.editInProgress ?? '',
-                                editInProgress: null,
-                            };
-                        } else {
-                            return image;
-                        }
-                    }),
+                    images: withUpdated(state.images, msg.id, (image) =>
+                        image.note.status === 'saving'
+                            ? {
+                                  ...image,
+                                  note: {
+                                      status: 'not edited' as const,
+                                      stored: image.note.user,
+                                  },
+                              }
+                            : image,
+                    ),
                 },
             ];
         }
@@ -274,13 +265,13 @@ function reducer(state: State, msg: Action): [State, Array<Effect>?] {
             return [
                 {
                     ...state,
-                    images: state.images.map((image) => {
-                        if (image.id === msg.id) {
-                            return { ...image, editInProgress: null };
-                        } else {
-                            return image;
-                        }
-                    }),
+                    images: withUpdated(state.images, msg.id, (image) => ({
+                        ...image,
+                        note: {
+                            status: 'not edited' as const,
+                            stored: image.note.stored,
+                        },
+                    })),
                 },
             ];
         }
@@ -309,13 +300,10 @@ function reducer(state: State, msg: Action): [State, Array<Effect>?] {
             return [
                 {
                     ...state,
-                    images: state.images.map((image) => {
-                        if (image.id === msg.id) {
-                            return { ...image, isSelected: !image.isSelected };
-                        } else {
-                            return image;
-                        }
-                    }),
+                    images: withUpdated(state.images, msg.id, (image) => ({
+                        ...image,
+                        isSelected: !image.isSelected,
+                    })),
                 },
             ];
         }
@@ -336,7 +324,7 @@ function GalleryCardDisplay({
 }) {
     return (
         <div className="gallerycard-content">
-            {image.note}
+            {image.note.stored}
 
             <div className="d-flex align-items-center justify-content-between">
                 <span className="d-flex gap-7 align-items-center">
@@ -403,6 +391,10 @@ function GalleryCardEditor({
     image: Image;
     dispatch: Dispatcher<Action>;
 }) {
+    if (image.note.status === 'not edited') {
+        throw new Error('Should not be called with image not in editing mode');
+    }
+
     return (
         <div className="gallerycard-content">
             <textarea
@@ -420,7 +412,7 @@ function GalleryCardEditor({
                         dispatch({ type: 'cancel note edit', id: image.id });
                     }
                 }}
-                value={image.editInProgress ?? ''}
+                value={image.note.user}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus={true}
             ></textarea>
@@ -430,6 +422,7 @@ function GalleryCardEditor({
                     <button
                         className="btn btn-primary"
                         onClick={() => dispatch({ type: 'save note', image })}
+                        disabled={image.note.status === 'saving'}
                     >
                         Save note
                     </button>
@@ -438,9 +431,11 @@ function GalleryCardEditor({
                         onClick={() =>
                             dispatch({ type: 'cancel note edit', id: image.id })
                         }
+                        disabled={image.note.status === 'saving'}
                     >
                         Cancel
                     </button>
+                    {image.note.status === 'saving' && <Spinner />}
                 </span>
                 <input
                     type="checkbox"
@@ -478,7 +473,7 @@ function GalleryCard({
                 />
             </a>
 
-            {image.editInProgress !== null ? (
+            {image.note.status !== 'not edited' ? (
                 <GalleryCardEditor image={image} dispatch={dispatch} />
             ) : (
                 <GalleryCardDisplay image={image} dispatch={dispatch} />
@@ -659,19 +654,19 @@ function UploadProgress({
                 To upload:
             </div>
 
-            {imagesToUpload.map(({ name, status }, idx) => (
+            {imagesToUpload.map(({ file, status }, idx) => (
                 <div
                     style={{ borderTop: '1px solid var(--grey-600)' }}
                     className="d-flex justify-content-between align-items-center px-15 py-7"
                     key={idx}
                 >
-                    <span>{name}</span>
+                    <span>{file.name}</span>
                     <span className="ml-30">
-                        {status === 'uploading' ? (
+                        {status === 'in flight' ? (
                             'Uploading...'
-                        ) : status === 'uploaded' ? (
+                        ) : status === 'successful' ? (
                             '✔️ Uploaded'
-                        ) : status === 'error during upload' ? (
+                        ) : status === 'failed' ? (
                             'Error uploading'
                         ) : (
                             <button
@@ -701,7 +696,7 @@ function UploadSection({
     dispatch: Dispatcher<Action>;
 }): ReactElement {
     const filesToUpload =
-        state.imagesToUpload.filter((row) => row.status === 'not uploaded').length > 0;
+        state.imagesToUpload.filter((upload) => upload.status === 'at rest').length > 0;
 
     return (
         <section className="line-top mb-45">
@@ -778,6 +773,7 @@ export const imageGalleryModule: UiModule<State, Action, Effect> = {
             }
             case 'save note': {
                 try {
+                    dispatch({ type: 'saving note', id: effect.id });
                     await apiClient.setImageNote(effect.id, effect.text);
                     dispatch({ type: 'note saved', id: effect.id });
                 } catch (err) {
@@ -795,10 +791,8 @@ export const imageGalleryModule: UiModule<State, Action, Effect> = {
                 break;
             }
             case 'upload images': {
-                type Task = { id: number; file: File };
-
-                const taskQueue: QueueObject<Task> = queue(
-                    ({ id, file }: Task, cb: ErrorCallback<unknown>) => {
+                const taskQueue: QueueObject<ImageUploadData> = queue(
+                    ({ id, file }: ImageUploadData, cb: ErrorCallback<unknown>) => {
                         dispatch({ type: 'image started uploading', id });
                         apiClient
                             .uploadImage(effect.assessmentId, file)
@@ -826,29 +820,16 @@ export const imageGalleryModule: UiModule<State, Action, Effect> = {
                 {
                     type: 'external data update',
                     state: {
-                        images: project.images.map(serverImageToModuleImage),
                         assessmentId: project.id,
+                        images: project.images,
                     },
                 },
             ]);
         },
-        mutateLegacyData: ({ project }, _context, state) => {
-            /* eslint-disable
-               @typescript-eslint/consistent-type-assertions,
-               @typescript-eslint/no-explicit-any,
-               @typescript-eslint/no-unsafe-member-access,
-            */
-            (project as any).images = state.images.map((image) => ({
-                id: image.id,
-                url: image.url,
-                width: image.width,
-                height: image.height,
-                thumbnail_url: image.thumbnailURL,
-                thumbnail_width: image.thumbnailWidth,
-                thumbnail_height: image.thumbnailHeight,
-                note: image.note,
-                is_featured: image.isFeatured,
-            }));
+        mutateLegacyData: ({ project: projectRaw }, _context, state) => {
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            const project = projectRaw as z.infer<typeof projectSchema>;
+            project.images = state.images;
         },
     },
 };

@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { assessmentMetadataSchema } from './api-metadata';
-import { dateSchema } from './helpers/date';
+import { assessmentMetadataSchema } from '../api-metadata';
+import { dateSchema } from '../helpers/date';
+import { scenarioSchema } from '../scenario';
 import { imageSchema } from './image';
-import { scenarioSchema } from './scenario';
 
 export const userAccessSchema = z.array(
     z.object({

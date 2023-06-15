@@ -22,7 +22,6 @@ import {
     libraryMetadataSchema,
     listAssessmentSchema,
 } from '../data-schemas/api-metadata';
-import { Image, imageSchema } from '../data-schemas/image';
 import { Library, librarySchema } from '../data-schemas/libraries';
 import { Organisation, listOrganisationResponse } from '../data-schemas/organisations';
 import {
@@ -31,6 +30,7 @@ import {
     updateAssessmentSchema,
     userAccessSchema,
 } from '../data-schemas/project';
+import { Image, imageSchema } from '../data-schemas/project/image';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
 import { isIndexable } from '../helpers/is-indexable';
 import { jsEnvironment } from '../helpers/js-environment';

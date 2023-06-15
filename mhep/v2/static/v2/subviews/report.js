@@ -96,7 +96,7 @@ function draw_scenarios() {
 }
 
 function get_featured_image() {
-    let featuredImage = p.images.find(e => e.is_featured);
+    let featuredImage = p.images.find(e => e.isFeatured);
     if (featuredImage) {
         return featuredImage.url;
     } else {
