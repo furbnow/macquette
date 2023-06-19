@@ -898,9 +898,6 @@ function _extract_scenario_inputs(data) {
     inputdata.heating_systems = data.heating_systems;
 
     inputdata.fuels = data.fuels;
-    inputdata.imagegallery = data.imagegallery;
-    inputdata.imagegallery_notes = data.imagegallery_notes;
-    inputdata.featuredimage = data.featuredimage;
     inputdata.measures = data.measures;
     inputdata.modelBehaviourVersion = data.modelBehaviourVersion
 

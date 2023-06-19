@@ -2,7 +2,6 @@ console.log('Debug export.js');
 
 $('#openbem').on('click', '#import-data', function () {
     p.data = project = JSON.parse($('#import').val());
-    project.master.imagegallery = [];
 
     update();
     redraw_scenario_menu();
@@ -53,7 +52,6 @@ $('#upload_project').submit(function (e) {
                     calc.run(project_to_load[scenario]);
                 } // Running all the scenarios we check if the JSON string is a valid MHEP project, if it is not we catch the exception
                 p.data = project = project_to_load;
-                project.master.imagegallery = [];
                 update();
                 $('#upload-result').css('color', 'black').html('Project uploaded and imported');
                 redraw_scenario_menu();
