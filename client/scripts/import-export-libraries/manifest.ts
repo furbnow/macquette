@@ -3,8 +3,8 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { z } from 'zod';
 
-import { LibraryMetadata } from '../../src/v2/data-schemas/api-metadata';
-import { Library } from '../../src/v2/data-schemas/libraries';
+import { LibraryMetadata } from '../../src/data-schemas/api-metadata';
+import { Library } from '../../src/data-schemas/libraries';
 import {
     mapSplitLibrary,
     SplitLibrary,

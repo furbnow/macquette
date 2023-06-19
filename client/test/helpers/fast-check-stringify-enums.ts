@@ -5,13 +5,13 @@
  */
 import fc, { toStringMethod } from 'fast-check';
 
-import { FloorLayerSpec } from '../../src/v2/data-schemas/scenario/fabric/floor-u-value';
-import { Proportion } from '../../src/v2/helpers/proportion';
-import { Month } from '../../src/v2/model/enums/month';
-import { Orientation } from '../../src/v2/model/enums/orientation';
-import { Overshading } from '../../src/v2/model/enums/overshading';
-import { Region } from '../../src/v2/model/enums/region';
-import { FloorLayerInput } from '../../src/v2/model/modules/fabric/floor-u-value-calculator/floor-layer-input';
+import { FloorLayerSpec } from '../../src/data-schemas/scenario/fabric/floor-u-value';
+import { Proportion } from '../../src/helpers/proportion';
+import { Month } from '../../src/model/enums/month';
+import { Orientation } from '../../src/model/enums/orientation';
+import { Overshading } from '../../src/model/enums/overshading';
+import { Region } from '../../src/model/enums/region';
+import { FloorLayerInput } from '../../src/model/modules/fabric/floor-u-value-calculator/floor-layer-input';
 
 (Overshading.prototype as any)[toStringMethod] = function () {
     const input = fc.stringify((this as Overshading).name);

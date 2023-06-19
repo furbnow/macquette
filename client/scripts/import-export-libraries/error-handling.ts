@@ -1,6 +1,6 @@
 import { inspect } from 'util';
 
-import { HttpClientError } from '../../src/v2/api/http';
+import { HttpClientError } from '../../src/api/http';
 
 export function finalErrorHandler(err: unknown) {
     if (!(err instanceof HttpClientError)) throw err;

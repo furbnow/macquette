@@ -2,8 +2,8 @@ import assert from 'assert';
 import { pickBy } from 'lodash';
 import { z } from 'zod';
 
-import { Library } from '../../src/v2/data-schemas/libraries';
-import { discriminateTags } from '../../src/v2/data-schemas/libraries/elements';
+import { Library } from '../../src/data-schemas/libraries';
+import { discriminateTags } from '../../src/data-schemas/libraries/elements';
 import { assertNotNever, LibraryWithOptionalId } from './types';
 
 export function splitLibrarySchema<T>(librarySchema: z.ZodSchema<T>) {

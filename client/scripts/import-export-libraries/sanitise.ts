@@ -1,8 +1,8 @@
 import assert from 'assert';
 import { cloneDeep, mapValues } from 'lodash';
-import { safeIsArray } from '../../src/v2/helpers/safe-is-array';
+import { safeIsArray } from '../../src/helpers/safe-is-array';
 
-import { Library } from '../../src/v2/data-schemas/libraries';
+import { Library } from '../../src/data-schemas/libraries';
 import type { ItemOf, LibraryItem } from './types';
 
 function sanitiseItem<Item extends LibraryItem>(item: Item, name: string): Item {

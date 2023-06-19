@@ -1,7 +1,7 @@
 import {
     CompareFloatParams,
     compareFloats,
-} from '../../../src/v2/helpers/fuzzy-float-equality';
+} from '../../../src/helpers/fuzzy-float-equality';
 
 type Params = { tolerance?: number; absoluteToleranceAroundZero?: number };
 

@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-import { HTTPClient } from '../src/v2/api/http';
+import { HTTPClient } from '../src/api/http';
 import { finalErrorHandler } from './import-export-libraries/error-handling';
 import { writeCsv, writeJson } from './import-export-libraries/export';
 import { generateManifest } from './import-export-libraries/manifest';

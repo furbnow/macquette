@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { z } from 'zod';
 
-import { HTTPClient } from '../src/v2/api/http';
+import { HTTPClient } from '../src/api/http';
 import { readApiKeysForBaseUrl } from './lib/config';
 
 type Params = {

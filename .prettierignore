@@ -13,7 +13,7 @@ mhep/v2/static/v2/css/bootstrap-2.3.2.css
 mhep/v2/static/v2/css/bootstrap-responsive-2.3.2.css
 
 client/coverage/
-client/test/v2/fixtures/private/
+client/test/fixtures/private/
 
 docs/_build/
 

@@ -5,9 +5,9 @@ import { parse as csvParse } from 'csv-parse/sync';
 import { stringify as csvStringify } from 'csv-stringify/sync';
 import { omit } from 'lodash';
 import { z } from 'zod';
-import { safeIsArray } from '../../src/v2/helpers/safe-is-array';
+import { safeIsArray } from '../../src/helpers/safe-is-array';
 
-import { Library } from '../../src/v2/data-schemas/libraries';
+import { Library } from '../../src/data-schemas/libraries';
 import { ItemOf, LibraryItem } from './types';
 
 type CsvRow = Omit<LibraryItem, 'tags'> & {

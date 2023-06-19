@@ -1,4 +1,4 @@
-import { Library } from '../../src/v2/data-schemas/libraries';
+import { Library } from '../../src/data-schemas/libraries';
 
 export type ItemOf<L extends Library> = L['data'][keyof L['data']];
 export type LibraryItem = ItemOf<Library>;

@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import { mapValues } from 'lodash';
 
-import { NonEmptyArray } from '../../src/v2/helpers/non-empty-array';
+import { NonEmptyArray } from '../../src/helpers/non-empty-array';
 
 export type FcInfer<ArbT> = ArbT extends fc.Arbitrary<infer T>
     ? T

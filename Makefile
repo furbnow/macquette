@@ -14,7 +14,7 @@ dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for c
 .PHONY: js-watch
 js-watch:  ## Compile JS (watching, for development)
 	./client/node_modules/.bin/esbuild \
-		client/src/exports-v2.ts \
+		client/src/exports.ts \
 		--outdir=mhep/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--target=es2019 \
@@ -23,7 +23,7 @@ js-watch:  ## Compile JS (watching, for development)
 .PHONY: js-prod
 js-prod:  ## Compile JS (one off, for production)
 	./client/node_modules/.bin/esbuild \
-		client/src/exports-v2.ts \
+		client/src/exports.ts \
 		--outdir=mhep/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--target=es2019 \

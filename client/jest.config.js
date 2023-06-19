@@ -1,6 +1,6 @@
 module.exports = {
     preset: 'ts-jest/presets/js-with-ts',
-    collectCoverageFrom: ["./src/v2/**"],
+    collectCoverageFrom: ["./src/**"],
     transform: { ".(ts|tsx)": "ts-jest" },
     testRegex: "\\.(test|spec)\\.(ts|tsx|js)$",
     moduleFileExtensions: ["ts", "tsx", "js"],

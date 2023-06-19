@@ -3,7 +3,7 @@ import { readFile } from 'fs/promises';
 import { cloneDeep } from 'lodash';
 import { z } from 'zod';
 
-import { calcRun } from '../src/v2/model/model';
+import { calcRun } from '../src/model/model';
 
 const MODEL_VERSION_LEGACY = 'legacy';
 const MODEL_VERSION_LATEST = 2;

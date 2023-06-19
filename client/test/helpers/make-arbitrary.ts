@@ -8,8 +8,8 @@ import {
     TypeOf,
     Visitable,
     Visitor,
-} from '../../src/v2/data-schemas/visitable-types';
-import { ReadonlyNonEmptyArray } from '../../src/v2/helpers/non-empty-array';
+} from '../../src/data-schemas/visitable-types';
+import { ReadonlyNonEmptyArray } from '../../src/helpers/non-empty-array';
 import { jsonFloat } from './arbitraries';
 
 const arbVisitor: Visitor<fc.Arbitrary<any>> = {
