@@ -899,6 +899,7 @@ svg.bi {
 .modal-backdrop {
     opacity: 1;
     background-color: var(--bg-shaded);
+    z-index: auto;
 }
 
 body .modal {
