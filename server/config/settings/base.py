@@ -127,7 +127,6 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "macquette.users.apps.UsersConfig",
     "macquette.organisations",
-    "macquette.dev",
     "macquette.v2",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
