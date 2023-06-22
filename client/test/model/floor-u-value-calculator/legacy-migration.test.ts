@@ -3,7 +3,6 @@ import { cloneDeep } from 'lodash';
 import { z } from 'zod';
 
 import { fabric, Floor } from '../../../src/data-schemas/scenario/fabric';
-import { featureFlags } from '../../../src/helpers/feature-flags';
 import { Region } from '../../../src/model/enums/region';
 import { extractFabricInputFromLegacy, Fabric } from '../../../src/model/modules/fabric';
 import { sensibleFloat } from '../../arbitraries/legacy-values';
@@ -39,70 +38,32 @@ const arbCompleteFloorElement = fc
     });
 
 describe('the Floor fabric element class', () => {
-    describe('when the feature flag is enabled', () => {
-        test('mutates .uvalue according to the new properties', () => {
-            featureFlags.withFeature('new-fuvc', true, () => {
-                fc.assert(
-                    fc.property(arbCompleteFloorElement, (floor) => {
-                        const fabricScenarioSection: z.infer<typeof fabric> = {
-                            thermal_bridging_yvalue: 0,
-                            elements: [floor],
-                        };
-                        const fabricModelInput = extractFabricInputFromLegacy({
-                            fabric: fabricScenarioSection,
-                        });
-                        const fabricModel = new Fabric(fabricModelInput, {
-                            region: Region.all[0]!,
-                            floors: {
-                                totalFloorArea: 0,
-                            },
-                        });
-                        const scenario = {
-                            losses_WK: {},
-                            gains_W: {},
-                            fabric: fabricScenarioSection,
-                        };
-                        const toMutate = cloneDeep(scenario);
-                        delete (toMutate as any).fabric.elements[0].uvalue;
-                        fabricModel.mutateLegacyData(toMutate);
-                        expect(toMutate.fabric.elements![0]!.uvalue).toBeDefined();
-                    }),
-                );
-            });
-        });
-    });
-    describe('when the feature flag is disabled', () => {
-        test('sets .uvalue according to input element .uvalue', () => {
-            featureFlags.withFeature('new-fuvc', false, () => {
-                fc.assert(
-                    fc.property(arbCompleteFloorElement, (floor) => {
-                        const fabricScenarioSection: z.infer<typeof fabric> = {
-                            thermal_bridging_yvalue: 0,
-                            elements: [floor],
-                        };
-                        const fabricModelInput = extractFabricInputFromLegacy({
-                            fabric: fabricScenarioSection,
-                        });
-                        const fabricModel = new Fabric(fabricModelInput, {
-                            region: Region.all[0]!,
-                            floors: {
-                                totalFloorArea: 0,
-                            },
-                        });
-                        const scenario = {
-                            losses_WK: {},
-                            gains_W: {},
-                            fabric: fabricScenarioSection,
-                        };
-                        const toMutate = cloneDeep(scenario);
-                        delete (toMutate as any).fabric.elements[0].uvalue;
-                        fabricModel.mutateLegacyData(toMutate);
-                        expect(toMutate.fabric.elements![0]!.uvalue).toBe(
-                            scenario.fabric.elements![0]!.uvalue,
-                        );
-                    }),
-                );
-            });
-        });
+    test('mutates .uvalue according to the new properties', () => {
+        fc.assert(
+            fc.property(arbCompleteFloorElement, (floor) => {
+                const fabricScenarioSection: z.infer<typeof fabric> = {
+                    thermal_bridging_yvalue: 0,
+                    elements: [floor],
+                };
+                const fabricModelInput = extractFabricInputFromLegacy({
+                    fabric: fabricScenarioSection,
+                });
+                const fabricModel = new Fabric(fabricModelInput, {
+                    region: Region.all[0]!,
+                    floors: {
+                        totalFloorArea: 0,
+                    },
+                });
+                const scenario = {
+                    losses_WK: {},
+                    gains_W: {},
+                    fabric: fabricScenarioSection,
+                };
+                const toMutate = cloneDeep(scenario);
+                delete (toMutate as any).fabric.elements[0].uvalue;
+                fabricModel.mutateLegacyData(toMutate);
+                expect(toMutate.fabric.elements![0]!.uvalue).toBeDefined();
+            }),
+        );
     });
 });

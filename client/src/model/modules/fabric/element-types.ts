@@ -6,7 +6,6 @@ import { mean, sum } from '../../../helpers/array-reducers';
 import { assertNever } from '../../../helpers/assert-never';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
 import { prependPath } from '../../../helpers/error-warning-path';
-import { featureFlags } from '../../../helpers/feature-flags';
 import { lightAccessFactor, solarAccessFactor } from '../../datasets';
 import { Month } from '../../enums/month';
 import { Orientation } from '../../enums/orientation';
@@ -94,11 +93,7 @@ export class Floor {
 
     @cache
     get uValueModel(): FloorUValueModel {
-        if (
-            !featureFlags.has('new-fuvc') ||
-            this.spec.perFloorTypeSpec === null ||
-            this.spec.selectedFloorType === null
-        ) {
+        if (this.spec.perFloorTypeSpec === null || this.spec.selectedFloorType === null) {
             return new CustomFloor({
                 floorType: 'custom',
                 uValue: this.spec.uValueLegacyField,

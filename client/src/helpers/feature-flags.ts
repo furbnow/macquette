@@ -26,7 +26,7 @@ class FeatureFlags {
             ) {
                 this.#features = new Set(window['features']);
             } else {
-                const defaults = new Set(['new-fuvc']);
+                const defaults = new Set([]);
                 this.#features = defaults;
             }
         }

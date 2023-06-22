@@ -116,7 +116,7 @@ $('#openbem').on('click', '.delete-element', function () {
     var row = $(this).attr('row');
     var item_id = 1.0 * $(this).attr('item_id');
     $(this).closest('tr').remove();
-    if (window.features.includes('new-fuvc') && this.dataset.type === "floor") {
+    if (this.dataset.type === "floor") {
         window.Macquette.uiModuleShims.floorRow.unmount(item_id.toString());
     }
     data.fabric.elements.splice(row, 1);
@@ -310,29 +310,6 @@ $('#openbem').on('click', '.revert-to-original', function () {
     elements_initUI();
     update();
 });
-$('#openbem').on('click', '.calculate-floor-uvalue', function () {
-    var z = $(this).attr('z');
-    var area = $('[key="data.fabric.elements.' + z + '.area"]').val();
-    var perimeter = $('[key="data.fabric.elements.' + z + '.perimeter"]').val();
-    $('#openFUVC-modal #area input').val(area).change();
-    $('#openFUVC-modal #perimeter input').val(perimeter).change();
-    openFUVC_helper.launch_calculator(function (uvalue) {
-        $('[key="data.fabric.elements.' + z + '.uvalue"]').val(uvalue.toFixed(2));
-        $('[key="data.fabric.elements.' + z + '.uvalue"]').change();
-        if (area == '' || area != $('#openFUVC-modal #area input').val()) {
-            var new_area = $('#openFUVC-modal #area input').val();
-            $('[key="data.fabric.elements.' + z + '.area"]').val(new_area);
-            $('[key="data.fabric.elements.' + z + '.area"]').change();
-        }
-        if (perimeter == '' || perimeter != $('#openFUVC-modal #perimeter input').val()) {
-            var new_perimeter = $('#openFUVC-modal #perimeter input').val();
-            $('[key="data.fabric.elements.' + z + '.perimeter"]').val(new_perimeter);
-            $('[key="data.fabric.elements.' + z + '.perimeter"]').change();
-        }
-    });
-});
-
-
 
 // --------------------------------------------------------
 // View/redraw code
@@ -418,26 +395,10 @@ function add_floor(z) {
     setupFabricCostTotal(root, element);
     setupFabricButtons(root, z, element);
 
-    root.querySelector('.calculate-floor-uvalue').setAttribute('z', z);
-
-    if (element.uvalue == 0) {
-        root.querySelector('input.floor-uvalue').classList.add('text-warning');
-    }
-
+    const reactFuvcRow = root.querySelector('.react-fuvc-row');
+    reactFuvcRow.setAttribute('data-element-id', element.id);
     const reactFloorDataRow = root.querySelector('.react-floor-data-row')
-    if (window.features.includes('new-fuvc')) {
-        const reactFuvcRow = root.querySelector('.react-fuvc-row');
-        reactFuvcRow.setAttribute('data-element-id', element.id);
-        const legacyRow = root.querySelector('.legacy-row')
-        root.removeChild(legacyRow)
-        window.Macquette.uiModuleShims.floorRow.init(reactFloorDataRow, element.id.toString());
-    } else {
-        root.removeChild(reactFloorDataRow)
-        const summaryCell = root.querySelector('.floors-table__floor-summary-cell')
-        if (summaryCell) {
-            summaryCell.setAttribute('colspan', 5);
-        }
-    }
+    window.Macquette.uiModuleShims.floorRow.init(reactFloorDataRow, element.id.toString());
 
     $(id).append(root);
 }
@@ -558,17 +519,6 @@ function elements_initUI() {
     if (data.measures != undefined && data.thermal_bridging != undefined) {
         $('#TB-measured-applied').show();
     }
-
-    if (!window.features.includes('new-fuvc')) {
-        const headerRowTypeCell = document.querySelector('.floors-table__type-column-header')
-        if (headerRowTypeCell) {
-            headerRowTypeCell.remove();
-        }
-        const footerTotalsCell = document.querySelector('.floors-table__footer-totals-cell')
-        if (footerTotalsCell) {
-            footerTotalsCell.setAttribute('colspan', 3);
-        }
-    }
 }
 
 function getSubtractOptions(data) {
@@ -653,13 +603,11 @@ function apply_measure(measure) {
             data.fabric.elements[measure.row] = measure.item[lib];
             data.fabric.measures[measure.item_id].measure = measure.item[lib];
 
-            if (window.features.includes('new-fuvc')) {
-                const element = data.fabric.elements[measure.row]
-                if (element.type === 'floor' || element.type === 'Floor') {
-                    element.selectedFloorType = 'custom'
-                    element.perFloorTypeSpec.custom = {
-                        uValue: element.uvalue
-                    }
+            const element = data.fabric.elements[measure.row]
+            if (element.type === 'floor' || element.type === 'Floor') {
+                element.selectedFloorType = 'custom'
+                element.perFloorTypeSpec.custom = {
+                    uValue: element.uvalue
                 }
             }
             break;
