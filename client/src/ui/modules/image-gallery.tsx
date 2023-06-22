@@ -395,24 +395,39 @@ function GalleryCardEditor({
         throw new Error('Should not be called with image not in editing mode');
     }
 
+    // We work around the roundtrip being incredibly slow due to repeated Zod parsing by
+    // storing the note state locally.
+    const [note, setNote] = useState(image.note.user);
+
+    function save() {
+        dispatch({
+            type: 'note field change',
+            id: image.id,
+            note,
+        });
+        dispatch({ type: 'save note', image });
+    }
+    function cancel() {
+        dispatch({ type: 'cancel note edit', id: image.id });
+    }
+
     return (
         <div className="gallerycard-content">
             <textarea
                 rows={4}
                 style={{ width: '97%' }}
-                onChange={(evt) =>
-                    dispatch({
-                        type: 'note field change',
-                        id: image.id,
-                        note: evt.target.value,
-                    })
-                }
+                onChange={(evt) => setNote(evt.target.value)}
                 onKeyDown={(evt) => {
                     if (evt.key === 'Esc' || evt.key === 'Escape') {
-                        dispatch({ type: 'cancel note edit', id: image.id });
+                        cancel();
+                    } else if (
+                        evt.key === 'Enter' &&
+                        (evt.metaKey === true || evt.ctrlKey === true)
+                    ) {
+                        save();
                     }
                 }}
-                value={image.note.user}
+                value={note}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus={true}
             ></textarea>
@@ -421,16 +436,14 @@ function GalleryCardEditor({
                 <span className="d-flex gap-7 align-items-center">
                     <button
                         className="btn btn-primary"
-                        onClick={() => dispatch({ type: 'save note', image })}
+                        onClick={save}
                         disabled={image.note.status === 'saving'}
                     >
                         Save note
                     </button>
                     <button
                         className="btn"
-                        onClick={() =>
-                            dispatch({ type: 'cancel note edit', id: image.id })
-                        }
+                        onClick={cancel}
                         disabled={image.note.status === 'saving'}
                     >
                         Cancel
