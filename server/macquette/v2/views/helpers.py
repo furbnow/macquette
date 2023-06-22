@@ -26,7 +26,7 @@ def build_static_dictionary():
     note that the dictionary value is created by calling the `static` helper, so depends
     on the specific static backend.
     """
-    return {fn: static(os.path.join(VERSION, fn)) for fn in find_app_static_files()}
+    return {filename: static(filename) for filename in find_app_static_files()}
 
 
 def find_app_static_files():
@@ -38,17 +38,17 @@ def find_app_static_files():
     note that the version static subdirectory is stripped
     """
 
-    static_dir = join(abspath(dirname(__file__)), "..", "static", VERSION)
+    static_dir = join(abspath(dirname(__file__)), "..", "..", "static")
 
     for root, _dirs, files in os.walk(static_dir):
-        for fn in files:
+        for filename in files:
             # We think collectstatic doesn't collect dotfiles, so this prevents an error
             # in production when Django loads up where there is a dotfile in the static
             # source directory, but collectstatic doesn't have it in its manifest
-            if fn.startswith("."):
+            if filename.startswith("."):
                 continue
 
-            full_filename = join(root, fn)
+            full_filename = join(root, filename)
             start = len(static_dir) + 1
             relative_filename = full_filename[start:]
             # print("relative: {}".format(relative_filename))

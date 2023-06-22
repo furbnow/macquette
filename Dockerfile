@@ -51,7 +51,7 @@ COPY ./scripts ./scripts
 COPY scripts/migrate scripts/webserver ./
 
 # Copy in built JS assets
-COPY --from=js /app/server/macquette/v2/static/v2/js_generated/ /app/macquette/v2/static/v2/js_generated/
+COPY --from=js /app/server/macquette/static/js_generated/ /app/macquette/static/js_generated/
 
 # Collect static files for faster serving and caching
 RUN DJANGO_SETTINGS_MODULE=config.settings.staticfiles \

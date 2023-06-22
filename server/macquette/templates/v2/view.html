@@ -2,18 +2,18 @@
 {% load static %}
 
 {% block extra_head %}
-    <script src="{% static VERSION|add:'/js/macquette.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/misc.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/graphics.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/extended-library-items.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/library-helper.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/vendor/jquery-ui-1.12.1.min.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/vendor/papaparse-5.0.2.min.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/openfuvc.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/openfuvc-ui-helper.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/questionnaire.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/comparison.js' %}"></script>
-    <script src="{% static VERSION|add:'/js_generated/exports.js' %}"></script>
+    <script src="{% static 'js/macquette.js' %}"></script>
+    <script src="{% static 'js/misc.js' %}"></script>
+    <script src="{% static 'js/graphics.js' %}"></script>
+    <script src="{% static 'js/extended-library-items.js' %}"></script>
+    <script src="{% static 'js/library-helper.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-ui-1.12.1.min.js' %}"></script>
+    <script src="{% static 'js/vendor/papaparse-5.0.2.min.js' %}"></script>
+    <script src="{% static 'js/openfuvc.js' %}"></script>
+    <script src="{% static 'js/openfuvc-ui-helper.js' %}"></script>
+    <script src="{% static 'js/questionnaire.js' %}"></script>
+    <script src="{% static 'js/comparison.js' %}"></script>
+    <script src="{% static 'js_generated/exports.js' %}"></script>
     <script>
         const datasets = window.Macquette.datasets
         const calc = {
@@ -21,8 +21,8 @@
         }
     </script>
 
-    <link rel="stylesheet" href="{% static VERSION|add:'/css/jquery-ui-1.12.1.min.css' %}">
-    <link rel="stylesheet" href="{% static VERSION|add:'/css/openfuvc.css' %}">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui-1.12.1.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/openfuvc.css' %}">
 {% endblock %}
 
 {% block content %}

@@ -7,10 +7,10 @@
 
 server/macquette/dev/
 server/macquette/templates/
-server/macquette/v2/templates/
-server/macquette/v2/static/v2/js_generated/
-server/macquette/v2/static/v2/css/bootstrap-2.3.2.css
-server/macquette/v2/static/v2/css/bootstrap-responsive-2.3.2.css
+server/macquette/templates/
+server/macquette/static/js_generated/
+server/macquette/static/css/bootstrap-2.3.2.css
+server/macquette/static/css/bootstrap-responsive-2.3.2.css
 
 client/coverage/
 client/test/fixtures/private/

@@ -9,10 +9,10 @@
     <link rel="icon" href="{% static 'favicon.png' %}" sizes="any">
     <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
 
-    <link href="{% static VERSION|add:'/css/bootstrap-2.3.2.css' %}" rel="stylesheet">
-    <link href="{% static VERSION|add:'/css/bootstrap-responsive-2.3.2.css' %}" rel="stylesheet">
-    <link href="{% static VERSION|add:'/css/bootstrap-overrides.css' %}" rel="stylesheet">
-    <link href="{% static VERSION|add:'/css/project.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-2.3.2.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-responsive-2.3.2.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-overrides.css' %}" rel="stylesheet">
+    <link href="{% static 'css/project.css' %}" rel="stylesheet">
 
     {# Load Sentry first #}
     {% if settings.sentry_url %}
@@ -24,8 +24,8 @@
         <script>Sentry.init({ dsn: "{{ settings.sentry_url }}", maxValueLength: 10 * 1024 });</script>
     {% endif %}
 
-    <script src="{% static VERSION|add:'/js/vendor/jquery-1.11.3.min.js' %}"></script>
-    <script src="{% static VERSION|add:'/js/vendor/bootstrap-2.3.2.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-1.11.3.min.js' %}"></script>
+    <script src="{% static 'js/vendor/bootstrap-2.3.2.min.js' %}"></script>
 
     {% block extra_head %}{% endblock %}
 </head>
