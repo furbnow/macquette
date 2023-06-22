@@ -15,7 +15,7 @@ dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for c
 js-watch:  ## Compile JS (watching, for development)
 	./client/node_modules/.bin/esbuild \
 		client/src/exports.ts \
-		--outdir=mhep/v2/static/v2/js_generated/ \
+		--outdir=server/mhep/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--target=es2019 \
 		--sourcemap --bundle --watch
@@ -24,36 +24,36 @@ js-watch:  ## Compile JS (watching, for development)
 js-prod:  ## Compile JS (one off, for production)
 	./client/node_modules/.bin/esbuild \
 		client/src/exports.ts \
-		--outdir=mhep/v2/static/v2/js_generated/ \
+		--outdir=server/mhep/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--target=es2019 \
 		--sourcemap --bundle --minify
 
 .PHONY: server
-server: docker-local-up ## Bring docker up and run the local server
-	python manage.py runserver
+server: docker-local-up ## Bring docker up and run the local server
+	python server/manage.py runserver
 
 .PHONY: pip-compile
 pip-compile:  ## Recompile requirements file after a change
-	pip-compile -q --output-file=requirements/production.txt requirements/production.in
-	pip-compile -q --output-file=requirements/local.txt requirements/local.in
-	git diff requirements/
+	pip-compile -q --output-file=server/requirements/production.txt server/requirements/production.in
+	pip-compile -q --output-file=server/requirements/local.txt server/requirements/local.in
+	git diff server/requirements/
 
 .PHONY: pip-upgrade
 pip-upgrade:  ## Compile new requirements files with the latest pkg (make pip-upgrade pkg=...)
-	pip-compile -qP $(pkg) --output-file=requirements/production.txt requirements/production.in
-	pip-compile -qP $(pkg) --output-file=requirements/local.txt requirements/local.in
-	git diff requirements/
+	pip-compile -qP $(pkg) --output-file=server/requirements/production.txt server/requirements/production.in
+	pip-compile -qP $(pkg) --output-file=server/requirements/local.txt server/requirements/local.in
+	git diff server/requirements/
 
 .PHONY: pip-upgrade-all
 pip-upgrade-all:  ## Compile new requirements files with latest possible versions of everything (be careful!)
-	pip-compile -qU --output-file=requirements/production.txt requirements/production.in
-	pip-compile -qU --output-file=requirements/local.txt requirements/local.in
-	git diff requirements/
+	pip-compile -qU --output-file=server/requirements/production.txt server/requirements/production.in
+	pip-compile -qU --output-file=server/requirements/local.txt server/requirements/local.in
+	git diff server/requirements/
 
 .PHONY: sync
 sync:  ## Install dependencies
-	pip-sync requirements/local.txt
+	pip-sync server/requirements/local.txt
 	cd client && npm clean-install
 
 .PHONY: docker-local-up
@@ -71,7 +71,7 @@ docker-local-clean:  ## Clean system volumes (helpful for resetting broken datab
 
 .PHONY: coverage
 coverage:  test-python ## Run tests & generate line-by-line coverage
-	coverage html
+	cd server && coverage html
 
 .PHONY: upversion
 upversion:  ## Mint a new version
@@ -82,7 +82,7 @@ test: test-python test-js  ## Run all tests
 
 .PHONY: test-python
 test-python:  ## Run Python tests
-	pytest --cov=mhep --mpl --mpl-generate-summary=html --mpl-results-path=graph_results
+	cd server && pytest --cov=mhep --mpl --mpl-generate-summary=html --mpl-results-path=graph_results
 
 .PHONY: test-js
 test-js:  ## Run non-browser JS tests
@@ -90,7 +90,7 @@ test-js:  ## Run non-browser JS tests
 
 .PHONY: check-types-python
 check-types-python:  ## Check types with tsc (without emitting)
-	mypy mhep
+	cd server && mypy ./mhep
 
 .PHONY: check-types-js
 check-types-js:  ## Check types with tsc (without emitting)
@@ -119,10 +119,10 @@ format-prettier: ## Run prettier on all non-ignored files
 lint-js-legacy:  ## Runs eslint with a separate config on legacy (non-compiled) JS
 	./client/node_modules/.bin/eslint \
 		$$(if [ "$${CI}" != "true" ]; then echo "--fix"; fi) \
-		--config mhep/v2/static/v2/js/.eslintrc.json \
-		--ignore-path mhep/v2/static/v2/js/.eslintignore \
+		--config server/mhep/v2/static/v2/js/.eslintrc.json \
+		--ignore-path server/mhep/v2/static/v2/js/.eslintignore \
 		--max-warnings 0 \
-		mhep/v2/static/v2/js/
+		server/mhep/v2/static/v2/js/
 
 .PHONY: docker-build
 docker-build:  ## Build the service image

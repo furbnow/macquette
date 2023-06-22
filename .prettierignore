@@ -5,12 +5,12 @@
 *.min.css
 *.html
 
-mhep/dev/
-mhep/templates/
-mhep/v2/templates/
-mhep/v2/static/v2/js_generated/
-mhep/v2/static/v2/css/bootstrap-2.3.2.css
-mhep/v2/static/v2/css/bootstrap-responsive-2.3.2.css
+server/mhep/dev/
+server/mhep/templates/
+server/mhep/v2/templates/
+server/mhep/v2/static/v2/js_generated/
+server/mhep/v2/static/v2/css/bootstrap-2.3.2.css
+server/mhep/v2/static/v2/css/bootstrap-responsive-2.3.2.css
 
 client/coverage/
 client/test/fixtures/private/

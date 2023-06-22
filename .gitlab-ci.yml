@@ -36,12 +36,12 @@ python-test:
         - source venv/bin/activate
         - pip -V
         - pip install pip-tools==6.12.1
-        - pip-sync requirements/local.txt
+        - pip-sync server/requirements/local.txt
     script:
         # Silence warnings
         - mkdir staticfiles
         - make check-types-python test-python
-        - coverage xml
+        - (cd server && coverage xml)
 
     artifacts:
         expose_as: test-output
