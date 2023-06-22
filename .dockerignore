@@ -1,5 +1,5 @@
 client/test/model/fixtures/private/*
-mhep/media/
+server/macquette/media/
 **/js_generated
 **/node_modules
 venv

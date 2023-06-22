@@ -5,7 +5,7 @@ graph_results
 
 # Ignore private test fixtures
 client/test/fixtures/private/*
-server/mhep/media/
+server/macquette/media/
 js_generated
 
 ### Python template

@@ -15,7 +15,7 @@ dev:  ## Bring up the DB, run the server, and recompile the JS (then watch for c
 js-watch:  ## Compile JS (watching, for development)
 	./client/node_modules/.bin/esbuild \
 		client/src/exports.ts \
-		--outdir=server/mhep/v2/static/v2/js_generated/ \
+		--outdir=server/macquette/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--target=es2019 \
 		--sourcemap --bundle --watch
@@ -24,7 +24,7 @@ js-watch:  ## Compile JS (watching, for development)
 js-prod:  ## Compile JS (one off, for production)
 	./client/node_modules/.bin/esbuild \
 		client/src/exports.ts \
-		--outdir=server/mhep/v2/static/v2/js_generated/ \
+		--outdir=server/macquette/v2/static/v2/js_generated/ \
 		--loader:.js=jsx \
 		--target=es2019 \
 		--sourcemap --bundle --minify
@@ -82,7 +82,7 @@ test: test-python test-js  ## Run all tests
 
 .PHONY: test-python
 test-python:  ## Run Python tests
-	cd server && pytest --cov=mhep --mpl --mpl-generate-summary=html --mpl-results-path=graph_results
+	cd server && pytest --cov=macquette --mpl --mpl-generate-summary=html --mpl-results-path=graph_results
 
 .PHONY: test-js
 test-js:  ## Run non-browser JS tests
@@ -90,7 +90,7 @@ test-js:  ## Run non-browser JS tests
 
 .PHONY: check-types-python
 check-types-python:  ## Check types with tsc (without emitting)
-	cd server && mypy ./mhep
+	cd server && mypy ./macquette
 
 .PHONY: check-types-js
 check-types-js:  ## Check types with tsc (without emitting)
@@ -119,10 +119,10 @@ format-prettier: ## Run prettier on all non-ignored files
 lint-js-legacy:  ## Runs eslint with a separate config on legacy (non-compiled) JS
 	./client/node_modules/.bin/eslint \
 		$$(if [ "$${CI}" != "true" ]; then echo "--fix"; fi) \
-		--config server/mhep/v2/static/v2/js/.eslintrc.json \
-		--ignore-path server/mhep/v2/static/v2/js/.eslintignore \
+		--config server/macquette/v2/static/v2/js/.eslintrc.json \
+		--ignore-path server/macquette/v2/static/v2/js/.eslintignore \
 		--max-warnings 0 \
-		server/mhep/v2/static/v2/js/
+		server/macquette/v2/static/v2/js/
 
 .PHONY: docker-build
 docker-build:  ## Build the service image

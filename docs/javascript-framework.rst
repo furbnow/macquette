@@ -165,7 +165,7 @@ JS + HTML file map
 ------------------
 
 Each version of Macquette has its own Django app, which is a directory inside
-``mhep/``. There are three versions, ``v1``, ``v2``, and ``dev``, of which only
+``macquette/``. There are three versions, ``v1``, ``v2``, and ``dev``, of which only
 ``v2`` is considered "live". This version structure is a historical artifact
 and is deprecated in favour of a rolling-release incremental system. Most work
 should only happen on ``v2``.

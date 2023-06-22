@@ -46,12 +46,12 @@ RUN pip install --no-cache-dir -r ./requirements/production.txt
 # Copy in Django app
 COPY ./server/manage.py ./
 COPY ./server/config ./config
-COPY ./server/mhep ./mhep
+COPY ./server/macquette ./macquette
 COPY ./scripts ./scripts
 COPY scripts/migrate scripts/webserver ./
 
 # Copy in built JS assets
-COPY --from=js /app/server/mhep/v2/static/v2/js_generated/ /app/mhep/v2/static/v2/js_generated/
+COPY --from=js /app/server/macquette/v2/static/v2/js_generated/ /app/macquette/v2/static/v2/js_generated/
 
 # Collect static files for faster serving and caching
 RUN DJANGO_SETTINGS_MODULE=config.settings.staticfiles \

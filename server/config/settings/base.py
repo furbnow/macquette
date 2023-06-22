@@ -10,8 +10,10 @@ from corsheaders.defaults import default_headers, default_methods
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-ROOT_DIR = environ.Path(__file__) - 3  # (mhep/config/settings/base.py - 3 = mhep/)
-APPS_DIR = ROOT_DIR.path("mhep")
+ROOT_DIR = (
+    environ.Path(__file__) - 3
+)  # (macquette/config/settings/base.py - 3 = macquette/)
+APPS_DIR = ROOT_DIR.path("macquette")
 
 env = environ.Env()
 
@@ -123,10 +125,10 @@ THIRD_PARTY_APPS = [
     "waffle",
 ]
 LOCAL_APPS = [
-    "mhep.users.apps.UsersConfig",
-    "mhep.organisations",
-    "mhep.dev",
-    "mhep.v2",
+    "macquette.users.apps.UsersConfig",
+    "macquette.organisations",
+    "macquette.dev",
+    "macquette.v2",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -134,7 +136,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # MIGRATIONS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
-MIGRATION_MODULES = {"sites": "mhep.contrib.sites.migrations"}
+MIGRATION_MODULES = {"sites": "macquette.contrib.sites.migrations"}
 
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -144,7 +146,7 @@ USE_AUTH_SERVICE = env.bool("USE_AUTH_SERVICE", default=False)
 if USE_AUTH_SERVICE is True:
     # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
     AUTHENTICATION_BACKENDS = [
-        "mhep.users.backends.Auth0",
+        "macquette.users.backends.Auth0",
         "django.contrib.auth.backends.ModelBackend",
     ]
     # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
@@ -201,14 +203,14 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
-    "mhep.middleware.HealthCheckMiddleware",
+    "macquette.middleware.HealthCheckMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "waffle.middleware.WaffleMiddleware",
-    "mhep.users.backends.ExceptionMiddleware",
+    "macquette.users.backends.ExceptionMiddleware",
 ]
 
 # STATIC
@@ -252,7 +254,7 @@ TEMPLATES: list[dict[str, Any]] = [
             ],
             # https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
             "context_processors": [
-                "mhep.context_processors.settings",
+                "macquette.context_processors.settings",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",

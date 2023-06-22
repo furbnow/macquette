@@ -17,14 +17,14 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # Login stuff
-    path("", include("mhep.users.urls")),
+    path("", include("macquette.users.urls")),
     # Your stuff: custom urls includes go here
     path(
         "", RedirectView.as_view(url=reverse_lazy("v2:list-assessments")), name="index"
     ),
     # Add app versions after this line
-    path("address-search/", include("mhep.address_search.urls")),
-    path("v2/", include("mhep.v2.urls", namespace="v2")),
+    path("address-search/", include("macquette.address_search.urls")),
+    path("v2/", include("macquette.v2.urls", namespace="v2")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
