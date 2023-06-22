@@ -638,24 +638,26 @@ function Totals({ walls }: { walls: WallLike[] }) {
 
     return (
         <table className="mb-15 table" style={{ width: 'auto' }}>
-            <tr>
-                <th className="text-left">Total net area</th>
-                <td>
-                    <NumberOutput
-                        value={sum(walls.map((wall) => wall.outputs.netArea ?? 0))}
-                        unit="m²"
-                    />
-                </td>
-            </tr>
-            <tr>
-                <th className="text-left">Total heat loss</th>
-                <td>
-                    <NumberOutput
-                        value={sum(walls.map((wall) => wall.outputs.heatLoss ?? 0))}
-                        unit="W/K"
-                    />
-                </td>
-            </tr>
+            <tbody>
+                <tr>
+                    <th className="text-left">Total net area</th>
+                    <td>
+                        <NumberOutput
+                            value={sum(walls.map((wall) => wall.outputs.netArea ?? 0))}
+                            unit="m²"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th className="text-left">Total heat loss</th>
+                    <td>
+                        <NumberOutput
+                            value={sum(walls.map((wall) => wall.outputs.heatLoss ?? 0))}
+                            unit="W/K"
+                        />
+                    </td>
+                </tr>
+            </tbody>
         </table>
     );
 }
