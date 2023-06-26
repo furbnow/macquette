@@ -23,8 +23,6 @@ export const SidebarContext = React.createContext<SidebarContextType>({
 });
 
 export type State = {
-    projectName: string;
-    projectDescription: string;
     route: Route | null;
     hasReports: boolean;
     scenarios: {
@@ -330,8 +328,6 @@ export const editorSidebarModule: UiModule<State, Action, never> = {
     component: EditorSidebar,
     initialState: () => {
         return {
-            projectName: '',
-            projectDescription: '',
             currentPageName: null,
             hasReports: false,
             scenarios: [],
@@ -378,8 +374,6 @@ export const editorSidebarModule: UiModule<State, Action, never> = {
                 {
                     type: 'merge data',
                     state: {
-                        projectName: project.name,
-                        projectDescription: project.description,
                         hasReports: project.organisation !== null,
                         route,
                         scenarios: Object.entries(project.data).map(
