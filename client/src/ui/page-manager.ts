@@ -10,6 +10,7 @@ import { InstantiatedUiModule } from './module-management/instantiated-module';
 import { UiModule } from './module-management/module-type';
 import { addressSearchModule } from './modules/address-search';
 import { currentEnergyModule } from './modules/current-energy';
+import * as editorHeader from './modules/editor-header';
 import * as editorNavModule from './modules/editor-nav';
 import * as editorSidebar from './modules/editor-sidebar';
 import { imageGalleryModule } from './modules/image-gallery';
@@ -71,17 +72,18 @@ export class PageManager {
         | InstantiatedUiModule<unknown, unknown, unknown>
         | 'legacy'
         | null = null;
+    private headerManager: HeaderManager;
     private sidebarManager: SidebarManager;
     private titleManager: TitleManager;
     private navManager: NavManager;
 
     constructor(
-        private legacySharedInit: () => void,
         private legacyModuleInit: () => Promise<void>,
         private legacyModuleInitPostUpdate: () => void,
         private legacyModuleUpdate: () => void,
         private legacyModuleUnload: () => void,
     ) {
+        this.headerManager = new HeaderManager();
         this.sidebarManager = new SidebarManager();
         this.titleManager = new TitleManager();
         this.navManager = new NavManager();
@@ -122,6 +124,7 @@ export class PageManager {
             }
 
             this.navManager.update();
+            this.headerManager.update();
             this.sidebarManager.update();
             this.titleManager.update();
 
@@ -199,10 +202,10 @@ export class PageManager {
                 applyDataMutator,
             );
         }
-        this.legacySharedInit();
 
         // Run updaters
         this.navManager.update();
+        this.headerManager.update();
         this.sidebarManager.update();
         this.titleManager.update();
         this.externalDataUpdate({});
@@ -211,6 +214,32 @@ export class PageManager {
         if (this.currentModule === 'legacy') {
             this.legacyModuleInitPostUpdate();
         }
+    }
+}
+
+class HeaderManager {
+    private headerModule: InstantiatedUiModule<
+        editorHeader.State,
+        editorHeader.Action,
+        never
+    > | null = null;
+
+    constructor() {
+        const headerElement = document.querySelector('#editor__main-header');
+        if (headerElement === null) {
+            throw new Error('header area not available for view initialisation');
+        }
+
+        this.headerModule = new InstantiatedUiModule(
+            editorHeader.editorHeaderModule,
+            null,
+            headerElement,
+            applyDataMutator,
+        );
+    }
+
+    update() {
+        this.headerModule?.update(getAppContext());
     }
 }
 

@@ -29,12 +29,6 @@ async function initMacquette(api, userId, assessmentId, appName, featureFlags) {
     const surrounds = await subview('_surrounds');
     document.getElementById('macquette-container').innerHTML = surrounds;
 
-    // Load house graphic + stats
-    load_view('#topgraphic', 'topgraphic').catch((err) => {
-        console.error(`Failed to load topgraphic: ${err}`);
-        alert('Failed to load top graphic');
-    });
-
     // Various project initialisation stuff
     p = await mhep_helper.getAssessment(projectid);
     if (p.data == false || p.data == null || Object.keys(p.data).length == 0) {
@@ -53,7 +47,6 @@ async function initMacquette(api, userId, assessmentId, appName, featureFlags) {
     library_helper = new libraryHelper('', $('#openbem'));
 
     pageManager = new window.Macquette.PageManager(
-        legacySharedInit,
         legacyModuleInit,
         legacyModuleInitPostUpdate,
         legacyModuleUpdate,
@@ -150,13 +143,6 @@ function setupEventHandlers() {
         }
         update();
     });
-    $('.house_graphic').click(function () {
-        if ($('.house_graphic').html() == 'Show house graphic') {
-            show_house_graphic();
-        } else {
-            hide_house_graphic();
-        }
-    });
 
     $('#modal-error-submitting-data-done').on('click', function () {
         location.reload();
@@ -179,10 +165,6 @@ function setupEventHandlers() {
         }
 
         refresh_undo_redo_buttons();
-    });
-    // Side menu
-    $(window).resize(function () {
-        draw_openbem_graphics('#topgraphic', data);
     });
 
     // Allow scrolling the left sidebar out of the way on smaller window sizes
@@ -216,7 +198,6 @@ function update({ undoRedo = false, dataChanged = true, source } = {}) {
                 historical_index = 0;
                 refresh_undo_redo_buttons();
             }
-            draw_openbem_graphics('#topgraphic', data);
         }
     }
 
@@ -227,73 +208,12 @@ function update({ undoRedo = false, dataChanged = true, source } = {}) {
     }
 }
 
-function hide_house_graphic() {
-    $('#topgraphic').hide();
-    $('.house_graphic').html('Show house graphic');
-}
-
-function show_house_graphic() {
-    $('#topgraphic').show();
-    $('.house_graphic').html('Hide house graphic');
-}
-
 function show_hide_if_master() {
     if (scenario == 'master') {
         $('#editor__main-content .if-not-master').hide();
     } else {
         $('#editor__main-content .if-master').hide();
         $('#editor__main-content .disabled-if-not-master').attr('disabled', 'true');
-    }
-}
-
-function legacySharedInit() {
-    if (
-        page == 'report' ||
-        page == 'householdquestionnaire' ||
-        page == 'commentary' ||
-        page == 'scopeofworks' ||
-        page == 'currentenergy' ||
-        page == 'imagegallery' ||
-        page == 'address-search' ||
-        page == 'compare' ||
-        page == 'scopeofworks' ||
-        page == 'export' ||
-        page == 'librariesmanager' ||
-        page == 'fuelsmanager' ||
-        page == 'project'
-    ) {
-        hide_house_graphic();
-    } else {
-        show_house_graphic();
-        draw_openbem_graphics('#topgraphic', data);
-    }
-
-    if (page == 'householdquestionnaire') {
-        $('.scenario-name').html('Household Questionnaire');
-    } else if (page == 'address-search') {
-        $('.scenario-name').html('Address Search');
-    } else if (page == 'commentary') {
-        $('.scenario-name').html('Commentary');
-    } else if (page == 'report') {
-        $('.scenario-name').html('Generate Report');
-    } else if (page == 'currentenergy') {
-        $('.scenario-name').html('Current Energy');
-    } else if (page == 'imagegallery') {
-        $('.scenario-name').html('Image Gallery');
-    } else if (page == 'compare') {
-        $('.scenario-name').html('Compare Scenarios');
-    } else if (page == 'scopeofworks') {
-        $('.scenario-name').html('Scope of Works');
-    } else if (page == 'fuelsmanager') {
-        $('.scenario-name').html('Fuels Manager');
-    } else if (page == 'librariesmanager') {
-        $('.scenario-name').html('Libraries Manager');
-    } else if (page == 'export') {
-        $('.scenario-name').html('Import/Export');
-    } else if (page == 'project') {
-        $('.scenario-name').html('Project setup');
-    } else {
-        $('.scenario-name').html(scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' - ' + data.scenario_name);
     }
 }
 

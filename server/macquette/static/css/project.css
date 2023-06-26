@@ -562,7 +562,7 @@ body .modal {
 .house--light-text {
     fill: var(--datavis-1-dark);
 }
-.house--darker {
+.house--dark {
     fill: var(--datavis-2);
 }
 .house--dark-text {
