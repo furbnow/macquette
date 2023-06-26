@@ -2,14 +2,10 @@ import React from 'react';
 
 import { assertNever } from '../../helpers/assert-never';
 import { Result } from '../../helpers/result';
-import { totalCostOfMeasures } from '../../measures';
-import { CombinedModules } from '../../model/combined-modules';
-import * as targets from '../../model/datasets/targets';
 import type { UiModule } from '../module-management/module-type';
-import { House } from '../output-components/house';
+import type { GraphicsInput } from '../output-components/graphics';
+import { Graphics, getGraphicsInput } from '../output-components/graphics';
 import { LockedWarning } from '../output-components/locked-warning';
-import { NumberOutput } from '../output-components/numeric';
-import { TargetBar } from '../output-components/target-bar';
 import type { ScenarioPageName, StandalonePageName } from '../pages';
 import { pageTitles } from '../pages';
 
@@ -19,22 +15,7 @@ export type State = {
     houseGraphicShown: boolean;
     scenarioId: string;
     scenarioLocked: boolean;
-    measuresCost: number | null;
-    targetBarData: {
-        spaceHeatingDemand: number | null;
-        dailyPersonalkWh: number | null;
-        co2m2: number | null;
-        primaryEnergykWhm2: number | null;
-    };
-    houseData: {
-        floor: number | null;
-        ventilation: number | null;
-        infiltration: number | null;
-        windows: number | null;
-        walls: number | null;
-        roof: number | null;
-        thermalbridge: number | null;
-    };
+    graphicsInput: GraphicsInput | null;
 };
 export type Action = { type: 'update state'; state: Partial<State> };
 
@@ -97,53 +78,11 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
 
                 <LockedWarning locked={state.scenarioLocked} />
 
-                {state.houseGraphicShown && state.isScenarioPage && (
-                    <div className="d-flex align-items-center justify-content-between pb-30">
-                        <div style={{ width: '50%' }}>
-                            <House {...state.houseData} />
-                            {state.measuresCost !== null && (
-                                <div>
-                                    Measures cost: £
-                                    <NumberOutput value={state.measuresCost} dp={0} />
-                                </div>
-                            )}
-                        </div>
-
-                        <div>
-                            <TargetBar
-                                name="Space heating demand"
-                                width={425}
-                                value={[state.targetBarData.spaceHeatingDemand]}
-                                units="kWh/m²"
-                                targets={targets.spaceHeatingDemand}
-                            />
-
-                            <TargetBar
-                                name="Primary energy demand"
-                                width={425}
-                                value={[state.targetBarData.primaryEnergykWhm2]}
-                                units="kWh/m²"
-                                targets={targets.primaryEnergyDemand}
-                            />
-
-                            <TargetBar
-                                name="CO₂ emission rate"
-                                width={425}
-                                value={[state.targetBarData.co2m2]}
-                                units="kgCO₂/m²"
-                                targets={targets.co2m2}
-                            />
-
-                            <TargetBar
-                                name="Per person energy use"
-                                width={425}
-                                value={[state.targetBarData.dailyPersonalkWh]}
-                                units="kWh/day"
-                                targets={targets.energyUsePerPerson}
-                            />
-                        </div>
-                    </div>
-                )}
+                {state.houseGraphicShown &&
+                    state.isScenarioPage &&
+                    state.graphicsInput !== null && (
+                        <Graphics input={state.graphicsInput} />
+                    )}
             </>
         );
     },
@@ -154,21 +93,7 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
             scenarioId: '',
             scenarioLocked: false,
             measuresCost: null,
-            targetBarData: {
-                dailyPersonalkWh: null,
-                co2m2: null,
-                primaryEnergykWhm2: null,
-                spaceHeatingDemand: null,
-            },
-            houseData: {
-                floor: 0,
-                ventilation: 0,
-                infiltration: 0,
-                windows: 0,
-                walls: 0,
-                roof: 0,
-                thermalbridge: 0,
-            },
+            graphicsInput: null,
             houseGraphicShown: true,
         };
     },
@@ -180,19 +105,7 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
     },
     effector: assertNever,
     shims: {
-        extractUpdateAction: function ({
-            currentScenario,
-            scenarioId,
-            route,
-            currentModel,
-        }) {
-            function unwrap(fn: (model: CombinedModules) => number): number | null {
-                return currentModel
-                    .map(fn)
-                    .mapErr(() => null)
-                    .coalesce();
-            }
-
+        extractUpdateAction: function ({ currentScenario, scenarioId, route }) {
             return Result.ok<Action[]>([
                 {
                     type: 'update state',
@@ -203,29 +116,11 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
                         scenarioLocked:
                             route.type === 'with scenario' &&
                             (currentScenario?.locked ?? false),
-                        measuresCost:
-                            scenarioId !== 'master'
-                                ? totalCostOfMeasures(currentScenario)
-                                : null,
-                        targetBarData: {
-                            spaceHeatingDemand:
-                                currentScenario?.space_heating_demand_m2 ?? null,
-                            dailyPersonalkWh: currentScenario?.kwhdpp ?? null,
-                            co2m2: currentScenario?.kgco2perm2 ?? null,
-                            primaryEnergykWhm2:
-                                currentScenario?.primary_energy_use_m2 ?? null,
-                        },
-                        houseData: {
-                            floor: unwrap((m) => m.fabric.heatLossTotals.floor),
-                            windows: unwrap((m) => m.fabric.heatLossTotals.windowLike),
-                            walls: unwrap((m) => m.fabric.heatLossTotals.externalWall),
-                            roof: unwrap((m) => m.fabric.heatLossTotals.roof),
-                            ventilation: unwrap((m) => m.ventilation.heatLossAverage),
-                            infiltration: unwrap((m) => m.infiltration.heatLossAverage),
-                            thermalbridge: unwrap(
-                                (m) => m.fabric.thermalBridgingHeatLoss,
-                            ),
-                        },
+                        graphicsInput: getGraphicsInput(
+                            scenarioId ?? '',
+                            currentScenario,
+                            currentModel,
+                        ),
                     },
                 },
             ]);
