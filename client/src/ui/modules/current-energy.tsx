@@ -201,16 +201,16 @@ function TargetBars({
         <div>
             <h4>Comparison charts</h4>
             <p>
-                <div
+                <span
                     className="square"
                     style={{ backgroundColor: `var(--${getBarColour(0)})` }}
-                ></div>{' '}
+                ></span>{' '}
                 Data provided on this page
                 <br />
-                <div
+                <span
                     className="square"
                     style={{ backgroundColor: `var(--${getBarColour(1)})` }}
-                ></div>{' '}
+                ></span>{' '}
                 From modelled baseline
             </p>
 
