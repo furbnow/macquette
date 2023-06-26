@@ -119,7 +119,6 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
                         graphicsInput: getGraphicsInput(
                             scenarioId ?? '',
                             currentScenario,
-                            currentModel,
                         ),
                     },
                 },

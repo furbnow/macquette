@@ -9,6 +9,8 @@ import { safeMerge } from '../../helpers/safe-merge';
 import { TextInput } from '../input-components/text';
 import { Textarea } from '../input-components/textarea';
 import type { Dispatcher, UiModule } from '../module-management/module-type';
+import type { GraphicsInput } from '../output-components/graphics';
+import { Graphics, getGraphicsInput } from '../output-components/graphics';
 
 type State = {
     brief: string;
@@ -20,6 +22,7 @@ type State = {
             number: number;
             name: string;
             description: string;
+            graphicsInput: GraphicsInput;
         }
     >;
 };
@@ -69,10 +72,16 @@ function Commentary({ state, dispatch }: { state: State; dispatch: Dispatcher<Ac
             </div>
 
             {Object.entries(state.scenarios).map(
-                ([id, { name, number, description }]) => (
-                    <section key={`commentary_${id}`} className="mb-30">
+                ([id, { name, number, description, graphicsInput }]) => (
+                    <section key={`commentary_${id}`} className="mb-30 line-top">
+                        <h3 className="mt-0">
+                            Scenario {number}: {name}
+                        </h3>
+
+                        <Graphics input={graphicsInput} />
+
                         <label htmlFor={`name_${id}`}>
-                            <b>Scenario {number} name:</b>
+                            <b>Name:</b>
                         </label>
                         <TextInput
                             id={`name_${id}`}
@@ -86,7 +95,7 @@ function Commentary({ state, dispatch }: { state: State; dispatch: Dispatcher<Ac
                         />
 
                         <label htmlFor={`description_${id}`}>
-                            <b>Scenario {number} description:</b>
+                            <b>Description:</b>
                         </label>
                         <Textarea
                             id={`description_${id}`}
@@ -158,6 +167,7 @@ export const commentaryModule: UiModule<State, Action, never> = {
                             number: parseInt(scenarioId.charAt(8), 10),
                             name: data?.scenario_name ?? '',
                             description: data?.scenario_description ?? '',
+                            graphicsInput: getGraphicsInput(scenarioId, data),
                         },
                     ]),
             );

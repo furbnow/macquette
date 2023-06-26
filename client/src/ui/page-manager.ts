@@ -9,6 +9,7 @@ import {
 import { InstantiatedUiModule } from './module-management/instantiated-module';
 import { UiModule } from './module-management/module-type';
 import { addressSearchModule } from './modules/address-search';
+import { commentaryModule } from './modules/commentary';
 import { currentEnergyModule } from './modules/current-energy';
 import * as editorHeader from './modules/editor-header';
 import * as editorNavModule from './modules/editor-nav';
@@ -24,7 +25,7 @@ import { Route } from './routes';
 
 export const standalonePages = {
     householdquestionnaire: { style: 'legacy' },
-    commentary: { style: 'legacy' },
+    commentary: { style: 'modern', module: commentaryModule },
     currentenergy: { style: 'modern', module: currentEnergyModule },
     imagegallery: { style: 'modern', module: imageGalleryModule },
     compare: { style: 'legacy' },

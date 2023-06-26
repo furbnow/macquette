@@ -1,10 +1,11 @@
 import React from 'react';
+import { z } from 'zod';
 
+import { resultSchema } from '../../data-schemas/helpers/result';
 import { Scenario } from '../../data-schemas/scenario';
 import { totalCostOfMeasures } from '../../measures';
 import { CombinedModules } from '../../model/combined-modules';
 import * as targets from '../../model/datasets/targets';
-import type { AppContext } from '../module-management/module-type';
 import { House } from './house';
 import { NumberOutput } from './numeric';
 import { TargetBar } from './target-bar';
@@ -28,16 +29,16 @@ export type GraphicsInput = {
     };
 };
 
-export function getGraphicsInput(
-    scenarioId: string,
-    scenario: Scenario,
-    modelR: AppContext['currentModel'],
-) {
-    function unwrap(fn: (model: CombinedModules) => number): number | null {
-        return modelR
-            .map(fn)
-            .mapErr(() => null)
-            .coalesce();
+export function getGraphicsInput(scenarioId: string, scenario: Scenario): GraphicsInput {
+    let model: CombinedModules | null = null;
+
+    if (scenario?.model !== undefined) {
+        const modelR = resultSchema(z.instanceof(CombinedModules), z.unknown()).safeParse(
+            scenario.model,
+        );
+        if (modelR.success === true) {
+            model = modelR.data.mapErr(() => null).coalesce();
+        }
     }
 
     return {
@@ -49,13 +50,13 @@ export function getGraphicsInput(
             primaryEnergykWhm2: scenario?.primary_energy_use_m2 ?? null,
         },
         houseData: {
-            floor: unwrap((m) => m.fabric.heatLossTotals.floor),
-            windows: unwrap((m) => m.fabric.heatLossTotals.windowLike),
-            walls: unwrap((m) => m.fabric.heatLossTotals.externalWall),
-            roof: unwrap((m) => m.fabric.heatLossTotals.roof),
-            ventilation: unwrap((m) => m.ventilation.heatLossAverage),
-            infiltration: unwrap((m) => m.infiltration.heatLossAverage),
-            thermalbridge: unwrap((m) => m.fabric.thermalBridgingHeatLoss),
+            floor: model?.fabric.heatLossTotals.floor ?? null,
+            windows: model?.fabric.heatLossTotals.windowLike ?? null,
+            walls: model?.fabric.heatLossTotals.externalWall ?? null,
+            roof: model?.fabric.heatLossTotals.roof ?? null,
+            ventilation: model?.ventilation.heatLossAverage ?? null,
+            infiltration: model?.infiltration.heatLossAverage ?? null,
+            thermalbridge: model?.fabric.thermalBridgingHeatLoss ?? null,
         },
     };
 }
