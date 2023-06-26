@@ -4,7 +4,6 @@ $('#openbem').on('click', '#import-data', function () {
     p.data = project = JSON.parse($('#import').val());
 
     update();
-    redraw_scenario_menu();
 });
 
 $('#openbem').on('click', '#show-project-data', function () {
@@ -54,7 +53,6 @@ $('#upload_project').submit(function (e) {
                 p.data = project = project_to_load;
                 update();
                 $('#upload-result').css('color', 'black').html('Project uploaded and imported');
-                redraw_scenario_menu();
             } catch (e) {
                 $('#upload-result').css('color', 'red').html('The uploaded project is corrupted');
             }
