@@ -22,25 +22,34 @@ export const SidebarContext = React.createContext<SidebarContextType>({
     route: null,
 });
 
+type ExtractedScenario = {
+    id: string;
+    title: string;
+    isBaseline: boolean;
+    num: number;
+    locked: boolean;
+    createdFromChanges: ChangeSinceCreation;
+    createdFromName: string | null;
+    spaceHeatingDemand: number | null;
+    justCreated: boolean;
+};
+
 export type State = {
     route: Route | null;
     hasReports: boolean;
-    scenarios: {
-        id: string;
-        title: string;
-        isBaseline: boolean;
-        num: number;
-        locked: boolean;
-        createdFromChanges: ChangeSinceCreation;
-        createdFromName: string | null;
-        spaceHeatingDemand: number | null;
-        expanded: boolean;
-        justCreated: boolean;
-    }[];
+    scenarios: (ExtractedScenario & { expanded: boolean })[];
     mutateAction: DuplicateScenarioAction | SetLockAction | DeleteScenarioAction | null;
 };
 
-type MergeDataAction = { type: 'merge data'; state: Partial<State> };
+type ExpansionInstruction = 'if initial' | 'as before';
+type UseExternalDataAction = {
+    type: 'use external data';
+    state: Pick<State, 'route' | 'hasReports'> & {
+        scenarios: (ExtractedScenario & {
+            expanded: ExpansionInstruction;
+        })[];
+    };
+};
 type ToggleExpansionAction = { type: 'toggle scenario expansion'; scenarioId: string };
 type DuplicateScenarioAction = {
     type: 'duplicate scenario';
@@ -51,7 +60,7 @@ type SetLockAction = { type: 'set scenario lock'; scenarioId: string; locked: bo
 type DeleteScenarioAction = { type: 'delete scenario'; scenarioId: string };
 
 export type Action =
-    | MergeDataAction
+    | UseExternalDataAction
     | ToggleExpansionAction
     | DuplicateScenarioAction
     | SetLockAction
@@ -342,9 +351,34 @@ export const editorSidebarModule: UiModule<State, Action, never> = {
         }
 
         switch (action.type) {
-            case 'merge data': {
-                return [{ ...state, ...action.state }];
+            case 'use external data': {
+                function findExpandedFor(
+                    instruction: ExpansionInstruction,
+                    scenarioId: string,
+                ): boolean | null {
+                    const existingScenario = state.scenarios.find(
+                        (scenario) => scenario.id === scenarioId,
+                    );
+                    if (existingScenario === undefined && instruction === 'if initial') {
+                        return true;
+                    }
+                    if (existingScenario !== undefined) {
+                        return existingScenario.expanded;
+                    }
+                    return null;
+                }
+
+                state.route = action.state.route;
+                state.hasReports = action.state.hasReports;
+                state.mutateAction = null;
+                state.scenarios = action.state.scenarios.map((scenario) => ({
+                    ...scenario,
+                    expanded: findExpandedFor(scenario.expanded, scenario.id) ?? false,
+                }));
+
+                return [state];
             }
+
             case 'toggle scenario expansion': {
                 return [
                     {
@@ -370,9 +404,21 @@ export const editorSidebarModule: UiModule<State, Action, never> = {
     effector: assertNever,
     shims: {
         extractUpdateAction: ({ route, project }) => {
-            return Result.ok([
+            function shouldExpand(
+                scenarioId: string,
+                data: (typeof project.data)[string],
+            ) {
+                if (data?.justCreated === true) {
+                    return 'if initial';
+                }
+                if (route.type === 'with scenario' && route.scenarioId === scenarioId) {
+                    return 'if initial';
+                }
+                return 'as before';
+            }
+            return Result.ok<Action[]>([
                 {
-                    type: 'merge data',
+                    type: 'use external data',
                     state: {
                         hasReports: project.organisation !== null,
                         route,
@@ -390,16 +436,10 @@ export const editorSidebarModule: UiModule<State, Action, never> = {
                                 createdFromName: scenarioData?.created_from ?? null,
                                 spaceHeatingDemand:
                                     scenarioData?.space_heating_demand_m2 ?? null,
-                                expanded:
-                                    scenarioData?.sidebarExpanded ??
-                                    (route.type === 'with scenario' &&
-                                    route.scenarioId === scenarioId
-                                        ? true
-                                        : false),
                                 justCreated: scenarioData?.justCreated ?? false,
+                                expanded: shouldExpand(scenarioId, scenarioData),
                             }),
                         ),
-                        mutateAction: null,
                     },
                 },
             ]);
@@ -434,16 +474,12 @@ export const editorSidebarModule: UiModule<State, Action, never> = {
                     }
                 }
             }
-
+            3;
             for (const [scenarioId, scenarioData] of Object.entries(project.data)) {
                 if (scenarioData === undefined) {
                     continue;
                 }
-                const expandedFlag =
-                    state.scenarios.find((row) => row.id === scenarioId)?.expanded ??
-                    false;
                 const isNew = scenarioId === newId;
-                scenarioData.sidebarExpanded = expandedFlag || isNew;
                 scenarioData.justCreated = isNew;
             }
         },
