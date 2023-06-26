@@ -6,6 +6,7 @@ import { CombinedModules } from '../../model/combined-modules';
 import * as targets from '../../model/datasets/targets';
 import type { UiModule } from '../module-management/module-type';
 import { House } from '../output-components/house';
+import { LockedWarning } from '../output-components/locked-warning';
 import { TargetBar } from '../output-components/target-bar';
 import type { ScenarioPageName, StandalonePageName } from '../pages';
 import { pageTitles } from '../pages';
@@ -15,6 +16,7 @@ export type State = {
     isScenarioPage: boolean;
     houseGraphicShown: boolean;
     scenarioId: string;
+    scenarioLocked: boolean;
     targetBarData: {
         spaceHeatingDemand: number | null;
         dailyPersonalkWh: number | null;
@@ -89,6 +91,9 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
                         </button>
                     )}
                 </div>
+
+                <LockedWarning locked={state.scenarioLocked} />
+
                 {state.houseGraphicShown && state.isScenarioPage && (
                     <div className="d-flex align-items-center justify-content-between pb-30">
                         <div style={{ width: '50%' }}>
@@ -140,6 +145,7 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
             currentPage: null,
             isScenarioPage: false,
             scenarioId: '',
+            scenarioLocked: false,
             targetBarData: {
                 dailyPersonalkWh: null,
                 co2m2: null,
@@ -186,6 +192,9 @@ export const editorHeaderModule: UiModule<State, Action, never> = {
                         currentPage: route.page,
                         isScenarioPage: route.type === 'with scenario',
                         scenarioId: scenarioId ?? '',
+                        scenarioLocked:
+                            route.type === 'with scenario' &&
+                            (currentScenario?.locked ?? false),
                         targetBarData: {
                             spaceHeatingDemand:
                                 currentScenario?.space_heating_demand_m2 ?? null,

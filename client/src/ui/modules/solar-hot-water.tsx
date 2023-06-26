@@ -27,7 +27,6 @@ import { NumberInput, NumberInputProps } from '../input-components/number';
 import { Select, SelectProps } from '../input-components/select';
 import type { Dispatcher } from '../module-management/module-type';
 import { UiModule } from '../module-management/module-type';
-import { LockedWarning } from '../output-components/locked-warning';
 import { NumberOutput } from '../output-components/numeric';
 
 type InputState = FormStateOf<typeof solarHotWaterDataModel>;
@@ -345,7 +344,6 @@ function SolarHotWater({
         <PageContext.Provider
             value={{ locked: scenarioLocked, enabled: input !== null && !input.isNull }}
         >
-            <LockedWarning locked={scenarioLocked} />
             <hr />
             <h3>Solar Hot Water system</h3>
 

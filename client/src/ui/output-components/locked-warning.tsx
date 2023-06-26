@@ -11,7 +11,7 @@ export function LockedWarning({ locked }: LockedWarningProps) {
         return <></>;
     } else {
         return (
-            <div className="scenario-locked-warning">
+            <div className="scenario-locked-warning mb-15">
                 <WarningFilledIcon /> You cannot make changes to this page because the
                 scenario is locked.
             </div>

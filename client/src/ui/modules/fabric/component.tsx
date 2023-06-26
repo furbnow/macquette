@@ -16,7 +16,6 @@ import { NumberInput, NumberInputProps } from '../../input-components/number';
 import type { RadioGroupProps } from '../../input-components/radio-group';
 import { RadioGroup } from '../../input-components/radio-group';
 import { TextInput, TextInputProps } from '../../input-components/text';
-import { LockedWarning } from '../../output-components/locked-warning';
 import {
     Modal,
     ModalBody,
@@ -869,7 +868,6 @@ export function Fabric({ state, dispatch }: PageProps) {
 
     return (
         <PageContext.Provider value={{ locked }}>
-            <LockedWarning locked={locked} />
             <ThermalMassParameter state={state} dispatch={dispatch} />
             <Walls state={state} dispatch={dispatch} />
             <PartyWalls state={state} dispatch={dispatch} />
