@@ -1,5 +1,0 @@
-client/test/model/fixtures/private/*
-server/macquette/media/
-**/js_generated
-**/node_modules
-venv
