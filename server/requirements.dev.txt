@@ -1,0 +1,28 @@
+pip-tools               # https://github.com/jazzband/pip-tools
+ipdb                    # https://github.com/gotcha/ipdb
+django-watchfiles       # https://github.com/adamchainz/django-watchfiles
+
+#  Testing
+# ------------------------------------------------------------------------------
+pytest                  # https://github.com/pytest-dev/pytest
+freezegun               # https://github.com/spulec/freezegun
+pytest-cov              # https://pypi.org/project/pytest-cov/
+pytest-django           # https://github.com/pytest-dev/pytest-django
+pytest-mpl              # https://github.com/matplotlib/pytest-mpl
+coverage                # https://github.com/nedbat/coveragepy
+
+# Code quality
+# ------------------------------------------------------------------------------
+mypy
+django-stubs[compatible-mypy]
+djangorestframework-stubs[compatible-mypy]
+types-python-jose
+ruff
+black
+pre-commit-hooks
+
+# Django
+# ------------------------------------------------------------------------------
+factory-boy             # https://github.com/FactoryBoy/factory_boy
+django-debug-toolbar    # https://github.com/jazzband/django-debug-toolbar
+django-extensions       # https://github.com/django-extensions/django-extensions
