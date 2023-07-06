@@ -1,14 +1,10 @@
 """
 Base settings to build other settings files upon.
 """
-import logging
 from typing import Any
 
 import environ
-import sentry_sdk
 from corsheaders.defaults import default_headers, default_methods
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
 
 ROOT_DIR = (
     environ.Path(__file__) - 3
@@ -63,34 +59,6 @@ APP_NAME = env.str("APP_NAME", "Macquette")
 
 FROM_EMAIL = env.str("FROM_EMAIL", "")
 
-
-# Sentry
-# ------------------------------------------------------------------------------
-# We set up Sentry early on so that other config errors get logged to Sentry.
-# If no DSN is provided, then we skip setup, that's fine.
-SENTRY_DSN = env("SENTRY_DSN", default="")
-if SENTRY_DSN:
-    SENTRY_LOG_LEVEL = env.int("DJANGO_SENTRY_LOG_LEVEL", logging.INFO)
-
-    sentry_logging = LoggingIntegration(
-        level=SENTRY_LOG_LEVEL,  # Capture info and above as breadcrumbs
-        event_level=logging.ERROR,  # Send events from Error messages
-    )
-
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[sentry_logging, DjangoIntegration()],
-        environment=ENV,
-        release=env.str("CI_COMMIT_SHA", ""),
-        traces_sample_rate=0.1,
-    )
-
-    # DisallowedHost errors are basically spam
-    from sentry_sdk.integrations.logging import ignore_logger
-
-    ignore_logger("django.security.DisallowedHost")
-
-
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
@@ -120,6 +88,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "corsheaders",
     "crispy_forms",
+    "crispy_bootstrap4",
     "social_django",
     "rest_framework",
     "waffle",

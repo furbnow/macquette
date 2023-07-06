@@ -73,7 +73,7 @@ class BarChart(BaseModel):
             )
         return v
 
-    @root_validator
+    @root_validator(skip_on_failure=True)
     def _validate(cls, values):
         cls._consistent_number_of_categories(cls, values)
         cls._no_mixed_negative_and_positive_within_category(cls, values)
