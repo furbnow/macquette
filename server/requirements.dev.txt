@@ -1,13 +1,8 @@
--r ./production.txt
--r ./docs.in
-
-# Development
-# ------------------------------------------------------------------------------
 pip-tools               # https://github.com/jazzband/pip-tools
 ipdb                    # https://github.com/gotcha/ipdb
 django-watchfiles       # https://github.com/adamchainz/django-watchfiles
 
-# Testing
+#  Testing
 # ------------------------------------------------------------------------------
 pytest                  # https://github.com/pytest-dev/pytest
 freezegun               # https://github.com/spulec/freezegun

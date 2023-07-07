@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -u
+set -e
+set -o pipefail
+
+python -m venv .venv --clear
+.venv/bin/pip install --requirement requirements.dev.txt --only-binary :all: --disable-pip-version-check

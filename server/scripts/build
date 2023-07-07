@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -u
+set -e
+set -o pipefail
+
+pip install --requirement requirements.txt --only-binary :all: --disable-pip-version-check
+./manage.py collectstatic --no-input
+./manage.py migrate
