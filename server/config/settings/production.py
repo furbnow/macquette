@@ -57,12 +57,13 @@ INSTALLED_APPS += ["storages"]  # noqa F405
 AWS_ACCESS_KEY_ID = env("DJANGO_AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = env("DJANGO_AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = env("DJANGO_AWS_STORAGE_BUCKET_NAME")
-AWS_QUERYSTRING_AUTH = ENV == "staging"  # TODO remove when finished testing
+AWS_QUERYSTRING_AUTH = False
 # DO NOT change these unless you know what you're doing.
 _AWS_EXPIRY = 60 * 60 * 24 * 7
 AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": f"max-age={_AWS_EXPIRY}, s-maxage={_AWS_EXPIRY}, must-revalidate"
 }
+AWS_DEFAULT_ACL = None
 
 # MEDIA
 # ------------------------------------------------------------------------------
@@ -73,7 +74,7 @@ from storages.backends.s3boto3 import S3Boto3Storage  # noqa E402
 
 class MediaRootS3Boto3Storage(S3Boto3Storage):
     location = f"media-{ENV}"
-    default_acl = None if ENV == "staging" else "public-read"
+    default_acl = "public-read"
 
 
 DEFAULT_FILE_STORAGE = "config.settings.production.MediaRootS3Boto3Storage"
