@@ -5,7 +5,6 @@ from macquette.users.tests.factories import UserFactory
 
 from ... import VERSION
 from ..factories import OrganisationFactory
-from .mixins import AssertErrorMixin
 
 
 class SetUpMixin:
@@ -22,7 +21,7 @@ class SetUpMixin:
         cls.org.admins.add(cls.org_admin)
 
 
-class TestCreateOrganisationMembers(SetUpMixin, AssertErrorMixin, APITestCase):
+class TestCreateOrganisationMembers(SetUpMixin, APITestCase):
     def test_can_add_member_to_organisation(self):
         self.client.force_authenticate(self.org_admin)
 
@@ -44,7 +43,7 @@ class TestCreateOrganisationMembers(SetUpMixin, AssertErrorMixin, APITestCase):
         assert self.member in self.org.members.all()
 
 
-class TestDeleteOrganisationMembers(SetUpMixin, AssertErrorMixin, APITestCase):
+class TestDeleteOrganisationMembers(SetUpMixin, APITestCase):
     def test_can_remove_member_successfully(self):
         self.client.force_authenticate(self.org_admin)
 

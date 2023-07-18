@@ -7,7 +7,7 @@ from macquette.users.tests.factories import UserFactory
 from ... import VERSION
 from ...models import Assessment
 from ..factories import AssessmentFactory, OrganisationFactory
-from .mixins import CreateAssessmentTestsMixin
+from .helpers import CreateAssessmentTestsMixin
 
 
 class TestListAssessmentsForOrganisation(APITestCase):

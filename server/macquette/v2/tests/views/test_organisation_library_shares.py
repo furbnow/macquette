@@ -5,7 +5,7 @@ from macquette.users.tests.factories import UserFactory
 
 from ... import VERSION
 from ..factories import LibraryFactory, OrganisationFactory
-from .mixins import AssertErrorMixin
+from .helpers import assert_error
 
 
 class SetUpMixin:
@@ -24,7 +24,7 @@ class SetUpMixin:
         )
 
 
-class TestShareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
+class TestShareOrganisationLibrary(SetUpMixin, APITestCase):
     def test_can_share_library_with_other_organisation(self):
         self.client.force_authenticate(self.org_admin)
 
@@ -59,7 +59,7 @@ class TestShareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/9999/"
         )
 
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_404_NOT_FOUND,
             "can't share library with non-existent organisation: id=9999",
@@ -74,7 +74,7 @@ class TestShareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/{self.other_org.id}/"
         )
 
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_404_NOT_FOUND,
             "organisation doesn't have a library with id=9999",
@@ -91,7 +91,7 @@ class TestShareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/{self.other_org.id}/"
         )
 
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_404_NOT_FOUND,
             f"organisation doesn't have a library with id={other_library.id}",
@@ -99,7 +99,7 @@ class TestShareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
         assert self.library not in self.other_org.libraries_shared_with.all()
 
 
-class TestUnshareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
+class TestUnshareOrganisationLibrary(SetUpMixin, APITestCase):
     def test_can_unshare_library_with_other_organisation(self):
         self.library.shared_with.add(self.other_org)
 
@@ -133,9 +133,7 @@ class TestUnshareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/{self.other_org.id}/"
         )
 
-        self._assert_error(
-            response, status.HTTP_404_NOT_FOUND, "Organisation not found"
-        )
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Organisation not found")
 
     def test_returns_404_if_other_organisation_id_doesnt_exist(self):
         self.library.shared_with.add(self.other_org)
@@ -146,7 +144,7 @@ class TestUnshareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/9999/"
         )
 
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_404_NOT_FOUND,
             "can't share library with non-existent organisation: id=9999",
@@ -162,7 +160,7 @@ class TestUnshareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
             f"/shares/{self.other_org.id}/"
         )
 
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_404_NOT_FOUND,
             "organisation doesn't have a library with id=9999",
@@ -170,7 +168,7 @@ class TestUnshareOrganisationLibrary(SetUpMixin, AssertErrorMixin, APITestCase):
         assert self.library in self.other_org.libraries_shared_with.all()
 
 
-class TestListOrganisationLibraryShares(SetUpMixin, AssertErrorMixin, APITestCase):
+class TestListOrganisationLibraryShares(SetUpMixin, APITestCase):
     def test_returns_organisations_a_library_is_shared_with(self):
         self.library.shared_with.add(self.other_org)
 
@@ -190,9 +188,7 @@ class TestListOrganisationLibraryShares(SetUpMixin, AssertErrorMixin, APITestCas
             f"/{VERSION}/api/organisations/999/libraries/{self.library.id}/shares/"
         )
 
-        self._assert_error(
-            response, status.HTTP_404_NOT_FOUND, "Organisation not found"
-        )
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Organisation not found")
 
     def test_returns_404_if_library_id_doesnt_exist(self):
         self.client.force_authenticate(self.org_admin)
@@ -200,7 +196,7 @@ class TestListOrganisationLibraryShares(SetUpMixin, AssertErrorMixin, APITestCas
             f"/{VERSION}/api/organisations/{self.my_org.id}/libraries/999/shares/"
         )
 
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_404_NOT_FOUND,
             "organisation doesn't have a library with id=999",

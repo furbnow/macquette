@@ -6,12 +6,12 @@ from macquette.users.tests.factories import UserFactory
 
 from ... import VERSION
 from ..factories import OrganisationFactory
-from .mixins import AssertErrorMixin
+from .helpers import assert_error
 
 pytestmark = pytest.mark.django_db  # enable DB and run each test in transaction
 
 
-class TestListUsersPermissions(AssertErrorMixin, APITestCase):
+class TestListUsersPermissions(APITestCase):
     def test_an_organisation_admin_can_list_all_users(self):
         me = UserFactory.create()
         org = OrganisationFactory.create()
@@ -24,7 +24,7 @@ class TestListUsersPermissions(AssertErrorMixin, APITestCase):
 
     def test_returns_forbidden_if_not_logged_in(self):
         response = self.client.get(f"/{VERSION}/api/users/")
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "Authentication credentials were not provided.",
@@ -34,7 +34,7 @@ class TestListUsersPermissions(AssertErrorMixin, APITestCase):
         self.client.force_authenticate(UserFactory.create())
 
         response = self.client.get(f"/{VERSION}/api/users/")
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You are not an admin of an organisation.",

@@ -5,7 +5,7 @@ from macquette.users.tests.factories import UserFactory
 
 from ... import VERSION
 from ..factories import OrganisationFactory
-from .mixins import AssertErrorMixin
+from .helpers import assert_error
 
 
 class SetUpMixin:
@@ -27,7 +27,7 @@ class SetUpMixin:
         cls.org.librarians.add(cls.librarian)
 
 
-class TestCreateOrganisationLibrarians(SetUpMixin, AssertErrorMixin, APITestCase):
+class TestCreateOrganisationLibrarians(SetUpMixin, APITestCase):
     def test_can_promote_organisation_member_as_librarian(self):
         self.org.librarians.clear()
 
@@ -59,7 +59,7 @@ class TestCreateOrganisationLibrarians(SetUpMixin, AssertErrorMixin, APITestCase
             f"/{VERSION}/api/organisations/{self.org.id}/librarians/{self.non_member.id}/"
         )
 
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_400_BAD_REQUEST,
             f"{self.non_member} is not a member of {self.org}",
@@ -67,7 +67,7 @@ class TestCreateOrganisationLibrarians(SetUpMixin, AssertErrorMixin, APITestCase
         assert self.non_member not in self.org.librarians.all()
 
 
-class TestDeleteOrganisationLibrarians(SetUpMixin, AssertErrorMixin, APITestCase):
+class TestDeleteOrganisationLibrarians(SetUpMixin, APITestCase):
     def test_can_demote_librarian_successfully(self):
         self.client.force_authenticate(self.org_admin)
 

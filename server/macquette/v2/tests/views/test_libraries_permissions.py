@@ -5,7 +5,7 @@ from macquette.users.tests.factories import UserFactory
 
 from ... import VERSION
 from ..factories import LibraryFactory, OrganisationFactory
-from .mixins import AssertErrorMixin
+from .helpers import assert_error
 
 
 class CreateLibraryMixin:
@@ -15,7 +15,7 @@ class CreateLibraryMixin:
         )
 
 
-class TestCreateLibraryPermissions(AssertErrorMixin, APITestCase):
+class TestCreateLibraryPermissions(APITestCase):
     def test_authenticated_user_can_create_a_library(self):
         person = UserFactory.create()
 
@@ -25,7 +25,7 @@ class TestCreateLibraryPermissions(AssertErrorMixin, APITestCase):
 
     def test_unauthenticated_user_cannot_create_a_library(self):
         response = self._call_endpoint()
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "Authentication credentials were not provided.",
@@ -43,7 +43,7 @@ class TestCreateLibraryPermissions(AssertErrorMixin, APITestCase):
         )
 
 
-class TestCreateOrganisationLibraryPermissions(AssertErrorMixin, APITestCase):
+class TestCreateOrganisationLibraryPermissions(APITestCase):
     def test_librarian_of_organisation_can_create_a_library_in_organisation(self):
         person = UserFactory.create()
         organisation = OrganisationFactory.create()
@@ -61,7 +61,7 @@ class TestCreateOrganisationLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(organisation)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You are not a librarian of the Organisation.",
@@ -69,7 +69,7 @@ class TestCreateOrganisationLibraryPermissions(AssertErrorMixin, APITestCase):
 
     def test_unauthenticated_user_cannot_create_a_library_in_organisation(self):
         response = self._call_endpoint(OrganisationFactory.create())
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "Authentication credentials were not provided.",
@@ -81,7 +81,7 @@ class TestCreateOrganisationLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(org_with_no_members)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You are not a librarian of the Organisation.",
@@ -101,7 +101,7 @@ class TestCreateOrganisationLibraryPermissions(AssertErrorMixin, APITestCase):
         )
 
 
-class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
+class TestUpdateLibraryPermissions(APITestCase):
     def test_owner_user_can_update_library(self):
         library = LibraryFactory.create()
         self.client.force_authenticate(library.owner_user)
@@ -112,7 +112,7 @@ class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
     def test_unauthenticated_user_cannot_update_library(self):
         library = LibraryFactory.create()
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "Authentication credentials were not provided.",
@@ -123,7 +123,7 @@ class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
         self.client.force_authenticate(non_owner)
 
         response = self._call_endpoint(LibraryFactory.create())
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_librarian_of_organisation_can_update_a_library_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -148,7 +148,7 @@ class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",
@@ -163,7 +163,7 @@ class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_user_who_is_superuser_can_update_a_global_library(self):
         library = LibraryFactory.create(owner_organisation=None, owner_user=None)
@@ -179,7 +179,7 @@ class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
         self.client.force_authenticate(UserFactory.create(is_superuser=False))
 
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",
@@ -193,7 +193,7 @@ class TestUpdateLibraryPermissions(AssertErrorMixin, APITestCase):
         )
 
 
-class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
+class TestDeleteLibraryPermissions(APITestCase):
     def test_owner_user_can_delete_library(self):
         library = LibraryFactory.create()
         self.client.force_authenticate(library.owner_user)
@@ -203,7 +203,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
 
     def test_unauthenticated_user_cannot_delete_library(self):
         response = self._call_endpoint(LibraryFactory.create())
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "Authentication credentials were not provided.",
@@ -214,7 +214,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
         self.client.force_authenticate(non_owner)
 
         response = self._call_endpoint(LibraryFactory.create())
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_librarian_of_organisation_cannot_delete_a_library_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -239,7 +239,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",
@@ -254,7 +254,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_user_who_is_superuser_can_delete_a_global_library(self):
         library = LibraryFactory.create(owner_organisation=None, owner_user=None)
@@ -270,7 +270,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
         self.client.force_authenticate(UserFactory.create(is_superuser=False))
 
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",
@@ -280,9 +280,7 @@ class TestDeleteLibraryPermissions(AssertErrorMixin, APITestCase):
         return self.client.delete(f"/{VERSION}/api/libraries/{library.id}/")
 
 
-class TestCreateLibraryItemPermissions(
-    CreateLibraryMixin, AssertErrorMixin, APITestCase
-):
+class TestCreateLibraryItemPermissions(CreateLibraryMixin, APITestCase):
     def test_owner_can_create_library_item(self):
         library = self.create_library()
         self.client.force_authenticate(library.owner_user)
@@ -293,7 +291,7 @@ class TestCreateLibraryItemPermissions(
     def test_unauthenticated_user_cannot_create_library_item(self):
         library = self.create_library()
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "Authentication credentials were not provided.",
@@ -304,7 +302,7 @@ class TestCreateLibraryItemPermissions(
         self.client.force_authenticate(non_owner)
 
         response = self._call_endpoint(self.create_library())
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_librarian_of_organisation_can_create_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -325,7 +323,7 @@ class TestCreateLibraryItemPermissions(
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",
@@ -340,7 +338,7 @@ class TestCreateLibraryItemPermissions(
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_user_who_is_superuser_can_create_item_in_global_library(self):
         library = self.create_library(owner_organisation=None, owner_user=None)
@@ -356,7 +354,7 @@ class TestCreateLibraryItemPermissions(
         self.client.force_authenticate(UserFactory.create(is_superuser=False))
 
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",
@@ -370,9 +368,7 @@ class TestCreateLibraryItemPermissions(
         )
 
 
-class TestUpdateLibraryItemPermissions(
-    CreateLibraryMixin, AssertErrorMixin, APITestCase
-):
+class TestUpdateLibraryItemPermissions(CreateLibraryMixin, APITestCase):
     def test_owner_can_update_library(self):
         library = self.create_library()
         self.client.force_authenticate(library.owner_user)
@@ -382,7 +378,7 @@ class TestUpdateLibraryItemPermissions(
 
     def test_unauthenticated_user_cannot_update_library_item(self):
         response = self._call_endpoint(self.create_library())
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "Authentication credentials were not provided.",
@@ -393,7 +389,7 @@ class TestUpdateLibraryItemPermissions(
         self.client.force_authenticate(non_owner)
 
         response = self._call_endpoint(self.create_library())
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_librarian_of_organisation_can_update_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -414,7 +410,7 @@ class TestUpdateLibraryItemPermissions(
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",
@@ -429,7 +425,7 @@ class TestUpdateLibraryItemPermissions(
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_user_who_is_superuser_can_update_item_in_global_library(self):
         library = self.create_library(owner_organisation=None, owner_user=None)
@@ -445,7 +441,7 @@ class TestUpdateLibraryItemPermissions(
         self.client.force_authenticate(UserFactory.create(is_superuser=False))
 
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",
@@ -461,9 +457,7 @@ class TestUpdateLibraryItemPermissions(
         )
 
 
-class TestDeleteLibraryItemPermissions(
-    CreateLibraryMixin, AssertErrorMixin, APITestCase
-):
+class TestDeleteLibraryItemPermissions(CreateLibraryMixin, APITestCase):
     def test_owner_can_delete_library_item(self):
         library = self.create_library()
         self.client.force_authenticate(library.owner_user)
@@ -473,7 +467,7 @@ class TestDeleteLibraryItemPermissions(
 
     def test_unauthenticated_user_cannot_delete_library_item(self):
         response = self._call_endpoint(self.create_library())
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "Authentication credentials were not provided.",
@@ -484,7 +478,7 @@ class TestDeleteLibraryItemPermissions(
         self.client.force_authenticate(non_owner)
 
         response = self._call_endpoint(self.create_library())
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_librarian_of_organisation_can_delete_a_library_item_in_organisation(self):
         organisation = OrganisationFactory.create()
@@ -505,7 +499,7 @@ class TestDeleteLibraryItemPermissions(
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",
@@ -520,7 +514,7 @@ class TestDeleteLibraryItemPermissions(
 
         self.client.force_authenticate(person)
         response = self._call_endpoint(library)
-        self._assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
+        assert_error(response, status.HTTP_404_NOT_FOUND, "Not found.")
 
     def test_user_who_is_superuser_can_delete_item_in_global_library(self):
         library = self.create_library(owner_organisation=None, owner_user=None)
@@ -536,7 +530,7 @@ class TestDeleteLibraryItemPermissions(
         self.client.force_authenticate(UserFactory.create(is_superuser=False))
 
         response = self._call_endpoint(library)
-        self._assert_error(
+        assert_error(
             response,
             status.HTTP_403_FORBIDDEN,
             "You do not have permission to perform this action.",

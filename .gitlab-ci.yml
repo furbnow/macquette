@@ -10,8 +10,11 @@ python-test:
     image: python:3.10-slim
     services:
         - postgres:11
+        - name: localstack/localstack
+          alias: localstack
     variables:
         DEBUG: 1
+        AWS_S3_ENDPOINT_URL: 'http://localstack:4566'
         POSTGRES_DB: mhep
         POSTGRES_USER: 'postgres'
         POSTGRES_PASSWORD: 'postgres'
@@ -19,14 +22,12 @@ python-test:
         DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB'
         DJANGO_SETTINGS_MODULE: config.settings.test
         PIP_CACHE_DIR: '$CI_PROJECT_DIR/.cache/pip'
-
     cache:
         key: python-test
         when: 'always'
         paths:
             - ${PIP_CACHE_DIR}
             - venv
-
     before_script:
         - python -V
         - apt-get update &&
@@ -38,11 +39,9 @@ python-test:
         - pip install pip-tools
         - pip-sync server/requirements/local.txt
     script:
-        # Silence warnings
         - mkdir staticfiles
         - make check-types-python test-python
         - (cd server && coverage xml)
-
     artifacts:
         expose_as: test-output
         paths:
