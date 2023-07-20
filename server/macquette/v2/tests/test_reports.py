@@ -1,6 +1,10 @@
 import pytest
 
 from .. import reports
+from .factories import (
+    AssessmentFactory,
+    ReportFactory,
+)
 
 
 def test_basic_html_generation():
@@ -148,3 +152,12 @@ def test_graph_key():
             },
         },
     )
+
+
+@pytest.mark.django_db()
+def test_report_str():
+    assessment = AssessmentFactory()
+    report = ReportFactory(assessment=assessment)
+    report_str = str(report)
+    assert str(report.id) in report_str
+    assert str(assessment.id) in report_str

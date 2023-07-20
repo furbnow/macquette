@@ -5,7 +5,9 @@ from . import VERSION
 from .views import dashboards
 from .views.assessments import (
     DuplicateAssessment,
+    ListCreateAssessmentReports,
     ListCreateAssessments,
+    PreviewAssessmentReport,
     RetrieveUpdateDestroyAssessment,
     SetFeaturedImage,
     ShareUnshareAssessment,
@@ -28,7 +30,6 @@ from .views.organisations import (
     ListOrganisations,
     ShareUnshareOrganisationLibraries,
 )
-from .views.reports import GenerateReport
 from .views.users import ListUsers
 
 app_name = "assessments"
@@ -70,6 +71,16 @@ urlpatterns = [
         "api/assessments/<int:pk>/images/",
         view=UploadAssessmentImage.as_view(),
         name="upload-image-to-assessment",
+    ),
+    path(
+        "api/assessments/<int:assessmentid>/reports/",
+        view=ListCreateAssessmentReports.as_view(),
+        name="list-create-assessment-report",
+    ),
+    path(
+        "api/assessments/<int:assessmentid>/reports/preview",
+        view=PreviewAssessmentReport.as_view(),
+        name="preview-assessment-report",
     ),
     path("api/images/<int:pk>/", view=UpdateDestroyImage.as_view(), name="image"),
     path(
@@ -122,11 +133,6 @@ urlpatterns = [
         "api/organisations/<int:pk>/members/<int:userid>/",
         view=CreateDeleteOrganisationMembers.as_view(),
         name="create-delete-organisation-members",
-    ),
-    path(
-        "api/organisations/<int:pk>/report/",
-        view=GenerateReport.as_view(),
-        name="generate-report",
     ),
     path(
         "api/libraries/<int:pk>/items/",

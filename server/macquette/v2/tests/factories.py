@@ -7,7 +7,7 @@ from faker.providers import BaseProvider
 
 from macquette.users.tests.factories import UserFactory
 
-from ..models import Assessment, Image, Library, Organisation, ReportTemplate
+from ..models import Assessment, Image, Library, Organisation, Report, ReportTemplate
 
 
 # create new provider class. Note that the class name _must_ be ``Provider``.
@@ -52,6 +52,15 @@ class ImageFactory(DjangoModelFactory):
 
     class Meta:
         model = Image
+
+
+class ReportFactory(DjangoModelFactory):
+    created_at = factory.Faker("date_time")
+    file = factory.Faker("url")
+    assessment = factory.SubFactory(AssessmentFactory)
+
+    class Meta:
+        model = Report
 
 
 class OrganisationFactory(DjangoModelFactory):

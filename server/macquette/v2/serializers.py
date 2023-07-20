@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from macquette.users.models import User
 
-from .models import Assessment, Image, Library, Organisation
+from .models import Assessment, Image, Library, Organisation, Report
 from .models.assessment import STATUS_CHOICES
 
 
@@ -302,3 +302,19 @@ class OrganisationMemberSerializer(serializers.ModelSerializer):
 class OrganisationInviteSerializer(serializers.Serializer):
     email = serializers.EmailField()
     name = serializers.CharField()
+
+
+class AssessmentReportSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Report
+        fields = ["id", "created_at", "report"]
+
+
+class AssessmentReportInputSerializer(serializers.Serializer):
+    preview = serializers.BooleanField(required=False, default=False)
+    # SAFETY: this field shadows a property of the same name but with a
+    # different type. This is fine at runtime but not in typechecking (yet).
+    context = serializers.JSONField(allow_null=True)  # type: ignore[assignment]
+    graphs = serializers.JSONField(allow_null=True)

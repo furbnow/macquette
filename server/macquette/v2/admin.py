@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import CheckboxSelectMultiple
 
-from .models import Assessment, Image, Library, Organisation, ReportTemplate
+from .models import Assessment, Image, Library, Organisation, Report, ReportTemplate
 
 
 @admin.register(Image)
@@ -20,6 +20,11 @@ class AssessmentAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "status", "updated_at", "organisation", "owner"]
     list_filter = ["organisation", "status", "owner", "updated_at"]
     search_fields = ["name", "description"]
+
+
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ["id", "uuid", "assessment"]
 
 
 @admin.register(Library)

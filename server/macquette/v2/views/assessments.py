@@ -3,25 +3,32 @@ import os
 
 import PIL
 from django.core.files.base import ContentFile
+from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework import exceptions, generics, parsers, serializers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from ..models import Assessment, Image
+from ..models import Assessment, Image, Report
 from ..permissions import (
-    IsAdminOfConnectedOrganissation,
+    IsAdminOfConnectedOrganisation,
     IsAssessmentOwner,
     IsInOrganisation,
+    IsMemberOfAssessmentOrganisation,
 )
+from ..reports import render_template, render_to_pdf
 from ..serializers import (
     AssessmentFullSerializer,
     AssessmentFullWithoutDataSerializer,
     AssessmentMetadataSerializer,
+    AssessmentReportInputSerializer,
+    AssessmentReportSerializer,
     FeaturedImageSerializer,
     ImageSerializer,
     get_access,
 )
+from .helpers import get_assessments_for_user
 from .mixins import AssessmentQuerySetMixin
 
 
@@ -99,7 +106,7 @@ class ShareUnshareAssessment(AssessmentQuerySetMixin, generics.GenericAPIView):
     permission_classes = [
         IsAuthenticated,
         IsInOrganisation,
-        IsAssessmentOwner | IsAdminOfConnectedOrganissation,
+        IsAssessmentOwner | IsAdminOfConnectedOrganisation,
     ]
 
     def put(self, request, pk, userid):
@@ -237,3 +244,72 @@ class UploadAssessmentImage(AssessmentQuerySetMixin, generics.GenericAPIView):
         assessment.save(update_fields=["updated_at"])
 
         return Response(response, status.HTTP_200_OK)
+
+
+class ListCreateAssessmentReports(AssessmentQuerySetMixin, generics.ListCreateAPIView):
+    permission_classes = [
+        IsAuthenticated,
+        IsMemberOfAssessmentOrganisation,
+    ]
+
+    serializer_class = AssessmentReportSerializer
+
+    def get_queryset(self):
+        return super().get_queryset().get(pk=self.kwargs["assessmentid"]).reports
+
+    def post(self, request, assessmentid):
+        serializer = AssessmentReportInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        assessment = get_assessments_for_user(request.user).get(pk=assessmentid)
+        organisation = assessment.organisation
+
+        html = render_template(
+            organisation.report.template,
+            {
+                "org": {
+                    "name": organisation.name,
+                    **organisation.report_vars,
+                },
+                **serializer.data["context"],
+            },
+            serializer.data["graphs"],
+        )
+        pdf = render_to_pdf(html)
+
+        report = Report(assessment=assessment)
+        report.file.save("report.pdf", ContentFile(pdf))
+        report.save()
+
+        response = HttpResponse(status=303)
+        response["Location"] = report.file.url
+        return response
+
+
+class PreviewAssessmentReport(APIView):
+    permission_classes = [
+        IsAuthenticated,
+        IsMemberOfAssessmentOrganisation,
+    ]
+
+    def post(self, request, assessmentid):
+        serializer = AssessmentReportInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        assessment = get_assessments_for_user(request.user).get(pk=assessmentid)
+        organisation = assessment.organisation
+
+        html = render_template(
+            organisation.report.template,
+            {
+                "org": {
+                    "name": organisation.name,
+                    **organisation.report_vars,
+                },
+                **serializer.data["context"],
+            },
+            serializer.data["graphs"],
+        )
+        response = HttpResponse(status=200, content_type="text/html")
+        response.write(html)
+        return response

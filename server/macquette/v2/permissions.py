@@ -1,7 +1,7 @@
 from rest_framework import exceptions, permissions
 
 from . import VERSION
-from .models import Organisation
+from .models import Assessment, Organisation
 
 # https://www.django-rest-framework.org/api-guide/permissions/#custom-permissions
 
@@ -30,7 +30,7 @@ class IsMemberOfConnectedOrganisation(permissions.BasePermission):
         return request.user in assessment.organisation.members.all()
 
 
-class IsAdminOfConnectedOrganissation(permissions.BasePermission):
+class IsAdminOfConnectedOrganisation(permissions.BasePermission):
     message = "You are not an administrator of the assessment's organisation."
 
     def has_object_permission(self, request, view, assessment):
@@ -60,6 +60,19 @@ class IsAdminOfOrganisation(permissions.BasePermission):
         except Organisation.DoesNotExist:
             raise exceptions.NotFound("Organisation not found")
         return request.user in organisation.admins.all()
+
+
+class IsMemberOfAssessmentOrganisation(permissions.BasePermission):
+    message = "You are not a member of the assessment's organisation."
+
+    def has_permission(self, request, view):
+        try:
+            organisation = Assessment.objects.get(
+                pk=view.kwargs["assessmentid"]
+            ).organisation
+        except Assessment.DoesNotExist:
+            raise exceptions.NotFound("Assessment not found")
+        return organisation is not None and request.user in organisation.members.all()
 
 
 class IsLibrarianOfOrganisation(permissions.BasePermission):
