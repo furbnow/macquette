@@ -19,7 +19,7 @@ function report_initUI() {
         const graphs = window.Macquette.generateReportGraphs(project, scenarioIds);
 
         try {
-            const pdf = await mhep_helper.generateReport(p.organisation.id, {
+            const pdf = await mhep_helper.generateReport(p.id, {
                 context,
                 graphs,
             });
@@ -41,12 +41,10 @@ function report_initUI() {
         const graphs = window.Macquette.generateReportGraphs(project, scenarioIds);
 
         try {
-            const blob = await mhep_helper.generateReport(p.organisation.id, {
-                preview: true,
+            const html = await mhep_helper.generateReportPreview(p.id, {
                 context,
                 graphs,
             });
-            const html = await blob.text();
             document.querySelector('#report-preview').style.display = 'block';
             document.querySelector('iframe').contentDocument.querySelector('body').innerHTML = html;
             endFetch();

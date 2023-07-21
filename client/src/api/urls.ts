@@ -87,7 +87,15 @@ export const urls = {
         return `/v2/api/organisations/${organisationId}/librarians/${userId}/`;
     },
 
-    report(organisationId: string): string {
-        return `/v2/api/organisations/${organisationId}/report/`;
+    reports(assessmentId: string): string {
+        return `/v2/api/assessments/${assessmentId}/reports/`;
+    },
+
+    report(assessmentId: string, reportId: string): string {
+        return `/v2/api/assessments/${assessmentId}/reports/${reportId}`;
+    },
+
+    reportPreview(assessmentId: string): string {
+        return `/v2/api/assessments/${assessmentId}/reports/preview`;
     },
 };

@@ -31,6 +31,7 @@ import {
     userAccessSchema,
 } from '../data-schemas/project';
 import { Image, imageSchema } from '../data-schemas/project/image';
+import { Report, reportSchema } from '../data-schemas/reports';
 import { handleNonErrorError } from '../helpers/handle-non-error-errors';
 import { isIndexable } from '../helpers/is-indexable';
 import { jsEnvironment } from '../helpers/js-environment';
@@ -590,14 +591,44 @@ export class HTTPClient {
         });
     }
 
-    async generateReport(organisationId: string, reportData: unknown): Promise<Blob> {
+    async listReports(assessmentId: string): Promise<Report[]> {
+        const response = await this.throwingRequest({
+            intent: 'listing reports',
+            url: urls.reports(assessmentId),
+            method: 'GET',
+            headers: jsonContentTypeHeader,
+            responseType: 'json',
+        });
+        const parseResult = z.array(reportSchema).safeParse(camelise(response.data));
+        if (!parseResult.success) {
+            throw new HttpClientError('listing reports', parseResult.error);
+        }
+        return parseResult.data;
+    }
+
+    async generateReport(assessmentId: string, reportData: unknown): Promise<Blob> {
         const response = await this.throwingRequest({
             intent: 'generating report',
-            url: urls.report(organisationId),
+            url: urls.reports(assessmentId),
             method: 'POST',
             headers: jsonContentTypeHeader,
             data: reportData,
             responseType: 'blob',
+        });
+        return response.data;
+    }
+
+    async generateReportPreview(
+        assessmentId: string,
+        reportData: unknown,
+    ): Promise<string> {
+        const response = await this.throwingRequest({
+            intent: 'generating report preview',
+            url: urls.reportPreview(assessmentId),
+            method: 'POST',
+            headers: jsonContentTypeHeader,
+            data: reportData,
+            responseType: 'text',
         });
         return response.data;
     }
