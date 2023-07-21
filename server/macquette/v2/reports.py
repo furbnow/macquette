@@ -23,7 +23,10 @@ def _nl2br(eval_ctx, value):
 
 
 def _sqrt(value) -> float:
-    return math.sqrt(value)
+    try:
+        return math.sqrt(value)
+    except ValueError:
+        return 0
 
 
 def _round_half_up(num: float) -> float:
