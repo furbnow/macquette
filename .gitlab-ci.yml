@@ -34,8 +34,8 @@ python-test:
         - pip install virtualenv
         - virtualenv venv
         - source venv/bin/activate
-        - pip -V
-        - pip install pip-tools==6.12.1
+        - pip --version
+        - pip install pip-tools
         - pip-sync server/requirements/local.txt
     script:
         # Silence warnings
@@ -85,7 +85,8 @@ pre-commit:
         - pip --version
         - node --version
         - npm --version
-        - pip install pip-tools==6.12.1
+        - pip --version
+        - pip install pip-tools
         - make sync
         - scripts/lint-staged-all
 
