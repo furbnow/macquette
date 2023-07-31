@@ -22,12 +22,6 @@ python-test:
         DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB'
         DJANGO_SETTINGS_MODULE: config.settings.test
         PIP_CACHE_DIR: '$CI_PROJECT_DIR/.cache/pip'
-    cache:
-        key: python-test
-        when: 'always'
-        paths:
-            - ${PIP_CACHE_DIR}
-            - venv
     before_script:
         - python -V
         - apt-get update &&
