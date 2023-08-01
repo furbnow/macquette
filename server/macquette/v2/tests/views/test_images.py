@@ -90,8 +90,8 @@ class TestDeleteImage(APITestCase):
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-IMG_WIDTH = 400
-IMG_HEIGHT = 300
+IMG_WIDTH = 1200
+IMG_HEIGHT = 900
 
 
 def make_image():
@@ -146,8 +146,8 @@ class TestUploadImage(APITestCase):
         assert thumbnail_url.path.endswith("_thumb.jpg")
         assert response.data["note"] == pathlib.PurePath(file.name).stem
 
-        assert response.data["thumbnail_width"] == IMG_WIDTH
-        assert response.data["thumbnail_height"] == IMG_HEIGHT
+        assert response.data["width"] == IMG_WIDTH
+        assert response.data["height"] == IMG_HEIGHT
 
         assert response.data["thumbnail_width"] <= 600
         assert response.data["thumbnail_height"] <= 600
