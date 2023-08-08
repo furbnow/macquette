@@ -75,16 +75,11 @@ function draw_scenarios() {
 
         const idx = scenario_id.split('scenario')[1];
         const name = project[scenario_id].scenario_name;
-        const is_checked = (
-            scenario_id == 'scenario1'
-            || scenario_id == 'scenario2'
-            || scenario_id == 'scenario3'
-        );
 
         scenarioOpts += `
             <li>
                 <input type="checkbox"
-                       ${is_checked ? 'checked' : ''}
+                       checked
                        value="${scenario_id}"
                        class="big-checkbox"
                        id="check-${scenario_id}">
