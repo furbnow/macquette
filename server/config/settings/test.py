@@ -64,6 +64,7 @@ AWS_S3_ENDPOINT_URL = env(
 )
 AWS_ACCESS_KEY_ID = "dummy-aws-access-key"
 AWS_SECRET_ACCESS_KEY = "dummy-aws-secret-key"
+AWS_S3_REGION_NAME = "eu-west-2"
 AWS_STORAGE_BUCKET_NAME = "macquette-storage"
 AWS_QUERYSTRING_AUTH = True
 AWS_LOCATION = "media"

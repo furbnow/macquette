@@ -5,6 +5,7 @@ psycopg2-binary       # https://github.com/psycopg/psycopg2
 ssm_parameter_store
 pydantic
 returns
+python-dateutil
 
 # Django
 # ------------------------------------------------------------------------------

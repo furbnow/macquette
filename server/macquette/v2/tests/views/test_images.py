@@ -3,6 +3,7 @@ import tempfile
 from datetime import timedelta
 from urllib.parse import urlparse
 
+import pytest
 from PIL import Image
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -13,7 +14,7 @@ from ... import VERSION, models, serializers
 from ...serializers import ImageSerializer
 from .. import factories
 from ..factories import AssessmentFactory
-from .helpers import assert_presigned_url_expiry_between, assert_url_is_presigned
+from .helpers import assert_url_is_presigned, get_presigned_url_expiry
 
 
 class TestEditImageNote(APITestCase):
@@ -102,52 +103,51 @@ def make_image():
     return file
 
 
-class TestUploadImage(APITestCase):
-    def setUp(cls):
-        cls.me = UserFactory.create()
+@pytest.mark.django_db()
+def test_upload_image_no_file(client):
+    user = UserFactory.create()
+    a = AssessmentFactory.create()
 
-    def test_no_file(self):
-        a = AssessmentFactory.create()
+    client.force_login(user)
+    response = client.post(f"/{VERSION}/api/assessments/{a.pk}/images/")
 
-        self.client.force_authenticate(self.me)
-        response = self.client.post(f"/{VERSION}/api/assessments/{a.pk}/images/")
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "no file" in response.data["detail"]
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "no file" in response.data["detail"]
 
-    def test_upload_image(self):
-        a = AssessmentFactory.create(owner=self.me)
-        file = make_image()
+@pytest.mark.django_db()
+def test_upload_image(client, media_s3_bucket):
+    user = UserFactory.create()
+    a = AssessmentFactory.create(owner=user)
+    file = make_image()
 
-        self.client.force_authenticate(self.me)
-        response = self.client.post(
-            f"/{VERSION}/api/assessments/{a.pk}/images/",
-            {"file": file},
-            format="multipart",
-        )
+    client.force_login(user)
+    response = client.post(
+        f"/{VERSION}/api/assessments/{a.pk}/images/",
+        {"file": file},
+        format="multipart",
+    )
 
-        assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
 
-        pk = response.data["id"]
-        record = models.Image.objects.get(pk=pk)
-        assert response.data == ImageSerializer(record).data
+    pk = response.data["id"]
+    record = models.Image.objects.get(pk=pk)
+    assert response.data == ImageSerializer(record).data
 
-        assert_url_is_presigned(response.data["url"])
-        assert_presigned_url_expiry_between(
-            response.data["url"], timedelta(hours=3.5), timedelta(hours=4.5)
-        )
+    assert_url_is_presigned(response.data["url"])
+    assert get_presigned_url_expiry(response.data["url"]) == timedelta(hours=4)
 
-        assert_url_is_presigned(response.data["thumbnail_url"])
-        assert_presigned_url_expiry_between(
-            response.data["thumbnail_url"], timedelta(hours=3.5), timedelta(hours=4.5)
-        )
+    assert_url_is_presigned(response.data["thumbnail_url"])
+    assert get_presigned_url_expiry(response.data["thumbnail_url"]) == timedelta(
+        hours=4
+    )
 
-        thumbnail_url = urlparse(response.data["thumbnail_url"])
-        assert thumbnail_url.path.endswith("_thumb.jpg")
-        assert response.data["note"] == pathlib.PurePath(file.name).stem
+    thumbnail_url = urlparse(response.data["thumbnail_url"])
+    assert thumbnail_url.path.endswith("_thumb.jpg")
+    assert response.data["note"] == pathlib.PurePath(file.name).stem
 
-        assert response.data["width"] == IMG_WIDTH
-        assert response.data["height"] == IMG_HEIGHT
+    assert response.data["width"] == IMG_WIDTH
+    assert response.data["height"] == IMG_HEIGHT
 
-        assert response.data["thumbnail_width"] <= 600
-        assert response.data["thumbnail_height"] <= 600
+    assert response.data["thumbnail_width"] <= 600
+    assert response.data["thumbnail_height"] <= 600

@@ -1,3 +1,5 @@
+import contextlib
+
 import boto3
 import pytest
 from django.conf import settings
@@ -26,12 +28,18 @@ s3 = boto3.resource(
     "s3",
     aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    region_name=settings.AWS_S3_REGION_NAME,
     endpoint_url=settings.AWS_S3_ENDPOINT_URL,
 )
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def media_s3_bucket():
     if settings.DEFAULT_FILE_STORAGE == "storages.backends.s3boto3.S3Boto3Storage":
         # Initialise localstack S3 bucket
-        s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME).create()
+        with contextlib.suppress(s3.meta.client.exceptions.BucketAlreadyOwnedByYou):
+            s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME).create(
+                CreateBucketConfiguration={
+                    "LocationConstraint": settings.AWS_S3_REGION_NAME
+                }
+            )
