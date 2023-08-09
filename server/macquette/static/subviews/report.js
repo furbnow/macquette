@@ -96,7 +96,11 @@ function draw_scenarios() {
 }
 
 function get_featured_image() {
-    let featuredImage = p.images.find(e => e.isFeatured);
+    // This or is here because the field name changes after the image gallery has been
+    // used. Then it's isFeatured, but until then the server-native format is
+    // is_featured. Ick, urgh, etc. Will be unnecessary after this code moves over to
+    // TypeScript.
+    let featuredImage = p.images.find(e => e.isFeatured || e.is_featured);
     if (featuredImage) {
         return featuredImage.url;
     } else {
