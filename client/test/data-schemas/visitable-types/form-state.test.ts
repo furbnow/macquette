@@ -3,12 +3,52 @@ import {
   FormStateOf,
   makeFormStateTransforms,
 } from '../../../src/data-schemas/visitable-types/form-state';
-import { exampleSpec } from './example-spec';
+import { exampleSpecWithoutUnion } from './example-spec';
 
 describe('form state', () => {
-  const { fromFormState, toFormState } = makeFormStateTransforms(exampleSpec);
+  const { fromFormState, toFormState } = makeFormStateTransforms(exampleSpecWithoutUnion);
+
+  // eslint-disable-next-line jest/expect-expect
+  test('type test', () => {
+    type Inferred = FormStateOf<typeof exampleSpecWithoutUnion>;
+    type Expected = {
+      aString: string | null;
+      aNumber: number | null;
+      aBoolean: boolean | null;
+      anArray: Array<number | null>;
+      aStruct: { nested: 'nest' };
+      anEnum: 'one' | 'two' | 'three' | null;
+      aLiteral: 'lorem';
+      aDiscriminatedUnion: {
+        selected: 'type 1' | 'type 2' | null;
+        variants: {
+          'type 1': { foo: number | null };
+          'type 2': {
+            foo: string | null;
+            aNestedDiscriminatedUnion: {
+              selected: 'strawberry' | 'banana' | null;
+              variants: {
+                strawberry: { bar: boolean | null };
+                banana: { baz: Array<boolean | null> };
+              };
+            };
+          };
+        };
+      };
+      aNullable: { isNull: boolean; value: { value: number | null } };
+      aComplexArray: Array<{ stairs: number | null; elevators: number | null }>;
+      anArrayWithIds: Array<{ id: string; somethingElse: number | null }>;
+      aTuple: [string | null, number | null];
+    };
+
+    type TestLeft = Expected extends Inferred ? 'success' : never;
+    'success' satisfies TestLeft;
+    type TestRight = Inferred extends Expected ? 'success' : never;
+    'success' satisfies TestRight;
+  });
+
   test('to form state', () => {
-    const value: TypeOf<typeof exampleSpec> = {
+    const value: TypeOf<typeof exampleSpecWithoutUnion> = {
       aString: '',
       aNumber: 0,
       aBoolean: false,
@@ -21,9 +61,12 @@ describe('form state', () => {
         foo: 42,
       },
       aNullable: null,
+      aComplexArray: [],
+      anArrayWithIds: [{ id: 'thirty', somethingElse: 42 }],
+      aTuple: ['', 0],
     };
     const observed = toFormState(value);
-    const expected: FormStateOf<typeof exampleSpec> = {
+    const expected: FormStateOf<typeof exampleSpecWithoutUnion> = {
       aString: '',
       aNumber: 0,
       aBoolean: false,
@@ -51,12 +94,15 @@ describe('form state', () => {
         isNull: true,
         value: { value: null },
       },
+      aComplexArray: [],
+      anArrayWithIds: [{ id: 'thirty', somethingElse: 42 }],
+      aTuple: ['', 0],
     };
     expect(observed).toEqual(expected);
   });
 
   test('from form state (nulls)', () => {
-    const formState: FormStateOf<typeof exampleSpec> = {
+    const formState: FormStateOf<typeof exampleSpecWithoutUnion> = {
       aString: null,
       aNumber: null,
       aBoolean: null,
@@ -84,9 +130,12 @@ describe('form state', () => {
         isNull: false,
         value: { value: null },
       },
+      aComplexArray: [{ stairs: null, elevators: null }],
+      anArrayWithIds: [{ id: 'one', somethingElse: null }],
+      aTuple: [null, null],
     };
     const observed = fromFormState(formState);
-    const expected: TypeOf<typeof exampleSpec> = {
+    const expected: TypeOf<typeof exampleSpecWithoutUnion> = {
       aString: '',
       aNumber: 0,
       aBoolean: false,
@@ -99,12 +148,15 @@ describe('form state', () => {
         foo: 0,
       },
       aNullable: { value: 0 },
+      aComplexArray: [{ stairs: 0, elevators: 0 }],
+      anArrayWithIds: [{ id: 'one', somethingElse: 0 }],
+      aTuple: ['', 0],
     };
     expect(observed).toEqual(expected);
   });
 
   test('from form state (non nulls)', () => {
-    const formState: FormStateOf<typeof exampleSpec> = {
+    const formState: FormStateOf<typeof exampleSpecWithoutUnion> = {
       aString: 'hello',
       aNumber: 42,
       aBoolean: true,
@@ -134,9 +186,15 @@ describe('form state', () => {
           value: 25,
         },
       },
+      aComplexArray: [{ stairs: 12, elevators: 2 }],
+      anArrayWithIds: [
+        { id: 'one', somethingElse: 180 },
+        { id: 'two', somethingElse: 360 },
+      ],
+      aTuple: ['', 42],
     };
     const observed = fromFormState(formState);
-    const expected: TypeOf<typeof exampleSpec> = {
+    const expected: TypeOf<typeof exampleSpecWithoutUnion> = {
       aString: 'hello',
       aNumber: 42,
       aBoolean: true,
@@ -153,6 +211,12 @@ describe('form state', () => {
         },
       },
       aNullable: { value: 25 },
+      aComplexArray: [{ stairs: 12, elevators: 2 }],
+      anArrayWithIds: [
+        { id: 'one', somethingElse: 180 },
+        { id: 'two', somethingElse: 360 },
+      ],
+      aTuple: ['', 42],
     };
     expect(observed).toEqual(expected);
   });
@@ -163,14 +227,16 @@ describe('form state', () => {
       bar: t.number({ default_: 42 }),
       baz: t.discriminatedUnion(
         'colour',
-        {
-          red: {
+        [
+          t.struct({
+            colour: t.literal('red'),
             stuff: t.boolean(),
-          },
-          blue: {
+          }),
+          t.struct({
+            colour: t.literal('blue'),
             otherStuff: t.array(t.number({ default_: 36 })),
-          },
-        },
+          }),
+        ],
         { default_: 'blue' },
       ),
     });

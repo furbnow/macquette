@@ -32,6 +32,13 @@ describe('dummy visitor example spec', () => {
       aNullable: null | {
         value: number;
       };
+      aComplexArray: Array<{ stairs: number; elevators: number }>;
+      anArrayWithIds: Array<{
+        id: string;
+        somethingElse: number;
+      }>;
+      aUnion: string | number | boolean;
+      aTuple: [string, number];
     };
     type Inferred = typeof dummyValue;
     type TestLeft = Expected extends Inferred ? 'success' : never;
@@ -56,6 +63,14 @@ describe('dummy visitor example spec', () => {
         foo: 42,
       },
       aNullable: null,
+      aComplexArray: [
+        { stairs: 42, elevators: 42 },
+        { stairs: 42, elevators: 42 },
+        { stairs: 42, elevators: 42 },
+      ],
+      anArrayWithIds: [{ id: 'hello world', somethingElse: 42 }],
+      aUnion: 'hello world',
+      aTuple: ['hello world', 42],
     } satisfies typeof dummyValue);
   });
 });

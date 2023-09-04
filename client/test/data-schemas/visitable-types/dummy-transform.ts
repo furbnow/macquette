@@ -21,6 +21,9 @@ const dummyVisitor: Visitor<unknown> = {
     };
   },
   nullable: () => null,
+  arrayWithIds: (idField, shape) => [shape],
+  union: (inners) => inners[0],
+  tuple: (inners) => inners,
 };
 
 export function makeDummyValue<Spec extends Visitable>(spec: Spec) {

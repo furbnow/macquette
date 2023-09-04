@@ -29,6 +29,16 @@ describe('zod visitor example spec', () => {
       aNullable: null | {
         value: number;
       };
+      aComplexArray: Array<{
+        stairs: number;
+        elevators: number;
+      }>;
+      anArrayWithIds: Array<{
+        id: string;
+        somethingElse: number;
+      }>;
+      aUnion: string | number | boolean;
+      aTuple: [string, number];
     }>;
     type Inferred = typeof zodSchema;
     type TestLeft = Expected extends Inferred ? 'success' : never;
@@ -53,12 +63,19 @@ describe('zod visitor example spec', () => {
         foo: 42,
       },
       aNullable: null,
+      aComplexArray: [{ stairs: 42, elevators: 42 }],
+      anArrayWithIds: [
+        { id: 'one', somethingElse: 42 },
+        { id: 'two', somethingElse: 42 },
+      ],
+      aUnion: false,
+      aTuple: ['', 42],
     } satisfies z.infer<typeof zodSchema>;
     expect(zodSchema.parse(goodData)).toEqual(goodData);
   });
 
   test('visitor test (bad data)', () => {
-    const goodData = {
+    const badData = {
       aString: false,
       aNumber: 'hello world',
       aBoolean: false,
@@ -75,7 +92,11 @@ describe('zod visitor example spec', () => {
       aNullable: {
         value: 'hello world',
       },
+      aComplexArray: [],
+      anArrayWithIds: [],
+      aUnion: null,
+      aTuple: [],
     };
-    expect(() => zodSchema.parse(goodData)).toThrow(z.ZodError);
+    expect(() => zodSchema.parse(badData)).toThrow(z.ZodError);
   });
 });

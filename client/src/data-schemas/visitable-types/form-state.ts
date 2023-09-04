@@ -12,6 +12,7 @@ import {
   Visitable,
   Visitor,
   _Array,
+  _ArrayWithIds,
   _Boolean,
   _DiscriminatedUnion,
   _Enum,
@@ -20,9 +21,11 @@ import {
   _Number,
   _String,
   _Struct,
+  _Tuple,
+  _Union,
 } from '.';
-import { ReadonlyNonEmptyArray } from '../../helpers/non-empty-array';
-import { TupleUnion } from '../../helpers/tuple-union';
+import { NonEmptyArray } from '../../helpers/non-empty-array';
+import { zip } from '../../helpers/zip';
 
 function id<T>(val: T): T {
   return val;
@@ -48,7 +51,7 @@ const fromFormStateVisitor: Visitor<(formState: any) => any> = {
     (formState: Record<string, any>) =>
       mapValues(shape, (innerFromFormState, key) => innerFromFormState(formState[key])),
   enum:
-    (values: ReadonlyNonEmptyArray<string>, { default_ }) =>
+    (values: NonEmptyArray<string>, { default_ }) =>
     (formState: string | null) =>
       formState ?? default_ ?? values[0],
   literal: (value: Primitive) => () => value,
@@ -75,6 +78,21 @@ const fromFormStateVisitor: Visitor<(formState: any) => any> = {
     (innerFromFormState) =>
     ({ isNull, value }: { isNull: boolean; value: any }) =>
       isNull ? null : innerFromFormState(value),
+  arrayWithIds:
+    (idField, shape: Record<string, (formState: any) => any>) =>
+    (formState: Array<Record<string, any>>) =>
+      formState.map((item) => ({
+        [idField]: item[idField],
+        ...mapValues(shape, (innerFromFormState, key) => innerFromFormState(item[key])),
+      })),
+  union: () => {
+    // We have no way of knowing which union variant is applicable
+    throw new Error('Unions are not supported in form state types');
+  },
+  tuple: (innerFromFormStates) => (formState: unknown[]) =>
+    zip(innerFromFormStates, formState).map(([innerFromFormState, formState]) =>
+      innerFromFormState(formState),
+    ),
 };
 
 const toFormStateVisitor: Visitor<(value: any) => any> = {
@@ -108,6 +126,21 @@ const toFormStateVisitor: Visitor<(value: any) => any> = {
     isNull: value === null,
     value: innerToFormState(value),
   }),
+  arrayWithIds:
+    (idField: string, shape: Record<string, (value: any) => any>) =>
+    (value: Array<Record<string, any>>) =>
+      value.map((item) => ({
+        [idField]: item[idField],
+        ...mapValues(shape, (innerToFormState, key) => innerToFormState(item[key])),
+      })),
+  union: () => {
+    // We have no way of knowing which union variant is applicable
+    throw new Error('Unions are not supported in form state types');
+  },
+  tuple: (innerToFormStates) => (values: unknown[]) =>
+    zip(innerToFormStates, values).map(([innerToFormState, value]) =>
+      innerToFormState(value),
+    ),
 };
 
 export type FormStateOf<T extends Visitable> = T extends _String
@@ -120,21 +153,41 @@ export type FormStateOf<T extends Visitable> = T extends _String
   ? Array<FormStateOf<Inner>>
   : T extends _Struct<infer Shape>
   ? { [K in keyof Shape]: FormStateOf<Shape[K]> }
-  : T extends _Enum<infer Values extends ReadonlyNonEmptyArray<string>>
-  ? TupleUnion<Values> | null
+  : T extends _Enum<infer Values>
+  ? Values[number] | null
   : T extends _Literal<infer Value>
   ? Value
-  : T extends _DiscriminatedUnion<string, infer Spec>
+  : T extends _DiscriminatedUnion<infer Field, infer Inners extends [...any[]]>
   ? {
-      selected: keyof Spec | null;
+      selected: Inners[number]['shape'][Field]['value'] | null;
       variants: {
-        [ShapeKey in keyof Spec]: {
-          [FieldKey in keyof Spec[ShapeKey]]: FormStateOf<Spec[ShapeKey][FieldKey]>;
+        [ShapeKey in Inners[number]['shape'][Field]['value']]: {
+          [FieldKey in keyof Omit<
+            Extract<Inners[number]['shape'], Record<Field, _Literal<ShapeKey>>>,
+            Field
+          >]: FormStateOf<
+            Extract<Inners[number]['shape'], Record<Field, _Literal<ShapeKey>>>[FieldKey]
+          >;
         };
       };
     }
   : T extends _Nullable<infer Inner>
   ? { isNull: boolean; value: FormStateOf<Inner> }
+  : T extends _ArrayWithIds<infer IdField extends string, infer Inner>
+  ? Array<
+      FormStateOf<Inner> & {
+        [K in IdField]: TypeOf<Inner['shape'][IdField]>;
+      }
+    >
+  : T extends _Union<infer Inners>
+  ? FormStateOf<Inners[number]>
+  : T extends _Tuple<infer Inners>
+  ? Inners extends [
+      infer FirstInner extends Visitable,
+      ...infer RestInners extends Visitable[],
+    ]
+    ? [FormStateOf<FirstInner>, ...FormStateOf<_Tuple<RestInners>>]
+    : []
   : never;
 
 export function makeFormStateTransforms<T extends Visitable>(spec: T) {

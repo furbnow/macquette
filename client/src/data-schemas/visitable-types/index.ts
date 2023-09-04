@@ -1,6 +1,5 @@
-import { mapValues } from 'lodash';
-import { ReadonlyNonEmptyArray } from '../../helpers/non-empty-array';
-import { TupleUnion } from '../../helpers/tuple-union';
+import { mapValues, omit } from 'lodash';
+import { NonEmptyArray } from '../../helpers/non-empty-array';
 
 export type Primitive = string | number | boolean | bigint | null | undefined;
 
@@ -11,7 +10,7 @@ export type Visitor<T> = {
   boolean: (context: Ctx) => T;
   array: (elemT: T, context: Ctx) => T;
   struct: (shape: Record<string, T>, context: Ctx) => T;
-  enum: (values: ReadonlyNonEmptyArray<string>, context: Ctx) => T;
+  enum: (values: NonEmptyArray<string>, context: Ctx) => T;
   literal: (value: Primitive, context: Ctx) => T;
   discriminatedUnion: (
     field: string,
@@ -19,6 +18,9 @@ export type Visitor<T> = {
     context: Ctx,
   ) => T;
   nullable: (inner: T, context: Ctx) => T;
+  arrayWithIds: (field: string, shape: Record<string, T>, context: Ctx) => T;
+  union: (inners: T[], context: Ctx) => T;
+  tuple: (inners: T[], context: Ctx) => T;
 };
 
 export type Visitable<Tag extends string = string> = {
@@ -60,7 +62,7 @@ export class _Array<I extends Visitable> implements Visitable {
 export class _Struct<Shape extends Record<string, Visitable>> implements Visitable {
   tag = 'struct' as const;
   constructor(
-    private shape: Shape,
+    public shape: Shape,
     private context: Ctx = {},
   ) {}
   visit<T>(visitor: Visitor<T>): T {
@@ -70,10 +72,10 @@ export class _Struct<Shape extends Record<string, Visitable>> implements Visitab
     );
   }
 }
-export class _Enum<Values extends ReadonlyNonEmptyArray<string>> implements Visitable {
+export class _Enum<Values extends NonEmptyArray<string>> implements Visitable {
   tag = 'enum' as const;
   constructor(
-    private values: Values,
+    private values: [...Values],
     private context: Ctx = {},
   ) {}
   visit<T>(visitor: Visitor<T>): T {
@@ -83,7 +85,7 @@ export class _Enum<Values extends ReadonlyNonEmptyArray<string>> implements Visi
 export class _Literal<Value extends Primitive> implements Visitable {
   tag = 'literal' as const;
   constructor(
-    private value: Value,
+    public value: Value,
     private context: Ctx = {},
   ) {}
   visit<T>(visitor: Visitor<T>): T {
@@ -92,21 +94,29 @@ export class _Literal<Value extends Primitive> implements Visitable {
 }
 export class _DiscriminatedUnion<
   Field extends string,
-  Shapes extends Record<string, Record<string, Visitable>>,
+  Inners extends _Struct<Record<Field, _Literal<string>> & Record<string, Visitable>>[],
 > implements Visitable
 {
   tag = 'discriminated union' as const;
   constructor(
     private field: Field,
-    private shapes: Shapes,
+    private inners: [...Inners],
     private context: Ctx = {},
   ) {}
   visit<T>(visitor: Visitor<T>): T {
+    const shapes = Object.fromEntries(
+      this.inners.map(
+        (innerStruct) =>
+          [
+            innerStruct.shape[this.field].value,
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            omit(innerStruct.shape, this.field) as Record<string, Visitable>,
+          ] as const,
+      ),
+    );
     return visitor.discriminatedUnion(
       this.field,
-      mapValues(this.shapes, (shape) =>
-        mapValues(shape, (field) => field.visit(visitor)),
-      ),
+      mapValues(shapes, (shape) => mapValues(shape, (field) => field.visit(visitor))),
       this.context,
     );
   }
@@ -119,6 +129,48 @@ export class _Nullable<Inner extends Visitable> implements Visitable {
   ) {}
   visit<T>(visitor: Visitor<T>): T {
     return visitor.nullable(this.inner.visit(visitor), this.context);
+  }
+}
+type ArrayIdType = _String | _Number | _Union<[_String, _Number]>;
+export class _ArrayWithIds<
+  IdField extends string,
+  Inner extends _Struct<Record<IdField, ArrayIdType> & Record<string, Visitable>>,
+> implements Visitable
+{
+  tag = 'array with ids' as const;
+  constructor(
+    private idField: IdField,
+    private inner: Inner,
+    private context: Ctx = {},
+  ) {}
+  visit<T>(visitor: Visitor<T>): T {
+    return visitor.arrayWithIds(
+      this.idField,
+      mapValues(this.inner.shape, (v: Visitable) => v.visit<T>(visitor)),
+      this.context,
+    );
+  }
+}
+export class _Union<Inners extends Visitable[]> implements Visitable {
+  tag = 'union' as const;
+  constructor(
+    private inners: [...Inners],
+    private context: Ctx = {},
+  ) {}
+  visit<T>(visitor: Visitor<T>): T {
+    const mappedInners = this.inners.map((v) => v.visit(visitor));
+    return visitor.union(mappedInners, this.context);
+  }
+}
+export class _Tuple<Inners extends Visitable[]> implements Visitable {
+  tag = 'tuple' as const;
+  constructor(
+    private inners: [...Inners],
+    private context: Ctx = {},
+  ) {}
+  visit<T>(visitor: Visitor<T>): T {
+    const mappedInners = this.inners.map((v) => v.visit(visitor));
+    return visitor.tuple(mappedInners, this.context);
   }
 }
 
@@ -135,18 +187,27 @@ export type TypeOf<T extends Visitable> = T extends _String
   ? Array<TypeOf<Inner>>
   : T extends _Struct<infer Shape>
   ? { [K in keyof Shape]: TypeOf<Shape[K]> }
-  : T extends _Enum<infer Values extends ReadonlyNonEmptyArray<string>>
-  ? TupleUnion<Values>
+  : T extends _Enum<infer Values extends NonEmptyArray<string>>
+  ? Values[number]
   : T extends _Literal<infer Value>
   ? Value
-  : T extends _DiscriminatedUnion<infer Field, infer Spec>
-  ? {
-      [ShapeKey in keyof Spec]: { [F in Field]: ShapeKey } & {
-        [FieldKey in keyof Spec[ShapeKey]]: TypeOf<Spec[ShapeKey][FieldKey]>;
-      };
-    }[keyof Spec]
+  : // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  T extends _DiscriminatedUnion<infer _Field, infer Inners>
+  ? TypeOf<Inners[number]>
   : T extends _Nullable<infer Inner>
   ? null | TypeOf<Inner>
+  : // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  T extends _ArrayWithIds<infer _IdField, infer Inner>
+  ? Array<TypeOf<Inner>>
+  : T extends _Union<infer Inners>
+  ? TypeOf<Inners[number]>
+  : T extends _Tuple<infer Inners>
+  ? Inners extends [
+      infer FirstInner extends Visitable,
+      ...infer RestInners extends Visitable[],
+    ]
+    ? [TypeOf<FirstInner>, ...TypeOf<_Tuple<RestInners>>]
+    : []
   : never;
 
 // Aliases
@@ -157,18 +218,32 @@ export const t = {
   array: <Elem extends Visitable>(elem: Elem, context?: Ctx) => new _Array(elem, context),
   struct: <Shape extends Record<string, Visitable>>(shape: Shape, context?: Ctx) =>
     new _Struct(shape, context),
-  enum: <Values extends ReadonlyNonEmptyArray<string>>(values: Values, context?: Ctx) =>
+  enum: <Values extends NonEmptyArray<string>>(values: [...Values], context?: Ctx) =>
     new _Enum(values, context),
   literal: <Value extends Primitive>(value: Value, context?: Ctx) =>
     new _Literal(value, context),
   discriminatedUnion: <
     Field extends string,
-    Shapes extends Record<string, Record<string, Visitable>>,
+    Inners extends Array<
+      _Struct<Record<Field, _Literal<string>> & Record<string, Visitable>>
+    >,
   >(
     field: Field,
-    shapes: Shapes,
+    inners: [...Inners],
     context?: Ctx,
-  ) => new _DiscriminatedUnion(field, shapes, context),
+  ) => new _DiscriminatedUnion(field, inners, context),
   nullable: <Inner extends Visitable>(inner: Inner, context?: Ctx) =>
     new _Nullable(inner, context),
+  arrayWithIds: <
+    IdField extends string,
+    Inner extends _Struct<Record<IdField, ArrayIdType> & Record<string, Visitable>>,
+  >(
+    idField: IdField,
+    inner: Inner,
+    context?: Ctx,
+  ) => new _ArrayWithIds<IdField, Inner>(idField, inner, context),
+  union: <Inners extends Visitable[]>(inners: [...Inners], context?: Ctx) =>
+    new _Union(inners, context),
+  tuple: <Inners extends Visitable[]>(inners: [...Inners], context?: Ctx) =>
+    new _Tuple(inners, context),
 };

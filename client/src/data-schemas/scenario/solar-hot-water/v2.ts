@@ -8,30 +8,31 @@ import { SolarHotWaterV1 } from './v1';
 
 export const solarHotWaterDataModel = t.nullable(
   t.struct({
-    pump: t.enum(['PV', 'electric'] as const, { default_: 'electric' }),
+    pump: t.enum(['PV', 'electric'], { default_: 'electric' }),
     dedicatedSolarStorageVolume: t.number(),
     combinedCylinderVolume: t.number(),
     collector: t.struct({
       apertureArea: t.number(),
       inclination: t.number(),
-      orientation: t.enum(Orientation.names),
-      overshading: t.enum(Overshading.names),
-      parameters: t.discriminatedUnion('source', {
-        'test certificate': {
+      orientation: t.enum([...Orientation.names]),
+      overshading: t.enum([...Overshading.names]),
+      parameters: t.discriminatedUnion('source', [
+        t.struct({
+          source: t.literal('test certificate'),
           zeroLossEfficiency: t.number(),
           linearHeatLossCoefficient: t.number(),
           secondOrderHeatLossCoefficient: t.number(),
-        },
-        estimate: {
-          collectorType: t.enum(
-            ['evacuated tube', 'flat plate, glazed', 'unglazed'] as const,
-            { default_: 'unglazed' },
-          ),
-          apertureAreaType: t.enum(['gross', 'exact'] as const, {
+        }),
+        t.struct({
+          source: t.literal('estimate'),
+          collectorType: t.enum(['evacuated tube', 'flat plate, glazed', 'unglazed'], {
+            default_: 'unglazed',
+          }),
+          apertureAreaType: t.enum(['gross', 'exact'], {
             default_: 'gross',
           }),
-        },
-      }),
+        }),
+      ]),
     }),
   }),
 );

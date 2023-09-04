@@ -28,9 +28,9 @@ writing types `O(n+m)` instead.)
 ### Writing a visitable type
 
 ```ts
-const myLovelyType = vt.struct({
-    foo: vt.number(),
-    bar: vt.string(),
+const myLovelyType = t.struct({
+    foo: t.number(),
+    bar: t.string(),
 });
 ```
 
@@ -46,11 +46,11 @@ There are equivalent functions for Arbitraries and form state types.
 
 ### Writing a new transform
 
-Due to some limitations of TypeScript, you're gonna have to write a
-runtime transform (a visitor) and a compile-time transform (a large
-type expression) separately, and then cast them together at the
-end. Also, the runtime transforms require a fair few `any` types to
-make things work, so you should rely on extensive testing.
+Due to some limitations of TypeScript, you will have to write a runtime
+transform (a visitor) and a compile-time transform (a large type expression)
+separately, and then cast them together at the end. Also, the runtime
+transforms require lots of `any` types to make things work, so you should rely
+on extensive testing.
 
 See the "dummy visitor" in the tests for an example, or look at one of
 the existing transforms in this directory.

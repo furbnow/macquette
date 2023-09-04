@@ -10,11 +10,29 @@ import {
   Visitor,
 } from '../../src/data-schemas/visitable-types';
 import { ReadonlyNonEmptyArray } from '../../src/helpers/non-empty-array';
-import { jsonFloat } from './arbitraries';
 
 const arbVisitor: Visitor<fc.Arbitrary<any>> = {
   string: () => fc.string(),
-  number: () => jsonFloat(),
+  number: (ctx) => {
+    const constraints: fc.FloatConstraints & fc.IntegerConstraints = {};
+    if (typeof ctx['min'] === 'number') {
+      constraints.min = ctx['min'];
+    }
+    if (typeof ctx['max'] === 'number') {
+      constraints.max = ctx['max'];
+    }
+    if (ctx['integer'] === true) {
+      return fc.integer(constraints);
+    } else {
+      return fc
+        .float({ noNaN: true, noDefaultInfinity: true, ...constraints })
+        .filter(
+          (value) =>
+            value === 0 ||
+            (Math.abs(value) > Math.pow(2, -7) && Math.abs(value) < Math.pow(2, 13)),
+        );
+    }
+  },
   boolean: () => fc.boolean(),
   array: (elemT: fc.Arbitrary<any>) => fc.array(elemT),
   struct: (shape: Record<string, fc.Arbitrary<any>>) => fc.record(shape),
@@ -35,6 +53,10 @@ const arbVisitor: Visitor<fc.Arbitrary<any>> = {
     return fc.oneof(...arbs);
   },
   nullable: (inner: fc.Arbitrary<any>) => fc.option(inner),
+  arrayWithIds: (_idField: string, shape: Record<string, fc.Arbitrary<any>>) =>
+    fc.array(fc.record(shape)),
+  union: (inners) => fc.oneof(...inners),
+  tuple: (inners) => fc.tuple(...inners),
 };
 
 export function makeArbitrary<T extends Visitable>(spec: T) {
