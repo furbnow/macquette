@@ -469,7 +469,7 @@ function get_context_data(scenarios) {
                 measures: getScenarioMeasures(project[scenario.id]),
                 measures_cost: Math.round(measures_costs(scenario.id) / 10) * 10,
                 measures_additive_cost: Math.round(get_additive_cost(scenario.id) / 10) * 10,
-                heating_load: window.Macquette.getHeatingLoad(project[scenario.id]),
+                heating_load: window.Macquette.getHeatingLoad(project[scenario.id].model.unwrap()),
                 target_temp: project[scenario.id].temperature.target,
                 co2: {
                     total: project[scenario.id].annualco2,

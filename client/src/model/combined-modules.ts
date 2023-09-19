@@ -32,6 +32,11 @@ import {
     GenerationInput,
     extractGenerationInputFromLegacy,
 } from './modules/generation';
+import {
+    Geography,
+    GeographyInput,
+    extractGeographyInputFromLegacy,
+} from './modules/geography';
 import { HeatLoss } from './modules/heat-loss';
 import {
     HeatingSystemInput,
@@ -82,6 +87,7 @@ import {
 export type Input = {
     modelBehaviourVersion: ModelBehaviourVersion;
     fuels: { fuels: FuelsDict };
+    geography: GeographyInput;
     floors: FloorsInput;
     occupancy: OccupancyInput;
     region: Region;
@@ -112,6 +118,7 @@ export function extractInputFromLegacy(
         return Result.ok({
             modelBehaviourVersion: scenario?.modelBehaviourVersion ?? 'legacy',
             fuels: extractFuelsInputFromLegacy(scenario),
+            geography: extractGeographyInputFromLegacy(scenario),
             floors: extractFloorsInputFromLegacy(scenario),
             occupancy: extractOccupancyInputFromLegacy(scenario),
             region: extractRegionFromLegacy(scenario),
@@ -139,6 +146,7 @@ export function extractInputFromLegacy(
 }
 
 export class CombinedModules {
+    geography: Geography;
     floors: Floors;
     occupancy: Occupancy;
     fabric: Fabric;
@@ -166,6 +174,7 @@ export class CombinedModules {
             input.modelBehaviourVersion,
         );
         this.fuels = new Fuels(input.fuels);
+        this.geography = new Geography(input.geography);
         this.floors = new Floors(input.floors);
         this.occupancy = new Occupancy(input.occupancy, { floors: this.floors });
         this.fabric = new Fabric(input.fabric, { region, floors: this.floors });
@@ -187,6 +196,8 @@ export class CombinedModules {
             infiltration: this.infiltration,
         });
         this.heatLoss = new HeatLoss(null, {
+            geography: this.geography,
+            floors: this.floors,
             fabric: this.fabric,
             ventilation: this.ventilation,
             infiltration: this.infiltration,

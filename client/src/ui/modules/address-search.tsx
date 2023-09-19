@@ -76,6 +76,7 @@ type State = {
     elevation: WithOrigin<number, null>;
     lowerLayerSuperOutputArea: WithOrigin<string>;
     overheatingRisk: null | OverheatingRisk;
+    coordinates: null | [number, number];
 
     // Manual input
     localPlanningAuthority: string;
@@ -983,6 +984,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
             address: { type: 'no data' },
             localPlanningAuthority: '',
             overheatingRisk: null,
+            coordinates: null,
             locationDensity: null,
             exposure: null,
             frostAttackRisk: null,
@@ -1108,7 +1110,8 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
             }
 
             case 'use resolved data': {
-                const { address, localAuthority, uprn, lsoa, elevation } = action.data;
+                const { address, localAuthority, uprn, lsoa, elevation, coordinates } =
+                    action.data;
                 return [
                     {
                         ...state,
@@ -1151,6 +1154,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                                     ? 'high risk'
                                     : 'moderate risk'
                                 : 'outside England',
+                        coordinates,
                     },
                 ];
             }
@@ -1294,6 +1298,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                     ),
                     localPlanningAuthority: household?.local_planning_authority ?? '',
                     overheatingRisk: household?.overheatingRisk ?? null,
+                    coordinates: household?.latLong ?? null,
                     locationDensity: household?.location_density ?? null,
                     exposure: household?.exposure ?? null,
                     frostAttackRisk: household?.frostAttackRisk ?? null,
@@ -1382,6 +1387,7 @@ export const addressSearchModule: UiModule<State, Action, Effect> = {
                 exposure: state.exposure ?? undefined,
                 frostAttackRisk: state.frostAttackRisk ?? undefined,
                 overheatingRisk: state.overheatingRisk ?? undefined,
+                latLong: state.coordinates ?? undefined,
                 flooding_rivers_sea: state.floodingRiversAndSea ?? undefined,
                 flooding_surface_water: state.floodingSurfaceWater ?? undefined,
                 flooding_reservoirs: state.floodingReservoirs ?? undefined,

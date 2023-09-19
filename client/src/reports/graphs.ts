@@ -202,26 +202,12 @@ function standardisedHeating(scenario: unknown): Record<string, unknown> {
     }
 }
 
-export function getHeatingLoad(scenario: unknown) {
-    const scenarioCopy = standardisedHeating(scenario);
-
-    const heatloss =
-        typeof scenarioCopy['totalWK'] === 'number' ? scenarioCopy['totalWK'] : 0;
-    const temp = 21;
-    const temp_low = -4;
-    const temp_diff = temp - temp_low;
-    const peak_heat = heatloss * temp_diff;
-    const area = typeof scenarioCopy['TFA'] === 'number' ? scenarioCopy['TFA'] : 0;
-    const peak_heat_m2 = peak_heat / area;
-
+export function getHeatingLoad(model: CombinedModules | null) {
     return {
-        heatloss,
-        temp,
-        temp_low,
-        temp_diff,
-        peak_heat: peak_heat / 1000, // in kW instead of W
-        area,
-        peak_heat_m2,
+        temp: model?.heatLoss.internalDesignTemperature ?? 0,
+        temp_low: model?.geography.externalDesignTemperature ?? 0,
+        peak_heat: (model?.heatLoss.peakHeatLoad ?? 0) / 1000,
+        peak_heat_m2: model?.heatLoss.peakHeatLoadPerArea ?? 0,
     };
 }
 
@@ -238,7 +224,7 @@ function peakHeatingLoad(project: ProjectData, scenarioIds: string[]): BarChart 
         numCategories: 1,
         bins: scenarioIds.map((id, idx) => ({
             label: scenarioName(id, idx),
-            data: [getHeatingLoad(project.scenarioRaw(id)).peak_heat],
+            data: [getHeatingLoad(project.scenario(id)[1]).peak_heat],
         })),
         areas: [
             { interval: [3, 6], label: 'Small' },

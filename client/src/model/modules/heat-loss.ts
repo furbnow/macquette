@@ -2,6 +2,12 @@ import { cache } from '../../helpers/cache-decorators';
 import { Month } from '../enums/month';
 
 export type HeatLossDependencies = {
+    geography: {
+        externalDesignTemperature: number;
+    };
+    floors: {
+        totalFloorArea: number;
+    };
     ventilation: {
         heatLossAverage: number;
         heatLossMonthly: (month: Month) => number;
@@ -39,6 +45,33 @@ export class HeatLoss {
             this.dependencies.infiltration.heatLossAverage +
             this.dependencies.ventilation.heatLossAverage
         );
+    }
+
+    get internalDesignTemperature(): number {
+        // We use 20 degrees here as an average value. MCS calcs specify different
+        // minimums per type of room but we can't do that.
+        return 20;
+    }
+
+    get totalAverageHeatLoss(): number {
+        return (
+            this.dependencies.fabric.heatLoss +
+            this.averageVentilationInfiltrationHeatLoss
+        );
+    }
+
+    /** Peak heat load in W */
+    get peakHeatLoad(): number {
+        return (
+            this.totalAverageHeatLoss *
+            (this.internalDesignTemperature -
+                this.dependencies.geography.externalDesignTemperature)
+        );
+    }
+
+    /** Peak heat load, W/m² */
+    get peakHeatLoadPerArea(): number {
+        return this.peakHeatLoad / this.dependencies.floors.totalFloorArea;
     }
 
     /* eslint-disable
