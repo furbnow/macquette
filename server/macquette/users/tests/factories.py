@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from datetime import timezone
+from datetime import UTC
 from typing import Any
 
 from django.contrib.auth import get_user_model
@@ -11,7 +11,7 @@ class UserFactory(DjangoModelFactory):
     username = Faker("user_name")
     email = Faker("email")
     name = Faker("name")
-    last_login = Faker("date_time_between", start_date="-30d", tzinfo=timezone.utc)
+    last_login = Faker("date_time_between", start_date="-30d", tzinfo=UTC)
 
     @post_generation
     def password(self, create: bool, extracted: Sequence[Any], **kwargs):

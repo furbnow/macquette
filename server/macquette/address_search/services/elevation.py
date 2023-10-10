@@ -1,37 +1,42 @@
+import dataclasses
 import logging
 from typing import Literal
 
 import requests
-from pydantic import BaseModel
+import typedload
 from returns.result import Failure, Result, Success
 
 
-class _APIError(BaseModel):
+@dataclasses.dataclass
+class _APIError:
     error: str
     status: Literal["INVALID_REQUEST", "SERVER_ERROR"]
 
 
-class LatLongPair(BaseModel):
+@dataclasses.dataclass
+class LatLongPair:
     lat: float
     lng: float
 
 
-class _APIResult(BaseModel):
+@dataclasses.dataclass
+class _APIResult:
     elevation: float
     location: LatLongPair
     dataset: Literal["eudem25m"]
 
 
-class _APISuccess(BaseModel):
+@dataclasses.dataclass
+class _APISuccess:
     results: list[_APIResult]
     status: Literal["OK"]
 
 
 def _parse_elevation_response(data: dict) -> _APISuccess | _APIError:
     if "error" in data:
-        return _APIError(**data)
+        return typedload.load(data, _APIError)
     else:
-        return _APISuccess(**data)
+        return typedload.load(data, _APISuccess)
 
 
 def get_elevation(latitude: float, longitude: float) -> Result[int, str]:

@@ -120,6 +120,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "corsheaders",
     "crispy_forms",
+    "crispy_bootstrap4",
     "social_django",
     "rest_framework",
     "waffle",
@@ -267,6 +268,7 @@ TEMPLATES: list[dict[str, Any]] = [
     }
 ]
 # http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # FIXTURES

@@ -22,7 +22,7 @@ RUN make -C .. js-prod
 # We're using "slim" (which is a cut down Debian stable) because Debian is a
 # much more standard setup than alpine with the potential for a lot less faff
 # later on if we need to install more obscure dependencies.
-FROM python:3.10-slim AS main
+FROM python:3.11-slim AS main
 
 # Don't buffer output - we should always get error messages this way
 ENV PYTHONUNBUFFERED 1

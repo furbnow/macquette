@@ -1,27 +1,32 @@
+import dataclasses
 import logging
 import random
 
 import requests
+import typedload
 from django.conf import settings
-from pydantic import BaseModel
 from returns.result import Failure, Result, Success
 
 
-class _APIError(BaseModel):
+@dataclasses.dataclass
+class _APIError:
     code: int
     message: str
 
 
-class AddressSuggestion(BaseModel):
+@dataclasses.dataclass
+class AddressSuggestion:
     id: str
     suggestion: str
 
 
-class _APIResult(BaseModel):
+@dataclasses.dataclass
+class _APIResult:
     hits: list[AddressSuggestion]
 
 
-class _APISuccess(BaseModel):
+@dataclasses.dataclass
+class _APISuccess:
     code: int
     message: str
     result: _APIResult
@@ -29,9 +34,9 @@ class _APISuccess(BaseModel):
 
 def _parse_address_suggestion_response(data: dict) -> _APISuccess | _APIError:
     if data["code"] != 2000:
-        return _APIError(**data)
+        return typedload.load(data, _APIError)
     else:
-        return _APISuccess(**data)
+        return typedload.load(data, _APISuccess)
 
 
 def get_suggestions(query: str) -> Result[list[AddressSuggestion], str]:

@@ -1,17 +1,17 @@
-from auth0.v3.authentication import GetToken
-from auth0.v3.management import Auth0
+from auth0.authentication import GetToken
+from auth0.management import Auth0
 from django.conf import settings
 from django.core.mail import send_mail
 
 
 def get_client():
     domain = settings.AUTH0_ENDPOINT
-    get_token = GetToken(domain)
-    token = get_token.client_credentials(
+    get_token = GetToken(
+        domain,
         settings.SOCIAL_AUTH_AUTH0_KEY,
         settings.SOCIAL_AUTH_AUTH0_SECRET,
-        f"https://{domain}/api/v2/",
     )
+    token = get_token.client_credentials(f"https://{domain}/api/v2/")
     mgmt_api_token = token["access_token"]
 
     return Auth0(domain, mgmt_api_token)

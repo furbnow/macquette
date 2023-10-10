@@ -1,29 +1,33 @@
+import dataclasses
 import logging
 
 import requests
-from pydantic import BaseModel
+import typedload
 from returns.result import Failure, Result, Success
 
 
-class _APIError(BaseModel):
+@dataclasses.dataclass
+class _APIError:
     status: int
     error: str
 
 
-class _APIResult(BaseModel):
+@dataclasses.dataclass
+class _APIResult:
     lsoa: str
 
 
-class _APISuccess(BaseModel):
+@dataclasses.dataclass
+class _APISuccess:
     status: int
     result: _APIResult
 
 
 def _parse_lsoa_response(data: dict) -> _APISuccess | _APIError:
     if data["status"] != 200:
-        return _APIError(**data)
+        return typedload.load(data, _APIError)
     else:
-        return _APISuccess(**data)
+        return typedload.load(data, _APISuccess)
 
 
 def get_lsoa(postcode: str) -> Result[str, str]:

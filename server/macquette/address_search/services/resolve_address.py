@@ -1,17 +1,20 @@
+import dataclasses
 import logging
 
 import requests
+import typedload
 from django.conf import settings
-from pydantic import BaseModel
 from returns.result import Failure, Result, Success
 
 
-class _APIError(BaseModel):
+@dataclasses.dataclass
+class _APIError:
     code: int
     message: str
 
 
-class ResolveResult(BaseModel):
+@dataclasses.dataclass
+class ResolveResult:
     id: str
     line_1: str
     line_2: str
@@ -25,7 +28,8 @@ class ResolveResult(BaseModel):
     uprn: str
 
 
-class _APISuccess(BaseModel):
+@dataclasses.dataclass
+class _APISuccess:
     code: int
     message: str
     result: ResolveResult
@@ -33,9 +37,9 @@ class _APISuccess(BaseModel):
 
 def _parse_address_lookup_response(data: dict) -> _APISuccess | _APIError:
     if data["code"] != 2000:
-        return _APIError(**data)
+        return typedload.load(data, _APIError)
     else:
-        return _APISuccess(**data)
+        return typedload.load(data, _APISuccess)
 
 
 def resolve_address(id: str) -> Result[ResolveResult, str]:

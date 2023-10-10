@@ -1,7 +1,6 @@
 import math
 import re
 
-import pydantic
 from jinja2 import DictLoader, Environment, pass_eval_context, select_autoescape
 from markupsafe import Markup, escape
 from rest_framework.exceptions import APIException
@@ -59,7 +58,7 @@ def render_template(template, context, graph_data):
     for name, data in graph_data.items():
         try:
             parsed = graphs.parse(data)
-        except pydantic.ValidationError as exc:
+        except Exception as exc:
             raise APIException(detail=f"Error parsing graph {name}: {exc}")
 
         try:

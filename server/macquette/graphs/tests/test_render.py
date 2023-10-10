@@ -35,11 +35,11 @@ def test_report_key_omits_unused_labels():
     chart = types.BarChart(
         type="bar",
         units="none",
-        numCategories=3,
-        categoryLabels=["French", "German", "Mauritian"],
+        num_categories=3,
+        category_labels=["French", "German", "Mauritian"],
         bins=[
-            {"label": "Fnargle", "data": [0, 0, 100]},
-            {"label": "Fnord", "data": [100, 0, 0]},
+            types.Bin(label="Fnargle", data=[0, 0, 100]),
+            types.Bin(label="Fnord", data=[100, 0, 0]),
         ],
     )
     _, key = render(chart)
@@ -56,11 +56,11 @@ def test_report_key_is_populated_from_category_labels():
     chart = types.BarChart(
         type="bar",
         units="none",
-        numCategories=1,
-        categoryLabels=["French"],
+        num_categories=1,
+        category_labels=["French"],
         bins=[
-            {"label": "Fnargle", "data": [0]},
-            {"label": "Fnord", "data": [100]},
+            types.Bin(label="Fnargle", data=[0]),
+            types.Bin(label="Fnord", data=[100]),
         ],
     )
     _, key = render(chart)
@@ -74,11 +74,11 @@ def test_report_key_is_populated_from_category_labels_when_empty():
     chart = types.BarChart(
         type="bar",
         units="none",
-        numCategories=1,
-        categoryLabels=None,
+        num_categories=1,
+        category_labels=None,
         bins=[
-            {"label": "Fnargle", "data": [0]},
-            {"label": "Fnord", "data": [100]},
+            types.Bin(label="Fnargle", data=[0]),
+            types.Bin(label="Fnord", data=[100]),
         ],
     )
     _, key = render(chart)

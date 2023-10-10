@@ -1,5 +1,5 @@
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 ignore_missing_imports = true
 exclude = ['^test_*\.py$']
 plugins = [
@@ -47,8 +47,9 @@ ignore = [
     "DTZ005",
     "PLR2004",
     "RUF005",
+    "RUF012",
     "SIM108",
     "PLC1901",
 ]
 line-length = 120
-target-version = "py310"
+target-version = "py311"
