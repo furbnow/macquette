@@ -120,38 +120,42 @@ export function extractFabricInputFromLegacy(scenario: Scenario): FabricInput {
     main: parentElements,
     floatingDeductibles: [],
   };
-  const stitchedUpElements = deductibleElements.reduce((elements, deductible) => {
-    const [parent, otherMainElements] = findWithRest(
-      elements.main,
-      (e) => e.id === deductible.subtractFrom,
-    );
-    if (parent?.type === 'floor') {
-      throw new ModelError('Attempted to deduct a deductible element from a floor', {
-        parent,
-        deductible,
-      });
-    }
-    if (parent === null) {
+  const stitchedUpElements = deductibleElements.reduce(
+    (elements, { subtractFrom, ...deductible }) => {
+      const [parent, otherMainElements] = findWithRest(
+        elements.main,
+        (e) => e.id === subtractFrom,
+      );
+      if (parent?.type === 'floor') {
+        throw new ModelError('Attempted to deduct a deductible element from a floor', {
+          parent,
+          deductible,
+        });
+      }
+      if (parent === null) {
+        return {
+          ...elements,
+          floatingDeductibles: [...elements.floatingDeductibles, deductible],
+        };
+      }
       return {
         ...elements,
-        floatingDeductibles: [...elements.floatingDeductibles, deductible],
+        main: [
+          ...otherMainElements,
+          {
+            ...parent,
+            deductions: [...parent.deductions, deductible],
+          },
+        ],
       };
-    }
-    return {
-      ...elements,
-      main: [
-        ...otherMainElements,
-        {
-          ...parent,
-          deductions: [...parent.deductions, deductible],
-        },
-      ],
-    };
-  }, initialElements);
+    },
+    initialElements,
+  );
   return {
     elements: stitchedUpElements,
     overrides: {
-      yValue: coalesceEmptyString(fabric?.thermal_bridging_yvalue, null) ?? null,
+      thermalBridgingAverageConductivity:
+        coalesceEmptyString(fabric?.thermal_bridging_yvalue, null) ?? null,
       thermalMassParameter: thermalMassParameterOverride,
     },
   };

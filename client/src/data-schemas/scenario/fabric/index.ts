@@ -10,6 +10,7 @@ const subtractFrom = z.union([
   z.literal(null),
   z.literal('no').transform(() => null),
   z.literal(undefined).transform(() => null),
+  z.string().uuid(),
   z.string().transform((s) => parseFloat(s)),
 ]);
 
@@ -83,7 +84,7 @@ const commonMeasure = z.object({
 });
 
 const basicElement = thing.extend({
-  id: z.number(),
+  id: z.union([z.number(), z.string()]),
   location,
   area: stringyFloatSchema,
 });
@@ -349,7 +350,9 @@ export const fabric = z.object({
     .record(
       z.object({
         measure: fabricMeasure,
-        original_elements: z.record(z.object({ id: z.number() })).optional(),
+        original_elements: z
+          .record(z.object({ id: z.union([z.number(), z.string()]) }))
+          .optional(),
       }),
     )
     .optional(),

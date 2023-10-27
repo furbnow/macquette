@@ -103,7 +103,7 @@ function extractWallFromLegacy(
   fabric: Exclude<Scenario, undefined>['fabric'],
   bulkMeasures: State['bulkMeasures'],
 ): WallLike {
-  function findMeasureIdx(id: number): number | null {
+  function findMeasureIdx(id: string | number): string | number | null {
     const measuresList = fabric?.measures ?? {};
 
     const bulkMeasure = bulkMeasures.find((measure) => measure.appliesTo.includes(id));
@@ -292,7 +292,7 @@ export function extractUpdateAction({
     throw new Error('scenarioId was not in bulkMeasuresByScenario');
   }
 
-  function getOriginalElement(id: number) {
+  function getOriginalElement(id: string | number) {
     const createdFrom = currentScenario?.created_from;
     if (createdFrom === undefined) {
       return null;

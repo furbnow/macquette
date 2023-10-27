@@ -46,7 +46,7 @@ export type FabricInput = {
     floatingDeductibles: Array<DeductibleSpec>;
   };
   overrides: {
-    yValue: number | null;
+    thermalBridgingAverageConductivity: number | null;
     thermalMassParameter: number | null;
   };
 };
@@ -92,11 +92,11 @@ export class Fabric {
   }
 
   @cache
-  get yValue(): number {
+  get thermalBridgingAverageConductivity(): number {
     // SAP Appendix K says default y-value is 0.15 W/m^2K, however it also
     // has a table of different default y-values for different
     // ages/building types in table S13. 🤷
-    return this.input.overrides.yValue ?? 0.15;
+    return this.input.overrides.thermalBridgingAverageConductivity ?? 0.15;
   }
 
   @cache
@@ -156,7 +156,7 @@ export class Fabric {
 
   @cache
   get thermalBridgingHeatLoss(): number {
-    return this.yValue * this.externalArea;
+    return this.thermalBridgingAverageConductivity * this.externalArea;
   }
 
   @cache

@@ -110,7 +110,7 @@ export const arbFloorType = fc.constantFrom(
 );
 
 export const arbFloorSpec: fc.Arbitrary<FloorSpec> = fc.record({
-  id: fc.integer(),
+  id: fc.uuidV(4),
   kValue: sensibleFloat,
   type: fc.constant('floor'),
   area: sensibleFloat,

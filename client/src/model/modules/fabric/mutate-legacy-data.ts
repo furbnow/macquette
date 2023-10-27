@@ -19,7 +19,7 @@ export function mutateLegacyData(fabric: Fabric, data: any) {
     data.fabric.elements = [];
   }
   if (data.fabric.thermal_bridging_yvalue === undefined) {
-    data.fabric.thermal_bridging_yvalue = fabric.yValue;
+    data.fabric.thermal_bridging_yvalue = fabric.thermalBridgingAverageConductivity;
   }
   if (data.fabric.global_TMP === undefined) {
     data.fabric.global_TMP = fabric.input.overrides.thermalMassParameter !== null;

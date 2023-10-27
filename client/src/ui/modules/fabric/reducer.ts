@@ -75,7 +75,7 @@ function withMeasuresQtyAndCost(wall: WithMeasuresInput): AppliedWallMeasure {
  * with removing them from the global state.  At some point this function should do that
  * itself.
  */
-function removeFromBulkMeasure(state: State, ids: number[]) {
+function removeFromBulkMeasure(state: State, ids: (string | number)[]) {
   for (const measure of state.bulkMeasures) {
     measure.appliesTo = measure.appliesTo.filter((id) =>
       ids.includes(id) ? false : true,

@@ -1,8 +1,14 @@
 import fc from 'fast-check';
 
+import { scenarioSchema } from '../../src/data-schemas/scenario';
 import { mean, sum } from '../../src/helpers/array-reducers';
 import { Month } from '../../src/model/enums/month';
-import { Fabric, FabricDependencies, FabricInput } from '../../src/model/modules/fabric';
+import {
+  Fabric,
+  FabricDependencies,
+  FabricInput,
+  extractFabricInputFromLegacy,
+} from '../../src/model/modules/fabric';
 import {
   CommonSpec,
   DeductibleSpec,
@@ -21,10 +27,11 @@ import {
   arbitraryOvershading,
   arbitraryRegion,
 } from '../helpers/arbitrary-enums';
+import { legacyFabric } from './golden-master/fabric';
 
 function arbitraryCommonSpec(): fc.Arbitrary<CommonSpec> {
   return fc.record({
-    id: fc.nat(),
+    id: fc.uuidV(4),
     kValue: sensibleFloat,
     uValue: sensibleFloat,
   });
@@ -90,7 +97,7 @@ function arbitraryFabricInput(): fc.Arbitrary<FabricInput> {
       floatingDeductibles: fc.array(arbitraryDeductibleSpec()),
     }),
     overrides: fc.record({
-      yValue: fc.option(sensibleFloat),
+      thermalBridgingAverageConductivity: fc.option(sensibleFloat),
       thermalMassParameter: fc.option(sensibleFloat),
     }),
   });
@@ -191,8 +198,207 @@ describe('fabric model module', () => {
       { examples },
     );
   });
+
+  test('golden master', () => {
+    fc.assert(
+      fc.property(
+        arbitraryFabricInput().filter(({ elements }) =>
+          elements.main.every(
+            (element) => element.type !== 'floor' || element.selectedFloorType === null,
+          ),
+        ),
+        arbitraryFabricDependencies(),
+        (input, dependencies) => {
+          const fabricModule = new Fabric(input, dependencies);
+          const legacyData: any = makeLegacyDataForFabric(input, dependencies);
+          legacyFabric(legacyData);
+          expect(fabricModule.heatLoss).toBeApproximately(
+            legacyData.fabric.total_heat_loss_WK,
+          );
+          expect(fabricModule.solarGainMeanAnnual).toBeApproximately(
+            legacyData.fabric.annual_solar_gain,
+          );
+          for (const month of Month.all) {
+            expect(fabricModule.solarGainByMonth(month)).toBeApproximately(
+              legacyData.gains_W['solar'][month.index0],
+            );
+          }
+          expect(fabricModule.fabricElementsThermalCapacity).toBeApproximately(
+            legacyData.fabric.total_thermal_capacity,
+          );
+          for (const legacyElement of legacyData.fabric.elements) {
+            const modelElement = fabricModule.getElementById(legacyElement.id);
+            expect(modelElement).not.toBeNull();
+            expect(modelElement!.heatLoss).toEqual(legacyElement.wk);
+            if (['window', 'door', 'roof light'].includes(modelElement!.type)) {
+              // eslint-disable-next-line jest/no-conditional-expect
+              expect((modelElement as WindowLike).meanSolarGain).toBeApproximately(
+                legacyElement.gain,
+              );
+            }
+          }
+          expect(fabricModule.naturalLight).toBeApproximately(legacyData.GL);
+        },
+      ),
+    );
+  });
+
+  test('extractor', () => {
+    fc.assert(
+      fc.property(
+        arbitraryFabricInput(),
+        arbitraryFabricDependencies(),
+        (input, dependencies) => {
+          const roundTripped = extractFabricInputFromLegacy(
+            scenarioSchema.parse(makeLegacyDataForFabric(input, dependencies)),
+          );
+          // Populate cached getters on orientation and overshading structs
+          function populate(element: any) {
+            if ('orientation' in element) element.orientation.index0;
+            if ('overshading' in element) element.overshading.index0;
+          }
+          roundTripped.elements.main.forEach((element) => {
+            populate(element);
+            if ('deductions' in element) element.deductions.forEach(populate);
+          });
+          roundTripped.elements.floatingDeductibles.forEach(populate);
+          function sortElements(input: FabricInput) {
+            function compareIds(
+              a: { id: string | number },
+              b: { id: string | number },
+            ): number {
+              return a.id < b.id ? -1 : a.id === b.id ? 0 : 1;
+            }
+            input.elements.main.sort(compareIds);
+            input.elements.main.forEach((element) => {
+              if ('deductions' in element) {
+                element.deductions.sort(compareIds);
+              }
+            });
+          }
+          sortElements(roundTripped);
+          sortElements(input);
+          expect(roundTripped).toEqual(input);
+        },
+      ),
+    );
+  });
 });
 
 function identity<T>(val: T) {
   return val;
+}
+
+const genericMeasureMixin = {
+  name: '',
+  lib: '',
+  who_by: '',
+  performance: '',
+  notes: '',
+  maintenance: '',
+  disruption: '',
+  cost: 0,
+  benefits: '',
+  associated_work: '',
+  description: '',
+};
+function makeLegacyDataForFabric(input: FabricInput, dependencies: FabricDependencies) {
+  function typeToLegacyType(
+    type: MainElementSpec['type'] | DeductibleSpec['type'],
+  ): string {
+    switch (type) {
+      case 'external wall':
+        return 'Wall';
+      case 'party wall':
+        return 'Party_wall';
+      case 'loft':
+        return 'Loft';
+      case 'roof':
+        return 'Roof';
+      case 'door':
+        return 'Door';
+      case 'roof light':
+        return 'Roof_light';
+      case 'window':
+        return 'Window';
+      case 'hatch':
+        return 'Hatch';
+      case 'floor':
+        return 'Floor';
+    }
+  }
+  function makeLegacyDeductible(subtractfrom: unknown, element: DeductibleSpec) {
+    const legacyDeductionElement = {
+      id: element.id,
+      type: typeToLegacyType(element.type),
+      area: element.area,
+      l: '',
+      h: '',
+      subtractfrom,
+      uvalue: element.uValue,
+      kvalue: element.kValue,
+      ...genericMeasureMixin,
+    };
+    if (element.type !== 'hatch') {
+      return {
+        ...legacyDeductionElement,
+        orientation: element.orientation.index0,
+        overshading: element.overshading.index0,
+        g: element.gHeat,
+        gL: element.gLight,
+        ff: element.frameFactor,
+      };
+    } else return legacyDeductionElement;
+  }
+  const { elements } = input;
+  const legacyElements = [
+    ...elements.main.flatMap((element) => {
+      if (element.type !== 'floor') {
+        const legacyElement = {
+          id: element.id,
+          type: typeToLegacyType(element.type),
+          area: element.grossArea,
+          h: '',
+          l: '',
+          uvalue: element.uValue,
+          kvalue: element.kValue,
+          ...genericMeasureMixin,
+        };
+        const legacyDeductions = element.deductions.map((element) =>
+          makeLegacyDeductible(legacyElement.id, element),
+        );
+        return [legacyElement, ...legacyDeductions];
+      } else {
+        return [
+          {
+            id: element.id,
+            type: typeToLegacyType(element.type),
+            area: element.area,
+            perimeter: element.exposedPerimeter,
+            h: '',
+            l: '',
+            uvalue: element.uValueLegacyField,
+            selectedFloorType: element.selectedFloorType ?? undefined,
+            perFloorTypeSpec: element.perFloorTypeSpec ?? undefined,
+            kvalue: element.kValue,
+            ...genericMeasureMixin,
+          },
+        ];
+      }
+    }),
+    ...elements.floatingDeductibles.map((element) => makeLegacyDeductible('', element)),
+  ];
+  return {
+    fabric: {
+      elements: legacyElements,
+      thermal_bridging_yvalue:
+        input.overrides.thermalBridgingAverageConductivity ?? undefined,
+      global_TMP: input.overrides.thermalMassParameter !== null,
+      global_TMP_value: input.overrides.thermalMassParameter ?? undefined,
+    },
+    TFA: dependencies.floors.totalFloorArea,
+    region: dependencies.region.index0,
+    losses_WK: {},
+    gains_W: {},
+  };
 }

@@ -45,7 +45,7 @@ type WallLibraryElement = {
 };
 type WallLibraryMeasure = WallLibraryElement & MeasureData;
 type AppliedWallBase = {
-  id: number;
+  id: string | number;
   inputs: {
     location: string;
     area: AreaSpec;
@@ -73,10 +73,10 @@ export type State = {
 
   walls: WallLike[];
 
-  bulkMeasures: { id: number; appliesTo: number[] }[];
+  bulkMeasures: { id: string | number; appliesTo: (string | number)[] }[];
   maxId: number;
-  deletedElement: number | null;
-  justInserted: number | null;
+  deletedElement: string | number | null;
+  justInserted: string | number | null;
 
   currentScenarioIsBaseline: boolean;
   modal:
@@ -87,7 +87,7 @@ export type State = {
     | {
         type: 'replace wall' | 'apply wall measure';
         elementType: WallType;
-        id: number;
+        id: string | number;
       }
     | {
         type: 'select wall bulk measure elements';

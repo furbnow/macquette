@@ -55,8 +55,8 @@ function normaliseRawScenario(
     delete rawScenario.fabric.global_TMP_value;
   }
 
-  const shouldBeLoft = new Set<number>();
-  const shouldBeRoof = new Set<number>();
+  const shouldBeLoft = new Set<string | number>();
+  const shouldBeRoof = new Set<string | number>();
 
   for (const [id, measure] of Object.entries(rawScenario.fabric.measures).filter(
     ([, measure]) =>

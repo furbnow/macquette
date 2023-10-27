@@ -84,10 +84,10 @@ function Button({ className = '', icon, title, ...passthroughProps }: ButtonProp
 
 type SelectBulkElementsParams = {
   onClose: () => void;
-  onSelect: (ids: number[]) => void;
+  onSelect: (ids: (string | number)[]) => void;
   measureToApply: { tag: string; name: string };
   items: {
-    id: number;
+    id: string | number;
     element: { tag: string; name: string };
     inputs: { location: string | null };
   }[];
@@ -99,8 +99,8 @@ function SelectBulkElements({
   measureToApply,
   items,
 }: SelectBulkElementsParams): JSX.Element {
-  const [selected, setSelected] = useState<number[]>([]);
-  function toggleSelected(id: number) {
+  const [selected, setSelected] = useState<(string | number)[]>([]);
+  function toggleSelected(id: string | number) {
     if (selected.includes(id)) {
       setSelected(selected.filter((element) => element !== id));
     } else {
