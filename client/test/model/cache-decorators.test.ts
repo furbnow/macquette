@@ -6,7 +6,6 @@ import { Month } from '../../src/model/enums/month';
 describe('@cache* decorators', () => {
   describe('@cache', () => {
     it('does not invoke the inner method on cache hit', () => {
-      const toReturn = 'some value';
       let getterCalls = 0;
       class Foo {
         @cache
@@ -15,7 +14,7 @@ describe('@cache* decorators', () => {
           if (getterCalls > 1) {
             throw new Error('called more than once!');
           } else {
-            return toReturn;
+            return 'some value';
           }
         }
       }
@@ -41,10 +40,8 @@ describe('@cache* decorators', () => {
   });
 
   describe('@cacheMonth', () => {
+    const arbMonth = fc.constantFrom(...Month.all);
     it('passes the month to the inner method', () => {
-      const arbMonth = fc
-        .integer({ min: 0, max: Month.names.length - 1 })
-        .map((m) => Month.fromIndex0(m));
       class Foo {
         @cacheMonth
         foo(month: Month) {
@@ -60,9 +57,6 @@ describe('@cache* decorators', () => {
     });
 
     it('does not invoke the inner method on cache hit and returns the correct value', () => {
-      const arbMonth = fc
-        .integer({ min: 0, max: Month.names.length - 1 })
-        .map((m) => Month.fromIndex0(m));
       class Foo {
         public methodInvocations = 0;
         @cacheMonth
@@ -82,9 +76,6 @@ describe('@cache* decorators', () => {
     });
 
     it('does not persist the cache between instances', () => {
-      const arbMonth = fc
-        .integer({ min: 0, max: Month.names.length - 1 })
-        .map((m) => Month.fromIndex0(m));
       class Foo {
         constructor(private offset: number) {}
         @cacheMonth
