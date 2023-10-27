@@ -6,88 +6,88 @@ import type { UiModule } from './module-type';
 
 /** Shim to be called from legacy code, for mounting a UI module on a legacy page */
 export class MultipleModuleShim<State, Action, Effect> {
-    private keyedInstances: Record<string, InstantiatedUiModule<State, Action, Effect>> =
-        {};
+  private keyedInstances: Record<string, InstantiatedUiModule<State, Action, Effect>> =
+    {};
 
-    private getInstance(
-        instanceKey: string,
-    ): Result<InstantiatedUiModule<State, Action, Effect>, string> {
-        const instance = this.keyedInstances[instanceKey];
-        if (instance === undefined) {
-            return Result.err(`module not found: ${instanceKey}`);
-        }
-        return Result.ok(instance);
+  private getInstance(
+    instanceKey: string,
+  ): Result<InstantiatedUiModule<State, Action, Effect>, string> {
+    const instance = this.keyedInstances[instanceKey];
+    if (instance === undefined) {
+      return Result.err(`module not found: ${instanceKey}`);
     }
+    return Result.ok(instance);
+  }
 
-    constructor(private module_: UiModule<State, Action, Effect>) {}
+  constructor(private module_: UiModule<State, Action, Effect>) {}
 
-    init = z
-        .function()
-        .args(z.instanceof(Element), z.string())
-        .implement((domElement, instanceKey) => {
-            const instance = new InstantiatedUiModule(
-                this.module_,
-                instanceKey,
-                domElement,
-                applyDataMutator,
-            );
-            this.keyedInstances[instanceKey] = instance;
-        });
+  init = z
+    .function()
+    .args(z.instanceof(Element), z.string())
+    .implement((domElement, instanceKey) => {
+      const instance = new InstantiatedUiModule(
+        this.module_,
+        instanceKey,
+        domElement,
+        applyDataMutator,
+      );
+      this.keyedInstances[instanceKey] = instance;
+    });
 
-    unmount = z
-        .function()
-        .args(z.string())
-        .implement((instanceKey) => {
-            const instance = this.getInstance(instanceKey).unwrap();
-            instance.unmount();
-            delete this.keyedInstances[instanceKey];
-        });
+  unmount = z
+    .function()
+    .args(z.string())
+    .implement((instanceKey) => {
+      const instance = this.getInstance(instanceKey).unwrap();
+      instance.unmount();
+      delete this.keyedInstances[instanceKey];
+    });
 
-    unmountAll() {
-        for (const instanceKey of Object.keys(this.keyedInstances)) {
-            this.unmount(instanceKey);
-        }
+  unmountAll() {
+    for (const instanceKey of Object.keys(this.keyedInstances)) {
+      this.unmount(instanceKey);
     }
+  }
 
-    update() {
-        const context = getAppContext();
-        for (const instance of Object.values(this.keyedInstances)) {
-            instance.update(context);
-        }
+  update() {
+    const context = getAppContext();
+    for (const instance of Object.values(this.keyedInstances)) {
+      instance.update(context);
     }
+  }
 }
 
 /** Shim to be called from legacy code, for mounting a UI module on a legacy page */
 export class SingleModuleShim<State, Action, Effect> {
-    private instance: InstantiatedUiModule<State, Action, Effect> | null = null;
-    constructor(private module_: UiModule<State, Action, Effect>) {}
+  private instance: InstantiatedUiModule<State, Action, Effect> | null = null;
+  constructor(private module_: UiModule<State, Action, Effect>) {}
 
-    init = z
-        .function()
-        .args(z.instanceof(Element))
-        .implement((domElement) => {
-            this.instance = new InstantiatedUiModule(
-                this.module_,
-                null,
-                domElement,
-                applyDataMutator,
-            );
-        });
+  init = z
+    .function()
+    .args(z.instanceof(Element))
+    .implement((domElement) => {
+      this.instance = new InstantiatedUiModule(
+        this.module_,
+        null,
+        domElement,
+        applyDataMutator,
+      );
+    });
 
-    unmount() {
-        if (this.instance === null) {
-            console.warn('Tried to unmount an uninitialised instance');
-            return;
-        }
-        this.instance.unmount();
-        this.instance = null;
+  unmount() {
+    if (this.instance === null) {
+      console.warn('Tried to unmount an uninitialised instance');
+      return;
     }
+    this.instance.unmount();
+    this.instance = null;
+  }
 
-    update() {
-        if (this.instance === null) {
-            console.warn('Tried to unmount an uninitialised instance');
-            return;
-        }
-        this.instance.update(getAppContext());
+  update() {
+    if (this.instance === null) {
+      console.warn('Tried to unmount an uninitialised instance');
+      return;
     }
+    this.instance.update(getAppContext());
+  }
 }

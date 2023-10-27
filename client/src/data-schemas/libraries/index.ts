@@ -10,8 +10,8 @@ import { generationMeasures } from './generation-measures';
 import { heatingSystems, heatingSystemsMeasures } from './heating-systems';
 import { hotWaterControlTypeMeasures } from './hot-water-control-type';
 import {
-    intentionalVentsAndFlues,
-    intentionalVentsAndFluesMeasures,
+  intentionalVentsAndFlues,
+  intentionalVentsAndFluesMeasures,
 } from './intentional-vents-and-flues';
 import { pipeworkInsulation } from './pipework-insulation';
 import { spaceHeatingControlTypeMeasures } from './space-heating-control-type';
@@ -20,26 +20,26 @@ import { ventilationSystems, ventilationSystemsMeasures } from './ventilation-sy
 import { waterUsageMeasures } from './water-usage';
 
 export const librarySchema = z.discriminatedUnion('type', [
-    appliancesAndCooking,
-    clothesDryingFacilitiesMeasures,
-    draughtProofingMeasures,
-    extractVentilationPointsMeasures,
-    fabricElements,
-    fabricMeasures,
-    floorInsulation,
-    generationMeasures,
-    heatingSystems,
-    heatingSystemsMeasures,
-    hotWaterControlTypeMeasures,
-    intentionalVentsAndFlues,
-    intentionalVentsAndFluesMeasures,
-    pipeworkInsulation,
-    spaceHeatingControlTypeMeasures,
-    storageType,
-    storageTypeMeasures,
-    ventilationSystems,
-    ventilationSystemsMeasures,
-    waterUsageMeasures,
+  appliancesAndCooking,
+  clothesDryingFacilitiesMeasures,
+  draughtProofingMeasures,
+  extractVentilationPointsMeasures,
+  fabricElements,
+  fabricMeasures,
+  floorInsulation,
+  generationMeasures,
+  heatingSystems,
+  heatingSystemsMeasures,
+  hotWaterControlTypeMeasures,
+  intentionalVentsAndFlues,
+  intentionalVentsAndFluesMeasures,
+  pipeworkInsulation,
+  spaceHeatingControlTypeMeasures,
+  storageType,
+  storageTypeMeasures,
+  ventilationSystems,
+  ventilationSystemsMeasures,
+  waterUsageMeasures,
 ]);
 
 export type Library = z.infer<typeof librarySchema>;

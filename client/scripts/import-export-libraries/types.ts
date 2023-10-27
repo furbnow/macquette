@@ -5,5 +5,5 @@ export type LibraryItem = ItemOf<Library>;
 export type LibraryWithOptionalId = Library & { id?: string };
 
 export function assertNotNever<T>(val: T): T {
-    return val;
+  return val;
 }

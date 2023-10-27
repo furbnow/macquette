@@ -9,13 +9,13 @@ import type { State } from './state';
 import { initialState } from './state';
 
 export const fabricModule: UiModule<State, Action, never> = {
-    name: 'fabric',
-    initialState,
-    reducer,
-    effector: assertNever,
-    component: Fabric,
-    shims: {
-        mutateLegacyData,
-        extractUpdateAction,
-    },
+  name: 'fabric',
+  initialState,
+  reducer,
+  effector: assertNever,
+  component: Fabric,
+  shims: {
+    mutateLegacyData,
+    extractUpdateAction,
+  },
 };

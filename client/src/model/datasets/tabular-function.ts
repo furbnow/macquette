@@ -5,258 +5,257 @@ import { Result } from '../../helpers/result';
 import { WarningCollector, WithWarnings } from '../../helpers/with-warnings';
 
 export type TabularFunctionRangeError = {
-    type: 'tabular function range error';
-    dimension: 'x' | 'y';
-    value: number;
-    range: [number, number];
+  type: 'tabular function range error';
+  dimension: 'x' | 'y';
+  value: number;
+  range: [number, number];
 };
 
 export type TabularFunctionRangeWarning = {
-    type: 'tabular function range warning';
-    dimension: 'x' | 'y';
-    value: number;
-    range: [number, number];
-    clampedTo: number;
+  type: 'tabular function range warning';
+  dimension: 'x' | 'y';
+  value: number;
+  range: [number, number];
+  clampedTo: number;
 };
 
 export class TabularFunction {
-    private xValues: ArrayLike<number>;
-    private yValues: ArrayLike<number>;
-    private table: ArrayLike<number>;
-    private xRange: [number, number];
-    private yRange: [number, number];
+  private xValues: ArrayLike<number>;
+  private yValues: ArrayLike<number>;
+  private table: ArrayLike<number>;
+  private xRange: [number, number];
+  private yRange: [number, number];
 
-    private constructor(
-        xValues: NonEmptyArray<number>,
-        yValues: NonEmptyArray<number>,
-        table: number[][],
-    ) {
-        this.table = new Float64Array(Array.prototype.concat(...table));
-        this.xValues = new Float64Array(xValues);
-        this.yValues = new Float64Array(yValues);
-        this.xRange = [first(xValues), last(xValues)];
-        this.yRange = [first(xValues), last(xValues)];
+  private constructor(
+    xValues: NonEmptyArray<number>,
+    yValues: NonEmptyArray<number>,
+    table: number[][],
+  ) {
+    this.table = new Float64Array(Array.prototype.concat(...table));
+    this.xValues = new Float64Array(xValues);
+    this.yValues = new Float64Array(yValues);
+    this.xRange = [first(xValues), last(xValues)];
+    this.yRange = [first(xValues), last(xValues)];
+  }
+
+  static newChecked(
+    xValues: number[],
+    yValues: number[],
+    table: number[][],
+  ): Result<TabularFunction, string> {
+    if (!isNonEmpty(yValues) || !isNonEmpty(xValues)) {
+      return Result.err('function may not be empty');
     }
-
-    static newChecked(
-        xValues: number[],
-        yValues: number[],
-        table: number[][],
-    ): Result<TabularFunction, string> {
-        if (!isNonEmpty(yValues) || !isNonEmpty(xValues)) {
-            return Result.err('function may not be empty');
-        }
-        if (yValues.length !== table.length) {
-            return Result.err('y-values must correspond with table primary axis');
-        }
-        if (table.some((row) => row.length !== xValues.length)) {
-            return Result.err('x-values must correspond with table secondary axis');
-        }
-        if (!isIncreasing(xValues)) {
-            return Result.err('x-values must be an increasing sequence');
-        }
-        if (!isIncreasing(yValues)) {
-            return Result.err('y-values must be an increasing sequence');
-        }
-        return Result.ok(new TabularFunction(xValues, yValues, table));
+    if (yValues.length !== table.length) {
+      return Result.err('y-values must correspond with table primary axis');
     }
-
-    private valueAtIndex(xIndex: number, yIndex: number): number | undefined {
-        return this.table[yIndex * this.xValues.length + xIndex];
+    if (table.some((row) => row.length !== xValues.length)) {
+      return Result.err('x-values must correspond with table secondary axis');
     }
-
-    private findClosestLeftIndexClamped(
-        dimension: 'x' | 'y',
-        needle: number,
-    ): WithWarnings<number, TabularFunctionRangeWarning> {
-        const wc = new WarningCollector<TabularFunctionRangeWarning>();
-        const range = dimension === 'x' ? this.xValues : this.yValues;
-        const index = findClosestLeftIndex(needle, range)
-            .mapErr((err) => {
-                if (err === 'empty input') {
-                    throw new Error('unreachable');
-                } else {
-                    let index: number;
-                    switch (err) {
-                        case 'needle too low':
-                            index = 0;
-                            break;
-                        case 'needle too high':
-                            index = range.length - 1;
-                            break;
-                    }
-                    wc.log({
-                        type: 'tabular function range warning',
-                        dimension,
-                        value: needle,
-                        range: dimension === 'x' ? this.xRange : this.yRange,
-                        // SAFETY: index is either 0 or range.length - 1, so within bounds
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        clampedTo: range[index]!,
-                    });
-                    return index;
-                }
-            })
-            .coalesce();
-        return wc.out(index);
+    if (!isIncreasing(xValues)) {
+      return Result.err('x-values must be an increasing sequence');
     }
+    if (!isIncreasing(yValues)) {
+      return Result.err('y-values must be an increasing sequence');
+    }
+    return Result.ok(new TabularFunction(xValues, yValues, table));
+  }
 
-    /** Bilinear interpolation, clamp and warn if out of range */
-    interpolateAtClamped(
-        x: number,
-        y: number,
-    ): WithWarnings<number, TabularFunctionRangeWarning> {
-        // SAFETY: All non-null assertions in this method are relating to
-        // unchecked array indexing. All indexes are generated by
-        // `findNeighbourIndexes`, which is tested and does not return
-        // out-of-range indexes, so all indexing operations return
-        // non-undefined.
-        /* eslint-disable @typescript-eslint/no-non-null-assertion */
-        const wc = new WarningCollector<TabularFunctionRangeWarning>();
-        const xIndex0 = this.findClosestLeftIndexClamped('x', x).unwrap(wc.sink());
-        const x0 = this.xValues[xIndex0]!;
-        const x1 = this.xValues[xIndex0 + 1];
+  private valueAtIndex(xIndex: number, yIndex: number): number | undefined {
+    return this.table[yIndex * this.xValues.length + xIndex];
+  }
 
-        const yIndex0 = this.findClosestLeftIndexClamped('y', y).unwrap(wc.sink());
-        const y0 = this.yValues[yIndex0]!;
-        const y1 = this.yValues[yIndex0 + 1];
-
-        let out: number;
-        if (x1 === undefined) {
-            if (y1 === undefined) {
-                // Top right corner
-                out = this.valueAtIndex(xIndex0, yIndex0)!;
-            } else {
-                // Top edge
-                out = linearInterpolateClamped(
-                    {
-                        x0: y0,
-                        x1: y1,
-                        y0: this.valueAtIndex(xIndex0, yIndex0)!,
-                        y1: this.valueAtIndex(xIndex0, yIndex0 + 1)!,
-                    },
-                    y,
-                );
-            }
+  private findClosestLeftIndexClamped(
+    dimension: 'x' | 'y',
+    needle: number,
+  ): WithWarnings<number, TabularFunctionRangeWarning> {
+    const wc = new WarningCollector<TabularFunctionRangeWarning>();
+    const range = dimension === 'x' ? this.xValues : this.yValues;
+    const index = findClosestLeftIndex(needle, range)
+      .mapErr((err) => {
+        if (err === 'empty input') {
+          throw new Error('unreachable');
         } else {
-            if (y1 === undefined) {
-                // Right edge
-                out = linearInterpolateClamped(
-                    {
-                        x0: x0,
-                        x1: x1,
-                        y0: this.valueAtIndex(xIndex0, yIndex0)!,
-                        y1: this.valueAtIndex(xIndex0 + 1, yIndex0)!,
-                    },
-                    x,
-                );
-            } else {
-                // Normal cases
-                const intermediateY0 = linearInterpolateClamped(
-                    {
-                        x0: x0,
-                        x1: x1,
-                        y0: this.valueAtIndex(xIndex0, yIndex0)!,
-                        y1: this.valueAtIndex(xIndex0 + 1, yIndex0)!,
-                    },
-                    x,
-                );
-                const intermediateY1 = linearInterpolateClamped(
-                    {
-                        x0: x0,
-                        x1: x1,
-                        y0: this.valueAtIndex(xIndex0, yIndex0 + 1)!,
-                        y1: this.valueAtIndex(xIndex0 + 1, yIndex0 + 1)!,
-                    },
-                    x,
-                );
-                out = linearInterpolateClamped(
-                    {
-                        x0: y0,
-                        x1: y1,
-                        y0: intermediateY0,
-                        y1: intermediateY1,
-                    },
-                    y,
-                );
-            }
+          let index: number;
+          switch (err) {
+            case 'needle too low':
+              index = 0;
+              break;
+            case 'needle too high':
+              index = range.length - 1;
+              break;
+          }
+          wc.log({
+            type: 'tabular function range warning',
+            dimension,
+            value: needle,
+            range: dimension === 'x' ? this.xRange : this.yRange,
+            // SAFETY: index is either 0 or range.length - 1, so within bounds
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            clampedTo: range[index]!,
+          });
+          return index;
         }
-        return wc.out(out);
-        /* eslint-enable @typescript-eslint/no-non-null-assertion */
-    }
+      })
+      .coalesce();
+    return wc.out(index);
+  }
 
-    /** Bilinear interpolation, erroring if out of range */
-    interpolateAt(x: number, y: number): Result<number, TabularFunctionRangeError> {
-        const [value, [firstWarning]] = this.interpolateAtClamped(x, y).inner();
-        if (firstWarning !== undefined) {
-            return Result.err({
-                type: 'tabular function range error',
-                ...pick(firstWarning, ['value', 'dimension', 'range']),
-            });
-        } else {
-            return Result.ok(value);
-        }
+  /** Bilinear interpolation, clamp and warn if out of range */
+  interpolateAtClamped(
+    x: number,
+    y: number,
+  ): WithWarnings<number, TabularFunctionRangeWarning> {
+    // SAFETY: All non-null assertions in this method are relating to
+    // unchecked array indexing. All indexes are generated by
+    // `findNeighbourIndexes`, which is tested and does not return
+    // out-of-range indexes, so all indexing operations return
+    // non-undefined.
+    /* eslint-disable @typescript-eslint/no-non-null-assertion */
+    const wc = new WarningCollector<TabularFunctionRangeWarning>();
+    const xIndex0 = this.findClosestLeftIndexClamped('x', x).unwrap(wc.sink());
+    const x0 = this.xValues[xIndex0]!;
+    const x1 = this.xValues[xIndex0 + 1];
+
+    const yIndex0 = this.findClosestLeftIndexClamped('y', y).unwrap(wc.sink());
+    const y0 = this.yValues[yIndex0]!;
+    const y1 = this.yValues[yIndex0 + 1];
+
+    let out: number;
+    if (x1 === undefined) {
+      if (y1 === undefined) {
+        // Top right corner
+        out = this.valueAtIndex(xIndex0, yIndex0)!;
+      } else {
+        // Top edge
+        out = linearInterpolateClamped(
+          {
+            x0: y0,
+            x1: y1,
+            y0: this.valueAtIndex(xIndex0, yIndex0)!,
+            y1: this.valueAtIndex(xIndex0, yIndex0 + 1)!,
+          },
+          y,
+        );
+      }
+    } else {
+      if (y1 === undefined) {
+        // Right edge
+        out = linearInterpolateClamped(
+          {
+            x0: x0,
+            x1: x1,
+            y0: this.valueAtIndex(xIndex0, yIndex0)!,
+            y1: this.valueAtIndex(xIndex0 + 1, yIndex0)!,
+          },
+          x,
+        );
+      } else {
+        // Normal cases
+        const intermediateY0 = linearInterpolateClamped(
+          {
+            x0: x0,
+            x1: x1,
+            y0: this.valueAtIndex(xIndex0, yIndex0)!,
+            y1: this.valueAtIndex(xIndex0 + 1, yIndex0)!,
+          },
+          x,
+        );
+        const intermediateY1 = linearInterpolateClamped(
+          {
+            x0: x0,
+            x1: x1,
+            y0: this.valueAtIndex(xIndex0, yIndex0 + 1)!,
+            y1: this.valueAtIndex(xIndex0 + 1, yIndex0 + 1)!,
+          },
+          x,
+        );
+        out = linearInterpolateClamped(
+          {
+            x0: y0,
+            x1: y1,
+            y0: intermediateY0,
+            y1: intermediateY1,
+          },
+          y,
+        );
+      }
     }
+    return wc.out(out);
+    /* eslint-enable @typescript-eslint/no-non-null-assertion */
+  }
+
+  /** Bilinear interpolation, erroring if out of range */
+  interpolateAt(x: number, y: number): Result<number, TabularFunctionRangeError> {
+    const [value, [firstWarning]] = this.interpolateAtClamped(x, y).inner();
+    if (firstWarning !== undefined) {
+      return Result.err({
+        type: 'tabular function range error',
+        ...pick(firstWarning, ['value', 'dimension', 'range']),
+      });
+    } else {
+      return Result.ok(value);
+    }
+  }
 }
 
 function isIncreasing(values: number[]): boolean {
-    let prev = -Infinity;
-    for (const val of values) {
-        if (val <= prev) {
-            return false;
-        }
-        prev = val;
+  let prev = -Infinity;
+  for (const val of values) {
+    if (val <= prev) {
+      return false;
     }
-    return true;
+    prev = val;
+  }
+  return true;
 }
 
 function findClosestLeftIndex(
-    needle: number,
-    values: ArrayLike<number>,
+  needle: number,
+  values: ArrayLike<number>,
 ): Result<number, 'empty input' | 'needle too low' | 'needle too high'> {
-    if (values.length === 0) return Result.err('empty input');
-    // SAFETY: values is non-empty
-    /* eslint-disable @typescript-eslint/no-non-null-assertion */
-    const first = values[0]!;
-    const last = values[values.length - 1]!;
-    /* eslint-enable */
-    if (needle === first) {
-        return Result.ok(0);
+  if (values.length === 0) return Result.err('empty input');
+  // SAFETY: values is non-empty
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
+  const first = values[0]!;
+  const last = values[values.length - 1]!;
+  /* eslint-enable */
+  if (needle === first) {
+    return Result.ok(0);
+  }
+  if (needle < first) {
+    return Result.err('needle too low');
+  }
+  if (needle > last) {
+    return Result.err('needle too high');
+  }
+  for (let idx = 1; idx < values.length; idx++) {
+    // SAFETY: Bounds checked by loop condition
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const val = values[idx]!;
+    if (needle < val) {
+      return Result.ok(idx - 1);
     }
-    if (needle < first) {
-        return Result.err('needle too low');
-    }
-    if (needle > last) {
-        return Result.err('needle too high');
-    }
-    for (let idx = 1; idx < values.length; idx++) {
-        // SAFETY: Bounds checked by loop condition
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const val = values[idx]!;
-        if (needle < val) {
-            return Result.ok(idx - 1);
-        }
-    }
-    return Result.ok(values.length - 1);
+  }
+  return Result.ok(values.length - 1);
 }
 
 // Invariants that calling code must ensure: x0 < x1
 function linearInterpolateClamped(
-    values: Record<'x0' | 'x1' | 'y0' | 'y1', number>,
-    needle: number,
+  values: Record<'x0' | 'x1' | 'y0' | 'y1', number>,
+  needle: number,
 ): number {
-    if (values.x0 >= values.x1) {
-        throw new Error('Invariant failed: x0 < x1');
-    }
-    const clampedNeedle = Math.max(Math.min(needle, values.x1), values.x0);
-    return (
-        (1 / (values.x1 - values.x0)) *
-        ((values.x1 - clampedNeedle) * values.y0 +
-            (clampedNeedle - values.x0) * values.y1)
-    );
+  if (values.x0 >= values.x1) {
+    throw new Error('Invariant failed: x0 < x1');
+  }
+  const clampedNeedle = Math.max(Math.min(needle, values.x1), values.x0);
+  return (
+    (1 / (values.x1 - values.x0)) *
+    ((values.x1 - clampedNeedle) * values.y0 + (clampedNeedle - values.x0) * values.y1)
+  );
 }
 
 export const exportsForTest = {
-    findClosestLeftIndex,
-    linearInterpolateClamped,
+  findClosestLeftIndex,
+  linearInterpolateClamped,
 };

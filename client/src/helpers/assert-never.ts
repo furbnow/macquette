@@ -6,5 +6,5 @@
  * statement.
  */
 export function assertNever(val: never): never {
-    return val;
+  return val;
 }

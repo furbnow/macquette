@@ -14,46 +14,46 @@ import { Region } from '../../src/model/enums/region';
 import { FloorLayerInput } from '../../src/model/modules/fabric/floor-u-value-calculator/floor-layer-input';
 
 (Overshading.prototype as any)[toStringMethod] = function () {
-    const input = fc.stringify((this as Overshading).name);
-    return `new Overshading(${input})`;
+  const input = fc.stringify((this as Overshading).name);
+  return `new Overshading(${input})`;
 };
 
 (Orientation.prototype as any)[toStringMethod] = function () {
-    const input = fc.stringify((this as Orientation).name);
-    return `new Orientation(${input})`;
+  const input = fc.stringify((this as Orientation).name);
+  return `new Orientation(${input})`;
 };
 
 (Region.prototype as any)[toStringMethod] = function () {
-    const input = fc.stringify((this as Region).name);
-    return `new Region(${input})`;
+  const input = fc.stringify((this as Region).name);
+  return `new Region(${input})`;
 };
 
 (Month.prototype as any)[toStringMethod] = function () {
-    const input = fc.stringify((this as Month).name);
-    return `new Month(${input})`;
+  const input = fc.stringify((this as Month).name);
+  return `new Month(${input})`;
 };
 
 (Proportion.prototype as any)[toStringMethod] = function () {
-    const ratio = fc.stringify((this as Proportion).asRatio);
-    return `Proportion.fromRatio(${ratio}).unwrap()`;
+  const ratio = fc.stringify((this as Proportion).asRatio);
+  return `Proportion.fromRatio(${ratio}).unwrap()`;
 };
 
 (FloorLayerInput.prototype as any)[toStringMethod] = function () {
-    const that = this as FloorLayerInput;
-    let bridging: FloorLayerSpec['bridging'];
-    if (that.bridging === null) {
-        bridging = {
-            material: null,
-            proportion: null,
-        };
-    } else {
-        bridging = that.bridging;
-    }
-    const spec: FloorLayerSpec = {
-        thickness: that.thickness,
-        mainMaterial: that.mainMaterial,
-        bridging,
+  const that = this as FloorLayerInput;
+  let bridging: FloorLayerSpec['bridging'];
+  if (that.bridging === null) {
+    bridging = {
+      material: null,
+      proportion: null,
     };
-    const stringifiedSpec = fc.stringify(spec);
-    return `FloorLayerInput.validate(${stringifiedSpec}).unwrap(() => undefined).unwrap()`;
+  } else {
+    bridging = that.bridging;
+  }
+  const spec: FloorLayerSpec = {
+    thickness: that.thickness,
+    mainMaterial: that.mainMaterial,
+    bridging,
+  };
+  const stringifiedSpec = fc.stringify(spec);
+  return `FloorLayerInput.validate(${stringifiedSpec}).unwrap(() => undefined).unwrap()`;
 };

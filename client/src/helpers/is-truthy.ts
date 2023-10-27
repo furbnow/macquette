@@ -12,5 +12,5 @@ MDN has an exhaustive list of truthy and falsy values at
 https://developer.mozilla.org/en-US/docs/Glossary/Truthy.
 */
 export function isTruthy(input: number | boolean | string | null | undefined): boolean {
-    return Boolean(input);
+  return Boolean(input);
 }

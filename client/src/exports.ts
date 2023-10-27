@@ -12,26 +12,26 @@ import { floorRowModule } from './ui/modules/floor-row';
 import { PageManager } from './ui/page-manager';
 
 declare global {
-    interface Window {
-        Macquette?: Record<string, unknown>;
-    }
+  interface Window {
+    Macquette?: Record<string, unknown>;
+  }
 }
 
 const calcRun: unknown = calcRunAny;
 
 window.Macquette = {
-    datasets,
-    calcRun,
-    uiModuleShims: {
-        floorRow: new MultipleModuleShim(floorRowModule),
-        fabric: new SingleModuleShim(fabricModule),
-        commentary: new SingleModuleShim(commentaryModule),
-    },
-    generateReportGraphs,
-    getHeatingLoad,
-    HTTPClient,
-    StaticFileResolver,
-    emulateJsonRoundTrip,
-    PageManager,
-    SaveManager,
+  datasets,
+  calcRun,
+  uiModuleShims: {
+    floorRow: new MultipleModuleShim(floorRowModule),
+    fabric: new SingleModuleShim(fabricModule),
+    commentary: new SingleModuleShim(commentaryModule),
+  },
+  generateReportGraphs,
+  getHeatingLoad,
+  HTTPClient,
+  StaticFileResolver,
+  emulateJsonRoundTrip,
+  PageManager,
+  SaveManager,
 };
