@@ -1,15 +1,13 @@
 import fc from 'fast-check';
 
-import { arbFloat } from '../helpers/arbitraries';
-
 export const sensibleFloat = fc.oneof(
-  arbFloat({
+  fc.float({
     noDefaultInfinity: true,
     noNaN: true,
     min: -Math.pow(2, 13),
     max: -Math.pow(2, -7),
   }),
-  arbFloat({
+  fc.float({
     noDefaultInfinity: true,
     noNaN: true,
     min: Math.pow(2, -7),

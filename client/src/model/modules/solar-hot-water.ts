@@ -48,7 +48,6 @@ export type SolarHotWaterDependencies = {
   region: Region;
   waterCommon: {
     dailyHotWaterUsageMeanAnnual: number;
-    hotWaterEnergyContentByMonth: (month: Month) => number;
     hotWaterEnergyContentAnnual: number;
     solarHotWater: boolean;
   };
