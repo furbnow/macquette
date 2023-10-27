@@ -35,7 +35,7 @@ export function extractWaterCommonInputFromLegacy(scenario: Scenario): WaterComm
   };
 }
 
-type WaterCommonDependencies = {
+export type WaterCommonDependencies = {
   occupancy: {
     occupancy: number;
   };
