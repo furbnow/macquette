@@ -1,6 +1,13 @@
 import * as fc from 'fast-check';
 
-import { Floor, Floors } from '../../src/model/modules/floors';
+import { cloneDeep } from 'lodash';
+import { scenarioSchema } from '../../src/data-schemas/scenario';
+import {
+  Floor,
+  Floors,
+  extractFloorsInputFromLegacy,
+} from '../../src/model/modules/floors';
+import { legacyFloors } from './golden-master/floors';
 
 function positiveRationalFloat() {
   return fc
@@ -21,7 +28,6 @@ function arbFloorSpec() {
 function arbFloorsInput() {
   return fc.record({
     floors: fc.array(arbFloorSpec()),
-    legacyStrings: fc.boolean(),
   });
 }
 function arbShuffle<T>(arr: T[]) {
@@ -123,5 +129,40 @@ describe('floors', () => {
         ),
       );
     });
+  });
+
+  test('golden master', () => {
+    fc.assert(
+      fc.property(arbFloorsInput(), (floorsInput) => {
+        const floorsModel = new Floors(floorsInput);
+        const legacyData: any = {
+          floors: cloneDeep(floorsInput.floors),
+          num_of_floors: 0,
+          TFA: 0,
+          volume: 0,
+        };
+        legacyFloors(legacyData);
+        expect(floorsModel.numberOfFloors).toEqual(legacyData.num_of_floors);
+        expect(floorsModel.totalFloorArea).toEqual(legacyData.TFA);
+        expect(floorsModel.totalVolume).toEqual(legacyData.volume);
+      }),
+    );
+  });
+
+  // eslint-disable-next-line jest/expect-expect
+  test('extractor', () => {
+    fc.assert(
+      fc.property(arbFloorsInput(), (input) => {
+        const roundTripped = extractFloorsInputFromLegacy(
+          scenarioSchema.parse({
+            floors: input.floors,
+            num_of_floors: 0,
+            TFA: 0,
+            volume: 0,
+          }),
+        );
+        expect(roundTripped).toEqual(input);
+      }),
+    );
   });
 });
