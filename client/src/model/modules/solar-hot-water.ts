@@ -47,7 +47,7 @@ type SolarHotWaterEnabledInput = Exclude<SolarHotWaterInput, null>;
 export type SolarHotWaterDependencies = {
   region: Region;
   waterCommon: {
-    dailyHotWaterUsageMeanAnnual: number;
+    dailyHotWaterUsageLitresMeanAnnual: number;
     hotWaterEnergyContentAnnual: number;
     solarHotWater: boolean;
   };
@@ -194,7 +194,7 @@ export class SolarHotWaterEnabled {
   get volumeRatio(): number {
     return (
       this.effectiveSolarVolume /
-      this.dependencies.waterCommon.dailyHotWaterUsageMeanAnnual
+      this.dependencies.waterCommon.dailyHotWaterUsageLitresMeanAnnual
     );
   }
 

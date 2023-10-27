@@ -1,5 +1,6 @@
 import { Scenario } from '../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../data-schemas/scenario/value-schemas';
+import { TypeOf, t } from '../../data-schemas/visitable-types';
 import { sum } from '../../helpers/array-reducers';
 import { cacheMonth } from '../../helpers/cache-decorators';
 import { Month } from '../enums/month';
@@ -15,39 +16,44 @@ export type WaterHeatingDependencies = {
     }>;
   };
   waterCommon: {
-    annualEnergyContentOverride: false | number;
     hotWaterEnergyContentByMonth: (m: Month) => number;
+    dailyHotWaterUsageLitresByMonth: (m: Month) => number;
+    annualEnergyContentOverride: false | number;
     solarHotWater: boolean;
-    dailyHotWaterUsageByMonth: (m: Month) => number;
   };
   solarHotWater: {
     solarInputMonthly: (m: Month) => number;
   };
 };
 
-export type WaterHeatingInput = {
-  storage: StorageInput;
-  communityHeating: boolean;
-  hotWaterStoreInDwelling: boolean;
+const storageCommon = {
+  volume: t.number(),
+  dedicatedSolarOrWWHRSStorage: t.number(),
 };
-
-type StorageInput = null | (StorageCommon & StorageSpecific);
-type StorageCommon = {
-  volume: number;
-  dedicatedSolarOrWWHRSStorage: false | number;
-};
-type StorageSpecific =
-  | {
-      type: 'declared loss factor';
-      manufacturerLossFactor: number;
-      temperatureFactor: number;
-    }
-  | {
-      type: 'unknown loss factor';
-      lossFactor: number;
-      volumeFactor: number;
-      temperatureFactor: number;
-    };
+const storageInput = t.nullable(
+  t.discriminatedUnion('type', [
+    t.struct({
+      type: t.literal('declared loss factor'),
+      ...storageCommon,
+      manufacturerLossFactor: t.number(),
+      temperatureFactor: t.number(),
+    }),
+    t.struct({
+      type: t.literal('unknown loss factor'),
+      ...storageCommon,
+      lossFactor: t.number(),
+      volumeFactor: t.number(),
+      temperatureFactor: t.number(),
+    }),
+  ]),
+);
+type StorageInput = TypeOf<typeof storageInput>;
+export const waterHeatingInput = t.struct({
+  storage: storageInput,
+  communityHeating: t.boolean(),
+  hotWaterStoreInDwelling: t.boolean(),
+});
+export type WaterHeatingInput = TypeOf<typeof waterHeatingInput>;
 
 export function extractWaterHeatingInputFromLegacy(
   scenario: Scenario,
@@ -59,17 +65,23 @@ export function extractWaterHeatingInputFromLegacy(
     storage = null;
   } else {
     const volume = coalesceEmptyString(storage_type.storage_volume, 0) ?? 0;
-    let dedicatedSolarOrWWHRSStorage: false | number;
+    let dedicatedSolarOrWWHRSStorage: number;
     if (
       contains_dedicated_solar_storage_or_WWHRS === undefined ||
       contains_dedicated_solar_storage_or_WWHRS === '' ||
       contains_dedicated_solar_storage_or_WWHRS <= 0
     ) {
-      dedicatedSolarOrWWHRSStorage = false;
+      dedicatedSolarOrWWHRSStorage = 0;
     } else {
       dedicatedSolarOrWWHRSStorage = contains_dedicated_solar_storage_or_WWHRS;
     }
-    let specific: StorageSpecific;
+    const common = {
+      volume,
+      dedicatedSolarOrWWHRSStorage,
+    } satisfies Pick<
+      NonNullable<StorageInput>,
+      'volume' | 'dedicatedSolarOrWWHRSStorage'
+    >;
     if (storage_type.declared_loss_factor_known === true) {
       const { manufacturer_loss_factor } = storage_type;
       let manufacturerLossFactor: number;
@@ -78,24 +90,21 @@ export function extractWaterHeatingInputFromLegacy(
       } else {
         manufacturerLossFactor = coalesceEmptyString(manufacturer_loss_factor, 0) ?? 0;
       }
-      specific = {
+      storage = {
         type: 'declared loss factor',
+        ...common,
         manufacturerLossFactor,
         temperatureFactor: coalesceEmptyString(storage_type.temperature_factor_a, 0) ?? 0,
       };
     } else {
-      specific = {
+      storage = {
         type: 'unknown loss factor',
+        ...common,
         lossFactor: coalesceEmptyString(storage_type.loss_factor_b, 0) ?? 0,
         volumeFactor: coalesceEmptyString(storage_type.volume_factor_b, 0) ?? 0,
         temperatureFactor: coalesceEmptyString(storage_type.temperature_factor_b, 0) ?? 0,
       };
     }
-    storage = {
-      ...specific,
-      volume,
-      dedicatedSolarOrWWHRSStorage,
-    };
   }
   const communityHeating = scenario?.water_heating?.community_heating ?? false;
   const hotWaterStoreInDwelling =
@@ -162,7 +171,7 @@ export class WaterHeating {
       return 0;
     }
     let dedicatedStorageLossFactor;
-    if (storage.dedicatedSolarOrWWHRSStorage !== false && storage.volume > 0) {
+    if (storage.volume > 0) {
       dedicatedStorageLossFactor =
         1.0 - storage.dedicatedSolarOrWWHRSStorage / storage.volume;
     } else {
@@ -196,11 +205,11 @@ export class WaterHeating {
 
   @cacheMonth
   gainsMonthly(month: Month): { kWhPerMonth: number; watts: number } {
-    let storageLoss: number;
+    let storageGain: number;
     if (this.input.hotWaterStoreInDwelling || this.input.communityHeating) {
-      storageLoss = this.storageLossMonthly(month);
+      storageGain = this.storageLossMonthly(month);
     } else {
-      storageLoss = 0;
+      storageGain = 0;
     }
     const kWhPerMonth =
       0.25 *
@@ -208,7 +217,7 @@ export class WaterHeating {
           this.combiLossMonthly(month)) +
       0.8 *
         (this.distributionLossMonthly(month) +
-          storageLoss +
+          storageGain +
           this.primaryCircuitLossMonthly(month));
     const watts = (1000 * kWhPerMonth) / (month.days * 24);
     return {

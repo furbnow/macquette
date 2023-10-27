@@ -23,7 +23,7 @@ function arbSolarHotWaterDependencies(
   return fc.record({
     region: arbitraryRegion,
     waterCommon: fc.record({
-      dailyHotWaterUsageMeanAnnual: sensibleFloat,
+      dailyHotWaterUsageLitresMeanAnnual: sensibleFloat,
       hotWaterEnergyContentAnnual: sensibleFloat,
       solarHotWater: alwaysOn ? fc.constant(true) : fc.boolean(),
     }),
@@ -64,7 +64,7 @@ function makeLegacyDataForSolarHotWater(
     region: dependencies.region.index0,
     water_heating: {
       annual_energy_content: dependencies.waterCommon.hotWaterEnergyContentAnnual,
-      Vd_average: dependencies.waterCommon.dailyHotWaterUsageMeanAnnual,
+      Vd_average: dependencies.waterCommon.dailyHotWaterUsageLitresMeanAnnual,
     },
     SHW,
   };

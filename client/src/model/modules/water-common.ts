@@ -56,33 +56,34 @@ export class WaterCommon {
   }
 
   @cache
-  get dailyHotWaterUsageMeanAnnual() {
+  get dailyHotWaterUsageLitresMeanAnnual() {
     const lowWaterUseModifier = this.input.lowWaterUseDesign ? 0.95 : 1;
     return lowWaterUseModifier * (25 * this.dependencies.occupancy.occupancy + 36);
   }
 
   @cacheMonth
-  dailyHotWaterUsageByMonth(month: Month) {
+  dailyHotWaterUsageLitresByMonth(month: Month) {
     const usageFactor = monthlyHotWaterUseFactor(month);
-    return usageFactor * this.dailyHotWaterUsageMeanAnnual;
+    return usageFactor * this.dailyHotWaterUsageLitresMeanAnnual;
   }
 
-  // kWh per month
+  // kWh
   @cacheMonth
   hotWaterEnergyContentByMonth(month: Month) {
     if (this.input.annualEnergyContentOverride !== false) {
-      /* Dubious non-SAP calculation here. Even if we know the annual
-               energy content, surely it's not the same every month --
-               different numbers of days, required temperature rises, etc.
-             */
+      /* Dubious non-SAP calculation here. Even if we know the annual energy content,
+       * surely it's not the same every month -- different numbers of days, required
+       * temperature rises, etc.
+       */
       const usageFactor = monthlyHotWaterUseFactor(month);
       return (usageFactor * this.input.annualEnergyContentOverride) / 12;
     }
-    const dailyVolume = this.dailyHotWaterUsageByMonth(month);
+    const dailyVolume = this.dailyHotWaterUsageLitresByMonth(month);
     const temperatureRise = monthlyHotWaterTemperatureRise(month);
     return (4.18 * dailyVolume * month.days * temperatureRise) / 3600;
   }
 
+  // kWh
   @cache
   get hotWaterEnergyContentAnnual() {
     if (this.input.annualEnergyContentOverride !== false) {
@@ -99,7 +100,7 @@ export class WaterCommon {
     */
   mutateLegacyData(data: any) {
     data.water_heating = data.water_heating ?? {};
-    data.water_heating.Vd_average = this.dailyHotWaterUsageMeanAnnual;
+    data.water_heating.Vd_average = this.dailyHotWaterUsageLitresMeanAnnual;
     data.water_heating.monthly_energy_content = Month.all.map((m) =>
       this.hotWaterEnergyContentByMonth(m),
     );

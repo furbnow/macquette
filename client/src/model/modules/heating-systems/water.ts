@@ -1,41 +1,54 @@
 import type { LegacyHeatingSystem } from '.';
 import { Scenario } from '../../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
+import { TypeOf, t } from '../../../data-schemas/visitable-types';
 import { solarHotWaterPrimaryCircuitLossFactor } from '../../datasets';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
 
-export type WaterHeatingSystemInput = {
-  fractionWaterHeating: number;
-  distributionLoss: boolean;
-  combiLoss:
-    | null
-    | {
-        type: 'instantaneous';
-        keepHotFacility: null | {
-          controlledByTimeClock: boolean;
-        };
-      }
-    | {
-        type: 'storage';
-        capacity: '>= 55 litres' | number;
-      };
-  primaryCircuitLoss: null | {
-    pipeworkInsulation:
-      | 'uninsulated'
-      | 'first metre'
-      | 'all accessible'
-      | 'fully insulated';
-    hotWaterControl:
-      | { type: 'no control' }
-      | { type: 'cylinder thermostat'; separatelyTimedWaterHeating: boolean };
-  };
-};
+export const waterHeatingSystemInput = t.struct({
+  fractionWaterHeating: t.number(),
+  distributionLoss: t.boolean(),
+  combiLoss: t.nullable(
+    t.discriminatedUnion('type', [
+      t.struct({
+        type: t.literal('instantaneous'),
+        keepHotFacility: t.nullable(
+          t.struct({
+            controlledByTimeClock: t.boolean(),
+          }),
+        ),
+      }),
+      t.struct({
+        type: t.literal('storage'),
+        capacity: t.union([t.literal('>= 55 litres'), t.number()]),
+      }),
+    ]),
+  ),
+  primaryCircuitLoss: t.nullable(
+    t.struct({
+      pipeworkInsulation: t.union([
+        t.literal('uninsulated'),
+        t.literal('first metre'),
+        t.literal('all accessible'),
+        t.literal('fully insulated'),
+      ]),
+      hotWaterControl: t.discriminatedUnion('type', [
+        t.struct({ type: t.literal('no control') }),
+        t.struct({
+          type: t.literal('cylinder thermostat'),
+          separatelyTimedWaterHeating: t.boolean(),
+        }),
+      ]),
+    }),
+  ),
+});
+export type WaterHeatingSystemInput = TypeOf<typeof waterHeatingSystemInput>;
 
 export type WaterHeatingSystemDependencies = {
   waterCommon: {
     hotWaterEnergyContentByMonth: (m: Month) => number;
-    dailyHotWaterUsageByMonth: (m: Month) => number;
+    dailyHotWaterUsageLitresByMonth: (m: Month) => number;
     annualEnergyContentOverride: false | number;
     solarHotWater: boolean;
   };
@@ -46,12 +59,12 @@ export class WaterHeatingSystem {
     private input: WaterHeatingSystemInput,
     private dependencies: WaterHeatingSystemDependencies,
   ) {
-    if (input.distributionLoss === null && input.combiLoss !== null) {
+    if (input.distributionLoss === false && input.combiLoss !== null) {
       console.warn(
         'Water heating system specified no distribution loss, but combi loss, but combi boilers must incur distribution loss',
       );
     }
-    if (input.distributionLoss === null && input.primaryCircuitLoss !== null) {
+    if (input.distributionLoss === false && input.primaryCircuitLoss !== null) {
       console.warn(
         'Water heating system specified no distribution loss, but primary circuit loss, but primary circuit systems must incur distribution loss',
       );
@@ -77,12 +90,14 @@ export class WaterHeatingSystem {
 
   combiLossMonthly(month: Month) {
     if (this.input.combiLoss === null) return 0;
-    const usage = this.dependencies.waterCommon.dailyHotWaterUsageByMonth(month);
+    if (this.input.fractionWaterHeating === 0) {
+      // Used instead of deleting systems in non-baseline scenarios
+      return 0;
+    }
+    const usage = this.dependencies.waterCommon.dailyHotWaterUsageLitresByMonth(month);
     let usageFactor: number;
     if (this.dependencies.waterCommon.annualEnergyContentOverride !== false) {
-      console.warn(
-        'Reproducing buggy behaviour in water heating model; using usageFactor = 1',
-      );
+      // Reproducing buggy? behaviour in water heating model
       usageFactor = 1;
     } else {
       usageFactor = Math.min(usage / 100.0, 1.0);
@@ -128,7 +143,12 @@ export class WaterHeatingSystem {
         return 1.0;
     }
   }
+
   primaryCircuitLossMonthly(month: Month) {
+    if (this.input.fractionWaterHeating === 0) {
+      // Used instead of deleting systems in non-baseline scenarios
+      return 0;
+    }
     const pipeworkInsulatedFraction = this.pipeworkInsulatedFraction;
     if (this.input.primaryCircuitLoss === null || pipeworkInsulatedFraction === null) {
       return 0;

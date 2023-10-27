@@ -84,11 +84,13 @@ export function lightAccessFactor(overshading: Overshading): number {
 }
 
 /** datasets.table_1c */
+// ratio
 export function monthlyHotWaterUseFactor(month: Month): number {
   return wrapDataset('table_1c', [month.index0], { month });
 }
 
 /** datasets.table_1d */
+// Kelvin
 export function monthlyHotWaterTemperatureRise(month: Month): number {
   return wrapDataset('table_1d', [month.index0], { month });
 }

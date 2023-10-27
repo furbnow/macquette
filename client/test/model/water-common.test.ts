@@ -7,12 +7,7 @@ import {
 } from '../../src/model/modules/water-common';
 import { sensibleFloat } from '../arbitraries/legacy-values';
 import { legacyWaterHeating } from './golden-master/water-heating';
-
-const arbWaterCommonInput: fc.Arbitrary<WaterCommonInput> = fc.record({
-  lowWaterUseDesign: fc.boolean(),
-  annualEnergyContentOverride: fc.oneof(fc.constant(false as const), sensibleFloat),
-  solarHotWater: fc.boolean(),
-});
+import { arbWaterCommonInput } from './water-common-arbitraries';
 
 const arbWaterCommonDependencies: fc.Arbitrary<WaterCommonDependencies> = fc.record({
   occupancy: fc.record({
@@ -49,7 +44,7 @@ describe('water common', () => {
           const waterCommon = new WaterCommon(input, dependencies);
           const legacyData: any = makeLegacyDataForWaterCommon(input, dependencies);
           legacyWaterHeating(legacyData);
-          expect(waterCommon.dailyHotWaterUsageMeanAnnual).toBeApproximately(
+          expect(waterCommon.dailyHotWaterUsageLitresMeanAnnual).toBeApproximately(
             legacyData.water_heating.Vd_average,
           );
           for (const month of Month.all) {

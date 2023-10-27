@@ -523,7 +523,7 @@ function SolarHotWater({
               Daily hot water demand, V<sub>d,average</sub> [from heating page]
             </span>
             <NumberOutput
-              value={combinedModules?.waterCommon?.dailyHotWaterUsageMeanAnnual}
+              value={combinedModules?.waterCommon?.dailyHotWaterUsageLitresMeanAnnual}
               unit={'litres'}
             />
 
