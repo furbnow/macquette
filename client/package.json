@@ -17,6 +17,7 @@
         "zod": "^3.21"
     },
     "devDependencies": {
+        "@inquirer/prompts": "^2.1.1",
         "@types/async": "^3.2.20",
         "@types/jest": "^29.5.1",
         "@types/lodash": "^4.14.194",
@@ -27,7 +28,6 @@
         "@types/validator": "^13.7.15",
         "@typescript-eslint/eslint-plugin": "^5.59.1",
         "@typescript-eslint/parser": "^5.59.1",
-        "@inquirer/prompts": "^2.1.1",
         "bottleneck": "^2.19.5",
         "chalk": "^5",
         "chokidar-cli": "^3.0.0",
@@ -46,7 +46,7 @@
         "husky": "^8.0.3",
         "jest": "^29.5.0",
         "lint-staged": "^13.2.2",
-        "prettier": "^2.8.8",
+        "prettier": "^3.0.3",
         "prettier-plugin-organize-imports": "^3.2.2",
         "ts-jest": "^29.1.0",
         "ts-node": "^10.9.1",

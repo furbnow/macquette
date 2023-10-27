@@ -1,5 +1,3 @@
 # vim: ft=yaml
-trailingComma: 'all'
-tabWidth: 4
 printWidth: 90
 singleQuote: true
