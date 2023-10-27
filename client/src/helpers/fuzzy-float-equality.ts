@@ -18,7 +18,7 @@ export function compareFloats(
     return Object.is(received, expected);
   }
   const absoluteToleranceAroundZero = params?.absoluteToleranceAroundZero ?? 0.0001;
-  if (Math.abs(expected) < absoluteToleranceAroundZero) {
+  if (Math.abs(expected) === 0 || Math.abs(received) === 0) {
     return Math.abs(received) < absoluteToleranceAroundZero;
   }
 
