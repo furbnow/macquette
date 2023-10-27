@@ -2,34 +2,43 @@ import _ from 'lodash';
 
 import { Scenario } from '../../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../../data-schemas/scenario/value-schemas';
+import { TypeOf, t } from '../../../data-schemas/visitable-types';
 import { sum } from '../../../helpers/array-reducers';
 import { cache } from '../../../helpers/cache-decorators';
 import { Month } from '../../enums/month';
 import { ModelError } from '../../error';
 import { ModelBehaviourFlags } from '../behaviour-version';
 
-export type AppliancesCookingCarbonCoopInput = Array<LoadInput>;
-type FuelType = 'electricity' | 'gas' | 'oil';
+const fuelType = t.enum(['electricity', 'gas', 'oil']);
+export type FuelType = TypeOf<typeof fuelType>;
 
 // Since cookers and other appliances are counted separately, but share the
 // same individual model, we refer to them generically as a "load"
-type LoadInput = {
-  originalIndex: number;
-  numberUsed: number;
-  aPlusRated: boolean;
-  normalisedDemand: number;
-  utilisationFactor: number;
-  referenceQuantity: number;
-  annualUseFrequency: number;
-  fuel: { type: FuelType; name: string; efficiency: number };
-  category: 'appliances' | 'cooking';
-};
+const loadInput = t.struct({
+  numberUsed: t.number(),
+  aPlusRated: t.boolean(),
+
+  // kWh per (1 year)/annualUseFrequency, so if annualUseFrequency = 365, this is kWh per day
+  normalisedDemand: t.number(),
+
+  utilisationFactor: t.number(),
+  referenceQuantity: t.number(),
+  annualUseFrequency: t.number(),
+  fuel: t.struct({ type: fuelType, name: t.string(), efficiency: t.number() }),
+  category: t.enum(['appliances', 'cooking']),
+});
+type LoadInput = TypeOf<typeof loadInput>;
+
+export const appliancesCookingCarbonCoopInput = t.array(loadInput);
+export type AppliancesCookingCarbonCoopInput = TypeOf<
+  typeof appliancesCookingCarbonCoopInput
+>;
 
 export function extractAppliancesCarbonCoopInputFromLegacy(
   scenario: Scenario,
 ): AppliancesCookingCarbonCoopInput {
   return (
-    scenario?.applianceCarbonCoop?.list?.map((item, index): LoadInput => {
+    scenario?.applianceCarbonCoop?.list?.map((item): LoadInput => {
       const fuelEfficiency = coalesceEmptyString(item.efficiency, 1);
       let fuelType: FuelType;
       switch (item.type_of_fuel) {
@@ -49,7 +58,6 @@ export function extractAppliancesCarbonCoopInputFromLegacy(
           break;
       }
       return {
-        originalIndex: index,
         numberUsed: coalesceEmptyString(item.number_used, 0),
         aPlusRated: item.a_plus_rated ?? false,
         normalisedDemand: coalesceEmptyString(item.norm_demand, 0),
@@ -74,22 +82,26 @@ export type AppliancesCookingCarbonCoopDependencies = {
   fuels: {
     names: string[];
   };
-  modelBehaviourFlags: ModelBehaviourFlags;
+  modelBehaviourFlags: Pick<ModelBehaviourFlags, 'carbonCoopAppliancesCooking'>;
 };
 
 export class AppliancesCookingCarbonCoop {
-  private cooking: LoadCollection;
-  private appliances: LoadCollection;
+  cooking: LoadCollection;
+  appliances: LoadCollection;
   constructor(
     input: AppliancesCookingCarbonCoopInput,
     dependencies: AppliancesCookingCarbonCoopDependencies,
   ) {
+    const withIndices = input.map((loadInput, index) => ({
+      ...loadInput,
+      originalIndex: index,
+    }));
     this.cooking = new LoadCollection(
-      input.filter((i) => i.category === 'cooking'),
+      withIndices.filter((i) => i.category === 'cooking'),
       dependencies,
     );
     this.appliances = new LoadCollection(
-      input.filter((i) => i.category === 'appliances'),
+      withIndices.filter((i) => i.category === 'appliances'),
       dependencies,
     );
   }
@@ -181,7 +193,7 @@ class LoadCollection {
   private flags: ModelBehaviourFlags['carbonCoopAppliancesCooking'];
 
   constructor(
-    public input: Array<LoadInput>,
+    public input: Array<LoadInput & { originalIndex: number }>,
     dependencies: AppliancesCookingCarbonCoopDependencies,
   ) {
     const uniqueCategories = _.uniq(input.map((item) => item.category));
@@ -220,6 +232,9 @@ class LoadCollection {
   get heatGainAverageAnnual(): number {
     if (this.flags.convertGainsToWatts) {
       const kWhPerYearToWatts = 1000 / (24 * 365);
+      // Is it right to assume that the heat gain is equal to the power
+      // input? Surely not in the case of e.g. a dishwasher which empties
+      // hot water into drains etc.
       return this.energyDemandAnnual * kWhPerYearToWatts;
     } else {
       console.warn(
@@ -283,7 +298,7 @@ class LoadCollection {
 
 class Load {
   constructor(
-    public input: LoadInput,
+    public input: LoadInput & { originalIndex: number },
     { fuels }: AppliancesCookingCarbonCoopDependencies,
   ) {
     if (!fuels.names.includes(input.fuel.name)) {
