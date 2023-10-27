@@ -1,19 +1,21 @@
 import { Scenario } from '../../../data-schemas/scenario';
+import { TypeOf, t } from '../../../data-schemas/visitable-types';
 import { sum } from '../../../helpers/array-reducers';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
 import { isTruthy } from '../../../helpers/is-truthy';
 import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
-import { Fuel, FuelInput } from './fuel-sap';
+import { Fuel, fuelInput } from './fuel-sap';
 
-export type LightingSAPInput = {
-  outlets: {
-    total: number;
-    lowEnergy: number;
-  };
-  reducedHeatGains: boolean;
-  fuels: FuelInput[];
-};
+export const lightingSAPInput = t.struct({
+  outlets: t.struct({
+    total: t.number(),
+    lowEnergy: t.number(),
+  }),
+  reducedHeatGains: t.boolean(),
+  fuels: t.array(fuelInput),
+});
+export type LightingSAPInput = TypeOf<typeof lightingSAPInput>;
 
 export function extractLightingSAPInputFromLegacy(scenario: Scenario): LightingSAPInput {
   const { LAC } = scenario ?? {};

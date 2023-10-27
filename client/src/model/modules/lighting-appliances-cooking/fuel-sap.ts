@@ -1,6 +1,11 @@
+import { TypeOf, t } from '../../../data-schemas/visitable-types';
 import { ModelError } from '../../error';
 
-export type FuelInput = { name: string; fraction: number };
+export const fuelInput = t.struct({
+  name: t.string(),
+  fraction: t.number({ min: 0, max: 1 }),
+});
+export type FuelInput = TypeOf<typeof fuelInput>;
 
 export class Fuel {
   constructor(
