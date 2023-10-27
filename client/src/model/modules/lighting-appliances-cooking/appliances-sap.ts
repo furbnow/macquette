@@ -1,15 +1,17 @@
 import { Scenario } from '../../../data-schemas/scenario';
+import { TypeOf, t } from '../../../data-schemas/visitable-types';
 import { sum } from '../../../helpers/array-reducers';
 import { cache, cacheMonth } from '../../../helpers/cache-decorators';
 import { isTruthy } from '../../../helpers/is-truthy';
 import { Month } from '../../enums/month';
 import { Fuels } from '../fuels';
-import { Fuel, FuelInput } from './fuel-sap';
+import { Fuel, fuelInput } from './fuel-sap';
 
-export type AppliancesSAPInput = {
-  energyEfficient: boolean;
-  fuels: FuelInput[];
-};
+export const appliancesSAPInput = t.struct({
+  energyEfficient: t.boolean(),
+  fuels: t.array(fuelInput),
+});
+export type AppliancesSAPInput = TypeOf<typeof appliancesSAPInput>;
 
 export function extractAppliancesSAPInputFromLegacy(
   scenario: Scenario,
