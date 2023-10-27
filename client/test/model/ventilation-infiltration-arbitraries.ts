@@ -3,6 +3,10 @@ import { Region } from '../../src/model/enums/region';
 import { VentilationInfiltrationCommonInput } from '../../src/model/modules/ventilation-infiltration/common-input';
 import { VentilationPoint } from '../../src/model/modules/ventilation-infiltration/common-types';
 import {
+  InfiltrationDependencies,
+  InfiltrationInput,
+} from '../../src/model/modules/ventilation-infiltration/infiltration';
+import {
   VentilationDependencies,
   VentilationInput,
 } from '../../src/model/modules/ventilation-infiltration/ventilation';
@@ -46,8 +50,30 @@ export const arbVentilationInput: fc.Arbitrary<VentilationInput> = fc.oneof(
   }),
 );
 
+export const arbInfiltrationInput: fc.Arbitrary<InfiltrationInput> = fc.record({
+  estimateFrom: fc.oneof(
+    fc.record({
+      type: fc.constant('fabric elements' as const),
+      numberOfFloorsOverride: fc.option(fc.nat()),
+      walls: fc.constantFrom('timber' as const, 'masonry' as const),
+      floor: fc.constantFrom(
+        'suspended sealed' as const,
+        'suspended unsealed' as const,
+        'solid' as const,
+      ),
+      draughtProofedProportion: sensibleFloat,
+      draughtLobby: fc.boolean(),
+    }),
+    fc.record({
+      type: fc.constant('pressure test' as const),
+      airPermeability: sensibleFloat,
+    }),
+  ),
+  intentionalVentsFlues: fc.array(arbVentilationPoint),
+});
+
 export type VentilationInfiltrationTestDependencies = Omit<
-  VentilationDependencies,
+  VentilationDependencies & InfiltrationDependencies,
   'ventilationInfiltrationCommon'
 > & {
   region: Region;
@@ -55,7 +81,11 @@ export type VentilationInfiltrationTestDependencies = Omit<
 export const arbDependencies: fc.Arbitrary<VentilationInfiltrationTestDependencies> =
   fc.record({
     region: arbitraryRegion,
-    floors: fc.record({ totalVolume: sensibleFloat.filter((v) => v !== 0) }),
+    floors: fc.record({
+      totalVolume: sensibleFloat.filter((v) => v !== 0),
+      numberOfFloors: fc.nat(),
+    }),
+    fabric: fc.record({ envelopeArea: sensibleFloat }),
   });
 
 export function makeLegacyDataForVentilation(
@@ -116,17 +146,84 @@ export function makeLegacyDataForVentilation(
       };
       break;
   }
+  ventilation['number_of_sides_sheltered'] = commonInput.numberOfSidesSheltered;
   return {
-    ventilation: {
-      ...ventilation,
-      number_of_sides_sheltered: commonInput.numberOfSidesSheltered,
-    },
+    ventilation,
     volume: dependencies.floors.totalVolume,
     region: dependencies.region.index0,
     num_of_floors: 0,
     fabric: {
       total_external_area: 0,
       total_party_wall_area: 0,
+    },
+    losses_WK: {},
+  };
+}
+export function makeLegacyDataForInfiltration(
+  commonInput: VentilationInfiltrationCommonInput,
+  infiltrationInput: InfiltrationInput,
+  dependencies: VentilationInfiltrationTestDependencies,
+  extras: { partyWallAreaProportionOfEnvelope: number },
+): unknown {
+  let ventilation: Record<string, unknown>;
+  let num_of_floors_override: number | undefined = undefined;
+  switch (infiltrationInput.estimateFrom.type) {
+    case 'pressure test': {
+      ventilation = {
+        air_permeability_test: true,
+        air_permeability_value: infiltrationInput.estimateFrom.airPermeability,
+      };
+      break;
+    }
+    case 'fabric elements': {
+      let dwelling_construction: string;
+      switch (infiltrationInput.estimateFrom.walls) {
+        case 'timber':
+          dwelling_construction = 'timberframe';
+          break;
+        case 'masonry':
+          dwelling_construction = 'masonry';
+          break;
+      }
+      let suspended_wooden_floor: string | number;
+      switch (infiltrationInput.estimateFrom.floor) {
+        case 'solid':
+          suspended_wooden_floor = 0;
+          break;
+        case 'suspended sealed':
+          suspended_wooden_floor = 'sealed';
+          break;
+        case 'suspended unsealed':
+          suspended_wooden_floor = 'unsealed';
+          break;
+      }
+      ventilation = {
+        dwelling_construction,
+        suspended_wooden_floor,
+        percentage_draught_proofed:
+          infiltrationInput.estimateFrom.draughtProofedProportion * 100,
+        draught_lobby: infiltrationInput.estimateFrom.draughtLobby,
+      };
+      num_of_floors_override =
+        infiltrationInput.estimateFrom.numberOfFloorsOverride ?? undefined;
+      break;
+    }
+  }
+  ventilation['IVF'] = infiltrationInput.intentionalVentsFlues.map(
+    ({ ventilationRate }) => ({ ventilation_rate: ventilationRate }),
+  );
+  ventilation['number_of_sides_sheltered'] = commonInput.numberOfSidesSheltered;
+  return {
+    ventilation,
+    num_of_floors_override,
+    volume: dependencies.floors.totalVolume,
+    num_of_floors: dependencies.floors.numberOfFloors,
+    region: dependencies.region.index0,
+    fabric: {
+      total_external_area:
+        dependencies.fabric.envelopeArea * (1 - extras.partyWallAreaProportionOfEnvelope),
+      total_party_wall_area:
+        dependencies.fabric.envelopeArea * extras.partyWallAreaProportionOfEnvelope,
     },
     losses_WK: {},
   };
