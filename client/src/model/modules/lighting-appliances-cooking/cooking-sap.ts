@@ -1,15 +1,17 @@
 import { Scenario } from '../../../data-schemas/scenario';
+import { TypeOf, t } from '../../../data-schemas/visitable-types';
 import { sum } from '../../../helpers/array-reducers';
 import { cache } from '../../../helpers/cache-decorators';
 import { isTruthy } from '../../../helpers/is-truthy';
 import { Month } from '../../enums/month';
-import { Fuels, Fuel as FuelsModuleFuel } from '../fuels';
-import { FuelInput, Fuel as LACModuleFuel } from './fuel-sap';
+import { Fuels } from '../fuels';
+import { Fuel as LACModuleFuel, fuelInput } from './fuel-sap';
 
-export type CookingSAPInput = {
-  energyEfficient: boolean;
-  fuels: FuelInput[];
-};
+export const cookingSAPInput = t.struct({
+  energyEfficient: t.boolean(),
+  fuels: t.array(fuelInput),
+});
+export type CookingSAPInput = TypeOf<typeof cookingSAPInput>;
 
 export function extractCookingSAPInputFromLegacy(scenario: Scenario): CookingSAPInput {
   const { LAC } = scenario ?? {};
@@ -31,7 +33,7 @@ export type CookingSAPDependencies = {
   };
   fuels: {
     names: string[];
-    standardTariff: FuelsModuleFuel;
+    standardTariff: { carbonEmissionsFactor: number };
   };
 };
 
