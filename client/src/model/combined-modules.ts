@@ -1,7 +1,6 @@
 import { ZodError } from 'zod';
 
 import { ModelBehaviourVersion, scenarioSchema } from '../data-schemas/scenario';
-import { SolarHotWaterDataModel } from '../data-schemas/scenario/solar-hot-water/v2';
 import { Result } from '../helpers/result';
 import { Region } from './enums/region';
 import { ModelError } from './error';
@@ -57,7 +56,11 @@ import {
   extractOccupancyInputFromLegacy,
 } from './modules/occupancy';
 import { extractRegionFromLegacy } from './modules/region';
-import { SolarHotWater, constructSolarHotWater } from './modules/solar-hot-water';
+import {
+  SolarHotWater,
+  SolarHotWaterInput,
+  constructSolarHotWater,
+} from './modules/solar-hot-water';
 import {
   VentilationInfiltrationCommon,
   VentilationInfiltrationCommonInput,
@@ -96,7 +99,7 @@ export type Input = {
   ventilation: VentilationInput;
   infiltration: InfiltrationInput;
   waterCommon: WaterCommonInput;
-  solarHotWater: SolarHotWaterDataModel;
+  solarHotWater: SolarHotWaterInput;
   lighting: LightingSAPInput;
   appliances: AppliancesInput;
   cooking: CookingInput;

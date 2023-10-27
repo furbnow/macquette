@@ -3,14 +3,14 @@ import { pick } from 'lodash';
 import { z } from 'zod';
 import { solarHotWaterSchema } from '../../../src/data-schemas/scenario/solar-hot-water';
 
-import { solarHotWaterDataModel } from '../../../src/data-schemas/scenario/solar-hot-water/v2';
+import { solarHotWaterInput } from '../../../src/model/modules/solar-hot-water';
 import { makeArbitrary } from '../../helpers/make-arbitrary';
 import { flatten } from '../../helpers/object-flattening';
 
 export const arbSolarHotWaterV2: fc.Arbitrary<z.input<typeof solarHotWaterSchema>> =
   fc.record({
     version: fc.constant(2 as const),
-    input: makeArbitrary(solarHotWaterDataModel),
+    input: makeArbitrary(solarHotWaterInput),
   });
 
 export function shwInputIsComplete(SHW: z.input<typeof solarHotWaterSchema>): boolean {

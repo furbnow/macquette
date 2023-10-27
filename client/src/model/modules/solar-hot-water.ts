@@ -1,16 +1,48 @@
-import { SolarHotWaterDataModel } from '../../data-schemas/scenario/solar-hot-water/v2';
+import { TypeOf, t } from '../../data-schemas/visitable-types';
 import { sum } from '../../helpers/array-reducers';
 import { cache, cacheMonth } from '../../helpers/cache-decorators';
 import { solarHotWaterOvershadingFactor } from '../datasets';
 import { Month } from '../enums/month';
 import { Orientation } from '../enums/orientation';
+import { Overshading } from '../enums/overshading';
 import { Region } from '../enums/region';
 import {
   calculateSolarRadiationAnnual,
   calculateSolarRadiationMonthly,
 } from '../solar-flux';
 
-type SolarHotWaterEnabledInput = Exclude<SolarHotWaterDataModel, null>;
+export const solarHotWaterInput = t.nullable(
+  t.struct({
+    pump: t.enum(['PV', 'electric'], { default_: 'electric' }),
+    dedicatedSolarStorageVolume: t.number(),
+    combinedCylinderVolume: t.number(),
+    collector: t.struct({
+      apertureArea: t.number(),
+      inclination: t.number(),
+      orientation: t.enum([...Orientation.names]),
+      overshading: t.enum([...Overshading.names]),
+      parameters: t.discriminatedUnion('source', [
+        t.struct({
+          source: t.literal('test certificate'),
+          zeroLossEfficiency: t.number(),
+          linearHeatLossCoefficient: t.number(),
+          secondOrderHeatLossCoefficient: t.number(),
+        }),
+        t.struct({
+          source: t.literal('estimate'),
+          collectorType: t.enum(['evacuated tube', 'flat plate, glazed', 'unglazed'], {
+            default_: 'unglazed',
+          }),
+          apertureAreaType: t.enum(['gross', 'exact'], {
+            default_: 'gross',
+          }),
+        }),
+      ]),
+    }),
+  }),
+);
+export type SolarHotWaterInput = TypeOf<typeof solarHotWaterInput>;
+type SolarHotWaterEnabledInput = Exclude<SolarHotWaterInput, null>;
 
 export type SolarHotWaterDependencies = {
   region: Region;
@@ -277,7 +309,7 @@ export class SolarHotWaterNoop {
 }
 
 export function constructSolarHotWater(
-  input: SolarHotWaterDataModel,
+  input: SolarHotWaterInput,
   dependencies: SolarHotWaterDependencies,
 ): SolarHotWaterEnabled | SolarHotWaterNoop {
   if (!dependencies.waterCommon.solarHotWater || input === null) {

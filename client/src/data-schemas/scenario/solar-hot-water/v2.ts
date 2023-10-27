@@ -1,46 +1,12 @@
 import { z } from 'zod';
 import { assertNever } from '../../../helpers/assert-never';
-import { Orientation } from '../../../model/enums/orientation';
-import { Overshading } from '../../../model/enums/overshading';
-import { TypeOf, t } from '../../visitable-types';
+import { solarHotWaterInput } from '../../../model/modules/solar-hot-water';
 import { makeZodSchema } from '../../visitable-types/zod';
 import { SolarHotWaterV1 } from './v1';
 
-export const solarHotWaterDataModel = t.nullable(
-  t.struct({
-    pump: t.enum(['PV', 'electric'], { default_: 'electric' }),
-    dedicatedSolarStorageVolume: t.number(),
-    combinedCylinderVolume: t.number(),
-    collector: t.struct({
-      apertureArea: t.number(),
-      inclination: t.number(),
-      orientation: t.enum([...Orientation.names]),
-      overshading: t.enum([...Overshading.names]),
-      parameters: t.discriminatedUnion('source', [
-        t.struct({
-          source: t.literal('test certificate'),
-          zeroLossEfficiency: t.number(),
-          linearHeatLossCoefficient: t.number(),
-          secondOrderHeatLossCoefficient: t.number(),
-        }),
-        t.struct({
-          source: t.literal('estimate'),
-          collectorType: t.enum(['evacuated tube', 'flat plate, glazed', 'unglazed'], {
-            default_: 'unglazed',
-          }),
-          apertureAreaType: t.enum(['gross', 'exact'], {
-            default_: 'gross',
-          }),
-        }),
-      ]),
-    }),
-  }),
-);
-export type SolarHotWaterDataModel = TypeOf<typeof solarHotWaterDataModel>;
-
 export const shwV2 = z.object({
   version: z.literal(2),
-  input: makeZodSchema(solarHotWaterDataModel),
+  input: makeZodSchema(solarHotWaterInput),
 });
 
 export type SolarHotWaterV2 = z.infer<typeof shwV2>;

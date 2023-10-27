@@ -4,8 +4,8 @@ import { z } from 'zod';
 import { projectSchema } from '../../../src/data-schemas/project';
 
 import { scenarioSchema } from '../../../src/data-schemas/scenario';
-import { solarHotWaterDataModel } from '../../../src/data-schemas/scenario/solar-hot-water/v2';
 import { makeFormStateTransforms } from '../../../src/data-schemas/visitable-types/form-state';
+import { solarHotWaterInput } from '../../../src/model/modules/solar-hot-water';
 import {
   LoadedState,
   solarHotWaterModule,
@@ -91,7 +91,7 @@ describe('solar hot water data mutator', () => {
       moduleKey: fc.string(),
       restOfProject: arbitraryProjectInputsWithoutScenarios(),
     });
-    const { fromFormState } = makeFormStateTransforms(solarHotWaterDataModel);
+    const { fromFormState } = makeFormStateTransforms(solarHotWaterInput);
     fc.assert(
       fc.property(
         arb,

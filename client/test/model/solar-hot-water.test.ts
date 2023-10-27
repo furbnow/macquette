@@ -3,8 +3,8 @@ import fc from 'fast-check';
 import { solarHotWaterSchema } from '../../src/data-schemas/scenario/solar-hot-water';
 
 import {
-  constructSolarHotWater,
   SolarHotWaterDependencies,
+  constructSolarHotWater,
 } from '../../src/model/modules/solar-hot-water';
 import { arbSolarHotWaterV2 } from '../arbitraries/scenario/solar-hot-water';
 import { arbFloat } from '../helpers/arbitraries';

@@ -3,10 +3,6 @@ import { z } from 'zod';
 import { projectSchema } from '../../data-schemas/project';
 import { SolarHotWaterSchema } from '../../data-schemas/scenario/solar-hot-water';
 import {
-  SolarHotWaterDataModel,
-  solarHotWaterDataModel,
-} from '../../data-schemas/scenario/solar-hot-water/v2';
-import {
   FormStateOf,
   makeFormStateTransforms,
 } from '../../data-schemas/visitable-types/form-state';
@@ -18,7 +14,9 @@ import { Orientation } from '../../model/enums/orientation';
 import { Overshading } from '../../model/enums/overshading';
 import {
   SolarHotWaterEnabled,
+  SolarHotWaterInput,
   SolarHotWater as SolarHotWaterModel,
+  solarHotWaterInput,
 } from '../../model/modules/solar-hot-water';
 import { WaterCommon } from '../../model/modules/water-common';
 import { CheckboxInput } from '../input-components/checkbox';
@@ -29,8 +27,8 @@ import type { Dispatcher } from '../module-management/module-type';
 import { UiModule } from '../module-management/module-type';
 import { NumberOutput } from '../output-components/numeric';
 
-type InputState = FormStateOf<typeof solarHotWaterDataModel>;
-const { fromFormState, toFormState } = makeFormStateTransforms(solarHotWaterDataModel);
+type InputState = FormStateOf<typeof solarHotWaterInput>;
+const { fromFormState, toFormState } = makeFormStateTransforms(solarHotWaterInput);
 
 export type LoadedState = {
   scenarioLocked: boolean;
@@ -45,7 +43,7 @@ type State = LoadedState | 'loading';
 
 type Action =
   | { type: 'set outputs'; model: CombinedModules }
-  | { type: 'reset inputs'; scenarioLocked: boolean; input: SolarHotWaterDataModel }
+  | { type: 'reset inputs'; scenarioLocked: boolean; input: SolarHotWaterInput }
   | { type: 'merge inputs'; toMerge: DeepPartial<InputState> };
 
 export const solarHotWaterModule: UiModule<State, Action, never> = {
