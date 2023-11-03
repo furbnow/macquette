@@ -1,11 +1,11 @@
 '!(*.{gif,png,jpg}|*.min.*)':
     - 'prettier --ignore-unknown --write'
     - 'check-merge-conflict'
-    - 'fix-byte-order-marker'
+    - 'scripts/run-lint-hook-without-symlinks fix-byte-order-marker'
     - 'forbid-new-submodules'
-    - 'mixed-line-ending --fix=lf'
-    - 'trailing-whitespace-fixer'
-    - 'end-of-file-fixer'
+    - 'scripts/run-lint-hook-without-symlinks mixed-line-ending --fix=lf'
+    - 'scripts/run-lint-hook-without-symlinks trailing-whitespace-fixer'
+    - 'scripts/run-lint-hook-without-symlinks end-of-file-fixer'
 'client/*.{js,jsx,ts,tsx}': 'eslint --fix'
 '*.py':
     - 'black'
