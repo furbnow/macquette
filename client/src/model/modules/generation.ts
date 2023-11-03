@@ -1,40 +1,47 @@
 import { Scenario } from '../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../data-schemas/scenario/value-schemas';
+import { TypeOf, t } from '../../data-schemas/visitable-types';
 import { sum } from '../../helpers/array-reducers';
 import { cache } from '../../helpers/cache-decorators';
-import { Result } from '../../helpers/result';
 import { Orientation } from '../enums/orientation';
 import { Overshading } from '../enums/overshading';
 import { Region } from '../enums/region';
 import { calculateSolarRadiationAnnual } from '../solar-flux';
 import { ModelBehaviourFlags } from './behaviour-version';
 
-export type GenerationInput = {
-  solar: GenericFuelSpec | SolarFuelCalculatorSpec;
-  wind: GenericFuelSpec;
-  hydro: GenericFuelSpec;
+const commonFuel = {
+  fractionUsedOnsite: t.number(),
+  feedInTariff: t.struct({
+    generationUnitPrice: t.number(),
+    exportUnitPrice: t.number(),
+  }),
 };
 
-type GenericFuelSpec = {
-  type: 'generic fuel';
-  annualEnergy: number;
-  fractionUsedOnsite: number;
-  feedInTariff: {
-    generationUnitPrice: number;
-    exportUnitPrice: number;
-  };
-};
-type SolarFuelCalculatorSpec = Omit<GenericFuelSpec, 'type' | 'annualEnergy'> & {
-  type: 'solar calculator spec';
-  annualEnergy:
-    | 'incomplete input'
-    | {
-        capacity: number; // kWp (peak power under standard conditions)
-        orientation: Orientation;
-        inclination: number; // degrees
-        overshading: Overshading;
-      };
-};
+const genericFuel = t.struct({
+  type: t.literal('generic fuel'),
+  annualEnergy: t.number(),
+  ...commonFuel,
+});
+type GenericFuel = TypeOf<typeof genericFuel>;
+
+const solarFuelCalculatorInput = t.struct({
+  type: t.literal('solar calculator input'),
+  annualEnergy: t.struct({
+    capacity: t.number(), // kWp (peak power under standard conditions)
+    orientation: t.enum([...Orientation.names]),
+    inclination: t.number(), // degrees
+    overshading: t.enum([...Overshading.names]),
+  }),
+  ...commonFuel,
+});
+type SolarFuelCalculatorInput = TypeOf<typeof solarFuelCalculatorInput>;
+
+export const generationInput = t.struct({
+  solar: t.discriminatedUnion('type', [genericFuel, solarFuelCalculatorInput]),
+  wind: genericFuel,
+  hydro: genericFuel,
+});
+export type GenerationInput = TypeOf<typeof generationInput>;
 
 export type GenerationDependencies = {
   region: Region;
@@ -44,7 +51,7 @@ export type GenerationDependencies = {
       primaryEnergyFactor: number;
     };
   };
-  modelBehaviourFlags: ModelBehaviourFlags;
+  modelBehaviourFlags: Pick<ModelBehaviourFlags, 'generation'>;
 };
 
 export function extractGenerationInputFromLegacy(scenario: Scenario): GenerationInput {
@@ -56,14 +63,9 @@ export function extractGenerationInputFromLegacy(scenario: Scenario): Generation
   };
 }
 
-function stringyNumberToResult(val: number | ''): Result<number, ''> {
-  if (typeof val === 'number') return Result.ok(val);
-  else return Result.err(val);
-}
-
 function extractWindFuelSpec(
   generation: Exclude<Scenario, undefined>['generation'],
-): GenericFuelSpec {
+): GenericFuel {
   return {
     type: 'generic fuel',
     annualEnergy: coalesceEmptyString(generation?.wind_annual_kwh, 0) ?? 0,
@@ -78,7 +80,7 @@ function extractWindFuelSpec(
 
 function extractHydroFuelSpec(
   generation: Exclude<Scenario, undefined>['generation'],
-): GenericFuelSpec {
+): GenericFuel {
   return {
     type: 'generic fuel',
     annualEnergy: coalesceEmptyString(generation?.hydro_annual_kwh, 0) ?? 0,
@@ -93,8 +95,8 @@ function extractHydroFuelSpec(
 
 function extractSolarFuelSpec(
   generation: Exclude<Scenario, undefined>['generation'],
-): GenericFuelSpec | SolarFuelCalculatorSpec {
-  const mixin = {
+): GenericFuel | SolarFuelCalculatorInput {
+  const common = {
     fractionUsedOnsite:
       coalesceEmptyString(generation?.solar_fraction_used_onsite, 0) ?? 0,
     feedInTariff: {
@@ -103,42 +105,28 @@ function extractSolarFuelSpec(
     },
   };
   if (generation?.use_PV_calculator === true) {
-    const orientationR = stringyNumberToResult(generation?.solarpv_orientation)
-      .map((n) => Orientation.optionalFromIndex0(n))
-      .chain((o) => Result.fromNullable(o));
-    const overshadingR = stringyNumberToResult(generation?.solarpv_overshading)
-      .map((f) => guessOvershadingFromFactor(f))
-      .chain((o) => Result.fromNullable(o));
-    if (!orientationR.isOk()) {
-      return {
-        type: 'solar calculator spec',
-        ...mixin,
-        annualEnergy: 'incomplete input',
-      };
-    }
-    if (!overshadingR.isOk()) {
-      return {
-        type: 'solar calculator spec',
-        ...mixin,
-        annualEnergy: 'incomplete input',
-      };
-    }
-    const orientation = orientationR.coalesce();
-    const overshading = overshadingR.coalesce();
+    const orientation =
+      Orientation.optionalFromIndex0(
+        coalesceEmptyString(generation?.solarpv_orientation, 0),
+      ) ?? new Orientation('North');
+    const overshading =
+      guessOvershadingFromFactor(
+        coalesceEmptyString(generation?.solarpv_overshading, 0),
+      ) ?? new Overshading('>80%');
     return {
-      type: 'solar calculator spec',
-      ...mixin,
+      type: 'solar calculator input',
+      ...common,
       annualEnergy: {
         capacity: coalesceEmptyString(generation?.solarpv_kwp_installed, 0) ?? 0,
-        orientation,
+        orientation: orientation.name,
         inclination: coalesceEmptyString(generation?.solarpv_inclination, 0) ?? 0,
-        overshading,
+        overshading: overshading.name,
       },
     };
   } else {
     return {
       type: 'generic fuel',
-      ...mixin,
+      ...common,
       annualEnergy: coalesceEmptyString(generation?.solar_annual_kwh, 0) ?? 0,
     };
   }
@@ -161,7 +149,7 @@ function guessOvershadingFromFactor(factor: number): Overshading | null {
 
 class GenerationFuel {
   constructor(
-    private input: GenericFuelSpec | SolarFuelCalculatorSpec,
+    private input: GenericFuel | SolarFuelCalculatorInput,
     private dependencies: GenerationDependencies,
   ) {}
 
@@ -169,14 +157,13 @@ class GenerationFuel {
   get energyAnnual(): number {
     if (this.input.type === 'generic fuel') return this.input.annualEnergy;
     const { annualEnergy } = this.input;
-    if (annualEnergy === 'incomplete input') return 0;
     const { orientation, inclination, overshading, capacity } = annualEnergy;
     const radiation = calculateSolarRadiationAnnual(
       this.dependencies.region,
-      orientation,
+      new Orientation(orientation),
       inclination,
     );
-    return 0.8 * capacity * radiation * overshadingFactor(overshading);
+    return 0.8 * capacity * radiation * overshadingFactor(new Overshading(overshading));
   }
 
   get energyUsedOnsiteAnnual(): number {
@@ -315,7 +302,7 @@ export class Generation {
   /* eslint-enable */
 }
 
-function overshadingFactor(overshading: Overshading): number {
+export function overshadingFactor(overshading: Overshading): number {
   switch (overshading.name) {
     case '<20%':
       return 1;

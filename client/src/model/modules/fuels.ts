@@ -1,4 +1,4 @@
-import { pick } from 'lodash';
+import { mapValues, pick } from 'lodash';
 import { Scenario } from '../../data-schemas/scenario';
 import { coalesceEmptyString } from '../../data-schemas/scenario/value-schemas';
 import { defaultFuels } from '../datasets';
@@ -18,7 +18,6 @@ export function extractFuelsInputFromLegacy(scenario: Scenario): { fuels: FuelsD
   const legacyFuels = Object.assign({}, defaultFuels, scenario?.fuels);
   type LegacyFuelData = (typeof legacyFuels)[''];
   type FuelData = FuelsDict[''];
-  const legacyEntries = Object.entries(legacyFuels);
   function sanitiseCategory(
     legacyCategory: LegacyFuelData['category'],
   ): FuelData['category'] {
@@ -36,19 +35,17 @@ export function extractFuelsInputFromLegacy(scenario: Scenario): { fuels: FuelsD
         return 'electricity';
     }
   }
-  const newEntries: Array<[string, FuelData]> = legacyEntries.map(
-    ([name, { category, standingcharge, fuelcost, co2factor, primaryenergyfactor }]) => [
-      name,
-      {
-        category: sanitiseCategory(category),
-        standingCharge: coalesceEmptyString(standingcharge, 0),
-        unitPrice: coalesceEmptyString(fuelcost, 0),
-        carbonEmissionsFactor: coalesceEmptyString(co2factor, 0),
-        primaryEnergyFactor: coalesceEmptyString(primaryenergyfactor, 0),
-      },
-    ],
+  const newFuels = mapValues(
+    legacyFuels,
+    ({ category, standingcharge, fuelcost, co2factor, primaryenergyfactor }) => ({
+      category: sanitiseCategory(category),
+      standingCharge: coalesceEmptyString(standingcharge, 0),
+      unitPrice: coalesceEmptyString(fuelcost, 0),
+      carbonEmissionsFactor: coalesceEmptyString(co2factor, 0),
+      primaryEnergyFactor: coalesceEmptyString(primaryenergyfactor, 0),
+    }),
   );
-  return { fuels: Object.fromEntries(newEntries) };
+  return { fuels: newFuels };
 }
 
 export class Fuels {
