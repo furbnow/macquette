@@ -7,9 +7,17 @@ import { cache } from '../../helpers/cache-decorators';
 import { ModelBehaviourFlags } from './behaviour-version';
 import { Fuel } from './fuels';
 
+type CurrentEnergyDependencyFuel = Pick<
+  Fuel,
+  'carbonEmissionsFactor' | 'primaryEnergyFactor' | 'unitPrice' | 'standingCharge'
+>;
+
 export type CurrentEnergyDependencies = {
-  fuels: { fuels: Record<string, Fuel>; generation: Fuel };
-  modelBehaviourFlags: ModelBehaviourFlags;
+  fuels: {
+    fuels: Record<string, CurrentEnergyDependencyFuel>;
+    generation: CurrentEnergyDependencyFuel;
+  };
+  modelBehaviourFlags: Pick<ModelBehaviourFlags, 'currentEnergy'>;
 };
 
 export type CurrentEnergyInput = {
@@ -158,7 +166,7 @@ export class CurrentEnergy {
 export class CurrentEnergyFuel {
   constructor(
     public annualUse: number,
-    public fuel: Fuel,
+    public fuel: CurrentEnergyDependencyFuel,
   ) {}
 
   // kg CO_2
@@ -191,7 +199,7 @@ class CurrentEnergyGeneration {
     private dependencies: CurrentEnergyDependencies,
   ) {}
 
-  get fuel(): Fuel {
+  get fuel(): CurrentEnergyDependencyFuel {
     return this.dependencies.fuels.generation;
   }
 
