@@ -43,8 +43,7 @@ import {
   extractHeatingSystemsInputFromLegacy,
 } from './modules/heating-systems';
 import { FansAndPumpsGains } from './modules/internal-gains/fans-and-pumps';
-import { InternalLosses } from './modules/internal-gains/losses';
-import { MetabolicGains } from './modules/internal-gains/metabolic';
+import { MiscellaneousInternalGains } from './modules/internal-gains/miscellaneous';
 import {
   LightingSAP,
   LightingSAPInput,
@@ -167,8 +166,7 @@ export class CombinedModules {
   generation: Generation;
   currentEnergy: CurrentEnergy;
   fuels: Fuels;
-  metabolicGains: MetabolicGains;
-  internalLosses: InternalLosses;
+  miscellanousInternalGains: MiscellaneousInternalGains;
   fansAndPumpsGains: FansAndPumpsGains;
 
   constructor(input: Input) {
@@ -245,8 +243,9 @@ export class CombinedModules {
       fuels: this.fuels,
       modelBehaviourFlags,
     });
-    this.metabolicGains = new MetabolicGains(null, { occupancy: this.occupancy });
-    this.internalLosses = new InternalLosses(null, { occupancy: this.occupancy });
+    this.miscellanousInternalGains = new MiscellaneousInternalGains(null, {
+      occupancy: this.occupancy,
+    });
     this.fansAndPumpsGains = new FansAndPumpsGains(null, {
       ventilation: this.ventilation,
       heatingSystems,
@@ -298,8 +297,7 @@ export class CombinedModules {
       this.waterHeating,
       this.generation,
       this.currentEnergy,
-      this.metabolicGains,
-      this.internalLosses,
+      this.miscellanousInternalGains,
       this.fansAndPumpsGains,
     ];
     for (const mod of Object.values(mutatorModules)) {
