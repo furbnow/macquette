@@ -1,6 +1,7 @@
 import { input, password } from '@inquirer/prompts';
 import axios, { AxiosInstance } from 'axios';
 import Bottleneck from 'bottleneck';
+import { mkdirSync } from 'fs';
 import { open, opendir, stat } from 'fs/promises';
 import { join, resolve } from 'path';
 
@@ -22,7 +23,7 @@ async function getParams(): Promise<Params> {
     }),
     dataDirectory: await input({
       message: 'Data directory',
-      default: resolve(__dirname, '..', 'test', 'v2', 'fixtures', 'private'),
+      default: resolve(__dirname, '..', 'test', 'fixtures', 'private'),
     }),
     cookies: {
       sessionid: await password({
@@ -103,6 +104,7 @@ function isSameSecond(a: Date, b: Date) {
 
 async function main() {
   const params = await getParams();
+  mkdirSync(params.dataDirectory, { recursive: true });
   const client = new AssessmentClient(params);
   const metadata = await client.listMetadata();
   console.log(`${metadata.length} items serverside`);
