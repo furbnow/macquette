@@ -15,6 +15,12 @@ export type ModelBehaviourFlags = {
     countSavingsCorrectlyInUsage: boolean; // Minor bug
     calculateSavingsIncorporatingOnsiteUse: boolean; // Minor improvement
   };
+  heatingSystems: {
+    fansAndPumps: {
+      fixUndefinedSpecificFanPowerInWarmAirSystems: boolean; // Minor bug
+      warmAirSystemsZeroGainInSummer: boolean; // SAP 9 vs 10
+    };
+  };
 };
 
 export function constructModelBehaviourFlags(
@@ -33,6 +39,12 @@ export function constructModelBehaviourFlags(
     currentEnergy: {
       countSavingsCorrectlyInUsage: false,
       calculateSavingsIncorporatingOnsiteUse: false,
+    },
+    heatingSystems: {
+      fansAndPumps: {
+        fixUndefinedSpecificFanPowerInWarmAirSystems: false,
+        warmAirSystemsZeroGainInSummer: false,
+      },
     },
   };
   const v1Flags = safeMerge(legacyFlags, {
@@ -54,6 +66,14 @@ export function constructModelBehaviourFlags(
       calculateSavingsIncorporatingOnsiteUse: true,
     },
   });
+  const v4Flags = safeMerge(v3Flags, {
+    heatingSystems: {
+      fansAndPumps: {
+        fixUndefinedSpecificFanPowerInWarmAirSystems: true,
+        warmAirSystemsZeroGainInSummer: true,
+      },
+    },
+  });
   switch (version) {
     case 'legacy':
       return legacyFlags;
@@ -63,5 +83,7 @@ export function constructModelBehaviourFlags(
       return v2Flags;
     case 3:
       return v3Flags;
+    case 4:
+      return v4Flags;
   }
 }

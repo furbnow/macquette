@@ -228,6 +228,7 @@ export class CombinedModules {
     const heatingSystems = new HeatingSystems(input.heatingSystems, {
       floors: this.floors,
       waterCommon: this.waterCommon,
+      modelBehaviourFlags,
     });
     this.waterHeating = new WaterHeating(input.waterHeating, {
       heatingSystems,

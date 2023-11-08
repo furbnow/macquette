@@ -5,7 +5,7 @@ import { Month } from '../../enums/month';
 
 export type FansAndPumpsGainsDependencies = {
   heatingSystems: {
-    fansAndPumpsHeatingSystems: Array<{ heatGain: number }>;
+    fansAndPumpsHeatingSystems: Array<{ heatGain: (m: Month) => number }>;
   };
   ventilation: {
     fanHeatGain: number;
@@ -17,10 +17,10 @@ export class FansAndPumpsGains {
     private dependencies: FansAndPumpsGainsDependencies,
   ) {}
 
-  get heatingSystemsHeatGain(): number {
+  heatingSystemsHeatGain(month: Month): number {
     return sum(
-      this.dependencies.heatingSystems.fansAndPumpsHeatingSystems.map(
-        (system) => system.heatGain,
+      this.dependencies.heatingSystems.fansAndPumpsHeatingSystems.map((system) =>
+        system.heatGain(month),
       ),
     );
   }
@@ -29,13 +29,13 @@ export class FansAndPumpsGains {
     return this.dependencies.ventilation.fanHeatGain;
   }
 
-  get heatGain(): number {
-    return this.heatingSystemsHeatGain + this.ventilationHeatGain;
+  heatGain(month: Month): number {
+    return this.heatingSystemsHeatGain(month) + this.ventilationHeatGain;
   }
 
   mutateLegacyData(data: z.input<typeof scenarioSchema>) {
     const gains_W = data?.gains_W;
     if (gains_W === undefined) return;
-    gains_W.fans_and_pumps = Month.all.map(() => this.heatGain);
+    gains_W.fans_and_pumps = Month.all.map((m) => this.heatGain(m));
   }
 }
