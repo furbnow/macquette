@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { Project, projectSchema } from '../../src/data-schemas/project';
 import { Scenario, scenarioSchema } from '../../src/data-schemas/scenario';
+import { isTruthy } from '../../src/helpers/is-truthy';
 
 const fixturesRoot = join(__filename, '..');
 
@@ -15,7 +16,9 @@ function collectFromDirectory(dir: string) {
 
 const fixturePaths = [
   ...collectFromDirectory(fixturesRoot),
-  ...collectFromDirectory(join(fixturesRoot, 'private')),
+  ...(isTruthy(process.env['SKIP_PRIVATE_FIXTURES'])
+    ? []
+    : collectFromDirectory(join(fixturesRoot, 'private'))),
 ];
 
 function safeJsonParse(...args: Parameters<typeof JSON.parse>): unknown {
