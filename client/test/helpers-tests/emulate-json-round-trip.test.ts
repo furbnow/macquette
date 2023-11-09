@@ -26,16 +26,14 @@ describe('emulate JSON round trip', () => {
   it('emulates a JSON round-trip', () => {
     fc.assert(
       fc.property(
-        fc.oneof(
-          fc
-            .anything()
-            .filter(
-              (val) =>
-                val !== undefined &&
-                !(typeof val === 'object' && val !== null && '__proto__' in val),
-            ),
-          objectWithToJSON,
-        ),
+        fc
+          .oneof(
+            fc.anything().filter((val) => val !== undefined),
+            objectWithToJSON,
+          )
+          .filter(
+            (val) => !(typeof val === 'object' && val !== null && '__proto__' in val),
+          ),
         (val) => {
           expect(emulateJsonRoundTrip(val)).toEqual(JSON.parse(JSON.stringify(val)));
         },
