@@ -1,9 +1,13 @@
 module.exports = {
     preset: 'ts-jest/presets/js-with-ts',
-    collectCoverageFrom: ["./src/**"],
-    transform: { ".(ts|tsx)": "ts-jest" },
-    testRegex: "\\.(test|spec)\\.(ts|tsx|js)$",
-    moduleFileExtensions: ["ts", "tsx", "js"],
+    collectCoverage: Boolean(process.env['CI']) || Boolean(process.env['COVERAGE']),
+    coverageProvider: 'v8',
+    collectCoverageFrom: ['./src/**', './test/model/golden-master/*.js'],
+    coverageDirectory: 'coverage',
+    coverageReporters: ['text', 'text-summary', 'cobertura', 'lcov'],
+    transform: { '.(ts|tsx)': 'ts-jest' },
+    testRegex: '\\.(test|spec)\\.(ts|tsx|js)$',
+    moduleFileExtensions: ['ts', 'tsx', 'js'],
     testEnvironment: 'node',
     setupFilesAfterEnv: [
         '<rootDir>/test/helpers/jest/to-be-approximately.ts',

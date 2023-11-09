@@ -51,11 +51,16 @@ js-test:
         when: 'always'
         paths:
             - ${CI_PROJECT_DIR}/node_modules
-
     before_script:
         - (cd client && npm clean-install)
     script:
         - make check-types-js lint-js test-js
+    coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+    artifacts:
+        reports:
+            coverage_report:
+                coverage_format: cobertura
+                path: client/coverage/cobertura-coverage.xml
 
 pre-commit:
     stage: test
