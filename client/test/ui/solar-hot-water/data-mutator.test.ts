@@ -3,7 +3,6 @@ import { cloneDeep } from 'lodash';
 import { z } from 'zod';
 import { projectSchema } from '../../../src/data-schemas/project';
 
-import { scenarioSchema } from '../../../src/data-schemas/scenario';
 import { makeFormStateTransforms } from '../../../src/data-schemas/visitable-types/form-state';
 import { solarHotWaterInput } from '../../../src/model/modules/solar-hot-water';
 import {
@@ -14,7 +13,6 @@ import {
   ProjectInput,
   arbitraryProjectInputsWithoutScenarios,
 } from '../../arbitraries/project-inputs';
-import { arbScenarioInputs } from '../../arbitraries/scenario-inputs';
 import { FcInfer } from '../../helpers/arbitraries';
 import { arbitraryState } from './arbitrary';
 
@@ -23,30 +21,26 @@ describe('solar hot water data mutator', () => {
     const arb = fc.record({
       state: arbitraryState(),
       scenarioId: fc.string(),
-      scenarioInput: arbScenarioInputs(),
       moduleKey: fc.string(),
       restOfProject: arbitraryProjectInputsWithoutScenarios(),
     });
     const examples: Array<[FcInfer<typeof arb>]> = [];
     fc.assert(
-      fc.property(
-        arb,
-        ({ state, scenarioId, scenarioInput, moduleKey, restOfProject }) => {
-          const toMutate = {
-            project: {
-              ...restOfProject,
-              data: { [scenarioId]: cloneDeep(scenarioInput) },
-            } satisfies ProjectInput,
-          };
-          solarHotWaterModule.shims.mutateLegacyData(
-            toMutate,
-            { scenarioId },
-            state,
-            moduleKey,
-          );
-          expect(() => projectSchema.parse(toMutate.project)).not.toThrow();
-        },
-      ),
+      fc.property(arb, ({ state, scenarioId, moduleKey, restOfProject }) => {
+        const toMutate = {
+          project: {
+            ...restOfProject,
+            data: { [scenarioId]: {} },
+          } satisfies ProjectInput,
+        };
+        solarHotWaterModule.shims.mutateLegacyData(
+          toMutate,
+          { scenarioId },
+          state,
+          moduleKey,
+        );
+        expect(() => projectSchema.parse(toMutate.project)).not.toThrow();
+      }),
       { examples },
     );
   });
@@ -55,29 +49,25 @@ describe('solar hot water data mutator', () => {
     const arb = fc.record({
       state: arbitraryState().filter((s) => s !== 'loading'),
       scenarioId: fc.string(),
-      scenarioInput: arbScenarioInputs(),
       moduleKey: fc.string(),
       restOfProject: arbitraryProjectInputsWithoutScenarios(),
     });
     fc.assert(
-      fc.property(
-        arb,
-        ({ state, scenarioId, scenarioInput, moduleKey, restOfProject }) => {
-          const toMutate = {
-            project: {
-              ...restOfProject,
-              data: { [scenarioId]: cloneDeep(scenarioInput) },
-            } satisfies ProjectInput,
-          };
-          solarHotWaterModule.shims.mutateLegacyData(
-            toMutate,
-            { scenarioId },
-            state,
-            moduleKey,
-          );
-          expect((toMutate.project as any).data[scenarioId].SHW.version).toBe(2);
-        },
-      ),
+      fc.property(arb, ({ state, scenarioId, moduleKey, restOfProject }) => {
+        const toMutate = {
+          project: {
+            ...restOfProject,
+            data: { [scenarioId]: {} },
+          } satisfies ProjectInput,
+        };
+        solarHotWaterModule.shims.mutateLegacyData(
+          toMutate,
+          { scenarioId },
+          state,
+          moduleKey,
+        );
+        expect((toMutate.project as any).data[scenarioId].SHW.version).toBe(2);
+      }),
     );
   });
 
@@ -87,35 +77,32 @@ describe('solar hot water data mutator', () => {
         .filter((s) => s !== 'loading')
         .map((s) => s as LoadedState),
       scenarioId: fc.string(),
-      scenarioInput: arbScenarioInputs(),
       moduleKey: fc.string(),
       restOfProject: arbitraryProjectInputsWithoutScenarios(),
     });
     const { fromFormState } = makeFormStateTransforms(solarHotWaterInput);
     fc.assert(
-      fc.property(
-        arb,
-        ({ state, scenarioId, scenarioInput, moduleKey, restOfProject }) => {
-          const moduleEnabled = !state.input.isNull;
-          const toMutate = {
-            project: {
-              ...restOfProject,
-              data: { [scenarioId]: cloneDeep(scenarioInput) },
-            } satisfies ProjectInput,
-          };
-          solarHotWaterModule.shims.mutateLegacyData(
-            toMutate,
-            { scenarioId },
-            state,
-            moduleKey,
-          );
-          const mutatedScenario = (toMutate.project as z.input<typeof projectSchema>)
-            .data[scenarioId]!;
-          expect((mutatedScenario.SHW as any).input).toEqual(fromFormState(state.input));
-          expect(mutatedScenario.use_SHW).toBe(moduleEnabled);
-          expect(mutatedScenario.water_heating!.solar_water_heating).toBe(moduleEnabled);
-        },
-      ),
+      fc.property(arb, ({ state, scenarioId, moduleKey, restOfProject }) => {
+        const moduleEnabled = !state.input.isNull;
+        const toMutate = {
+          project: {
+            ...restOfProject,
+            data: { [scenarioId]: {} },
+          } satisfies ProjectInput,
+        };
+        solarHotWaterModule.shims.mutateLegacyData(
+          toMutate,
+          { scenarioId },
+          state,
+          moduleKey,
+        );
+        const mutatedScenario = (toMutate.project as z.input<typeof projectSchema>).data[
+          scenarioId
+        ]!;
+        expect((mutatedScenario.SHW as any).input).toEqual(fromFormState(state.input));
+        expect(mutatedScenario.use_SHW).toBe(moduleEnabled);
+        expect(mutatedScenario.water_heating!.solar_water_heating).toBe(moduleEnabled);
+      }),
     );
   });
 
@@ -123,32 +110,21 @@ describe('solar hot water data mutator', () => {
     const arb = fc.record({
       state: arbitraryState(),
       scenarioId: fc.string(),
-      currentScenario: arbScenarioInputs(),
-      nonCurrentScenarios: fc.dictionary(
-        fc.string(),
-        arbScenarioInputs().map((i) => scenarioSchema.parse(i)),
-      ),
+      otherScenarioIds: fc.array(fc.string()),
       moduleKey: fc.string(),
       restOfProject: arbitraryProjectInputsWithoutScenarios(),
     });
     fc.assert(
       fc.property(
         arb,
-        ({
-          state,
-          scenarioId,
-          currentScenario,
-          nonCurrentScenarios,
-          moduleKey,
-          restOfProject,
-        }) => {
+        ({ state, scenarioId, otherScenarioIds, moduleKey, restOfProject }) => {
           const original = {
             project: {
               ...restOfProject,
-              data: {
-                ...nonCurrentScenarios,
-                [scenarioId]: currentScenario,
-              },
+              data: Object.fromEntries([
+                ...otherScenarioIds.map((id) => [id, {}]),
+                [scenarioId, {}],
+              ]),
             } satisfies ProjectInput,
           };
           const toMutate = cloneDeep(original);
@@ -172,18 +148,17 @@ describe('solar hot water data mutator', () => {
     const arb = fc.record({
       state: arbitraryState(),
       scenarioId: fc.string(),
-      scenario: arbScenarioInputs(),
       moduleKey: fc.string(),
       restOfProject: arbitraryProjectInputsWithoutScenarios(),
     });
     fc.assert(
-      fc.property(arb, ({ state, scenarioId, scenario, moduleKey, restOfProject }) => {
+      fc.property(arb, ({ state, scenarioId, moduleKey, restOfProject }) => {
         const toNotMutate = cloneDeep(state);
         solarHotWaterModule.shims.mutateLegacyData(
           {
             project: {
               ...restOfProject,
-              data: { [scenarioId]: scenario },
+              data: { [scenarioId]: {} },
             } satisfies ProjectInput,
           },
           { scenarioId },

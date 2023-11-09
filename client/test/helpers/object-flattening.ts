@@ -1,4 +1,4 @@
-export type Opaque =
+type Opaque =
   | string
   | number
   | bigint
@@ -26,9 +26,9 @@ function isOpaque(val: unknown): val is Opaque {
   );
 }
 
-export type KeySequence = string;
+type KeySequence = string;
 type Pair = [KeySequence, Opaque];
-export type FlattenedObject = Map<KeySequence, Opaque>;
+type FlattenedObject = Map<KeySequence, Opaque>;
 
 export function flatten(input: unknown): FlattenedObject {
   return new Map(flattenInner(input, ''));

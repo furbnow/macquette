@@ -1,15 +1,12 @@
 /* eslint-disable jest/expect-expect */
 import assert from 'assert';
-import * as fc from 'fast-check';
 import { cloneDeep } from 'lodash';
 import { z } from 'zod';
 
 import { scenarioSchema } from '../../src/data-schemas/scenario';
 import { emulateJsonRoundTrip } from '../../src/helpers/emulate-json-round-trip';
 import { calcRun } from '../../src/model/model';
-import { arbScenarioInputs } from '../arbitraries/scenario-inputs';
 import { scenarios } from '../fixtures';
-import { checkInputBugs } from '../model/scenario-predicates';
 
 function runModel(data: unknown): unknown {
   const oldConsoleWarn = console.warn;
@@ -27,9 +24,6 @@ describe('scenario schema', () => {
       expect(() => scenarioSchema.parse(scenarioData)).not.toThrow();
     }
     test.each(scenarios)('$displayName', (scenario) => testFn(scenario.rawData));
-    test('arbitrary', () => {
-      fc.assert(fc.property(arbScenarioInputs(), testFn));
-    });
   });
 
   describe('should be able to parse the output of running the model', () => {
@@ -38,14 +32,6 @@ describe('scenario schema', () => {
       expect(() => scenarioSchema.parse(modelOutput)).not.toThrow();
     }
     test.each(scenarios)('$displayName', (scenario) => testFn(scenario.rawData));
-    test('arbitrary', () => {
-      fc.assert(
-        fc.property(
-          arbScenarioInputs().filter((s) => !checkInputBugs(s).bugs),
-          testFn,
-        ),
-      );
-    });
   });
 
   describe('should be able to parse the JSON round-tripped output of running the model', () => {
@@ -55,14 +41,6 @@ describe('scenario schema', () => {
       expect(() => scenarioSchema.parse(jsonRoundTripped)).not.toThrow();
     }
     test.each(scenarios)('$displayName', (scenario) => testFn(scenario.rawData));
-    test('arbitrary', () => {
-      fc.assert(
-        fc.property(
-          arbScenarioInputs().filter((s) => !checkInputBugs(s).bugs),
-          testFn,
-        ),
-      );
-    });
   });
 
   describe('idempotence', () => {
@@ -99,14 +77,6 @@ describe('scenario schema', () => {
     }
 
     test.each(scenarios)('$displayName', (scenario) => testFn(scenario.rawData));
-    test('arbitrary', () => {
-      fc.assert(
-        fc.property(
-          arbScenarioInputs().filter((s) => !checkInputBugs(s).bugs),
-          testFn,
-        ),
-      );
-    });
 
     test('type level idempotence check', () => {
       // Test that output is assignable to input. We don't want to

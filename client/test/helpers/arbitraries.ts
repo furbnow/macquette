@@ -1,5 +1,4 @@
 import fc from 'fast-check';
-import { mapValues } from 'lodash';
 
 import { NonEmptyArray } from '../../src/helpers/non-empty-array';
 
@@ -35,12 +34,6 @@ export function arbFloat(options: fc.FloatConstraints = {}) {
   return fc.float(options);
 }
 
-export function jsonFloat(options: fc.FloatConstraints = {}) {
-  return fc
-    .float({ ...options, noNaN: true, noDefaultInfinity: true })
-    .filter((num) => !Object.is(num, -0));
-}
-
 export function arbDateOrRFC3339(): fc.Arbitrary<string | Date> {
   return fc
     .tuple(
@@ -51,33 +44,6 @@ export function arbDateOrRFC3339(): fc.Arbitrary<string | Date> {
       }),
     )
     .map(([stringify, date]) => (stringify ? date.toISOString() : date));
-}
-
-export function fcOptional<T>(arb: fc.Arbitrary<T>) {
-  return fc.option(arb, { nil: undefined });
-}
-export function fcNullable<T>(arb: fc.Arbitrary<T>) {
-  return fc.option(arb, { nil: null });
-}
-
-export function fcPartialRecord<T>(record: { [K in keyof T]: fc.Arbitrary<T[K]> }) {
-  return fc.record<T, { withDeletedKeys: true }>(record, { withDeletedKeys: true });
-}
-
-export function recordWith<T extends Record<string | symbol, fc.Arbitrary<unknown>>, W>(
-  extra: fc.Arbitrary<W>,
-  source: T,
-): {
-  [K in keyof T]: fc.Arbitrary<
-    (T[K] extends fc.MaybeWeightedArbitrary<infer U> ? U : never) | W
-  >;
-} {
-  return mapValues(source, (val) => fc.oneof(val, extra));
-}
-
-/** @deprecated use fc.constantFrom instead */
-export function fcEnum<Value>(...vals: Value[]): fc.Arbitrary<Value> {
-  return fc.constantFrom(...vals);
 }
 
 export function fcNonEmptyArray<T>(
